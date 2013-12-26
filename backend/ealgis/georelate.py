@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from ealgis import EAlGIS
+from .ealgis import EAlGIS
 from db import GeometrySource, GeometryRelation, GeometryIntersection, GeometrySourceProjected, GeometryTouches
-import sqlalchemy, hashlib, random, time
+import sqlalchemy, hashlib, random, time, sys
 
 st_intersects = sqlalchemy.func.st_intersects
 st_intersection = sqlalchemy.func.st_intersection

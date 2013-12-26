@@ -56,7 +56,7 @@ def main():
         eal = EAlGIS()
         left_source = eal.get_table_info(args.geom_left).geometry_source
         right_source = eal.get_table_info(args.geom_right).geometry_source
-        from ealgis.georelate import build_relations
+        from .georelate import build_relations
         build_relations(left_source, right_source)
 
     def fn_set(args):

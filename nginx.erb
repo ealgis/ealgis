@@ -8,7 +8,7 @@ server {
     }
 
     location / { 
-        alias /vagrant/html;
+        alias /vagrant/html/;
     }
     location @yourapplication {
         include uwsgi_params;
