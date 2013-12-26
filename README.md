@@ -1,9 +1,9 @@
 
-EAlGIS: interactive geographic data analysis
-===================================
+EAlGIS
+======
 
-Overview
---------
+Interactive Data Analysis
+-------------------------
 
 EAlGIS offers:
 
@@ -16,6 +16,7 @@ EAlGIS offers:
        nonsense values when percentages of some attribute are calculated), you might add a filter "b3 > 30" when plotting the 
        Australian Census.
      - download calculated values for further analysis
+     - user access delegated to Mozilla Personas
  * reproducable data loader infrastructure, and pre-supplied loader for the Australian Census 2011.
      - be sure where the data in your database came from
      - automated reprojection to map SRIDs (a big performance win)
