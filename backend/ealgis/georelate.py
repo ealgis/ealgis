@@ -153,7 +153,6 @@ def find_intersections(left, right, left_relation, right_relation):
             with_gid=with_gid,
             area_overlap=intersection_area,
             percentage_overlap=(intersection_area / area) * 100.)
-        eal.db.session.commit()
         if (idx +1) % 1000 == 0:
             eal.db.session.commit() # cut memory usage
         eal.db.session.add(isect)
@@ -187,7 +186,6 @@ def find_touches(left, right, left_relation, right_relation):
             relation=relation,
             gid=gid,
             with_gid=with_gid)
-        eal.db.session.commit()
         if (idx +1) % 1000 == 0:
             eal.db.session.commit() # cut memory usage
         eal.db.session.add(isect)

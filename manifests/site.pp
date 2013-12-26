@@ -70,6 +70,9 @@ node default {
     package { "p7zip":
       ensure => 'installed'
     }
+    package { "python-lxml":
+      ensure => 'installed'
+    }
     package { "pyparsing":
       ensure => 'installed',
       provider => "pip",
