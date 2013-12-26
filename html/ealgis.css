@@ -1,0 +1,86 @@
+
+#map {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    overflow-y:auto;
+    background-color: white;
+}
+
+html, body {
+    height: 100%;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+
+body {
+    padding-top:40px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.brand {
+    margin-left: 0px!important;
+}
+
+img.olTileImage {
+    max-width: none;
+}
+
+.modal-body .modal-body {
+  overflow-y: scroll;
+}
+
+.remove-layer {
+    background-color: green;
+}
+
+.add-layer {
+    background-color: red;
+}
+
+.layer-filled {
+    font-weight: bold;
+}
+
+.layer-unfilled {
+    text-decoration: underline;
+}
+
+#legend {
+    position:absolute;
+    right:30px; 
+    bottom:30px; 
+    z-index:10000; 
+    width:160px; 
+    height:400px; 
+    background-color: rgba(255, 255, 255, 0.7);
+    margin:0;
+    padding:0;
+}
+
+.olForeignContainer img { 
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    filter: gray; /* IE 6-9 */
+}
+
+.olForeignContainer img.olTileImage { 
+  -webkit-filter: none;
+  -moz-filter: none;
+  -ms-filter: none;
+  -o-filter: none;
+  filter: none; /* IE 6-9 */
+}
+
+.tooltip-inner {
+    white-space:pre-wrap;
+}
+

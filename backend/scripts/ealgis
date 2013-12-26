@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+from ealgis.ealgis import main
+
+main()
+

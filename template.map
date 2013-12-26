@@ -1,0 +1,30 @@
+MAP
+  CONFIG "MS_ERRORFILE" "/tmp/ms_error.txt"
+  DEBUG 5
+  SYMBOL
+    NAME "triangle"
+    TYPE vector
+    POINTS
+      0 4
+      2 0
+      4 4
+      0 4
+    END
+  END
+  SYMBOL
+    NAME "circle"
+    TYPE ellipse
+    FILLED true
+    POINTS
+      4 4
+    END
+  END
+  WEB
+    METADATA
+      "wms_feature_info_mime_type" "text/html"
+      "wms_title"           "template"
+      "wms_srs"             "epsg:3857"
+      "ows_enable_request" "*"
+    END
+  END
+END
