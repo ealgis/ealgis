@@ -2,6 +2,9 @@
 EAlGIS
 ======
 
+![Unemployment % in Perth, Australia](https://raw.github.com/grahame/ealgis/master/doc/screenshots/unemployment.png "Unemployment % in Perth, Australia")
+
+
 Interactive Data Analysis
 -------------------------
 
