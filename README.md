@@ -32,6 +32,9 @@ On your host, browse to:
 ... and you should be up and running.
 
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
-You may wish to start with the 2011 Australian Census:
+You may wish to start with the 2011 Australian Census: http://github.com/grahame/ealgis-aus-census-2011
 
-    http://github.com/grahame/ealgis-aus-census-2011
+When loading data, you might want to clone the loader module in the `modules` directory 
+of the EAlGIS checkout. The code will then be available in `/vagrant/modules` in your 
+vagrant VM.
+

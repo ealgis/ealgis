@@ -67,6 +67,9 @@ node default {
     package { "liblzma-dev":
       ensure => 'installed'
     }
+    package { "p7zip":
+      ensure => 'installed'
+    }
     package { "pyparsing":
       ensure => 'installed',
       provider => "pip",
