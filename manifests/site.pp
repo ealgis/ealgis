@@ -73,6 +73,9 @@ node default {
     package { "python-lxml":
       ensure => 'installed'
     }
+    package { "gdal-bin":
+      ensure => 'installed'
+    }
     package { "pyparsing":
       ensure => 'installed',
       provider => "pip",
