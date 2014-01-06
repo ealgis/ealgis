@@ -76,6 +76,9 @@ node default {
     package { "gdal-bin":
       ensure => 'installed'
     }
+    package { "man-db":
+      ensure => 'installed'
+    }
     package { "pyparsing":
       ensure => 'installed',
       provider => "pip",
