@@ -240,7 +240,7 @@ class EAlGIS(object):
         cls = self.get_table_class(geometry_source.table_info.name)
         geom_attr = getattr(cls, geometry_source.column)
         self.db.session.execute(sqlalchemy.update(cls.__table__, values={
-            geom_attr : sqlalchemy.func.st_buffer(geom_attr, 0)
+            geom_attr : sqlalchemy.func.st_multi(sqlalchemy.func.st_buffer(geom_attr, 0))
             }).where(sqlalchemy.func.st_isvalid(geom_attr) == False))
 
     def reproject(self, geometry_source, to_srid):
