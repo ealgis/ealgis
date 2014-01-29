@@ -21,6 +21,9 @@ node default {
       superuser => true,
     }
 
+    package { "tmux":
+      ensure => "installed"
+    }
     package { "python-dev":
       ensure => "installed"
     }
