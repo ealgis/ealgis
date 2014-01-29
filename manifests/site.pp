@@ -87,6 +87,11 @@ node default {
       provider => "pip",
       require => [ Package["python-pip"] ]
     }
+    package { "rauth":
+      ensure => 'installed',
+      provider => "pip",
+      require => [ Package["python-pip"] ]
+    }
     package { "backports-lzma":
       name => ["git+https://github.com/peterjc/backports.lzma"],
       provider => "pip",
