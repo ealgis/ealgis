@@ -41,6 +41,9 @@ mkdb)
 dropdb)
     cmd_dropdb
     ;;
+lint)
+    flake8 --exclude 'svn,CVS,.bzr,.hg,.git,__pycache__,2011 Datapacks BCP_IP_TSP_PEP_ECP_WPP_ERP_Release 3' .
+    ;;
 install)
     cmd_install
     ;;
