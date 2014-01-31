@@ -54,12 +54,18 @@ node default {
       ensure => "installed",
       require => [ Apt::Ppa["ppa:ubuntugis/ppa"], Package["postgresql-server"] ], 
     }
-
     package { "pythonbits":
       name => ["simplejson", "markdown", "Geoalchemy", "flask", "flask-sqlalchemy", "ipython", "openpyxl", "flake8", "nose"],
       provider => "pip",
       ensure => "installed",
       require => [ Package["python-pip"] ]
+    }
+    # unfortunately 12.04 lxml is too old so need to build a newer one
+    package { "lxml":
+      name => ["lxml"],
+      provider => "pip",
+      ensure => "installed",
+      require => [ Package["python-pip"], Package["libxml2-dev"], Package["pkg-config"] ]
     }
     package { "flask-browserid":
       name => ["git+https://github.com/garbados/flask-browserid.git"],
@@ -70,10 +76,16 @@ node default {
     package { "liblzma-dev":
       ensure => 'installed'
     }
-    package { "p7zip":
+    package { "libxml2-dev":
       ensure => 'installed'
     }
-    package { "python-lxml":
+    package { "libxslt-dev":
+      ensure => 'installed'
+    }
+    package { "pkg-config":
+      ensure => 'installed'
+    }
+    package { "p7zip":
       ensure => 'installed'
     }
     package { "gdal-bin":
