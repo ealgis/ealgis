@@ -2,6 +2,8 @@
 
 DB=ealgis
 
+cd /vagrant || exit 1
+
 cmd_dropdb()
 {
     dropdb ealgis
@@ -42,7 +44,10 @@ dropdb)
     cmd_dropdb
     ;;
 lint)
-    flake8 --exclude 'svn,CVS,.bzr,.hg,.git,__pycache__,2011 Datapacks BCP_IP_TSP_PEP_ECP_WPP_ERP_Release 3' .
+    flake8 --ignore E501 --exclude 'svn,CVS,.bzr,.hg,.git,__pycache__,2011 Datapacks BCP_IP_TSP_PEP_ECP_WPP_ERP_Release 3' --count .
+    ;;
+tests)
+    nosetests ealgis
     ;;
 install)
     cmd_install

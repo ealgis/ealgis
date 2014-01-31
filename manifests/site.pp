@@ -56,7 +56,7 @@ node default {
     }
 
     package { "pythonbits":
-      name => ["simplejson", "markdown", "Geoalchemy", "flask", "flask-sqlalchemy", "ipython", "openpyxl", "flake8"],
+      name => ["simplejson", "markdown", "Geoalchemy", "flask", "flask-sqlalchemy", "ipython", "openpyxl", "flake8", "nose"],
       provider => "pip",
       ensure => "installed",
       require => [ Package["python-pip"] ]

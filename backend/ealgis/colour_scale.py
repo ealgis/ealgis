@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
-import cairo, colorsys, csv
+import cairo
+import colorsys
+import csv
 from cStringIO import StringIO
 from util import pairwise
 
 RGBBase = namedtuple('RGB', ['r', 'g', 'b'])
+
 
 class RGB(RGBBase):
     def __mul__(self, s):
@@ -20,6 +23,7 @@ class RGB(RGBBase):
 
     def __add__(self, rgb):
         return RGB(self.r + rgb.r, self.g + rgb.g, self.b + rgb.b)
+
 
 class ColourScale(object):
     def __init__(self, interpolated, nanno, is_discrete, scale_min=0., scale_max=1.):
@@ -65,7 +69,7 @@ class ColourScale(object):
         elif v >= 1:
             idx = self.nlevels - 1
         else:
-            idx = int(v * (self.nlevels - 2)) + 1 # eg. 5 levels, 3 "inner"
+            idx = int(v * (self.nlevels - 2)) + 1  # eg. 5 levels, 3 "inner"
         return self.interpolated[idx]
 
     def legend(self, height=400, width=160):
