@@ -214,7 +214,8 @@ class EAlGIS(object):
 
     def geom_column(self, table_name):
         info = self.get_table(table_name)
-        rv = None
+        geom_columns = []
+
         for column in info.columns:
             # SQLAlchemy can't figure out what a geom column
             # is; hence the one that we can't decode is the
@@ -222,10 +223,13 @@ class EAlGIS(object):
             try:
                 str(column.type)
             except NotImplementedError:
-                if rv is not None:
-                    raise Exception("more than one geometry column?")
-                rv = column
-        return rv
+                geom_columns.append(column)
+            except sqlalchemy.exc.CompileError:  # SQLAlchemy >= 0.9
+                geom_columns.append(column)
+        
+        if len(geom_columns) > 1:
+            raise Exception("more than one geometry column?")
+        return geom_columns[0]
 
     def set_table_metadata(self, table_name, meta_dict):
         ti = self.get_table_info(table_name)
