@@ -7,6 +7,4 @@ eal = EAlGIS()
 app = eal.serve()
 
 # load in URL handlers
-import handlers
-
-print "handlers loaded:", handlers
+import handlers  # noqa

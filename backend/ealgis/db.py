@@ -260,7 +260,7 @@ class EAlGIS(object):
         self.db.session.execute(sqlalchemy.update(
             cls.__table__, values={
                 geom_attr: sqlalchemy.func.st_multi(sqlalchemy.func.st_buffer(geom_attr, 0))
-            }).where(sqlalchemy.func.st_isvalid(geom_attr) == False))
+            }).where(sqlalchemy.func.st_isvalid(geom_attr) == False))  # noqa
 
     def reproject(self, geometry_source, to_srid):
         # add the geometry column
