@@ -1,17 +1,20 @@
 import unittest
 
+
 class SequenceClassifier(object):
     casts = (int, float)
+
     def __init__(self):
         self.possible = list(SequenceClassifier.casts)
 
     def update(self, v):
         def test(cast):
             try:
-                cv = cast(v)
+                cast(v)
             except ValueError:
                 return False
             return True
+
         ok = []
         for cast in self.possible:
             if test(cast):
@@ -22,6 +25,7 @@ class SequenceClassifier(object):
         if len(self.possible) > 0:
             return self.possible[0]
         return str
+
 
 class TestSequenceClassifier(unittest.TestCase):
     def run_seq(self, s):

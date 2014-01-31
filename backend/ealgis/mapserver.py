@@ -1,9 +1,11 @@
 
 from flask import request, abort, Response
 from flask.ext.login import login_required
-import os, threading, mapscript
+import os
+import mapscript
 from db import EAlGIS, MapDefinition
 from colour_scale import colour_for_layer
+
 
 # mapserver utility functions
 def iget_iter(fn):
@@ -18,15 +20,11 @@ def iget_iter(fn):
         yield obj
         i = i + 1
 
-def get_layer(layer_naem):
-    for layer in layer_iter(instance):
-        if layer.name == layer_name:
-            return layer
-    return None
 
 layer_iter = lambda m: iget_iter(m.getLayer)
 class_iter = lambda c: iget_iter(c.getClass)
 style_iter = lambda s: iget_iter(s.getStyle)
+
 
 class Layer(object):
     @classmethod
@@ -48,10 +46,10 @@ class Layer(object):
             layer.labelitem = None
             return layer
 
-        # we need to build the query knowing what data we need 
+        # we need to build the query knowing what data we need
         # to build the map;
         #   - what is our geometry table & column
-        #   - which attribute data do we need, and how should it be 
+        #   - which attribute data do we need, and how should it be
         #     named?
         self.defn = defn
         geolinkage_ids = set()
@@ -110,18 +108,20 @@ class Layer(object):
             style.color.alpha = int(opacity * 255)
 
         # below cmin
-        inc = float(cmax - cmin)/(scale.nlevels - 2)
+        inc = float(cmax - cmin) / (scale.nlevels - 2)
         add_class(scale.lookup(cmin - inc), "([%s] < %g)" % (attr, cmin))
         # intermediate "within range" levels
-        for idx in xrange(1,scale.nlevels-1):
+        for idx in xrange(1, scale.nlevels - 1):
             vfrom = cmin + (idx - 1) * inc
             vto = vfrom + inc
             # we hedge on any floating-point rounding issues with a have increment jump into our level
             # for the colour lookup
-            add_class(scale.lookup(vfrom+inc/2.), "([%s] >= %g AND [%s] < %g)" % (attr, vfrom, attr, vto))
+            add_class(scale.lookup(vfrom + inc / 2.), "([%s] >= %g AND [%s] < %g)" % (attr, vfrom, attr, vto))
         # above cmin
         add_class(scale.lookup(cmax + inc), "([%s] >= %g)" % (attr, cmax))
+
 mapscript.msIO_installStdoutToBuffer()
+
 
 class Map(object):
     def __init__(self, rev, defn):
@@ -135,7 +135,8 @@ class Map(object):
     def make_base_layer(self, layer_defn):
         layer = Layer(self.instance, "base", layer_defn)
         return layer
-        
+
+
 class MapInstances(object):
     def __init__(self):
         self.instances = {}
@@ -146,7 +147,7 @@ class MapInstances(object):
             return None
         defn = defn_obj.get()
         rev = defn.get('rev', 0)
-        if not defn.has_key('layers'):
+        if 'layers' not in defn:
             return None
         layer_defn = defn['layers'].get(layer_id, None)
         if layer_defn is None:
@@ -165,6 +166,7 @@ instances = MapInstances()
 
 app = EAlGIS().app
 
+
 @app.route("/api/0.1/map/<map_name>/mapserver_wms/<layer_id>/<client_rev>", methods=['GET'])
 @login_required
 def mapserver_wms(map_name, layer_id, client_rev):
@@ -182,7 +184,7 @@ def mapserver_wms(map_name, layer_id, client_rev):
     mapscript.msIO_getStdoutBufferBytes()
     try:
         wrapper.instance.OWSDispatch(req)
-        headers = {'Cache-Control' : 'max-age=86400, public'}
+        headers = {'Cache-Control': 'max-age=86400, public'}
     except mapscript.MapServerError:
         # don't cache errors
         headers = {}

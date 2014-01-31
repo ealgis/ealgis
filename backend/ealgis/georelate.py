@@ -2,7 +2,6 @@
 
 from .ealgis import EAlGIS
 from db import GeometryRelation, GeometryIntersection, GeometryTouches
-from util import make_table
 import sys
 import time
 import random
@@ -54,11 +53,15 @@ class SnappedGeometry(object):
         table_name = "%s_%s_tmp" % (
             source.table_info.name,
             hashlib.sha1("%s%g%g" % (source.table_info.name, random.random(), time.time())).hexdigest()[:8])
-        metadata = eal.db.MetaData()
         cols = [
             eal.db.Column(SnappedGeometry.gid_column, eal.db.Integer, index=True, unique=True, primary_key=True),
         ]
-        make_table(eal.db.Table(table_name, metadata, *cols, prefixes=[]))
+
+        metadata = eal.db.MetaData()
+        new_tbl = eal.db.Table(table_name, metadata, *cols, prefixes=[])
+        metadata.create_all(eal.db.engine)
+        eal.db.session.commit()
+        del new_tbl
 
         eal.db.session.execute(
             sqlalchemy.func.addgeometrycolumn(

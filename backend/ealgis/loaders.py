@@ -1,13 +1,18 @@
-import os.path, hashlib, zipfile, glob
+import os.path
+import hashlib
+import zipfile
+import glob
 from util import piperun, table_name_valid
-from subprocess import check_call
-from pprint import pprint
 from itertools import izip
 from seqclassifier import SequenceClassifier
-import osr, sys, psycopg2, csv
+import osr
+import sys
+import csv
+
 
 class LoaderException(Exception):
     pass
+
 
 class DirectoryAccess(object):
     def __init__(self, directory):
@@ -27,6 +32,7 @@ class DirectoryAccess(object):
 
     def glob(self, pattern):
         return glob.glob(os.path.join(self.getdir(), pattern))
+
 
 class ZipAccess(DirectoryAccess):
     def __init__(self, parent, tmpdir, zf_path):
@@ -58,6 +64,7 @@ class ZipAccess(DirectoryAccess):
     def __exit__(self, type, value, traceback):
         return super(ZipAccess, self).__exit__(type, value, traceback)
 
+
 class RewrittenCSV(object):
     def __init__(self, tmpdir, csvpath, mutate_row_cb=None):
         if mutate_row_cb is None:
@@ -79,9 +86,11 @@ class RewrittenCSV(object):
     def __exit__(self, *args):
         os.unlink(self._path)
 
+
 class GeoDataLoader(object):
     def __init__(self):
         pass
+
 
 class ShapeLoader(GeoDataLoader):
     @classmethod
@@ -133,7 +142,7 @@ class ShapeLoader(GeoDataLoader):
         elif auto_srid is not None and srid != auto_srid:
             print >>sys.stderr, "warning: auto srid (%s) does not match provided srid (%s) for `%s'" % (auto_srid, srid, self.shpname)
         self.srid = srid
-    
+
     def load(self, eal):
         if eal.have_table(self.table_name):
             print "already loaded: %s" % (self.table_name)
@@ -147,6 +156,7 @@ class ShapeLoader(GeoDataLoader):
         print "registering, table name is:", self.table_name
         eal.register_table(self.table_name, geom=True, srid=self.srid, gid='gid')
 
+
 class CSVLoader(GeoDataLoader):
     def __init__(self, table_name, csvpath, pkey_column=None):
         self.table_name = table_name
@@ -155,9 +165,14 @@ class CSVLoader(GeoDataLoader):
 
     def load(self, eal):
         db = eal.db
+
         def columns(header, reader, max_rows=None):
-            sql_columns = { int : db.Integer, float : db.Float, str: db.Text }
-            classifiers = [ SequenceClassifier() for column in header ]
+            sql_columns = {
+                int: db.Integer,
+                float: db.Float,
+                str: db.Text
+            }
+            classifiers = [SequenceClassifier() for column in header]
             for i, row in enumerate(r):
                 for classifier, value in izip(classifiers, row):
                     classifier.update(value)
@@ -175,21 +190,22 @@ class CSVLoader(GeoDataLoader):
                     primary_key=make_index))
             return coldefs
 
-        # smell the file, generate a SQLAlchemy table definition 
+        # smell the file, generate a SQLAlchemy table definition
         # and then make it
-        metadata = db.MetaData()
         with open(self.csvpath) as fd:
             r = csv.reader(fd)
             header = next(r)
             cols = columns(header, r)
-        table = db.Table(self.table_name, metadata, *cols)
-        metadata.create_all(db.engine)
+        metadata = eal.db.MetaData()
+        new_tbl = db.Table(self.table_name, metadata, *cols)
+        metadata.create_all(eal.db.engine)
+        eal.db.session.commit()
+        del new_tbl
 
-        # this isn't wrapped by SQLAlchemy, so we must do it ourselves; 
+        # this isn't wrapped by SQLAlchemy, so we must do it ourselves;
         # invoke the Postgres CSV loader
         conn = db.session.connection()
-        res = conn.execute('COPY %s FROM %%s CSV HEADER' % (self.table_name), (self.csvpath, ))
+        conn.execute('COPY %s FROM %%s CSV HEADER' % (self.table_name), (self.csvpath, ))
         ti = eal.register_table(self.table_name)
         db.session.commit()
         return ti
-
