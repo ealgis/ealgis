@@ -2,8 +2,6 @@
 
 DB=ealgis
 
-cd /vagrant || exit 1
-
 cmd_dropdb()
 {
     dropdb ealgis
