@@ -83,19 +83,19 @@ class ColourScale(object):
         legend_from = PAD_Y
         legend_to = height - PAD_Y
         legend_height = legend_to - legend_from
-        legend_width = width/3
+        legend_width = width / 3
         cr.set_line_width(1)
         # draw box around the colour scale
-        cr.move_to(0, PAD_Y + 0.5) # top
+        cr.move_to(0, PAD_Y + 0.5)  # top
         cr.line_to(legend_width + 1, PAD_Y + 0.5)
-        cr.move_to(legend_width + 1.5, PAD_Y) # right side
+        cr.move_to(legend_width + 1.5, PAD_Y)  # right side
         cr.line_to(legend_width + 1.5, PAD_Y + 1 + legend_height)
-        cr.move_to(legend_width + 2, PAD_Y + 1.5 + legend_height) # bottom
+        cr.move_to(legend_width + 2, PAD_Y + 1.5 + legend_height)  # bottom
         cr.line_to(0, 1.5 + PAD_Y + legend_height)
-        cr.move_to(0.5, PAD_Y + 1 + legend_height) # left side
+        cr.move_to(0.5, PAD_Y + 1 + legend_height)  # left side
         cr.line_to(0.5, PAD_Y + 1)
         cr.stroke()
-        # draw the colour scale; two of the levels extend "beyond" (0, 1] so 
+        # draw the colour scale; two of the levels extend "beyond" (0, 1] so
         # we draw slightly past that range
         v_start = - 1. / (self.nlevels - 2)
         v_end = 1. - v_start
@@ -115,26 +115,29 @@ class ColourScale(object):
         nanno = self.nanno
         if not self.is_discrete and nanno < 3:
             nanno = 3
+
         def draw_label(v, text):
             y_attach = legend_from + (v_end - v) / v_inc + 1.5
             # draw anchor line
             cr.move_to(legend_width, y_attach)
-            cr.line_to(legend_width+2+ATTACH_W, y_attach)
+            cr.line_to(legend_width + 2 + ATTACH_W, y_attach)
             cr.stroke()
             # draw the text
             (x, y, width, height, dx, dy) = cr.text_extents(text)
-            cr.move_to(legend_width+2*ATTACH_W, y_attach+height/2)
+            cr.move_to(legend_width + 2 * ATTACH_W, y_attach + height / 2)
             cr.show_text(text)
+
         def fv(v):
             if int(v) == v:
                 return str(int(v))
             else:
                 return "%.2f" % v
-        anno_inc = (1-v_start)/(nanno-1)
+
+        anno_inc = (1 - v_start) / (nanno - 1)
         if self.is_discrete:
             discrete_inc = (self.scale_max - self.scale_min) / (nanno - 2)
         else:
-            continuous_inc =(self.scale_max - self.scale_min) / (nanno - 1)
+            continuous_inc = (self.scale_max - self.scale_min) / (nanno - 1)
         for i in xrange(nanno):
             if i == 0:
                 label = "<%s" % fv(self.scale_min)
@@ -150,12 +153,13 @@ class ColourScale(object):
                     else:
                         label = "%s<%s" % (fv(f_v), fv(t_v))
                 else:
-                    label = "%s" % (fv(self.scale_min + i*continuous_inc))
-            v = v_start/2. + i * anno_inc
+                    label = "%s" % (fv(self.scale_min + i * continuous_inc))
+            v = v_start / 2. + i * anno_inc
             draw_label(v, label)
         buf = StringIO()
         img.write_to_png(buf)
         return buf.getvalue()
+
 
 class ContinuousColourScale(ColourScale):
     def __init__(self, defn, nlevels=255):
@@ -167,7 +171,6 @@ class ContinuousColourScale(ColourScale):
     @classmethod
     def interpolate_iter(cls, defn, nlevels):
         npairs = len(defn) - 1
-        pairinc = 1. / npairs
         nlevel_pair = nlevels // npairs
         nlevel_leftover = nlevels - (nlevel_pair * npairs)
         # pair together the definition
@@ -178,11 +181,10 @@ class ContinuousColourScale(ColourScale):
             if idx == npairs - 1:
                 n += nlevel_leftover
                 ninc = n - 1
-            scale_from = (idx - 1) * pairinc
-            scale_to = idx * pairinc
             colour_inc = (c2 - c1) / float(ninc)
             for l in xrange(n):
                 yield c1 + (colour_inc * l)
+
 
 class DiscreteColourScale(ColourScale):
     def __init__(self, defn):
@@ -191,21 +193,23 @@ class DiscreteColourScale(ColourScale):
             len(defn),
             True)
 
+
 class HLSDiscreteColourScale(DiscreteColourScale):
     def __init__(self, ls, nlevels=10):
         (l, s) = ls
         # circle is defined by [0, 1], eg. 0 and 1 are the same point. so opposites of a is a + 0.5
         defn = []
         # use 2/3 of the circle, so end not too like start
-        h_inc = (2/3.) / nlevels
+        h_inc = (2 / 3.) / nlevels
         for i in xrange(nlevels):
             h = i * h_inc
             defn.append(RGB(*colorsys.hls_to_rgb(h, l, s)))
         super(HLSDiscreteColourScale, self).__init__(defn)
 
+
 class CannedColourDefinitions(object):
     def __init__(self):
-        self.defs= {}
+        self.defs = {}
         self.huey()
         self.color_brewer()
 
@@ -230,24 +234,26 @@ class CannedColourDefinitions(object):
         return self.defs[(name, nlevels)]
 
     def color_brewer(self):
-        data = {}
         def strip_bl(r):
             return [t for t in r if t != '']
 
         with open('/vagrant/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as fd:
             rdr = csv.reader(fd)
             header = strip_bl(next(rdr))
+
             def make_getter(nm, f=str):
                 idx = header.index(nm)
+
                 def __getter(row):
                     return f(row[idx])
+
                 return __getter
+
             color_name = make_getter('ColorName')
-            typ = make_getter('Type')
             num_of_colours = make_getter('NumOfColors', int)
-            r = make_getter('R', lambda v: int(v)/255.)
-            g = make_getter('G', lambda v: int(v)/255.)
-            b = make_getter('B', lambda v: int(v)/255.)
+            r = make_getter('R', lambda v: int(v) / 255.)
+            g = make_getter('G', lambda v: int(v) / 255.)
+            b = make_getter('B', lambda v: int(v) / 255.)
             for row in rdr:
                 name = color_name(row)
                 if name == '':
@@ -261,6 +267,7 @@ class CannedColourDefinitions(object):
                 self.register(name, DiscreteColourScale(colours))
 
 definitions = CannedColourDefinitions()
+
 
 def colour_for_layer(defn):
     fill = defn['fill']
