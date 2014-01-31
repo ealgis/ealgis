@@ -1,8 +1,12 @@
 
 from hashlib import sha1
-import os.path, pickle, urllib
+import os.path
+import pickle
+import urllib
 
 cache_path = './cache/'
+
+
 def cache_result(fn):
     def _wrapped(*args, **kwargs):
         arg_hash = sha1()
@@ -21,4 +25,3 @@ def cache_result(fn):
                 pickle.dump((args, kwargs, rv), fd)
             return rv
     return _wrapped
-

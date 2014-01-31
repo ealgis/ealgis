@@ -26,3 +26,7 @@ def alistdir(path):
 table_name_re = re.compile(r'^[A-Za-z0-9_]+$')
 def table_name_valid(table_name):
     return table_name_re.match(table_name) is not None
+
+def make_table(table):
+    metadata.create_all(eal.db.engine)
+    eal.db.session.commit()

@@ -4,8 +4,13 @@
 # EAlGIS
 # Copyright 2012, Grahame Bowland <grahame@angrygoats.net>
 
-import imp, os, csv, sys, email
+import imp
+import os
+import csv
+import sys
+import email
 from db import EAlGIS, User
+
 
 def main():
     import argparse
@@ -97,11 +102,11 @@ def main():
     parser_set.add_argument('key', type=str)
     parser_set.add_argument('value', type=str)
     parser_set.set_defaults(func=fn_set)
-    
+
     parser_clear = subparsers.add_parser('clear', help='Configure EAlGIS')
     parser_clear.add_argument('key', type=str)
     parser_clear.set_defaults(func=fn_clear)
-    
+
     parser_run = subparsers.add_parser('run', help='Run data loader')
     parser_run.add_argument('module', type=str, nargs='+', help='Path to loader module')
     parser_run.add_argument('--opts', '-o', help='loader options')
@@ -134,4 +139,3 @@ def main():
     if args.verbose:
         EAlGIS().db.engine.echo = True
     args.func(args)
-
