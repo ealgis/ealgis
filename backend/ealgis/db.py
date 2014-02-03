@@ -198,7 +198,7 @@ class EAlGIS(object):
             return False
         try:
             tbl = self.get_table(table_name)
-            # tbl.drop(self.db.engine)
+            tbl.drop(self.db.engine)
             self.db.session.delete(ti)
             self.db.session.commit()
             return True
@@ -226,7 +226,7 @@ class EAlGIS(object):
                 geom_columns.append(column)
             except sqlalchemy.exc.CompileError:  # SQLAlchemy >= 0.9
                 geom_columns.append(column)
-        
+
         if len(geom_columns) > 1:
             raise Exception("more than one geometry column?")
         return geom_columns[0]
@@ -498,7 +498,7 @@ class GeometrySource(db.Model):
         cascade="all",
         lazy='dynamic',
         foreign_keys="[GeometryRelation.overlaps_with_id]")
- 
+
     def __repr__(self):
         return "GeometrySource<%s.%s>" % (self.table_info.name, self.column)
 
