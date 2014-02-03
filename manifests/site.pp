@@ -21,6 +21,9 @@ node default {
       superuser => true,
     }
 
+    package { "default-jre":
+      ensure => "installed"
+    }
     package { "tmux":
       ensure => "installed"
     }
