@@ -198,7 +198,7 @@ class EAlGIS(object):
             return False
         try:
             tbl = self.get_table(table_name)
-            tbl.drop(self.db.engine)
+            # tbl.drop(self.db.engine)
             self.db.session.delete(ti)
             self.db.session.commit()
             return True
@@ -486,7 +486,19 @@ class GeometrySource(db.Model):
         backref=db.backref('geometry_source'),
         cascade="all",
         lazy='dynamic')
-
+    from_relations = db.relationship(
+        'GeometryRelation',
+        backref=db.backref('geometry_source'),
+        cascade="all",
+        lazy='dynamic',
+        foreign_keys="[GeometryRelation.geo_source_id]")
+    with_relations = db.relationship(
+        'GeometryRelation',
+        backref=db.backref('overlaps_geometry_source'),
+        cascade="all",
+        lazy='dynamic',
+        foreign_keys="[GeometryRelation.overlaps_with_id]")
+ 
     def __repr__(self):
         return "GeometrySource<%s.%s>" % (self.table_info.name, self.column)
 
