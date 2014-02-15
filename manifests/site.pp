@@ -21,9 +21,6 @@ node default {
       superuser => true,
     }
 
-    package { "default-jre":
-      ensure => "installed"
-    }
     package { "tmux":
       ensure => "installed"
     }
@@ -125,6 +122,7 @@ node default {
       ensure => "installed",
       require => [ Apt::Ppa["ppa:chris-lea/node.js"] ]
     }
+    include java7
 
     # nginx setup
     package { "nginx":

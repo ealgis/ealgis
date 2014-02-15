@@ -7,7 +7,8 @@ if [ -f "$DONE" ]; then
 fi
 
 sudo /opt/ruby/bin/puppet module install puppetlabs/apt &&
-sudo /opt/ruby/bin/puppet module install puppetlabs/postgresql
+sudo /opt/ruby/bin/puppet module install puppetlabs/postgresql &&
+sudo /opt/ruby/bin/puppet module install softek/java7
 
 # apt::ppa puppet module needs to install python-software-properties
 # which can't work without this
