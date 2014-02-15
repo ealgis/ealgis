@@ -114,6 +114,18 @@ node default {
       require => [ Package["liblzma-dev"], Package["python-pip"] ]
     }
 
+    # useful to some modules, but not globally required; FIXME put these 
+    # somewhere else
+    package { "firefox":
+      ensure => "installed",
+    }
+    apt::ppa { 'ppa:chris-lea/node.js':
+    }
+    package { ["nodejs"]:
+      ensure => "installed",
+      require => [ Apt::Ppa["ppa:chris-lea/node.js"] ]
+    }
+
     # nginx setup
     package { "nginx":
       ensure => "installed",
