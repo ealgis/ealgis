@@ -123,6 +123,15 @@ node default {
       require => [ Apt::Ppa["ppa:chris-lea/node.js"] ]
     }
     include java7
+    package { "xvfb":
+      ensure => installed
+    }
+    apt::ppa { 'ppa:fkrull/deadsnakes':
+    }
+    package { ["python3.3"]:
+      ensure => "installed",
+      require => [ Apt::Ppa["ppa:fkrull/deadsnakes"] ]
+    }
 
     # nginx setup
     package { "nginx":
