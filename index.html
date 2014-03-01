@@ -31,38 +31,17 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p>EAlGIS offers:</p>
+        <p>EAlGIS allows the constructions of 'recipes' which allow geospatial data to be loaded (or calculated) into a PostGIS database a repeatable way. Metadata is kept so that attribute information for a particular geometry is associated with that geometry.</p>
 
-<ul>
-<li>a web interface to allow quick, interactive analysis of geospatial data, overlaid over a Google baselayer using OpenLayers
+<p>A web interface is provided which allows one or more polygon layers to be shown on top of a Google base layer. The layers are colourised based on a user-defined colour scheme, according to an equation input by the user. This equation can access any attributes available for the layer's geometry.</p>
 
-<ul>
-<li>add one or more "polygon" layers, which plot a given loaded polygon data source (PostGIS table)</li>
-<li>polygons in the layer are filled according to a function, which uses attributes that are linked to the chosen geometry
-functions are simple expressions. to plot the percentage of women in each Australian Census SA1 polygon, you would enter
-the formula "100 * B2 / B3". this is automatically resolved into a database query which can be called by MapServer</li>
-<li>polygons can also be filtered out. For example, if you wish to avoid SA1s which have very few people (and thus may have
-nonsense values when percentages of some attribute are calculated), you might add a filter "b3 &gt; 30" when plotting the
-Australian Census.</li>
-<li>download calculated values for further analysis</li>
-<li>user access delegated to Mozilla Personas</li>
-</ul>
-</li>
-<li>reproducable data loader infrastructure, and pre-supplied loader for the Australian Census 2011.
+<p>An example formula might be (for the Australian census) <code>100 * B2 / B3</code> which calculates the percentage of women in each polygon within the layer. In the case of the census, these attributes are available at on multiple geometries - from SA1 through to the Australia as a whole. EAlGIS calculates the SQL query needed to perform these calculations, including managing cross-table joins.</p>
 
-<ul>
-<li>be sure where the data in your database came from</li>
-<li>automated reprojection to map SRIDs (a big performance win)</li>
-<li>includes loaders for shapefiles, and for CSV data (which can be linked with shapefiles, for easy interactive analysis)</li>
-</ul>
-</li>
-<li>framework for off-line analysis work
+<p>The system is quick and interactive. Any data generated can be downloaded in CSV format.</p>
 
-<ul>
-<li>perform complex analysis outside of EAlGIS, and then load the results in to visualise them on a map</li>
-</ul>
-</li>
-</ul><p>Have a look at README.md in the repository to get started.</p>
+<p>Mozilla Personas are used for user authentication. The system stores no passwords, access control relatively simple as it stands, and is via email address - Personas is used to establish that the person logging in has ownership of that email address.</p>
+
+<p>Have a look at README.md in the repository to get started setting up EAlGIS.</p>
 
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
