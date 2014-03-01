@@ -40,10 +40,10 @@ EAlGIS is intended to be run within Vagrant. To get started:
     # log into the vm
     vagrant ssh
     cd /vagrant
-    # create a database
-    ./develop.sh mkdb
     # make a secret key for auth
     ./develop.sh install
+    # create a database
+    ./develop.sh mkdb
 
 Add a user:
 
