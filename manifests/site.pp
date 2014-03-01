@@ -54,8 +54,7 @@ node default {
       ensure => "installed",
       require => [ Apt::Ppa["ppa:ubuntugis/ppa"], Package["postgresql-server"] ], 
     }
-    package { "pythonbits":
-      name => ["simplejson", "markdown", "Geoalchemy", "flask", "flask-sqlalchemy", "ipython", "openpyxl", "flake8", "nose"],
+    package { ["simplejson", "markdown", "Geoalchemy", "flask", "flask-sqlalchemy", "ipython", "openpyxl", "flake8", "nose"]:
       provider => "pip",
       ensure => "installed",
       require => [ Package["python-pip"] ]
