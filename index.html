@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="EAlGIS : Interactive Geospatial Data Analysis" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>EAlGIS</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/grahame/ealgis">View on GitHub</a>
+
+          <h1 id="project_title">EAlGIS</h1>
+          <h2 id="project_tagline">Interactive Geospatial Data Analysis</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/grahame/ealgis/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/grahame/ealgis/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>EAlGIS offers:</p>
+
+<ul>
+<li>a web interface to allow quick, interactive analysis of geospatial data, overlaid over a Google baselayer using OpenLayers
+
+<ul>
+<li>add one or more "polygon" layers, which plot a given loaded polygon data source (PostGIS table)</li>
+<li>polygons in the layer are filled according to a function, which uses attributes that are linked to the chosen geometry
+functions are simple expressions. to plot the percentage of women in each Australian Census SA1 polygon, you would enter
+the formula "100 * B2 / B3". this is automatically resolved into a database query which can be called by MapServer</li>
+<li>polygons can also be filtered out. For example, if you wish to avoid SA1s which have very few people (and thus may have
+nonsense values when percentages of some attribute are calculated), you might add a filter "b3 &gt; 30" when plotting the
+Australian Census.</li>
+<li>download calculated values for further analysis</li>
+<li>user access delegated to Mozilla Personas</li>
+</ul>
+</li>
+<li>reproducable data loader infrastructure, and pre-supplied loader for the Australian Census 2011.
+
+<ul>
+<li>be sure where the data in your database came from</li>
+<li>automated reprojection to map SRIDs (a big performance win)</li>
+<li>includes loaders for shapefiles, and for CSV data (which can be linked with shapefiles, for easy interactive analysis)</li>
+</ul>
+</li>
+<li>framework for off-line analysis work
+
+<ul>
+<li>perform complex analysis outside of EAlGIS, and then load the results in to visualise them on a map</li>
+</ul>
+</li>
+</ul><p>Have a look at README.md in the repository to get started.</p>
+
+<h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>EAlGIS has been developed by <a href="https://github.com/grahame" class="user-mention">@grahame</a>. Contributions extremely welcome!</p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>Prod me on twitter (twitter.com/angrygoat) or email me - <a href="mailto:grahame@angrygoats.net">grahame@angrygoats.net</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">EAlGIS maintained by <a href="https://github.com/grahame">grahame</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
