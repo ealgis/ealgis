@@ -163,24 +163,28 @@ class CSVLoader(GeoDataLoader):
         self.csvpath = csvpath
         self.pkey_column = pkey_column
 
-    def load(self, eal):
+    def load(self, eal, column_types=None):
         db = eal.db
 
-        def columns(header, reader, max_rows=None):
+        def get_column_types(header, max_rows=None):
             sql_columns = {
                 int: db.Integer,
                 float: db.Float,
                 str: db.Text
             }
+            if column_types is not None:
+                return [sql_columns[t] for t in column_types]
             classifiers = [SequenceClassifier() for column in header]
             for i, row in enumerate(r):
                 for classifier, value in izip(classifiers, row):
                     classifier.update(value)
                 if max_rows is not None and i == max_rows:
                     break
+            return [ sql_columns[t.get()] for t in classifiers ]
+
+        def columns(header):
             coldefs = []
-            for idx, (column_name, classifier) in enumerate(izip(header, classifiers)):
-                ty = sql_columns[classifier.get()]
+            for idx, (column_name, ty) in enumerate(izip(header, get_column_types(header))):
                 make_index = idx == self.pkey_column
                 coldefs.append(db.Column(
                     column_name.lower(),
@@ -195,7 +199,7 @@ class CSVLoader(GeoDataLoader):
         with open(self.csvpath) as fd:
             r = csv.reader(fd)
             header = next(r)
-            cols = columns(header, r)
+            cols = columns(header)
         metadata = eal.db.MetaData()
         new_tbl = db.Table(self.table_name, metadata, *cols)
         metadata.create_all(eal.db.engine)
