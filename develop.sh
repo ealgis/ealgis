@@ -58,6 +58,14 @@ start)
     fi
     uwsgi --plugins http,python -s 127.0.0.1:8888 -w ealgis.ealwsgi:app --master -p "$P" --lazy
     ;;
+socketstart)
+    if [[ x"$2" != x ]]; then 
+        P="$2"
+    else
+        P=4
+    fi
+    uwsgi --plugins http,python -s ealgis.sock -w ealgis.ealwsgi:app --umask 0000 --master -p "$P" --lazy
+    ;;
 *)
     echo "unknown command \`$1'"
     ;;
