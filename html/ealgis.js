@@ -259,7 +259,7 @@ $(function() {
                         return;
                     } else {
                         // deep-ish copy, works well enough for a flat JSON object
-                        var copied = jQuery.extend({}, config.json_data);
+                        var copied = jQuery.extend(true, {}, config.json_data);
                         copied['administrators'] = user_info['email_address'];
                         copied['rev'] = 0;
                         var new_url = "/api/0.1/map/" + new_name;
@@ -398,6 +398,11 @@ $(function() {
                         editor._delete_layer();
                     }
                 }());
+                $("#cloneLayer").click(function() {
+                    return function() {
+                        editor._clone_layer();
+                    }
+                }());
                 $("#saveEditLayer").click(function() {
                     return function() {
                         editor._save_layer();
@@ -406,6 +411,10 @@ $(function() {
             },
             _delete_layer: function() {
                 this.editing.remove();
+            },
+            _clone_layer: function() {
+                var copied = jQuery.extend(true, {}, this.editing.layer);
+                config.add_polygon_layer(copied);
             },
             _save_layer: function() {
                 var s2int = function(s) {
@@ -917,7 +926,7 @@ $(function() {
                 }
                 this.save_to_url(this.url, this.json_data);
             },
-            add_polygon_layer: function() {
+            add_polygon_layer: function(defn) {
                 /* find the next free layer identifier */
                 var m = -1;
                 var layers = this.json_data['layers'];
@@ -927,10 +936,14 @@ $(function() {
                         m = n;
                     }
                 });
-                /* pick arbitrary first geom */
-                var geom = (get_geom_names(config.datainfo, ["MULTIPOLYGON", "GEOMETRY", "POLYGON"]))[0];
                 var id = m + 1;
-                layers[id] = make_polygon_layer(id, geom);
+                if (!defn) {
+                    /* pick arbitrary first geom */
+                    var geom = (get_geom_names(config.datainfo, ["MULTIPOLYGON", "GEOMETRY", "POLYGON"]))[0];
+                    layers[id] = make_polygon_layer(id, geom);
+                } else {
+                    layers[id] = defn;
+                }
                 this._sync_layers();
                 this.save();
                 /* fire up editor for the new layer */
