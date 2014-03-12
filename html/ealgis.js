@@ -830,7 +830,8 @@ $(function() {
                         config._config_loaded(data);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        config._config_loaded({'defn' : {}});
+                        config._config_loaded({'defn' : {}, 'administrator': true});
+                        config.save();
                     }
                 });
             },
