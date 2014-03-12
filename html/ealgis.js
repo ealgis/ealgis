@@ -662,7 +662,8 @@ $(function() {
             }
         });
 
-        var MapConfig = function(datainfo) {
+        var MapConfig = function(settings, datainfo) {
+            this.settings = settings;
             this.datainfo = datainfo;
             this.init();
         }
@@ -710,13 +711,6 @@ $(function() {
                     $("#delete-map").hide();
                 }
                 this.json_data = data['defn'];
-                // new map
-                if (!this.json_data['layers']) {
-                    this.json_data['layers'] = {};
-                    this.json_data['show_legend'] = true;
-                    this.json_data['administrators'] = user_info['email_address'];
-                    this.json_data['hide_baselayer'] = false;
-                }
                 $(this).trigger("changed");
                 this._centre_to_ui();
                 this._sync_layers();
@@ -830,7 +824,26 @@ $(function() {
                         config._config_loaded(data);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        config._config_loaded({'defn' : {}, 'administrator': true});
+                        var new_map = {
+                            'defn' : {
+                                'layers' : {},
+                                'show_legend': true,
+                                'hide_baselayer': false
+                            },
+                            'administrator': true,
+                            'administrators': user_info['email_address']
+                        };
+                        if (config.settings.map_default_lat &&
+                            config.settings.map_default_lon &&
+                            config.settings.map_default_zoom)
+                        {
+                            new_map['defn']['map_defaults'] = {
+                                'lat': config.settings.map_default_lat,
+                                'lon': config.settings.map_default_lon,
+                                'zoom': config.settings.map_default_zoom
+                            };
+                        }
+                        config._config_loaded(new_map);
                         config.save();
                     }
                 });
@@ -950,15 +963,18 @@ $(function() {
             });
         });
 
-        /* grab overlay information */
-        $.getJSON("/api/0.1/datainfo", function(data) {
-            /* build config object, pass it datainfo */
-            config = new MapConfig(data);
-            /* wire up UI, then load existing map config from the server */
-            polygon_editor = new PolygonLayerEditorUI();
-            setup_map();
-            setup_topbar();
-            config.reload();
+        /* grab global settings */
+        $.getJSON("/api/0.1/settings", function(settings_data) {
+            /* grab overlay information */
+            $.getJSON("/api/0.1/datainfo", function(datainfo_data) {
+                /* build config object, pass it datainfo */
+                config = new MapConfig(settings_data, datainfo_data);
+                /* wire up UI, then load existing map config from the server */
+                polygon_editor = new PolygonLayerEditorUI();
+                setup_map();
+                setup_topbar();
+                config.reload();
+            });
         });
     }
 });

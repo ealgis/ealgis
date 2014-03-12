@@ -180,7 +180,7 @@ class CSVLoader(GeoDataLoader):
                     classifier.update(value)
                 if max_rows is not None and i == max_rows:
                     break
-            return [ sql_columns[t.get()] for t in classifiers ]
+            return [sql_columns[t.get()] for t in classifiers]
 
         def columns(header):
             coldefs = []

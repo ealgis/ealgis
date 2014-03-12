@@ -5,7 +5,7 @@ except ImportError:
 import urllib
 from flask import request, jsonify, abort, Response
 from flask.ext.login import current_user, login_required
-from db import EAlGIS, MapDefinition, NoMatches, TooManyMatches, CompilationError
+from db import EAlGIS, MapDefinition, Setting, NoMatches, TooManyMatches, CompilationError
 from colour_scale import colour_for_layer, definitions
 app = EAlGIS().app
 
@@ -142,6 +142,16 @@ def layer_legend(map_name, layer_id, client_rev):
         response=scale.legend(),
         status=200,
         content_type='image/png')
+
+
+@app.route("/api/0.1/settings")
+@login_required
+def settings():
+    settings_obj = {}
+    eal = EAlGIS()
+    for setting in eal.db.session.query(Setting).all():
+        settings_obj[setting.key] = setting.value
+    return jsonify(settings_obj)
 
 
 @app.route("/api/0.1/map/<map_name>/export-csv", methods=['GET'])
