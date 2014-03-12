@@ -930,7 +930,7 @@ $(function() {
                 /* pick arbitrary first geom */
                 var geom = (get_geom_names(config.datainfo, ["MULTIPOLYGON", "GEOMETRY", "POLYGON"]))[0];
                 var id = m + 1;
-                layers[id] = make_polygon_layer(id+1, geom);
+                layers[id] = make_polygon_layer(id, geom);
                 this._sync_layers();
                 this.save();
                 /* fire up editor for the new layer */
