@@ -52,23 +52,29 @@ def main():
         db = eal.db
         from dataexpr import DataExpression
         iters = []
+        data = {}
         for expr in args.equation:
             ti = eal.get_table_info(args.geometry)
             geometry_source = ti.geometry_source
-            iters.append(iter(DataExpression(
+            it = iter(DataExpression(
                 "CLI",
                 geometry_source,
                 expr,
                 "",
                 3112,
                 include_geometry=False,
-                order_by_gid=True).get_query().yield_per(1)))
+                order_by_gid=True).get_query().yield_per(1))
+            data[expr] = {}
+            for gid, v in it:
+                data[expr][gid] = v
+        all_gids = set()
+        for expr in data:
+            all_gids = all_gids.union(set(data[expr].keys()))
         w = csv.writer(sys.stdout)
         w.writerow(['gid'] + args.equation)
-        for gid, v in iters[0]:
-            next_vals = [next(t) for t in iters[1:]]
-            assert(all(t[0] == gid for t in next_vals))
-            row = [gid, v] + [t[1] for t in next_vals]
+
+        for gid in sorted(all_gids):
+            row = [gid] + [data[t].get(gid) for t in args.equation]
             w.writerow(row)
 
     def delete_user(args):
