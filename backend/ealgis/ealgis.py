@@ -47,6 +47,30 @@ def main():
             db.session.commit()
             print "User %s / %s added." % (name, email_address)
 
+    def query(args):
+        eal = EAlGIS()
+        db = eal.db
+        from dataexpr import DataExpression
+        iters = []
+        for expr in args.equation:
+            ti = eal.get_table_info(args.geometry)
+            geometry_source = ti.geometry_source
+            iters.append(iter(DataExpression(
+                "CLI",
+                geometry_source,
+                expr,
+                "",
+                3112,
+                include_geometry=False,
+                order_by_gid=True).get_query().yield_per(1)))
+        w = csv.writer(sys.stdout)
+        w.writerow(['gid'] + args.equation)
+        for gid, v in iters[0]:
+            next_vals = [next(t) for t in iters[1:]]
+            assert(all(t[0] == gid for t in next_vals))
+            row = [gid, v] + [t[1] for t in next_vals]
+            w.writerow(row)
+
     def delete_user(args):
         db = EAlGIS().db
         u = User.query.filter(User.email_address == args.email_address).one()
@@ -118,6 +142,11 @@ def main():
     parser_adduser = subparsers.add_parser('adduser', help="Add user(s)")
     parser_adduser.add_argument('email_address', type=str, nargs='+', help="email address")
     parser_adduser.set_defaults(func=add_user)
+
+    parser_query = subparsers.add_parser('query', help="Evaluate equations on a geometry")
+    parser_query.add_argument('geometry', type=str)
+    parser_query.add_argument('equation', type=str, nargs='+', help="equations to evaluate (eg. \"b3+b4\")")
+    parser_query.set_defaults(func=query)
 
     parser_deleteuser = subparsers.add_parser('deleteuser', help="Add a user")
     parser_deleteuser.add_argument('email_address', type=str, help="email address")
