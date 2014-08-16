@@ -17,8 +17,12 @@ from mapserver import mapserver_wms  # noqa
 @login_required
 def api_maps():
     r = {}
+    objects = r['objects'] = []
     for m in MapDefinition.query.all():
-        r[m.name] = {"description": m.description}
+        objects.append({
+            "name": m.name,
+             "description": m.description
+        })
     return jsonify(r)
 
 
