@@ -83,7 +83,7 @@ module.exports = function (grunt) {
       livereload: {
         options: {
           open: true,
-          middleware: function (connect, options) {
+          middleware: function (connect) {
             return [
               require('grunt-connect-proxy/lib/utils').proxyRequest,
               connect.static('.tmp'),
