@@ -4,5 +4,9 @@
 </div>
 
 <p>
-Maps: {{ maps }}
+Maps:
 </p>
+
+<ul>
+  <li ng-repeat="map in maps | orderBy:'name'"><a href="/maps/{{map.name}}">{{ map.name }}</a></li>
+</ul>
