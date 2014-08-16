@@ -1,15 +1,7 @@
 'use strict';
 
-/**
- * @ngdoc overview
- * @name htmlApp
- * @description
- * # htmlApp
- *
- * Main module of the application.
- */
 angular
-  .module('htmlApp', [
+  .module('ealgisApp', [
     'ngAnimate',
     'ngCookies',
     'ngResource',
