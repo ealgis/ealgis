@@ -22,11 +22,13 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container">
+    <div class="container" ng-controller="SessionCtrl">
       <div class="header">
         <h3 class="text-muted">EAlGIS</h3>
       </div>
-      <div ng-view=""></div>
+      <div ng-view ng-if="logged_in"></div>
+      <button ng-if="logged_in" ng-click="logout()">Log Out</button>
+      <div ng-if="!logged_in"><eal-login></eal-login></div>
     </div>
 
     <!-- build:js(.) scripts/oldieshim.js -->
@@ -36,7 +38,7 @@
     <![endif]-->
     <!-- endbuild -->
 
-    <script src="bower_components/openlayers/lib/OpenLayers.js"></script>
+    <script src="https://login.persona.org/include.js"></script>
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
@@ -70,6 +72,8 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/map.js"></script>
+    <script src="scripts/controllers/session.js"></script>
     <!-- endbuild -->
 </body>
 </html>

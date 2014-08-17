@@ -77,7 +77,6 @@ class EAlGIS(object):
         with open('/etc/ealgis/secret_key') as secret_fd:
             secret_key = secret_fd.read().rstrip()
         app.config['SECRET_KEY'] = secret_key
-        app.config['TESTING'] = True
 
         login_manager = LoginManager()
         login_manager.user_loader(self.get_user_by_id)
