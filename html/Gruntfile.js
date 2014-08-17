@@ -87,7 +87,7 @@ module.exports = function (grunt) {
             return [
               require('grunt-connect-proxy/lib/utils').proxyRequest,
               require('connect-modrewrite')([
-                '!\\.html|\\.js|\\.css|\\.swf|\\.jp(e?)g|\\.png|\\.gif$ /index.html'
+                '!\\.html|\\.js|\\.css|\\.swf|\\.jp(e?)g|\\.png|\\.gif|\\.ico$ /index.html'
               ]),
               connect.static('.tmp'),
               connect().use(
