@@ -12,7 +12,6 @@
     "angular-animate": "1.2.16",
     "angular-touch": "1.2.16",
     "angular-route": "1.2.16",
-    "openlayers": "*",
     "restangular": "~1.4.0"
   },
   "devDependencies": {
