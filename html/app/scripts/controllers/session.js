@@ -2,13 +2,13 @@
 
 angular.module('ealgisApp')
   .controller('SessionCtrl', function(Restangular, $scope, $http) {
-    $scope.user_info = null;
-    $scope.logged_in = false;
-
     var refresh_user = function() {
         Restangular.one('userinfo').get().then(function(ui) {
-            $scope.user_info = ui;
             $scope.logged_in = ui.status === 'OK';
+            $scope.user_info = null;
+            if ($scope.logged_in) {
+                $scope.user_info = ui.userinfo;
+            }
         });
     };
     navigator.id.watch({
@@ -48,5 +48,13 @@ angular.module('ealgisApp')
     return {
         restrict: 'E',
         templateUrl: 'views/login.html'
+    };
+  })
+  .filter('ealFirstName', function() {
+    return function(data) {
+        if (data) {
+            return data.split(' ')[0];    
+        }
+        return '';
     };
   });
