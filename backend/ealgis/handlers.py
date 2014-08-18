@@ -43,7 +43,7 @@ def is_administrator(map_defn):
         return False
 
 
-@app.route("/api/0.1/map/<map_name>", methods=['POST', 'GET', 'DELETE'])
+@app.route("/api/0.1/maps/<map_name>", methods=['POST', 'GET', 'DELETE'])
 @login_required
 def api_map(map_name):
     eal = EAlGIS()
@@ -81,7 +81,7 @@ def api_map(map_name):
     else:
         if defn is None:
             abort(404)
-        return jsonify(defn=defn.get(), administrator=is_administrator(defn))
+        return jsonify(object=defn.get(), meta={'administrator': is_administrator(defn)})
 
 
 @app.route("/api/0.1/datainfo/<table_name>")
@@ -117,9 +117,9 @@ def api_mapexists(map_name):
 @app.route("/api/0.1/userinfo")
 def api_userinfo():
     if not current_user.is_authenticated():
-        return jsonify(status="FAIL")
+        return jsonify(meta={'status':'FAIL'})
     else:
-        return jsonify(status="OK", userinfo=current_user.get_info())
+        return jsonify(meta={'status':'OK'}, object=current_user.get_info())
 
 
 @app.route("/api/0.1/colours")

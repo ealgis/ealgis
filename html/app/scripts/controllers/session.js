@@ -4,10 +4,10 @@ angular.module('ealgisApp')
   .controller('SessionCtrl', function(Restangular, $scope, $http) {
     var refresh_user = function() {
         Restangular.one('userinfo').get().then(function(ui) {
-            $scope.logged_in = ui.status === 'OK';
+            $scope.logged_in = ui.meta.status === 'OK';
             $scope.user_info = null;
             if ($scope.logged_in) {
-                $scope.user_info = ui.userinfo;
+                $scope.user_info = ui;
             }
         });
     };
