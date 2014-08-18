@@ -12,5 +12,17 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
 
 /* Space out content a bit */
 body {
-  padding-top: 70px;
+  padding-top: 50px;
+}
+
+#map {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    overflow-y:auto;
+    background-color: white;
+}
+
+.page-view {
+  margin-top: 20px;
 }

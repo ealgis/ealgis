@@ -1,7 +1,9 @@
-<p>
-Choose a map to load:
-</p>
+<div class="container page-view">
+    <p>
+    Choose a map to load:
+    </p>
 
-<ul>
-  <li ng-repeat="map in maps | orderBy:'name'"><a href="/maps/{{map.name}}">{{ map.name }}</a></li>
-</ul>
+    <ul>
+      <li ng-repeat="map in maps | orderBy:'name'"><a href="/maps/{{map.name}}">{{ map.name }}</a></li>
+    </ul>
+</div>

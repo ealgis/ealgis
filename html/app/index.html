@@ -50,11 +50,9 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div class="container">
-      <div ng-view ng-if="logged_in"></div>
-      <!-- <button ng-if="logged_in" ng-click="logout()">Log Out</button> -->
-      <div ng-if="!logged_in"><eal-login></eal-login></div>
-    </div>
+    <div ng-view ng-if="logged_in"></div>
+
+    <eal-login ng-if="!logged_in"></eal-login>
 
     <!-- build:js(.) scripts/oldieshim.js -->
     <!--[if lt IE 9]>
