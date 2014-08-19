@@ -95,7 +95,7 @@ class EAlGIS(object):
             self.manager.create_api(model, **opts)
 
         self.manager = flask.ext.restless.APIManager(self.app, flask_sqlalchemy_db=self.db)
-        create_standard_api(Setting)
+        create_standard_api(Setting, methods=['GET'])
         create_standard_api(User)
         create_standard_api(MapDefinition)
         create_standard_api(ColumnInfo, results_per_page=10)
