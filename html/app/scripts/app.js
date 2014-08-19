@@ -16,15 +16,9 @@ angular
     RestangularProvider.addResponseInterceptor(function(data, operation) {
       // .. to look for getList operations
       if (operation === 'getList') {
-        // .. and handle the data and meta data
         return data.objects;
-      } else {
-        var extracted = data.object;
-        if (extracted) {
-          extracted.meta = data.meta;        
-        }
-        return extracted;
       }
+      return data;
     });
     RestangularProvider.setErrorInterceptor(function(response, deferred, responseHandler) {
       console.log('>> error', response);

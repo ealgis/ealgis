@@ -71,12 +71,12 @@ def is_administrator(map_defn):
 #         return jsonify(object=defn.get(), meta={'administrator': is_administrator(defn)})
 
 
-@app.route("/api/v2/auth/userinfo")
+@app.route("/api/v2/auth/current_user")
 def api_userinfo():
-    if not current_user.is_authenticated():
-        return jsonify(meta={'status':'FAIL'})
-    else:
-        return jsonify(meta={'status':'OK'}, object=current_user.get_info())
+    info = {}
+    if current_user.is_authenticated():
+        info['id'] = current_user.id
+    return jsonify(**info)
 
 
 @app.route("/api/v2/map/<map_name>/legend/<layer_id>/<client_rev>", methods=['GET'])

@@ -3,12 +3,11 @@
 angular.module('ealgisApp')
   .controller('SessionCtrl', function(Restangular, $scope, $http) {
     var refresh_user = function() {
-        Restangular.one('auth', 'userinfo').get().then(function(ui) {
-            $scope.logged_in = (ui && ui.meta && ui.meta.status === 'OK');
-            $scope.user_info = null;
-            if ($scope.logged_in) {
-                $scope.user_info = ui;
-            }
+        Restangular.one('auth', 'current_user').get().then(function(ui) {
+            $scope.logged_in = (ui && ui.id);
+            Restangular.one('user', ui.id).get().then(function(obj) {
+                $scope.current_user = obj;
+            });
         });
     };
     navigator.id.watch({

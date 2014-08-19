@@ -31,7 +31,7 @@
         <div ng-class="{'navbar-collapse': true, 'collapse': !isCollapsed}">
           <ul class="nav navbar-nav">
             <li class="dropdown" ng-if="logged_in">
-              <a href="#" class="dropdown-toggle">{{ user_info.name | ealFirstName }}
+              <a href="#" class="dropdown-toggle">{{ current_user.name | ealFirstName }}
               <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="#" ng-click="isCollapsed = false; logout();">Logout</a></li>
