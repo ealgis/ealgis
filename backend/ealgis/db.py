@@ -7,6 +7,8 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, UserMixin
 from flaskext.browserid import BrowserID
+from flask.ext.login import current_user, login_required
+import flask.ext.restless
 from sqlalchemy.ext.declarative import declarative_base
 import sys
 import os
@@ -63,9 +65,32 @@ class EAlGIS(object):
         if self._made:
             return
         self._made = True
+        self.datainfo = None
         self.app = self._generate_app()
         self.db = SQLAlchemy(self.app)
-        self.datainfo = None
+
+    def register_api(self):
+        def auth_func(*args, **kwargs):
+            if not current_user.is_authenticated():
+                raise flask.ext.restless.ProcessingException(description='Not authenticated!', code=401)
+            return True
+
+        def create_standard_api(model, **kwargs):
+            opts = {
+                "methods": ['GET', 'POST', 'PUT', 'DELETE'],
+                "preprocessors": {
+                    'GET_SINGLE': [auth_func],
+                    'GET_MANY': [auth_func]
+                }
+            }
+            opts.update(kwargs)
+            self.manager.create_api(model, **opts)
+
+        self.manager = flask.ext.restless.APIManager(self.app, flask_sqlalchemy_db=self.db)
+        create_standard_api(Setting)
+        create_standard_api(User)
+        create_standard_api(MapDefinition)
+        create_standard_api(ColumnInfo)
 
     def _generate_app(self):
         app = Flask(__name__)
@@ -451,7 +476,7 @@ class TableInfo(db.Model):
 
 
 class ColumnInfo(db.Model):
-    "metadata for columns in the tabbles"
+    "metadata for columns in the tables"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), index=True)
     tableinfo_id = db.Column(db.Integer, db.ForeignKey('table_info.id'), index=True, nullable=False)
@@ -685,3 +710,5 @@ class MapDefinition(db.Model):
             return self._set(defn, **kwargs)
         except pyparsing.ParseException as e:
             raise CompilationError(str(e))
+
+EAlGIS().register_api()
