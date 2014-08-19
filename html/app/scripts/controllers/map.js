@@ -7,8 +7,8 @@ angular.module('ealgisApp')
         $scope.name = mapname;
         $scope.map = obj;
         console.log(obj);
-        obj.save().then(function() {
-            console.log('saved?');
-        });
+        // obj.save().then(function() {
+        //     console.log('saved?');
+        // });
     });
   });
