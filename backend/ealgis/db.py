@@ -80,8 +80,16 @@ class EAlGIS(object):
                 "methods": ['GET', 'POST', 'PUT', 'DELETE'],
                 "preprocessors": {
                     'GET_SINGLE': [auth_func],
-                    'GET_MANY': [auth_func]
-                }
+                    'GET_MANY': [auth_func],
+                    'PUT_SINGLE': [auth_func],
+                    'PUT_MANY': [auth_func],
+                    'PATCH_SINGLE': [auth_func],
+                    'PATCH_MANY': [auth_func],
+                    'POST': [auth_func],
+                    'DELETE': [auth_func]
+                },
+                "results_per_page": 0,
+                "url_prefix": "/api/v2"
             }
             opts.update(kwargs)
             self.manager.create_api(model, **opts)
@@ -96,8 +104,8 @@ class EAlGIS(object):
         app = Flask(__name__)
         app.config['PROPAGATE_EXCEPTIONS'] = True
         app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///ealgis'
-        app.config['BROWSERID_LOGIN_URL'] = "/api/0.1/login"
-        app.config['BROWSERID_LOGOUT_URL'] = "/api/0.1/logout"
+        app.config['BROWSERID_LOGIN_URL'] = "/api/v2/auth/login"
+        app.config['BROWSERID_LOGOUT_URL'] = "/api/v2/auth/logout"
 
         with open('/etc/ealgis/secret_key') as secret_fd:
             secret_key = secret_fd.read().rstrip()

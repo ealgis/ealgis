@@ -3,7 +3,7 @@
 angular.module('ealgisApp')
   .controller('SessionCtrl', function(Restangular, $scope, $http) {
     var refresh_user = function() {
-        Restangular.one('userinfo').get().then(function(ui) {
+        Restangular.one('auth', 'userinfo').get().then(function(ui) {
             $scope.logged_in = (ui && ui.meta && ui.meta.status === 'OK');
             $scope.user_info = null;
             if ($scope.logged_in) {
@@ -15,7 +15,7 @@ angular.module('ealgisApp')
         onlogin: function(assertion) {
             $http({
                 method: 'POST',
-                url: '/api/0.1/login',
+                url: '/api/v2/auth/login',
                 data: $.param({assertion: assertion}),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).success(function() {
@@ -27,7 +27,7 @@ angular.module('ealgisApp')
             });  
         },
         onlogout: function() {
-            $http.post('/api/0.1/logout').then(function() {
+            $http.post('/api/v2/auth/logout').then(function() {
                 refresh_user();
             });
         }

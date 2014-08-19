@@ -12,7 +12,7 @@ angular
     'ui.bootstrap'
   ])
   .config(function ($routeProvider, $locationProvider, RestangularProvider) {
-    RestangularProvider.setBaseUrl('/api/0.1');
+    RestangularProvider.setBaseUrl('/api/v2');
     RestangularProvider.addResponseInterceptor(function(data, operation) {
       // .. to look for getList operations
       if (operation === 'getList') {

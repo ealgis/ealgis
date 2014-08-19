@@ -167,7 +167,7 @@ instances = MapInstances()
 app = EAlGIS().app
 
 
-@app.route("/api/0.1/map/<map_name>/mapserver_wms/<layer_id>/<client_rev>", methods=['GET'])
+@app.route("/api/v2/map/<map_name>/mapserver_wms/<layer_id>/<client_rev>", methods=['GET'])
 @login_required
 def mapserver_wms(map_name, layer_id, client_rev):
     wrapper = instances.get_or_create(map_name, layer_id)
