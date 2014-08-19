@@ -98,7 +98,7 @@ class EAlGIS(object):
         create_standard_api(Setting)
         create_standard_api(User)
         create_standard_api(MapDefinition)
-        create_standard_api(ColumnInfo)
+        create_standard_api(ColumnInfo, results_per_page=10)
 
     def _generate_app(self):
         app = Flask(__name__)
