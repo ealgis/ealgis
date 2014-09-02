@@ -13,6 +13,7 @@ cmd_mkdb()
     ( 
         (echo 'CREATE EXTENSION postgis;' | psql "$DB") && 
         (echo 'CREATE EXTENSION postgis_topology;' | psql "$DB")
+        (echo 'CREATE EXTENSION citext;' | psql "$DB")
     ) && 
     echo "$db created" &&
     ealgis syncdb
