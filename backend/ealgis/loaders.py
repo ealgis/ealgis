@@ -1,6 +1,7 @@
 import os.path
 import hashlib
 import zipfile
+import sqlalchemy
 import subprocess
 import glob
 from util import piperun, table_name_valid
@@ -95,7 +96,7 @@ class GeoDataLoader(object):
 
     @classmethod
     def generate_table_name(cls, base):
-        table_name = os.path.splitext(os.path.basename(base))[0].replace(" ", "_")
+        table_name = os.path.splitext(os.path.basename(base))[0].replace(" ", "_").replace("-", '_')
         return table_name.lower()
 
 
@@ -179,6 +180,41 @@ class MapInfoLoader(GeoDataLoader):
             subprocess.check_call(ogr_cmd)
         except subprocess.CalledProcessError:
             raise LoaderException("load of %s failed." % os.path.basename(self.filename))
+        # make the meta info
+        print "registering, table name is:", self.table_name
+        eal.register_table(self.table_name, geom=True, srid=self.srid, gid='gid')
+
+
+class KMLLoader(GeoDataLoader):
+    def __init__(self, filename, srid, table_name=None):
+        self.filename = filename
+        self.srid = srid
+        self.table_name = table_name or GeoDataLoader.generate_table_name(MapInfoLoader.get_file_base(filename))
+        if not table_name_valid(self.table_name):
+            raise LoaderException("table name is `%s' is invalid." % self.table_name)
+
+    def load(self, eal):
+        if eal.have_table(self.table_name):
+            print "already loaded: %s" % (self.table_name)
+            return
+        ogr_cmd = [
+            'ogr2ogr',
+            '-f', 'postgresql',
+            'pg:dbname=%s' % (eal.dbname()),
+            self.filename,
+            '-nln', self.table_name,
+            '-append',
+            '-lco', 'fid=gid']
+        print >>sys.stderr, ogr_cmd
+        try:
+            subprocess.check_call(ogr_cmd)
+        except subprocess.CalledProcessError:
+            raise LoaderException("load of %s failed." % os.path.basename(self.filename))
+        # delete any pins or whatever
+        cls = eal.get_table_class(self.table_name)
+        for obj in eal.db.session.query(cls).filter(sqlalchemy.func.geometrytype(cls.wkb_geometry)!='MULTIPOLYGON'):
+            eal.db.session.delete(obj)
+        eal.db.session.commit()
         # make the meta info
         print "registering, table name is:", self.table_name
         eal.register_table(self.table_name, geom=True, srid=self.srid, gid='gid')
