@@ -109,7 +109,7 @@ class EAlGIS(object):
                 source_info = {'description': source.table_info.name}
             source_info['_id'] = source.id
 
-            ## source_info['tables'] = dict(dump_linkage(t) for t in source.linkages)
+            # source_info['tables'] = dict(dump_linkage(t) for t in source.linkages)
             source_info['type'] = source.geometry_type
             return source_info
 
