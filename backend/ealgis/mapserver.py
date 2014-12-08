@@ -99,7 +99,6 @@ class Layer(object):
 
         def add_class(rgb, expr):
             rgb *= 255.
-            ###print expr, rgb
             cls = self.make_class()
             cls.setExpression(expr)
             self.outline(cls)

@@ -49,7 +49,6 @@ def main():
 
     def query(args):
         eal = EAlGIS()
-        db = eal.db
         from dataexpr import DataExpression
         iters = []
         data = {}
