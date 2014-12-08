@@ -234,7 +234,6 @@ class DataExpression(object):
             self.query = self.query.filter(filter_expr)
         for tbl, join_l, join_r in self.joins:
             self.query = self.query.join(tbl, join_l == join_r)
-        print "XXX", self.query
         if order_by_gid:
             self.query = self.query.order_by(gid_attr)
 
