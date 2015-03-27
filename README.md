@@ -30,39 +30,25 @@ EAlGIS offers:
 Installation
 ------------
 
-EAlGIS is intended to be run within Vagrant. To get started:
+EAlGIS is intended to be run within docker. To get started:
 
-    # make a new VM, provision using puppet. may take a while
-    vagrant up
-    # or, if using vagrant vmware
-    ./develop.sh vagrant_vmware /path/to/license.lic
-
-    # log into the vm
-    vagrant ssh
-    cd /vagrant
-    # make a secret key for auth
-    ./develop.sh install
-    # create a database
-    ./develop.sh mkdb
+    docker-compose up
 
 Add a user:
 
+    docker-compose run uwsgi /bin/bash
     ealgis adduser "Grahame Bowland <grahame@angrygoats.net>"
-
-Then to launch EAlGIS:
-
-    ./develop.sh start
 
 On your host, browse to:
 
-    http://localhost:8080
+    https://localhost:8443
 
 ... and you should be up and running.
 
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
 You may wish to start with the 2011 Australian Census: https://github.com/grahame/ealgis-aus-census-2011
 
-When loading data, you might want to clone the loader module in the `modules` directory 
-of the EAlGIS checkout. The code will then be available in `/vagrant/modules` in your 
-vagrant VM.
+When loading data, you might want to clone the loader module in the `data/uwsgi` directory
+of the EAlGIS checkout. The code will then be available in `/data` in your
+uwsgi container.
 
