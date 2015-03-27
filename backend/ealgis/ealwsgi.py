@@ -4,7 +4,7 @@
 from db import EAlGIS
 
 eal = EAlGIS()
-app = eal.serve()
+app = eal.serve().wsgi_app
 
 # load in URL handlers
 import handlers  # noqa

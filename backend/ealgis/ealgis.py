@@ -20,9 +20,11 @@ def main():
 
     def syncdb(args):
         print "syncing database"
-        db = EAlGIS().db
+        eal = EAlGIS()
+        db = eal.db
         db.create_all()
         db.session.commit()
+        eal.create_extensions()
 
     def list_users(args):
         db = EAlGIS().db
@@ -104,7 +106,6 @@ def main():
         print("`%s' cleared." % (args.key))
 
     def run(args):
-        from tempfile import gettempdir
         eal = EAlGIS()
         opts = []
         if args.opts is not None:
@@ -114,7 +115,12 @@ def main():
             opts_module = dict([tuple(t[1:3]) for t in opts if t[0] == module_name])
             print "running loader:", module, repr(opts_module)
             loader = imp.load_source('_plugin', module)
-            loader.go(eal, gettempdir(), **opts_module)
+            tmpdir = '/data/tmp'
+            try:
+                os.mkdir(tmpdir)
+            except OSError:
+                pass
+            loader.go(eal, tmpdir, **opts_module)
             del loader
 
     def recompile(args):

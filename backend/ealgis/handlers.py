@@ -112,6 +112,7 @@ def api_mapexists(map_name):
 
 @app.route("/api/0.1/userinfo")
 def api_userinfo():
+    print current_user, current_user.is_authenticated()
     if not current_user.is_authenticated():
         return jsonify(status="FAIL")
     else:

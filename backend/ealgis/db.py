@@ -31,6 +31,21 @@ class CompilationError(Exception):
     pass
 
 
+# source: http://flask.pocoo.org/snippets/35/
+class ReverseProxied(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get('HTTP_SCRIPT_NAME', '')
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            if path_info.startswith(script_name):
+                environ['PATH_INFO'] = path_info[len(script_name):]
+        return self.app(environ, start_response)
+
+
 class BrowserIDUser(UserMixin):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
@@ -67,17 +82,28 @@ class EAlGIS(object):
         self.db = SQLAlchemy(self.app)
         self.datainfo = None
 
+    def _connection_string(self):
+        # try and autoconfigure for running under docker
+        dbuser = os.environ.get('DB_ENV_POSTGRES_USER')
+        dbpassword = os.environ.get('DB_ENV_POSTGRES_PASSWORD')
+        dbhost = os.environ.get('DB_PORT_5432_TCP_ADDR')
+        if dbuser and dbpassword and dbhost:
+            return 'postgres://%s:%s@%s:5432/ealgis' % (dbuser, dbpassword, dbhost)
+        return 'postgres:///ealgis'
+
     def _generate_app(self):
         app = Flask(__name__)
+        app.wsgi_app = ReverseProxied(app.wsgi_app)
         app.config['PROPAGATE_EXCEPTIONS'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///ealgis'
+        app.config['SQLALCHEMY_DATABASE_URI'] = self._connection_string()
         app.config['BROWSERID_LOGIN_URL'] = "/api/0.1/login"
         app.config['BROWSERID_LOGOUT_URL'] = "/api/0.1/logout"
 
-        with open('/etc/ealgis/secret_key') as secret_fd:
+        with open('/data/secret_key') as secret_fd:
             secret_key = secret_fd.read().rstrip()
         app.config['SECRET_KEY'] = secret_key
-        app.config['TESTING'] = True
+        # Warning: this *disables* authentication on the API
+        # app.config['TESTING'] = True
 
         login_manager = LoginManager()
         login_manager.user_loader(self.get_user_by_id)
@@ -88,6 +114,16 @@ class EAlGIS(object):
         browserid.init_app(app)
 
         return app
+
+    def create_extensions(self):
+        extensions = ('postgis', 'postgis_topology', 'citext', 'hstore')
+        for extension in extensions:
+            try:
+                self.db.engine.execute('CREATE EXTENSION %s;' % extension)
+                db.session.commit()
+            except sqlalchemy.exc.ProgrammingError as e:
+                if 'already exists' not in str(e):
+                    print "couldn't load: %s (%s)" % (extension, e)
 
     def get_datainfo(self):
         """grab a representation of the data available in the database
@@ -170,6 +206,18 @@ class EAlGIS(object):
 
     def dbname(self):
         return self.db.engine.url.database
+
+    def dbhost(self):
+        return self.db.engine.url.host
+
+    def dbuser(self):
+        return self.db.engine.url.username
+
+    def dbport(self):
+        return self.db.engine.url.port
+
+    def dbpassword(self):
+        return self.db.engine.url.password
 
     def have_table(self, table_name):
         try:

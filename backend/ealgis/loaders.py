@@ -147,8 +147,13 @@ class ShapeLoader(GeoDataLoader):
             print "already loaded: %s" % (self.table_name)
             return
         shp_cmd = ['shp2pgsql', '-s', str(self.srid), '-I', self.shppath, self.table_name]
-        print >>sys.stderr, shp_cmd
-        _, _, code = piperun(shp_cmd, ['psql', '-q', eal.dbname()])
+        os.environ['PGPASSWORD'] = eal.dbpassword()
+        _, _, code = piperun(shp_cmd, [
+            'psql',
+            '-h', eal.dbhost(),
+            '-U', eal.dbuser(),
+            '-p', str(eal.dbport()),
+            '-q', eal.dbname()])
         if code != 0:
             raise LoaderException("load of %s failed." % self.shpname)
         # make the meta info

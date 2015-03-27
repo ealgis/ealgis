@@ -1,0 +1,36 @@
+data:
+  image: debian:jessie
+  volumes:
+    - .:/app
+    - data/dev:/data
+
+# shares volume with other images so we can use COPY
+db:
+  image: mdillon/postgis:9.4
+  environment:
+    - POSTGRES_USER=ealgis
+    - POSTGRES_PASSWORD=ealgis
+  ports:
+    - ":5432"
+  volumes:
+    - data/postgis:/var/lib/postgresql/data
+  volumes_from:
+    - data
+
+uwsgi:
+  build: backend/
+  links:
+   - db
+  ports:
+    - "9100:9100"
+  volumes_from:
+    - data
+
+nginx:
+  image: angrygoat/nginx-ealgis
+  volumes_from:
+    - data
+  links:
+    - uwsgi
+  ports:
+    - "8443:443"
