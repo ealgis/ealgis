@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libxslt-dev pkg-config p7zip gdal-bin \
       postgresql-client-9.4 libpq-dev \
       uwsgi-plugin-python \
-      git nginx && \
+      less git && \
   apt-get autoremove -y --purge && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -28,7 +28,7 @@ WORKDIR /app
 
 RUN pip install \
     simplejson markdown Geoalchemy flask flask-sqlalchemy ipython \
-    openpyxl flake8 nose sqlalchemy-citext lxml \
+    openpyxl==1.8.6 flake8 nose sqlalchemy-citext lxml \
     pyparsing rauth  \
     'git+https://github.com/garbados/flask-browserid.git' \
     backports.lzma && \
