@@ -34,12 +34,14 @@ RUN pip install \
     backports.lzma && \
   rm -rf /root/.cache/pip/
 
+RUN adduser --system --uid 1000 --shell /bin/bash ealgis
+
 EXPOSE 9100
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-VOLUME ['/app', '/data']
+VOLUME ['/app', '/data', '/recipes']
 
 # entrypoint shell script that by default starts runserver
 ENTRYPOINT ["/docker-entrypoint.sh"]

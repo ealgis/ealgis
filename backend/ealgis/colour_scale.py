@@ -237,7 +237,7 @@ class CannedColourDefinitions(object):
         def strip_bl(r):
             return [t for t in r if t != '']
 
-        with open('/app/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as fd:
+        with open('/app/backend/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as fd:
             rdr = csv.reader(fd)
             header = strip_bl(next(rdr))
 
