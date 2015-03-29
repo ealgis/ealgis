@@ -39,7 +39,8 @@ class Layer(object):
             layer.status = mapscript.MS_DEFAULT
             layer.name = self.name = name
             layer.connectiontype = mapscript.MS_POSTGIS
-            layer.connection = "dbname=" + EAlGIS().dbname()
+            eal = EAlGIS()
+            layer.connection = "host=%s port=%s dbname=%s user=%s password=%s" % (eal.dbhost(), eal.dbport(), eal.dbname(), eal.dbuser(), eal.dbpassword())
             layer.data = geo_query
             # layer.label = "[sa1_7digit]"
             layer.processing = "CLOSE_CONNECTION=DEFER"
@@ -124,7 +125,7 @@ mapscript.msIO_installStdoutToBuffer()
 
 class Map(object):
     def __init__(self, rev, defn):
-        self.instance = mapscript.mapObj(os.path.expanduser('/app/template.map'))
+        self.instance = mapscript.mapObj(os.path.expanduser('/app/backend/template.map'))
         self.instance.imagetype = 'png'
         self.instance.setProjection('init=epsg:%s' % (EAlGIS().get_setting('map_srid')))
         self.rev = rev

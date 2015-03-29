@@ -28,7 +28,7 @@ uwsgi:
     - data
 
 nginx:
-  image: angrygoat/nginx-ealgis
+  image: angrygoat/docker-nginx-ealgis
   volumes_from:
     - data
   links:

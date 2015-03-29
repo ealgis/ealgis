@@ -29,6 +29,7 @@ if [ x"$command" = x"uwsgi" ]; then
     ealgis syncdb
     echo "starting uwsgi"
     rm -f /data/ealgis.sock
+    chown ealgis /data
     cd /app &&
         su ealgis -c "uwsgi --plugins http,python -s /data/ealgis.sock -w ealgis.ealwsgi:app --umask 0000 -w ealgis.ealwsgi:app --master -p 8 --lazy"
 fi
