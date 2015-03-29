@@ -3,6 +3,7 @@ data:
   volumes:
     - .:/app
     - data/dev:/data
+    - data/recipes:/recipes
 
 # shares volume with other images so we can use COPY
 db:
