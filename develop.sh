@@ -7,7 +7,27 @@ cmd_psql()
     PAGER=less PGPASSWORD="$EALGISDOCKER_DB_1_ENV_POSTGRES_PASSWORD" exec psql -h "$EALGISDOCKER_DB_1_PORT_5432_TCP_ADDR" -U "$EALGISDOCKER_DB_1_ENV_POSTGRES_USER" -p "$EALGISDOCKER_DB_1_PORT_5432_TCP_PORT" $*
 }
 
+jslint()
+{
+    docker run --rm -v $PWD:/app muccg/jslint:latest /app/backend/static/ealgis.js
+}
+
+pylint()
+{
+    docker run --rm -v $PWD:/app muccg/pylint:latest /app/backend/
+}
+
 case "$1" in
+jslint)
+    jslint
+    ;;
+pylint)
+    pylint
+    ;;
+lint)
+    jslint
+    pylint
+    ;;
 psql)
     shift
     cmd_psql $*
