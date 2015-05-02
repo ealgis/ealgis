@@ -20,15 +20,15 @@ db:
 
 uwsgi:
   build: backend/
+  volumes_from:
+    - data
   links:
    - db
   ports:
     - "9100:9100"
-  volumes_from:
-    - data
 
 nginx:
-  image: angrygoat/docker-nginx-ealgis
+  build: frontend/
   volumes_from:
     - data
   links:

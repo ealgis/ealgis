@@ -125,7 +125,7 @@ mapscript.msIO_installStdoutToBuffer()
 
 class Map(object):
     def __init__(self, rev, defn):
-        self.instance = mapscript.mapObj(os.path.expanduser('/app/backend/template.map'))
+        self.instance = mapscript.mapObj(os.path.expanduser('/app/backend/mapserver/template.map'))
         self.instance.imagetype = 'png'
         self.instance.setProjection('init=epsg:%s' % (EAlGIS().get_setting('map_srid')))
         self.rev = rev
