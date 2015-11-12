@@ -13,8 +13,6 @@ db:
     - POSTGRES_PASSWORD=ealgis
   ports:
     - ":5432"
-  volumes:
-    - ./data/postgis:/var/lib/postgresql/data
   volumes_from:
     - data
 
@@ -25,7 +23,7 @@ uwsgi:
   links:
    - db
   ports:
-    - "9100:9100"
+    - "9000:9000"
 
 nginx:
   build: frontend/

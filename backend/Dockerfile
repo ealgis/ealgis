@@ -36,7 +36,7 @@ RUN pip install \
 
 RUN adduser --system --uid 1000 --shell /bin/bash ealgis
 
-EXPOSE 9100
+EXPOSE 9000 9001
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh

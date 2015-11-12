@@ -31,7 +31,11 @@ if [ x"$command" = x"uwsgi" ]; then
     rm -f /data/ealgis.sock
     chown ealgis /data
     cd /app &&
-        su ealgis -c "uwsgi --plugins http,python -s /data/ealgis.sock -w ealgis.ealwsgi:app --umask 0000 -w ealgis.ealwsgi:app --master -p 8 --lazy"
+        su ealgis -c "uwsgi --ini /app/uwsgi/ealgis.uwsgi"
+    while true; do
+        echo "** uwsgi has quit: sleep 30 **"
+        sleep 30
+    done
 fi
 
 echo "executing: $*"
