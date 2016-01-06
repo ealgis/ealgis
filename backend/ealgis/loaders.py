@@ -176,7 +176,7 @@ class MapInfoLoader(GeoDataLoader):
         ogr_cmd = [
             'ogr2ogr',
             '-f', 'postgresql',
-            'pg:dbname=%s' % (eal.dbname()),
+            'PG:dbname=\'%s\' host=\'%s\' port=\'%d\' user=\'%s\' password=\'%s\'' % (eal.dbname(), eal.dbhost(), eal.dbport(), eal.dbuser(), eal.dbpassword()),
             self.filename,
             '-nln', self.table_name,
             '-lco', 'fid=gid']
@@ -205,7 +205,7 @@ class KMLLoader(GeoDataLoader):
         ogr_cmd = [
             'ogr2ogr',
             '-f', 'postgresql',
-            'pg:dbname=%s' % (eal.dbname()),
+            'PG:dbname=\'%s\' host=\'%s\' port=\'%d\' user=\'%s\' password=\'%s\'' % (eal.dbname(), eal.dbhost(), eal.dbport(), eal.dbuser(), eal.dbpassword()),
             self.filename,
             '-nln', self.table_name,
             '-append',
