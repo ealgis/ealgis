@@ -1,0 +1,9 @@
+[uwsgi]
+plugin = python
+socket = :9000
+uid = ealgis
+chdir = /app
+module = ealgis.ealwsgi:app
+master = true
+lazy = true
+processes = 8
