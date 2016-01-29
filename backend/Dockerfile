@@ -6,6 +6,11 @@
 FROM debian:jessie
 MAINTAINER Grahame Bowland <grahame@angrygoats.net>
 
+ARG GIT_TAG=next
+ARG PIP_OPTS="--no-cache-dir"
+
+ENV GITTAG $GIT_TAG
+
 # this is a bit of a kitchen sink. we use this container to
 # run ealgis 'recipes'; at some point we should break the recipe
 # container out
@@ -30,7 +35,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-RUN pip install \
+RUN pip install -U "pip<8"
+
+RUN pip ${PIP_OPTS} install \
     simplejson markdown Geoalchemy flask flask-sqlalchemy ipython \
     openpyxl==1.8.6 flake8 nose sqlalchemy-citext lxml \
     pyparsing rauth  \
@@ -38,14 +45,19 @@ RUN pip install \
     backports.lzma && \
   rm -rf /root/.cache/pip/
 
+RUN echo "building from git tag $GIT_TAG" && \
+    git clone --depth=1 --branch=$GITTAG https://github.com/grahame/ealgis.git .
+
+RUN cd /app/backend && pip install .
+
 RUN adduser --system --uid 1000 --shell /bin/bash ealgis
+USER ealgis
+ENV HOME /app
 
 EXPOSE 9000 9001
+VOLUME ["/app", "/data", "/recipes", "/scratch"]
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-VOLUME ["/app", "/data", "/recipes", "/scratch"]
 
 # entrypoint shell script that by default starts runserver
 ENTRYPOINT ["/docker-entrypoint.sh"]
