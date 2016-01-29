@@ -17,7 +17,7 @@ db:
     - data
 
 uwsgi:
-  build: backend/
+  image: angrygoat/ealgis:next
   volumes_from:
     - data
   links:
