@@ -217,7 +217,7 @@ class KMLLoader(GeoDataLoader):
             raise LoaderException("load of %s failed." % os.path.basename(self.filename))
         # delete any pins or whatever
         cls = eal.get_table_class(self.table_name)
-        for obj in eal.db.session.query(cls).filter(sqlalchemy.func.geometrytype(cls.wkb_geometry)!='MULTIPOLYGON'):
+        for obj in eal.db.session.query(cls).filter(sqlalchemy.func.geometrytype(cls.wkb_geometry) != 'MULTIPOLYGON'):
             eal.db.session.delete(obj)
         eal.db.session.commit()
         # make the meta info
