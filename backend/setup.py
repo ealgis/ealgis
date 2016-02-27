@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ealgis',
-    version='0.0.1',
+    version='1.1.0',
     description='EAlGIS',
     long_description='Interactive geospatial mapping system',
     author='Grahame Bowland',
