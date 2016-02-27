@@ -40,7 +40,7 @@ dockerbuild() {
     for tag in "${DOCKER_IMAGE}:${gittag}"; do
         echo "############################################################# ${DOCKER_IMAGE} ${tag}"
         set -x
-        cd backend && docker build ${DOCKER_BUILD_OPTIONS} --build-arg GIT_TAG=${gittag} -t ${tag} -f Dockerfile .
+        cd backend && docker build ${DOCKER_BUILD_OPTIONS} --build-arg GIT_TAG=${gittag} -t ${tag} -f Dockerfile-release .
         docker push ${tag}
         set +x
     done
