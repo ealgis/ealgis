@@ -146,7 +146,7 @@ class ShapeLoader(GeoDataLoader):
         if eal.have_table(self.table_name):
             print "already loaded: %s" % (self.table_name)
             return
-        shp_cmd = ['shp2pgsql', '-s', str(self.srid), '-I', self.shppath, self.table_name]
+        shp_cmd = ['shp2pgsql', '-s', str(self.srid), '-t', '2D', '-I', self.shppath, self.table_name]
         os.environ['PGPASSWORD'] = eal.dbpassword()
         _, _, code = piperun(shp_cmd, [
             'psql',
