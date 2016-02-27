@@ -7,7 +7,7 @@ data:
 
 # shares volume with other images so we can use COPY
 db:
-  image: mdillon/postgis:9.4
+  image: mdillon/postgis:9.5
   environment:
     - POSTGRES_USER=ealgis
     - POSTGRES_PASSWORD=ealgis
