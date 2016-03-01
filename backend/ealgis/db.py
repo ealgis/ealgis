@@ -333,7 +333,7 @@ class EAlGIS(object):
                 tbl, values={
                     getattr(tbl.c, new_column):
                     sqlalchemy.func.st_transform(
-                        sqlalchemy.func.st_force_2d(
+                        sqlalchemy.func.ST_Force2D(
                             getattr(tbl.c, geometry_source.column)),
                         to_srid)
                 }))
