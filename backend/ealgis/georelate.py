@@ -232,7 +232,7 @@ def build_relations(left_source, right_source):
         else:
             right_relation = left_relation
         find_intersections(left, right, left_relation, right_relation)
-        find_touches(left, right, left_relation, right_relation)
+        # find_touches(left, right, left_relation, right_relation)
     with Relate(left_source) as left:
         if left_source == right_source:
             _build(left, left)
