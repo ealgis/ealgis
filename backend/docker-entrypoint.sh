@@ -6,7 +6,7 @@ function defaults {
     : ${DBPORT:="5432"}
     : ${DBUSER="ealgis"}
     : ${DBNAME="${DBUSER}"}
-    : ${DBPASS="${DBUSER}"}
+    : ${DBPASS="${DBPASS}"}
 
     export DBSERVER DBPORT DBUSER DBNAME DBPASS DOCKER_HOST
 }
@@ -40,7 +40,7 @@ if [ x"$command" = x"uwsgi" ]; then
     echo "starting uwsgi"
     rm -f /data/ealgis.sock
     cd /app &&
-        uwsgi --ini /app/uwsgi/ealgis.uwsgi
+        su ealgis -c 'uwsgi --ini /app/uwsgi/ealgis.uwsgi'
     while true; do
         echo "** uwsgi has quit: sleep 30 **"
         sleep 30
