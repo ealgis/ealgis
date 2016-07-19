@@ -4,7 +4,7 @@ except ImportError:
     import json
 import urllib
 from flask import request, jsonify, abort, Response
-from flask.ext.login import current_user, login_required
+from flask_login import current_user, login_required
 from db import EAlGIS, MapDefinition, Setting, NoMatches, TooManyMatches, CompilationError
 from colour_scale import colour_for_layer, definitions
 app = EAlGIS().app

@@ -11,6 +11,9 @@ ARG PIP_OPTS="--no-cache-dir"
 
 ENV GITTAG $GIT_TAG
 
+# httpredir sucks
+RUN sed -i s/httpredir.debian.org/mirror.aarnet.edu.au/ /etc/apt/sources.list
+
 # this is a bit of a kitchen sink. we use this container to
 # run ealgis 'recipes'; at some point we should break the recipe
 # container out
