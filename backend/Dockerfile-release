@@ -54,7 +54,7 @@ RUN echo "building from git tag $GIT_TAG" && \
 RUN cd /app/backend && pip install .
 
 RUN adduser --system --uid 1000 --shell /bin/bash ealgis
-USER ealgis
+USER root
 ENV HOME /app
 
 EXPOSE 9000 9001
