@@ -6,7 +6,7 @@ function defaults {
     : ${DBPORT:="5432"}
     : ${DBUSER="ealgis"}
     : ${DBNAME="${DBUSER}"}
-    : ${DBPASS="${DBPASS}"}
+    : ${DBPASS="${DBUSER}"}
 
     export DBSERVER DBPORT DBUSER DBNAME DBPASS DOCKER_HOST
 }
