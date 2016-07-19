@@ -44,7 +44,7 @@ RUN pip ${PIP_OPTS} install \
     simplejson markdown Geoalchemy flask flask-sqlalchemy ipython \
     openpyxl==1.8.6 flake8 nose sqlalchemy-citext lxml \
     pyparsing rauth  \
-    'git+https://github.com/garbados/flask-browserid.git' \
+    'git+https://github.com/grahame/flask-browserid.git' \
     backports.lzma && \
   rm -rf /root/.cache/pip/
 
