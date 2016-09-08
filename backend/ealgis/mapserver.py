@@ -1,6 +1,6 @@
 
 from flask import request, abort, Response
-from flask.ext.login import login_required
+from flask_login import login_required
 import os
 import mapscript
 from db import EAlGIS, MapDefinition

@@ -146,7 +146,7 @@ class ShapeLoader(GeoDataLoader):
         if eal.have_table(self.table_name):
             print "already loaded: %s" % (self.table_name)
             return
-        shp_cmd = ['shp2pgsql', '-s', str(self.srid), '-I', self.shppath, self.table_name]
+        shp_cmd = ['shp2pgsql', '-s', str(self.srid), '-t', '2D', '-I', self.shppath, self.table_name]
         os.environ['PGPASSWORD'] = eal.dbpassword()
         _, _, code = piperun(shp_cmd, [
             'psql',
@@ -217,7 +217,7 @@ class KMLLoader(GeoDataLoader):
             raise LoaderException("load of %s failed." % os.path.basename(self.filename))
         # delete any pins or whatever
         cls = eal.get_table_class(self.table_name)
-        for obj in eal.db.session.query(cls).filter(sqlalchemy.func.geometrytype(cls.wkb_geometry)!='MULTIPOLYGON'):
+        for obj in eal.db.session.query(cls).filter(sqlalchemy.func.geometrytype(cls.wkb_geometry) != 'MULTIPOLYGON'):
             eal.db.session.delete(obj)
         eal.db.session.commit()
         # make the meta info

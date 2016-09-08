@@ -1,0 +1,10 @@
+def interesting(o):
+	return set(dir(o)) - set(dir(1))
+
+try:
+	import readline
+	import rlcompleter
+	readline.parse_and_bind("tab: complete")
+except:
+	from sys import stdout
+	stdout.write("TAB completion not available)\n")

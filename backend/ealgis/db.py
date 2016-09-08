@@ -4,8 +4,8 @@ try:
 except ImportError:
     import json
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager, UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin
 from flaskext.browserid import BrowserID
 from sqlalchemy.ext.declarative import declarative_base
 import sys
@@ -95,6 +95,7 @@ class EAlGIS(object):
         app = Flask(__name__)
         app.wsgi_app = ReverseProxied(app.wsgi_app)
         app.config['PROPAGATE_EXCEPTIONS'] = True
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = self._connection_string()
         app.config['BROWSERID_LOGIN_URL'] = "/api/0.1/login"
         app.config['BROWSERID_LOGOUT_URL'] = "/api/0.1/logout"
@@ -333,7 +334,7 @@ class EAlGIS(object):
                 tbl, values={
                     getattr(tbl.c, new_column):
                     sqlalchemy.func.st_transform(
-                        sqlalchemy.func.st_force_2d(
+                        sqlalchemy.func.ST_Force2D(
                             getattr(tbl.c, geometry_source.column)),
                         to_srid)
                 }))

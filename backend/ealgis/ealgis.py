@@ -52,7 +52,6 @@ def main():
     def query(args):
         eal = EAlGIS()
         from dataexpr import DataExpression
-        iters = []
         data = {}
         for expr in args.equation:
             ti = eal.get_table_info(args.geometry)

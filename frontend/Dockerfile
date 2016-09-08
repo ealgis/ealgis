@@ -1,5 +1,5 @@
 #
-FROM nginx:1.7
+FROM nginx:latest
 MAINTAINER Grahame Bowland <grahame@angrygoats.net>
 
 RUN rm -rf /etc/nginx
