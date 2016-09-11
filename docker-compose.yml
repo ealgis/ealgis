@@ -16,6 +16,20 @@ db:
   volumes_from:
     - data
 
+geoserver:
+    image: keithmoss/ealgis-geoserver:2.9.1
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    links:
+      - db
+    environment:
+     - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
+    volumes:
+     - ./backend/geoserver/data:/opt/geoserver/data_dir
+     - ./backend/geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+
 uwsgi:
   build: backend/
   volumes_from:
@@ -31,5 +45,6 @@ nginx:
     - data
   links:
     - uwsgi
+    - geoserver
   ports:
     - "8443:443"
