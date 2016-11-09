@@ -36,13 +36,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+RUN echo "building from git tag $GIT_TAG" && \
+    git clone --depth=1 --branch=$GITTAG https://github.com/grahame/ealgis.git .
+
 RUN pip install -U "pip<8"
 
 RUN pip ${PIP_OPTS} install -r /app/backend/requirements.txt && \
   rm -rf /root/.cache/pip/
-
-RUN echo "building from git tag $GIT_TAG" && \
-    git clone --depth=1 --branch=$GITTAG https://github.com/grahame/ealgis.git .
 
 RUN cd /app/backend && pip install .
 
