@@ -29,8 +29,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   apt-get autoremove -y --purge && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# stuff needed by recipes; FIXME we should just directly
-# dockerise the recipes rather than making this container huge
 RUN apt-get update && apt-get install -y --no-install-recommends \
       wget less git && \
   apt-get autoremove -y --purge && \
@@ -40,12 +38,7 @@ WORKDIR /app
 
 RUN pip install -U "pip<8"
 
-RUN pip ${PIP_OPTS} install \
-    simplejson markdown Geoalchemy flask flask-sqlalchemy ipython \
-    openpyxl==1.8.6 flake8 nose sqlalchemy-citext lxml \
-    pyparsing rauth  \
-    'git+https://github.com/grahame/flask-browserid.git' \
-    backports.lzma && \
+RUN pip ${PIP_OPTS} install -r /app/backend/requirements.txt && \
   rm -rf /root/.cache/pip/
 
 RUN echo "building from git tag $GIT_TAG" && \
