@@ -5,6 +5,7 @@ except ImportError:
     import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin
 from flaskext.browserid import BrowserID
 from sqlalchemy.ext.declarative import declarative_base
@@ -80,6 +81,7 @@ class EAlGIS(object):
         self._made = True
         self.app = self._generate_app()
         self.db = SQLAlchemy(self.app)
+        self.migrate = Migrate(self.app, self.db)
         self.datainfo = None
 
     def _connection_string(self):
