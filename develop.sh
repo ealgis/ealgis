@@ -41,7 +41,7 @@ dockerbuild() {
         echo "############################################################# ${DOCKER_IMAGE} ${tag}"
         set -x
         cd backend &&
-            docker build ${DOCKER_BUILD_OPTIONS} -t ${tag} -f Dockerfile-release . &&
+            docker build --no-cache ${DOCKER_BUILD_OPTIONS} -t ${tag} -f Dockerfile-release . &&
             docker push ${tag}
         set +x
     done
