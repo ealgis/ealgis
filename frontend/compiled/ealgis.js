@@ -1,7 +1,7 @@
 
 /* EAlGIS: main client javascript program */
 $(function() {
-    var user_info;
+    var user_info = {'email_address': 'grahame@angrygoats.net'};
     var user_firstname;
 
     var map_re_base = '[a-zA-Z0-9_]+';
@@ -75,45 +75,6 @@ $(function() {
     // mapserver is a bit crashy
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 2;
 
-    /* personas code */
-    var handle_assertion = function(assertion) {
-        if (assertion) {
-            return $.ajax({
-                type : 'POST',
-                url : '/api/0.1/login',
-                data : {
-                    assertion: assertion
-                },
-                success: function(res, status, jqXHR) {
-                    hide_login();
-                    attempt_bootstrap();
-                },
-                error: function(res, status, jqXHR) {
-                    hide_login();
-                    display_error(
-                        "Login failed. You may not have access to this system; contact the administrator if in doubt.",
-                        show_login);
-                }
-            });
-        }
-    };
-    var handle_logout = function(event) {
-        $.ajax({
-            type: 'POST',
-            url: '/api/0.1/logout',
-            success: function(res, status, jqXHR) {
-                window.location = "/";
-            },
-            error: function(res, status, jqXHR) {
-                display_error("Logout failed: " + status);
-            }
-        });
-        return false;
-    };
-
-    $("#browserid-logout").click(function(event) {
-        navigator.id.logout(handle_logout);
-    });
     var bootstrap_after_login = function() {
         /* set name on menu */
         $("#user-menu-user").text(user_firstname);
@@ -125,30 +86,9 @@ $(function() {
             chooseMap();
         }
     };
-    $("#browserid-login").click(function(event) {
-        $("#browserid-login").attr('disabled', '');
-        navigator.id.get(handle_assertion);
-    });
-    var hide_login = function() {
-        $("#loginDialog").modal("hide");
-    }
-    var show_login = function() {
-        $("#browserid-login").removeAttr('disabled');
-        $("#loginDialog").modal();
-    };
-
     var attempt_bootstrap = function() {
-        /* first, are we logged in? nothing much will work if we aren't... */
-        $.getJSON("/api/0.1/userinfo", function(data) {
-            if (data['status'] == 'OK') {
-                user_info = data['userinfo'];
-                var names = user_info['name'].split(/[, ]+/);
-                user_firstname = names[0];
-                bootstrap_after_login();
-            } else {
-                show_login();
-            }
-        });
+        user_firstname = "HAL 9000";
+        bootstrap_after_login();
     };
     attempt_bootstrap();
 
@@ -833,6 +773,7 @@ $(function() {
                         config._config_loaded(data);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
+                        console.log("down here");
                         var new_map = {
                             'defn' : {
                                 'layers' : {},

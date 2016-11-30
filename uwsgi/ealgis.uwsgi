@@ -7,3 +7,4 @@ module = ealgis.ealwsgi:app
 master = true
 lazy = true
 processes = 8
+py-autoreload = 1
