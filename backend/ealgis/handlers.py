@@ -4,7 +4,7 @@ except ImportError:
     import json
 import urllib
 from flask import request, jsonify, abort, Response
-from flask_login import current_user, login_required
+from flask_login import current_user
 from db import EAlGIS, MapDefinition, Setting, NoMatches, TooManyMatches, CompilationError
 from colour_scale import colour_for_layer, definitions
 app = EAlGIS().app
@@ -14,7 +14,6 @@ from mapserver import mapserver_wms  # noqa
 
 
 @app.route("/api/0.1/maps", methods=['POST', 'GET'])
-@login_required
 def api_maps():
     r = {}
     for m in MapDefinition.query.all():
@@ -23,24 +22,10 @@ def api_maps():
 
 
 def is_administrator(map_defn):
-    email = current_user.get_email()
-    administrators = map_defn.get().get('administrators')
-    # for now it's more sane to not lock anyone out if there are no admins
-    # eg. treat as public
-    if administrators is None:
-        return True
-    administrators = administrators.strip()
-    if administrators == '':
-        return True
-    admin_emails = [t.lower().strip() for t in administrators.splitlines()]
-    if email.lower() in admin_emails:
-        return True
-    else:
-        return False
+    return True
 
 
 @app.route("/api/0.1/map/<map_name>", methods=['POST', 'GET', 'DELETE'])
-@login_required
 def api_map(map_name):
     eal = EAlGIS()
     defn = MapDefinition.get_by_name(map_name)
@@ -81,7 +66,6 @@ def api_map(map_name):
 
 
 @app.route("/api/0.1/datainfo/<table_name>")
-@login_required
 def api_datainfo_table(table_name):
     table_info = EAlGIS().get_table_info(table_name)
     if table_info is None:
@@ -94,14 +78,12 @@ def api_datainfo_table(table_name):
 
 
 @app.route("/api/0.1/datainfo")
-@login_required
 def api_datainfo():
     eal = EAlGIS()
     return jsonify(eal.get_datainfo())
 
 
 @app.route("/api/0.1/mapexists/<map_name>")
-@login_required
 def api_mapexists(map_name):
     defn_obj = MapDefinition.get_by_name(map_name)
     res = {
@@ -119,13 +101,11 @@ def api_userinfo():
 
 
 @app.route("/api/0.1/colours")
-@login_required
 def api_colours():
     return jsonify(definitions.get_json())
 
 
 @app.route("/api/0.1/map/<map_name>/legend/<layer_id>/<client_rev>", methods=['GET'])
-@login_required
 def layer_legend(map_name, layer_id, client_rev):
     defn_obj = MapDefinition.get_by_name(map_name)
     if defn_obj is None:
@@ -145,7 +125,6 @@ def layer_legend(map_name, layer_id, client_rev):
 
 
 @app.route("/api/0.1/settings")
-@login_required
 def settings():
     settings_obj = {}
     eal = EAlGIS()
@@ -155,7 +134,6 @@ def settings():
 
 
 @app.route("/api/0.1/map/<map_name>/export-csv", methods=['GET'])
-@login_required
 def layer_export(map_name):
     defn_obj = MapDefinition.get_by_name(map_name)
     if defn_obj is None:
@@ -169,7 +147,6 @@ def layer_export(map_name):
 
 
 @app.route("/api/0.1/map/<map_name>/export-csv/<ne>/<sw>", methods=['GET'])
-@login_required
 def layer_export_bounds(map_name, ne, sw):
     defn_obj = MapDefinition.get_by_name(map_name)
     if defn_obj is None:
