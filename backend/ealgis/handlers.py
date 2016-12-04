@@ -4,7 +4,6 @@ except ImportError:
     import json
 import urllib
 from flask import request, jsonify, abort, Response
-from flask_login import current_user
 from db import EAlGIS, MapDefinition, Setting, NoMatches, TooManyMatches, CompilationError
 from colour_scale import colour_for_layer, definitions
 app = EAlGIS().app
@@ -90,14 +89,6 @@ def api_mapexists(map_name):
         'exists': defn_obj is not None
     }
     return jsonify(res)
-
-
-@app.route("/api/0.1/userinfo")
-def api_userinfo():
-    if not current_user.is_authenticated:
-        return jsonify(status="FAIL")
-    else:
-        return jsonify(status="OK", userinfo=current_user.get_info())
 
 
 @app.route("/api/0.1/colours")

@@ -1,6 +1,5 @@
 
 from flask import request, abort, Response
-from flask_login import login_required
 import os
 import mapscript
 from db import EAlGIS, MapDefinition
@@ -168,7 +167,6 @@ app = EAlGIS().app
 
 
 @app.route("/api/0.1/map/<map_name>/mapserver_wms/<layer_id>/<client_rev>", methods=['GET'])
-@login_required
 def mapserver_wms(map_name, layer_id, client_rev):
     wrapper = instances.get_or_create(map_name, layer_id)
     if wrapper is None:

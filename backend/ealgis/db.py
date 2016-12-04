@@ -6,8 +6,6 @@ except ImportError:
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin
-from flaskext.browserid import BrowserID
 from sqlalchemy.ext.declarative import declarative_base
 import sys
 import os
@@ -47,22 +45,6 @@ class ReverseProxied(object):
         return self.app(environ, start_response)
 
 
-class BrowserIDUser(UserMixin):
-    def __init__(self, **kwargs):
-        self.id = kwargs['id']
-        self.email = kwargs['email']
-        self.db_user = kwargs['user']
-
-    def get_email(self):
-        return self.email
-
-    def get_info(self):
-        return {
-            'name': self.db_user.name,
-            'email_address': self.db_user.email_address
-        }
-
-
 class EAlGIS(object):
     "singleton with key application (eg. database connection) state"
     # pattern credit: http://stackoverflow.com/questions/42558/python-and-the-singleton-pattern
@@ -99,23 +81,10 @@ class EAlGIS(object):
         app.config['PROPAGATE_EXCEPTIONS'] = True
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = self._connection_string()
-        app.config['BROWSERID_LOGIN_URL'] = "/api/0.1/login"
-        app.config['BROWSERID_LOGOUT_URL'] = "/api/0.1/logout"
 
         with open('/data/secret_key') as secret_fd:
             secret_key = secret_fd.read().rstrip()
         app.config['SECRET_KEY'] = secret_key
-        # Warning: this *disables* authentication on the API
-        # app.config['TESTING'] = True
-
-        login_manager = LoginManager()
-        login_manager.user_loader(self.get_user_by_id)
-        login_manager.init_app(app)
-
-        browserid = BrowserID()
-        browserid.user_loader(self.browserid_get_user)
-        browserid.init_app(app)
-
         return app
 
     def create_extensions(self):
@@ -431,31 +400,6 @@ class EAlGIS(object):
                 GeometryRelation.overlaps_with_id == to_source.id).one()
         except sqlalchemy.orm.exc.NoResultFound:
             return None
-
-    def get_user_by_id(self, id):
-        try:
-            u = User.query.filter(User.id == id).one()
-            return BrowserIDUser(id=u.id, email=u.email_address, user=u)
-        except sqlalchemy.orm.exc.NoResultFound:
-            return None
-
-    def get_user_by_email(self, email_address):
-        try:
-            u = User.query.filter(sqlalchemy.func.lower(User.email_address) == email_address.lower()).one()
-            return BrowserIDUser(id=u.id, email=u.email_address, user=u)
-        except sqlalchemy.orm.exc.NoResultFound:
-            return None
-
-    def browserid_get_user(self, response):
-        if 'id' in response:
-            by_id = self.get_user_by_id(response['id'])
-            if by_id is not None:
-                return by_id
-        if 'email' in response:
-            by_email = self.get_user_by_email(response['email'])
-            if by_email is not None:
-                return by_email
-        return None
 
     def recompile_all(self):
         for defn in MapDefinition.query.all():
