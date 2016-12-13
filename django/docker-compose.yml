@@ -15,5 +15,11 @@ services:
       - DB_NAME=postgres
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
+      - SOCIAL_AUTH_TWITTER_KEY
+      - SOCIAL_AUTH_TWITTER_SECRET
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
+      - SOCIAL_AUTH_FACEBOOK_KEY
+      - SOCIAL_AUTH_FACEBOOK_SECRET
     depends_on:
       - db
