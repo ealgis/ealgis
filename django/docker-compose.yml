@@ -1,0 +1,19 @@
+version: '2'
+services:
+  db:
+    image: mdillon/postgis:9.6
+  web:
+    build: .
+    command: runserver
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+      - db
