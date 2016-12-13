@@ -1,5 +1,9 @@
 <html>
 <body>
 <h1>hello</h1>
+
+<p>
+    Logged in as: {{ request.user.social_auth.get.provider }} / {{ request.user.username }}
+</p>
 </body>
 </html>
