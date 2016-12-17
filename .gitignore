@@ -10,3 +10,5 @@ data/
 __pycache__
 *.egg-info
 .vscode/
+dist/
+node_modules/

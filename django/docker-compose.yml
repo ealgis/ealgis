@@ -7,6 +7,7 @@ services:
     command: runserver
     volumes:
       - .:/app
+      - ../frontend:/frontend
     ports:
       - "8000:8000"
     environment:
