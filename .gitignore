@@ -12,3 +12,5 @@ __pycache__
 .vscode/
 dist/
 node_modules/
+
+django/web-variables.env
