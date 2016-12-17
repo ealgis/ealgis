@@ -11,7 +11,7 @@ class TableInfo(models.Model):
 class ColumnInfo(models.Model):
     "metadata for columns in the tables"
     name = models.CharField(max_length=256, unique=True)
-    tableinfo_id = models.ForeignKey(TableInfo, on_delete=models.CASCADE)
+    tableinfo_id = models.ForeignKey(TableInfo, related_name='columns', on_delete=models.CASCADE)
     metadata_json = JSONField(max_length=2048, null=True)
 
     class Meta:
