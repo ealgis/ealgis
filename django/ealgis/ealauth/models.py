@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 
 # Create your models here.
-class DataTableInfo(models.Model):
+class TableInfo(models.Model):
     "metadata for each table that has been loaded into the system"
     name = models.CharField(max_length=256, unique=True)
 
@@ -11,23 +11,23 @@ class DataTableInfo(models.Model):
 class ColumnInfo(models.Model):
     "metadata for columns in the tables"
     name = models.CharField(max_length=256, unique=True)
-    datatableinfo_id = models.ForeignKey(DataTableInfo, on_delete=models.CASCADE)
+    tableinfo_id = models.ForeignKey(TableInfo, on_delete=models.CASCADE)
     metadata_json = JSONField(max_length=2048, null=True)
 
     class Meta:
-        unique_together = ('name', 'datatableinfo_id')
+        unique_together = ('name', 'tableinfo_id')
 
 
 class GeometrySource(models.Model):
     "table describing sources of geometry information: the table, and the column"
-    datatableinfo_id = models.ForeignKey(DataTableInfo, on_delete=models.CASCADE)
+    tableinfo_id = models.ForeignKey(TableInfo, on_delete=models.CASCADE)
     geometry_type = models.CharField(max_length=256)
     column = models.CharField(max_length=256)
     srid = models.IntegerField()
     gid = models.CharField(max_length=256)
 
     def __str__(self):
-        return "GeometrySource<%s.%s>" % (self.datatable_info.name, self.column)
+        return "GeometrySource<%s.%s>" % (self.table_info.name, self.column)
     
     def srid_column(self, srid):
         if self.srid == srid:
@@ -58,7 +58,7 @@ class GeometryLinkage(models.Model):
     geo_column = models.CharField(max_length=256)
     # the attribute table, and the column which links a row in our geomtry table with
     # a row in the attribute table
-    attr_table_info_id = models.ForeignKey(DataTableInfo, on_delete=models.CASCADE)
+    attr_table_info_id = models.ForeignKey(TableInfo, on_delete=models.CASCADE)
     attr_column = models.CharField(max_length=256)
 
 
