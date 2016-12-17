@@ -2,12 +2,17 @@ version: '2'
 services:
   db:
     image: mdillon/postgis:9.6
+  frontend:
+    build: frontend/
+    command: gulp
+    volumes:
+      - ./frontend:/frontend
   web:
-    build: .
+    build: django/
     command: runserver
     volumes:
-      - .:/app
-      - ../frontend:/frontend
+      - ./django/:/app
+      - ./frontend:/frontend
     ports:
       - "8000:8000"
     environment:
