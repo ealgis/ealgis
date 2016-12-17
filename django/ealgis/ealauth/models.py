@@ -6,11 +6,6 @@ from django.contrib.auth.models import User
 class DataTableInfo(models.Model):
     "metadata for each table that has been loaded into the system"
     name = models.CharField(max_length=256, unique=True)
-    # @TODO Geom linkages
-
-    class Meta:
-        verbose_name = "DataTable"
-        verbose_name_plural = "DataTables"
 
 
 class ColumnInfo(models.Model):
@@ -21,8 +16,50 @@ class ColumnInfo(models.Model):
 
     class Meta:
         unique_together = ('name', 'datatableinfo_id')
-        verbose_name = "ColumnInfo"
-        verbose_name_plural = "ColumnInfos"
+
+
+class GeometrySource(models.Model):
+    "table describing sources of geometry information: the table, and the column"
+    datatableinfo_id = models.ForeignKey(DataTableInfo, on_delete=models.CASCADE)
+    geometry_type = models.CharField(max_length=256)
+    column = models.CharField(max_length=256)
+    srid = models.IntegerField()
+    gid = models.CharField(max_length=256)
+
+    def __str__(self):
+        return "GeometrySource<%s.%s>" % (self.datatable_info.name, self.column)
+    
+    def srid_column(self, srid):
+        if self.srid == srid:
+            return self.column
+        proj = [t for t in self.reprojections.all() if t.srid == srid]
+        if len(proj) == 1:
+            return proj[0].column
+        else:
+            return None
+
+
+class GeometrySourceProjected(models.Model):
+    "details of an additional column (on the same table as the source) with the source reprojected to this srid"
+    geometry_source_id = models.ForeignKey(GeometrySource, on_delete=models.CASCADE)
+    srid = models.IntegerField()
+    column = models.CharField(max_length=256)
+
+    class Meta:
+        verbose_name = "Geometry source projection"
+        verbose_name_plural = "Geometry source projections"
+
+
+class GeometryLinkage(models.Model):
+    "details of links to tie attribute data to columns in a geometry table"
+    # the geometry table, and the column which links a row in our attribute table with
+    # a row in the geometry table
+    geo_source_id = models.ForeignKey(GeometrySource, on_delete=models.CASCADE)
+    geo_column = models.CharField(max_length=256)
+    # the attribute table, and the column which links a row in our geomtry table with
+    # a row in the attribute table
+    attr_table_info_id = models.ForeignKey(DataTableInfo, on_delete=models.CASCADE)
+    attr_column = models.CharField(max_length=256)
 
 
 class MapDefinition(models.Model):
