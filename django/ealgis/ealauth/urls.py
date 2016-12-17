@@ -6,7 +6,11 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'maps', MapDefinitionViewSet, 'Maps')
+
+# Need to set base_name because Reasons
+# http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)
+# http://stackoverflow.com/questions/22083090/what-base-name-parameter-do-i-need-in-my-route-to-make-this-django-api-work
+router.register(r'maps', MapDefinitionViewSet, base_name='MapDefinition')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),

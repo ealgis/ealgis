@@ -26,4 +26,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     serializer_class = MapDefinitionSerializer
 
     def get_queryset(self):
+        # More complex example from SO:
+        # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
