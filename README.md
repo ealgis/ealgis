@@ -34,21 +34,49 @@ EAlGIS is intended to be run within docker. To get started:
 
     docker-compose up
 
-Add a user:
+Add a [Python Social Auth](http://python-social-auth.readthedocs.io/en/latest) backend of your choice. e.g. [Social backends](http://python-social-auth.readthedocs.io/en/latest/backends/index.html#social-backends).
 
-    docker-compose run uwsgi /bin/bash
-    ealgis adduser "Grahame Bowland <grahame@angrygoats.net>"
+Assuming you're configuring Google as a backend for auth:
 
-On your host, browse to:
+Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/latest/backends/google.html) and [Google - Using OAuth 2.0 to Access Google APIs](https://developers.google.com/identity/protocols/OAuth2?csw=1#Registering).
 
-    https://localhost:8443
+- Create a Web application OAuth 2 Client in the Google API's Console
+  - Add `http://localhost:8000` as an **Authorised JavaScript origin**
+  - Add `http://localhost:8000/complete/google-oauth2/` as an **Authorised redirect URI**
+  - Enable the Google+ API
+- Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
+- Add the resulting Client Id and Secret to `django/web-variables.env`
+- Nuke and restart your Docker containers
+- Navigate to `http://localhost:8000/login/google-oauth2/` and you be sent through the Google OAuth flow and end up back at `http://localhost:8000/`
 
-... and you should be up and running.
+Now you're up and running!
 
+Making yourself an admin:
+
+Hop into your running `django_web` Docker container:
+
+`docker exec -i -t django_web_1 /bin/bash`
+
+And enter the Django Admin shell:
+
+```
+django-admin shell
+from django.contrib.auth.models import User
+Users.objects.all()
+user=_[0]
+user.is_staff = True
+user.is_superuser = True
+user.save()
+```
+
+Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
+
+
+Get some data
+------------
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
 You may wish to start with the 2011 Australian Census: https://github.com/grahame/ealgis-aus-census-2011
 
 When loading data, you might want to clone the loader module in the `data/uwsgi` directory
 of the EAlGIS checkout. The code will then be available in `/data` in your
 uwsgi container.
-
