@@ -62,7 +62,7 @@ And enter the Django Admin shell:
 ```
 django-admin shell
 from django.contrib.auth.models import User
-Users.objects.all()
+User.objects.all()
 user=_[0]
 user.is_staff = True
 user.is_superuser = True
