@@ -16,6 +16,8 @@ var watchedBrowserify = watchify(browserify({
     entries: ['./src/index.tsx'],
     cache: {},
     packageCache: {}
+}, {
+    poll: true,
 }).plugin(tsify));
 
 function bundle() {
