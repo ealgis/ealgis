@@ -9,6 +9,6 @@ router.register(r'users', UserViewSet)
 router.register(r'maps', MapDefinitionViewSet, 'Maps')
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
+    url(r'^api/0.1/', include(router.urls)),
     url('^$', LandingView.as_view(), name='landing'),
 ]
