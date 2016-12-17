@@ -9,5 +9,5 @@ router.register(r'users', UserViewSet)
 
 urlpatterns = [
     url(r'^api/', include(router.urls)),
-    url('', LandingView.as_view(), name='landing')
+    url('^$', LandingView.as_view(), name='landing'),
 ]

@@ -10,11 +10,6 @@ var paths = {
     pages: ['src/*.html']
 };
 
-gulp.task('copy-html', function () {
-    return gulp.src(paths.pages)
-        .pipe(gulp.dest('dist'));
-});
-
 var watchedBrowserify = watchify(browserify({
     basedir: '.',
     debug: true,
@@ -38,6 +33,6 @@ function bundle() {
     .pipe(gulp.dest('dist'));
 };
 
-gulp.task("default", ["copy-html"], bundle);
+gulp.task("default", [], bundle);
 watchedBrowserify.on("update", bundle);
 watchedBrowserify.on("log", gutil.log);
