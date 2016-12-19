@@ -1,10 +1,14 @@
 #!/bin/sh
 
 command="$1"
-if [ x"$command" = x"gulp" ]; then
+if [ x"$command" = x"webpack" ]; then
+    export TERM=xterm
     npm install .
-    gulp
-    sleep 50000
+    webpack --progress --colors --watch
+    echo "webpack quit, status $?, sleeping..."
+    while /bin/true; do
+        sleep 60
+    done
     exit
 fi
 

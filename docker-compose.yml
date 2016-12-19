@@ -4,9 +4,11 @@ services:
     image: mdillon/postgis:9.6
   frontend:
     build: frontend/
-    command: gulp
+    command: webpack
     volumes:
       - ./frontend:/frontend
+    ports:
+      - "35729:35729"
   web:
     build: django/
     command: runserver
