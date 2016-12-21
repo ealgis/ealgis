@@ -7,6 +7,7 @@ from .models import *
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
 from ealgis.colour_scale import definitions
 
@@ -18,6 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (IsAdminUser,)
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
