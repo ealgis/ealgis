@@ -4,7 +4,7 @@ var LiveReloadPlugin = require('webpack-livereload-plugin');
 module.exports = {
     entry: "./src/index.tsx",
     plugins: [
-        new LiveReloadPlugin({})
+        new LiveReloadPlugin({'appendScriptTag': true})
     ],
     output: {
         filename: "bundle.js",
