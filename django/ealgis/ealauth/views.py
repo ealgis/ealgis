@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 from .models import *
 
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
+from ealgis.colour_scale import definitions
 
 class LandingView(TemplateView):
     template_name = 'landing.html'
@@ -47,3 +50,11 @@ class ColumnInfoViewSet(viewsets.ModelViewSet):
     """
     queryset = ColumnInfo.objects.all()
     serializer_class = ColumnInfoSerializer
+
+
+class ColoursViewset(viewsets.ViewSet):
+    """
+    API endpoint that returns available colours scale for styling.
+    """
+    def list(self, request, format=None):
+        return Response(definitions.get_json())
