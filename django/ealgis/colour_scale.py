@@ -1,15 +1,17 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from collections import namedtuple
-import cairo
+import cairocffi as cairo
 import colorsys
 import csv
-from cStringIO import StringIO
-from util import pairwise
+from io import StringIO
+# from util import pairwise
 
 RGBBase = namedtuple('RGB', ['r', 'g', 'b'])
 
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 class RGB(RGBBase):
     def __mul__(self, s):
@@ -100,7 +102,7 @@ class ColourScale(object):
         v_start = - 1. / (self.nlevels - 2)
         v_end = 1. - v_start
         v_inc = (v_end - v_start) / (legend_height - 1)
-        for i in xrange(legend_height):
+        for i in list(range(legend_height)):
             v = v_end - (v_inc * i)
             c = self.lookup(v, normalise=False)
             cr.set_source_rgb(c.r, c.g, c.b)
@@ -138,7 +140,7 @@ class ColourScale(object):
             discrete_inc = (self.scale_max - self.scale_min) / (nanno - 2)
         else:
             continuous_inc = (self.scale_max - self.scale_min) / (nanno - 1)
-        for i in xrange(nanno):
+        for i in list(range(nanno)):
             if i == 0:
                 label = "<%s" % fv(self.scale_min)
             elif i == nanno - 1:
@@ -182,7 +184,7 @@ class ContinuousColourScale(ColourScale):
                 n += nlevel_leftover
                 ninc = n - 1
             colour_inc = (c2 - c1) / float(ninc)
-            for l in xrange(n):
+            for l in list(range(n)):
                 yield c1 + (colour_inc * l)
 
 
@@ -201,7 +203,7 @@ class HLSDiscreteColourScale(DiscreteColourScale):
         defn = []
         # use 2/3 of the circle, so end not too like start
         h_inc = (2 / 3.) / nlevels
-        for i in xrange(nlevels):
+        for i in list(range(nlevels)):
             h = i * h_inc
             defn.append(RGB(*colorsys.hls_to_rgb(h, l, s)))
         super(HLSDiscreteColourScale, self).__init__(defn)
@@ -227,7 +229,7 @@ class CannedColourDefinitions(object):
         self.defs[(name, defn.get_nlevels())] = defn
 
     def huey(self):
-        for i in xrange(2, 13):
+        for i in list(range(2, 13)):
             self.register("Huey", HLSDiscreteColourScale((0.5, 0.8), i))
 
     def get(self, name, nlevels):
@@ -237,7 +239,7 @@ class CannedColourDefinitions(object):
         def strip_bl(r):
             return [t for t in r if t != '']
 
-        with open('/app/backend/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as fd:
+        with open('/app/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as fd:
             rdr = csv.reader(fd)
             header = strip_bl(next(rdr))
 
@@ -261,7 +263,7 @@ class CannedColourDefinitions(object):
                 nc = num_of_colours(row)
                 colours = []
                 colours.append(RGB(r(row), g(row), b(row)))
-                for i in xrange(nc - 1):
+                for i in list(range(nc - 1)):
                     row = next(rdr)
                     colours.append(RGB(r(row), g(row), b(row)))
                 self.register(name, DiscreteColourScale(colours))
