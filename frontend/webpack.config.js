@@ -1,10 +1,12 @@
 
+var webpack = require('webpack');
 var LiveReloadPlugin = require('webpack-livereload-plugin');
- 
+
 module.exports = {
     entry: "./src/index.tsx",
     plugins: [
-        new LiveReloadPlugin({'appendScriptTag': true})
+        new LiveReloadPlugin({'appendScriptTag': true}),
+        // new webpack.optimize.UglifyJsPlugin()
     ],
     output: {
         filename: "bundle.js",
