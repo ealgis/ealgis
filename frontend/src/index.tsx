@@ -10,6 +10,7 @@ injectTapEventPlugin();
 
 import reducers from './reducers/index';
 import { EalUI } from "./components/EalUI";
+import { MapList } from "./components/MapList";
 
 
 const store = createStore(
@@ -23,7 +24,9 @@ const history = syncHistoryWithStore(browserHistory, store);
 ReactDOM.render(
     <Provider store={store}>
         <Router history={history}>
-            <Route path="/" component={EalUI}></Route>
+            <Route path="/" component={EalUI}>
+                <Route path="login" component={MapList} />
+            </Route>
         </Router>
     </Provider>,
     document.getElementById("ealgis")

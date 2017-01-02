@@ -1,0 +1,35 @@
+html,
+body,
+#ealgis,
+.page {
+  height: 100%; /* needed for proper layout */
+}
+
+body {
+  overflow: hidden;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  flex: 0 0 auto;
+  background-color: #dcdcdc;
+}
+
+.page-content {
+  flex: 1 1 auto;
+  position: relative;/* need this to position inner content */
+  overflow-y: auto;
+}
+
+.page-footer {
+  flex: 0 0 auto;
+  background-color: #dcdcdc;
+}
