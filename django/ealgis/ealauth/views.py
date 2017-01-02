@@ -11,9 +11,6 @@ from rest_framework.permissions import IsAdminUser
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
 from ealgis.colour_scale import definitions
 
-class LandingView(TemplateView):
-    template_name = 'landing.html'
-
 
 class UserViewSet(viewsets.ModelViewSet):
     """

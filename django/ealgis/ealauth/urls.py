@@ -1,7 +1,6 @@
 from django.conf.urls import url, include
-from .views import LandingView, UserViewSet, MapDefinitionViewSet, TableInfoViewSet, ColumnInfoViewSet, ColoursViewset
+from .views import UserViewSet, MapDefinitionViewSet, TableInfoViewSet, ColumnInfoViewSet, ColoursViewset
 
-from django.contrib import admin
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -17,5 +16,4 @@ router.register(r'maps', MapDefinitionViewSet, base_name='MapDefinition')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
-    url('^$', LandingView.as_view(), name='landing'),
 ]
