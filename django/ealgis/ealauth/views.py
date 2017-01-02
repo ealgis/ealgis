@@ -18,6 +18,21 @@ try:
     import simplejson as json
 except ImportError:
     import json
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
+from ealgis.colour_scale import definitions
+from django.http import HttpResponseNotFound
+
+
+def api_not_found(request):
+    return HttpResponseNotFound()
+
+
+class CurrentUserView(APIView):
+    def get(self, request):
+        serializer = UserSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,6 +49,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     API endpoint to allow map definitions to be viewed or edited by the user that owns them.
     """
     serializer_class = MapDefinitionSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         # More complex example from SO:
@@ -55,6 +71,7 @@ class TableInfoViewSet(viewsets.ViewSet):
     API endpoint that allows tables to be viewed or edited.
     """
     serializer_class = TableInfoSerializer
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
@@ -65,6 +82,7 @@ class TableInfoViewSet(viewsets.ViewSet):
     def retrieve(self, request, format=None, pk=None):
         eal = apps.get_app_config('ealauth').eal
 
+<<<<<<< 4a0a353442c3d2c84f5a961fbb5920126212c082
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
@@ -83,12 +101,23 @@ class TableInfoViewSet(viewsets.ViewSet):
         
         serializer = TableInfoSerializer(table)
         return Response(serializer.data)
+=======
+class ColumnInfoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows columns to be viewed or edited.
+    """
+    queryset = ColumnInfo.objects.all()
+    serializer_class = ColumnInfoSerializer
+    permission_classes = (IsAuthenticated,)
+>>>>>>> add endpoint /api/0.1/self returning current user
 
 
 class ColoursViewset(viewsets.ViewSet):
     """
     API endpoint that returns available colours scale for styling.
     """
+    permission_classes = (IsAuthenticated,)
+
     def list(self, request, format=None):
         return Response(definitions.get_json())
 

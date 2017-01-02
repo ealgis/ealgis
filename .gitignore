@@ -14,4 +14,5 @@ dist/
 node_modules/
 web-variables.env
 data-loader/tmp
+data/
 dev/*

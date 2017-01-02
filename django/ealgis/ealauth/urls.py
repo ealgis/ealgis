@@ -1,6 +1,13 @@
 from django.conf.urls import url, include
-from .views import UserViewSet, MapDefinitionViewSet, TableInfoViewSet, ColoursViewset, SchemasViewSet
-
+from .views import (
+    UserViewSet,
+    MapDefinitionViewSet,
+    TableInfoViewSet,
+    ColumnInfoViewSet,
+    ColoursViewset,
+    CurrentUserView,
+    SchemasViewSet
+    api_not_found)
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -16,4 +23,7 @@ router.register(r'tableinfo', TableInfoViewSet, base_name='tableinfo')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
+    url(r'^api/0.1/self$', CurrentUserView.as_view(), name='api-self'),
+    # make sure that the API never serves up the react app
+    url(r'^api/0.1/.*', api_not_found),
 ]
