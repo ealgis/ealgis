@@ -3,6 +3,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import { Router, Route, Link, browserHistory } from 'react-router';
+import { LoginDialog } from './LoginDialog';
 
 import './FixedLayout.css';
 
@@ -16,6 +17,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                 <AppBar title="ealgis" />
             </div>
             <div className="page-content">
+                <LoginDialog />
                 {this.props.children || <p><Link to="/login">Log in</Link></p>}
             </div>
         </div>
