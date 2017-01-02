@@ -158,3 +158,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/frontend/dist/',
 ]
+
+LOGIN_REDIRECT_URL = 'home'
