@@ -6,7 +6,7 @@ export interface SocialLoginButtonState { }
 
 export class SocialLoginButton extends React.Component<SocialLoginButtonProps, SocialLoginButtonState> {
     handleClick = () => {
-        console.log("click " + this.props.providerName);
+        window.location.href = this.props.providerUrl;
     }
     render() {
         const buttonStyle = {
