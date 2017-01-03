@@ -1,0 +1,3 @@
+# Don't send the raw data or tmp files to `docker build`!
+data/*
+tmp/*
