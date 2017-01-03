@@ -28,8 +28,14 @@ def piperun(*cmds, **kwargs):
     return stdin, stderr, pipes[-1].returncode
 
 
+def cmdrun(cmd_args, stdout=None):
+    p = sp.Popen(cmd_args, stdout=sp.PIPE, stderr=sp.PIPE)
+    stdin, stderr = p.communicate()
+    return stdin, stderr, p.returncode
+
+
 def alistdir(path):
-    return (os.path.join(path, t) for t in os.listdir(path))
+    return (os.path.join(path, t) for t in os.listdir(path) if not t.startswith("."))
 
 
 def table_name_valid(table_name):

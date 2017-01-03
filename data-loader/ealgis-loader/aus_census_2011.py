@@ -17,7 +17,6 @@ import sqlalchemy
 
 
 def go(eal, tmpdir):
-    # census_dir = '2011 Datapacks BCP_IP_TSP_PEP_ECP_WPP_ERP_Release 3'
     census_dir = '/app/data/ealgis-aus-census-2011-master/2011 Datapacks BCP_IP_TSP_PEP_ECP_WPP_ERP_Release 3'
     release = '3'
     schema_name = "aus_census_2011"
@@ -44,8 +43,6 @@ def go(eal, tmpdir):
         'sua': ('sua_code', None, 'Significant Urban Areas'),
         'ucl': ('ucl_code', None, 'Urban Centre/Locality')
     }
-    # @TODO Hacky for testing
-    # shp_linkage = {'sa4': ('sa4_code', None, 'Statistical Area Level 4')}
     
     census_division_table = {}
     geo_gid_mapping = {}
@@ -60,8 +57,6 @@ def go(eal, tmpdir):
     def mapper():
         cls = eal.get_table_class('sa1_2011_aust')
         eal.db.session.query(sqlalchemy.cast(cls.sa1_7digit, sqlalchemy.Integer()))[:10]
-
-    # geo_data_tables = []
 
     def load_shapes():
         print "load shapefiles"
@@ -91,14 +86,7 @@ def go(eal, tmpdir):
                     new = list(set(eal.get_table_names()) - before)
                     assert(len(new) == 1)
                     new_tables.append(new[0])
-        
-        # Let the outside world know about the tables we were responsible for creating
-        # geo_data_tables = new_tables
-        # print "geo_data_tables (new_tables)"
-        # print geo_data_tables
 
-        # @TODO Hacky to make partial import work
-        # new_tables = set(eal.get_table_names())
         print "loaded shapefile OK"
 
         print "creating shape indexes"
@@ -118,12 +106,6 @@ def go(eal, tmpdir):
             except sqlalchemy.exc.ProgrammingError:
                 # index already exists
                 eal.db.session.rollback()
-
-        # @TODO Hacky to make partial import work
-        # for census_division in shp_linkage:
-        #     pfx = "%s_2011" % (census_division)
-        #     table = [t for t in new_tables if t.startswith(pfx)][0]
-        #     census_division_table[census_division] = table
 
         # create geo_column -> gid mapping
         print "creating gid mapping tables"
@@ -163,12 +145,6 @@ def go(eal, tmpdir):
         csv_files = get_csv_files()
         table_re = re.compile(r'^2011Census_(.*)_sequential.csv$')
         linkage_pending = []
-
-        # @TODO Hacky to make partial import work
-        # for i, csv_path in enumerate(csv_files):
-        #     print "[%d/%d] %s: %s" % (i + 1, len(csv_files), packname, os.path.basename(csv_path))
-        #     table_name = table_re.match(os.path.split(csv_path)[-1]).groups()[0].lower()
-        #     data_tables.append(table_name)
 
         for i, csv_path in enumerate(csv_files):
             print "[%d/%d] %s: %s" % (i + 1, len(csv_files), packname, os.path.basename(csv_path))
@@ -262,45 +238,42 @@ def go(eal, tmpdir):
             eal.set_table_metadata(table_name, meta)
             eal.register_columns(table_name, columns)
     
-    
+
     # Initialise the database
-    # if database_exists(eal.engineurl()):
-    #     raise Exception("the dataloader database already exists - it should be nuked after each load, so this probably means that a data load failed")
-    # else:
-    #     create_database(eal.engineurl())
-    #     print "dataloader database created"
+    if database_exists(eal.engineurl()):
+        raise Exception("the dataloader database already exists - it should be nuked after each load, so this probably means that a data load failed")
+    else:
+        create_database(eal.engineurl())
+        print "dataloader database created"
         
-    # eal.db.create_all()
-    # eal.db.session.commit()
+    eal.db.create_all()
+    eal.db.session.commit()
 
-    # eal.set_setting("projected_srid", "3112")
-    # eal.set_setting("map_srid", "3857")
+    eal.set_setting("projected_srid", "3112")
+    eal.set_setting("map_srid", "3857")
 
-    # eal.create_extensions()
-    # print "database initialisation complete"
+    eal.create_extensions()
+    print "database initialisation complete"
 
-    # load_shapes()
-    # # load_datapacks("2011 Basic Community Profile Release %s - TESTING" % release)
+    load_shapes()
 
-    # load_datapacks("2011 Aboriginal and Torres Strait Islander Peoples Profile Release %s" % release)
-    # load_datapacks("2011 Basic Community Profile Release %s" % release)
-    # load_datapacks("2011 Expanded Community Profile Release %s" % release)
-    # load_datapacks("2011 Place of Enumeration Profile Release %s" % release)
-    # load_datapacks("2011 Time Series Profile Release %s" % release)
-    # load_datapacks("2011 Working Population Profile Release %s" % release)
-    
-    # # load_metadata("Metadata_2011_BCP_DataPack.xlsx")
+    load_datapacks("2011 Aboriginal and Torres Strait Islander Peoples Profile Release %s" % release)
+    load_datapacks("2011 Basic Community Profile Release %s" % release)
+    load_datapacks("2011 Expanded Community Profile Release %s" % release)
+    load_datapacks("2011 Place of Enumeration Profile Release %s" % release)
+    load_datapacks("2011 Time Series Profile Release %s" % release)
+    load_datapacks("2011 Working Population Profile Release %s" % release)
 
-    # load_metadata(
-    #     "Metadata_2011_BCP_DataPack.xlsx",
-    #     "Metadata_2011_IP_DataPack.xlsx",
-    #     "Metadata_2011_PEP_DataPack.xlsx",
-    #     "Metadata_2011_TSP_DataPack.xlsx",
-    #     "Metadata_2011_WPP_DataPack.xlsx",
-    #     "Metadata_2011_XCP_DataPack.xlsx")
+    load_metadata(
+        "Metadata_2011_BCP_DataPack.xlsx",
+        "Metadata_2011_IP_DataPack.xlsx",
+        "Metadata_2011_PEP_DataPack.xlsx",
+        "Metadata_2011_TSP_DataPack.xlsx",
+        "Metadata_2011_WPP_DataPack.xlsx",
+        "Metadata_2011_XCP_DataPack.xlsx")
 
-    # print "create schema %s" % schema_name
-    # eal.db.engine.execute(CreateSchema(schema_name))
+    print "create schema %s" % schema_name
+    eal.db.engine.execute(CreateSchema(schema_name))
 
     print "move tables to standalone schema"
     ealgis_tables = ["user", "setting", "geometry_touches", "map_definition", "geometry_intersection", "geometry_relation", "spatial_ref_sys"]
@@ -325,8 +298,8 @@ def go(eal, tmpdir):
         print "load with: pg_restore --username=user --dbname=db /path/to/%s" % schema_name
         print "then run VACUUM ANALYZE;"
     
-    # print "nuking the database"
-    # drop_database(eal.engineurl())
+    print "nuking the database"
+    drop_database(eal.engineurl())
 
 
 eal = EAlGIS()

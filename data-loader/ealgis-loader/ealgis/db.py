@@ -6,7 +6,9 @@ except ImportError:
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from sqlalchemy import inspect
 from sqlalchemy.ext.declarative import declarative_base
+from geoalchemy2 import Geometry, Geography
 import sys
 import os
 import sqlalchemy
@@ -68,9 +70,9 @@ class EAlGIS(object):
 
     def _connection_string(self):
         # try and autoconfigure for running under docker
-        dbuser = os.environ.get('DB_ENV_POSTGRES_USER')
-        dbpassword = os.environ.get('DB_ENV_POSTGRES_PASSWORD')
-        dbhost = os.environ.get('DB_PORT_5432_TCP_ADDR')
+        dbuser = os.environ.get('DB_USERNAME')
+        dbpassword = os.environ.get('DB_PASSWORD')
+        dbhost = os.environ.get('DB_HOST')
         if dbuser and dbpassword and dbhost:
             return 'postgres://%s:%s@%s:5432/ealgis' % (dbuser, dbpassword, dbhost)
         return 'postgres:///ealgis'
@@ -82,9 +84,6 @@ class EAlGIS(object):
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = self._connection_string()
 
-        with open('/data/secret_key') as secret_fd:
-            secret_key = secret_fd.read().rstrip()
-        app.config['SECRET_KEY'] = secret_key
         return app
 
     def create_extensions(self):
@@ -175,6 +174,9 @@ class EAlGIS(object):
 
     def metadata_dirty(self):
         self._metadata = None
+    
+    def engineurl(self):
+        return self.db.engine.url
 
     def dbname(self):
         return self.db.engine.url.database
@@ -202,12 +204,10 @@ class EAlGIS(object):
         return sqlalchemy.Table(table_name, sqlalchemy.MetaData(), autoload=True, autoload_with=db.engine)
 
     def get_table_names(self):
-        "get a list of the table names in a database. NB: this is *expensive memory wise* on a complex DB"
-        metadata = self._get_metadata()
-        rv = list(metadata.tables.keys())
-        # can be HUGE
-        del metadata
-        return rv
+        "this is a more lightweight approach to getting table names from the db that avoids all of that messy reflection"
+        "c.f. http://docs.sqlalchemy.org/en/rel_0_9/core/reflection.html?highlight=inspector#fine-grained-reflection-with-inspector"
+        inspector = inspect(db.engine)
+        return inspector.get_table_names()
 
     def unload(self, table_name):
         "drop a table and all associated EAlGIS information"
@@ -237,14 +237,8 @@ class EAlGIS(object):
         geom_columns = []
 
         for column in info.columns:
-            # SQLAlchemy can't figure out what a geom column
-            # is; hence the one that we can't decode is the
-            # geom column.
-            try:
-                str(column.type)
-            except NotImplementedError:
-                geom_columns.append(column)
-            except sqlalchemy.exc.CompileError:  # SQLAlchemy >= 0.9
+            # GeoAlchemy2 lets us find geometry columns
+            if isinstance(column.type, Geometry):
                 geom_columns.append(column)
 
         if len(geom_columns) > 1:
