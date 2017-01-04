@@ -24,6 +24,7 @@ class EAlGIS(object):
             return
         self._made = True
         self.db = create_engine(self._connection_string())
+        self.schemas = None
         self.datainfo = None
 
     def _connection_string(self):
@@ -58,17 +59,23 @@ class EAlGIS(object):
         
         return False
     
-    def scan_schemas(self):
+    def scan_schemas(self, skip_cache=False):
         """identify and load EAlGIS-compliant schemas available in the database"""
-        # PostgreSQL and PostGIS system schemas
-        system_schemas = ["information_schema", "tiger", "tiger_data", "topology", "public"]
 
-        inspector = inspect(self.db)
+        def get_schemas():
+            print("Scanning!")
+            # PostgreSQL and PostGIS system schemas
+            system_schemas = ["information_schema", "tiger", "tiger_data", "topology", "public"]
 
-        schemas = []
-        for schema_name in inspector.get_schema_names():
-            if schema_name not in system_schemas:
-                if self.is_compliant_schema(schema_name):
-                    schemas.append(schema_name)
-                
-        return schemas
+            inspector = inspect(self.db)
+
+            schemas = []
+            for schema_name in inspector.get_schema_names():
+                if schema_name not in system_schemas:
+                    if self.is_compliant_schema(schema_name):
+                        schemas.append(schema_name)
+            return schemas
+        
+        if skip_cache is True or self.schemas is None:
+            self.schemas = get_schemas()
+        return self.schemas
