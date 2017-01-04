@@ -6,5 +6,5 @@ class EalauthConfig(AppConfig):
     
     def ready(self):
         eal = EAlGIS()
-        schemas = eal.scan_schemas()
-        print("Found {} EAlGIS-compliant schemas: {}".format(len(schemas), ",".join(schemas)))
+        schema_names = eal.get_schemas()
+        print("Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))

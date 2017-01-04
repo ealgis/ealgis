@@ -35,14 +35,16 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
 
 
-class TableInfoViewSet(viewsets.ModelViewSet):
+class TableInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tables to be viewed or edited.
     """
-    # Use this approach to prefetch info for columns related to this table
-    # http://stackoverflow.com/a/29910181
-    queryset = TableInfo.objects.all().prefetch_related('columns')
-    serializer_class = TableInfoSerializer
+
+    def list(self, request, format=None):
+        # @TODO Shove this into Django global state
+        eal = EAlGIS()
+        schemas = eal.get_datainfo()
+        return Response(schemas)
 
 
 class ColumnInfoViewSet(viewsets.ModelViewSet):
@@ -65,10 +67,9 @@ class SchemasViewSet(viewsets.ViewSet):
     """
     API endpoint that scans the database for EAlGIS-compliant schemas.
     """
-    permission_classes = (IsAdminUser,)
 
     def list(self, request, format=None):
         # @TODO Shove this into Django global state
         eal = EAlGIS()
-        schemas = eal.scan_schemas()
-        return Response(schemas)
+        schema_names = eal.get_schemas()
+        return Response(schema_names)
