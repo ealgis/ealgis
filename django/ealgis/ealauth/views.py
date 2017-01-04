@@ -5,11 +5,13 @@ from django.contrib.auth.models import User
 from .models import *
 
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
 from ealgis.colour_scale import definitions
+from ealgis.ealgis import EAlGIS
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -57,3 +59,16 @@ class ColoursViewset(viewsets.ViewSet):
     """
     def list(self, request, format=None):
         return Response(definitions.get_json())
+
+
+class SchemasViewSet(viewsets.ViewSet):
+    """
+    API endpoint that scans the database for EAlGIS-compliant schemas.
+    """
+    permission_classes = (IsAdminUser,)
+
+    def list(self, request, format=None):
+        # @TODO Shove this into Django global state
+        eal = EAlGIS()
+        schemas = eal.scan_schemas()
+        return Response(schemas)

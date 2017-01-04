@@ -4,3 +4,5 @@ python-social-auth==0.2.21
 djangorestframework==3.5.3
 cairocffi==0.7.2
 git+git://github.com/tiran/defusedxml
+SQLAlchemy==1.1.4
+GeoAlchemy2==0.4.0
