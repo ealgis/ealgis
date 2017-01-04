@@ -1,6 +1,6 @@
 recipes/
 modules/
-data/
+backend/geoserver/data/
 .vagrant
 .*swp
 *.pyc
@@ -13,3 +13,4 @@ __pycache__
 dist/
 node_modules/
 web-variables.env
+data-loader/tmp
