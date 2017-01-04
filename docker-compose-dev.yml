@@ -1,12 +1,19 @@
 version: '2'
 services:
+  dbdata:
+    image: mdillon/postgis:9.6
+    entrypoint: /bin/bash
+    volumes:
+      - /var/lib/postgresql
   db:
     image: mdillon/postgis:9.6
     ports:
       - "5432:5432"
     volumes:
       - ./data-loader:/data-loader
-      - ./postgis/data:/var/lib/postgresql/data
+      # - ./dev/postgis/data:/var/lib/postgresql/data
+    volumes_from:
+      - dbdata
   frontend:
     build: frontend/
     command: webpack
