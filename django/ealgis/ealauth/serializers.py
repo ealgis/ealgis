@@ -12,7 +12,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = MapDefinition
-        fields = ('name', 'description', 'json', 'owner_user_id')
+        fields = ('id', 'name', 'description', 'json', 'owner_user_id')
 
 
 class ColumnInfoSerializer(serializers.Serializer):

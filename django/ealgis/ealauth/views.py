@@ -6,7 +6,7 @@ from .models import *
 
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, detail_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import NotFound, ValidationError
@@ -39,6 +39,15 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
+    
+    @detail_route(methods=['get'])
+    def exists(self, request, pk=None, format=None):
+        queryset = self.get_queryset()
+        map = queryset.filter(id=pk).first()
+
+        return Response({
+            "exists": map is not None
+        })
 
 
 class TableInfoViewSet(viewsets.ViewSet):
