@@ -9,9 +9,15 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
+from rest_framework.exceptions import NotFound, ValidationError
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer
 from ealgis.colour_scale import definitions
-from ealgis.ealgis import EAlGIS
+from django.apps import apps
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,20 +45,35 @@ class TableInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tables to be viewed or edited.
     """
+    serializer_class = TableInfoSerializer
 
     def list(self, request, format=None):
-        # @TODO Shove this into Django global state
-        eal = EAlGIS()
-        schemas = eal.get_datainfo()
-        return Response(schemas)
+        eal = apps.get_app_config('ealauth').eal
+        tables = eal.get_datainfo()
+        return Response(tables)
+    
+    # @TODO Make a Custom ViewSet that can handle common tasks like schema checking?
+    def retrieve(self, request, format=None, pk=None):
+        eal = apps.get_app_config('ealauth').eal
 
+        schema_name = request.query_params.get('schema', None)
+        if schema_name is None or not schema_name:
+            raise ValidationError(detail="No schema name provided.")
+        elif schema_name not in eal.get_schemas():
+            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
 
-class ColumnInfoViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows columns to be viewed or edited.
-    """
-    queryset = ColumnInfo.objects.all()
-    serializer_class = ColumnInfoSerializer
+        table = eal.get_table_info(pk, schema_name)
+
+        if table is None:
+            raise NotFound()
+
+        columninfo = eal.get_table_class("column_info", schema_name)
+        table.columns = columns = {}
+        for column in eal.session.query(columninfo).filter_by(tableinfo_id=table.id).all():
+            columns[column.name] = json.loads(column.metadata_json)
+        
+        serializer = TableInfoSerializer(table)
+        return Response(serializer.data)
 
 
 class ColoursViewset(viewsets.ViewSet):
@@ -69,7 +90,6 @@ class SchemasViewSet(viewsets.ViewSet):
     """
 
     def list(self, request, format=None):
-        # @TODO Shove this into Django global state
-        eal = EAlGIS()
+        eal = apps.get_app_config('ealauth').eal
         schema_names = eal.get_schemas()
         return Response(schema_names)
