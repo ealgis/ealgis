@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 # from ealgis import EAlGIS
 # from ealgis.ealgis import EAlGIS
+from django.apps import apps
 
 Base = declarative_base()
 
@@ -93,7 +94,8 @@ class GeometrySource(Base):
     def srid_column(self, srid):
         if self.srid == srid:
             return self.column
-        proj = [t for t in self.reprojections.all() if t.srid == srid]
+        eal = apps.get_app_config('ealauth').eal
+        proj = [t for t in eal.get_geometry_source_projections(self.id, self.schema_name) if t.srid == srid]
         if len(proj) == 1:
             return proj[0].column
         else:

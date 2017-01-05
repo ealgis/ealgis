@@ -178,3 +178,25 @@ class EAlGIS(object):
         eal = apps.get_app_config('ealauth').eal
         tableinfo = eal.get_table_class("table_info", schema_name)
         return eal.session.query(tableinfo).filter_by(name=table_name).first()
+    
+    def get_geometry_source(self, geometry_source_name, schema_name):
+        eal = apps.get_app_config('ealauth').eal
+        tableinfo = eal.get_table_class("table_info", schema_name)
+        geometrysource = eal.get_table_class("geometry_source", schema_name)
+
+        table = eal.session.query(tableinfo).filter_by(name=geometry_source_name).first()
+        geomsource = eal.session.query(geometrysource).filter_by(tableinfo_id=table.id).first()
+        geomsource.schema_name = "aus_census_2011"
+        geomsource.table_info = table
+        return geomsource
+    
+    def get_geometry_source_projections(self, geometry_source_id, schema_name):
+        eal = apps.get_app_config('ealauth').eal
+        geomsourceprojected = eal.get_table_class("geometry_source_projected", schema_name)
+
+        return eal.session.query(geomsourceprojected).filter_by(geometry_source_id=geometry_source_id).all()
+
+    def get_geometry_source_by_id(self, id, schema_name):
+        eal = apps.get_app_config('ealauth').eal
+        geometrysource = eal.get_table_class("geometry_source", schema_name)
+        return eal.session.query(geometrysource).filter_by(id=id).first()
