@@ -1,11 +1,10 @@
 from django.conf.urls import url, include
-from .views import UserViewSet, MapDefinitionViewSet, TableInfoViewSet, ColumnInfoViewSet, ColoursViewset, SchemasViewSet
+from .views import UserViewSet, MapDefinitionViewSet, TableInfoViewSet, ColoursViewset, SchemasViewSet
 
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'columninfo', ColumnInfoViewSet)
 
 # Need to set base_name because Reasons
 # http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)
