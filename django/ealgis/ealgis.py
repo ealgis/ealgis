@@ -14,6 +14,7 @@ import sqlalchemy as sqlalchemy
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, subqueryload
 from sqlalchemy.ext.declarative import declarative_base
+from django.apps import apps
 
 class EAlGIS(object):
     "singleton with key application (eg. database connection) state"
@@ -163,9 +164,17 @@ class EAlGIS(object):
                         query(source, tableinfo).\
                         filter(source.tableinfo_id == tableinfo.id).all():
                     name = "{}.{}".format(schema_name, tableinfo.name)
-                    info[name] = dump_source(source, tableinfo)
+                    source = dump_source(source, tableinfo)
+                    source['name'] = tableinfo.name
+                    source['schema_name'] = schema_name
+                    info[name] = source
             return info
 
         if self.datainfo is None:
             self.datainfo = make_datainfo()
         return self.datainfo
+    
+    def get_table_info(self, table_name, schema_name):
+        eal = apps.get_app_config('ealauth').eal
+        tableinfo = eal.get_table_class("table_info", schema_name)
+        return eal.session.query(tableinfo).filter_by(name=table_name).first()
