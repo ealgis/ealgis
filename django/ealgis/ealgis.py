@@ -144,24 +144,21 @@ class EAlGIS(object):
         #     obj['_id'] = linkage.id
         #     return name, obj
 
-        def dump_source(source, tableinfo):
-            if tableinfo.metadata_json is not None:
-                source_info = json.loads(tableinfo.metadata_json)
+        def dump_source(source):
+            if source.table_info.metadata_json is not None:
+                print("Load JSON")
+                source_info = json.loads(source.table_info.metadata_json)
+                print(source_info)
             else:
-                source_info = {'description': tableinfo.name}
+                print("No JSON")
+                source_info = {'description': source.table_info.name}
             source_info['_id'] = source.id
 
             # source_info['tables'] = dict(dump_linkage(t) for t in source.linkages)
             source_info['type'] = source.geometry_type
+            source_info['name'] = source.table_info.name
+            source_info['schema_name'] = source.__table__.schema
             return source_info
-
-        # def make_datainfo():
-        #     # our geography sources
-        #     info = {}
-        #     for source in GeometrySource.query.all():
-        #         name = source.table_info.name
-        #         info[name] = dump_source(source)
-        #     return info
 
         def make_datainfo():
             # our geography sources
@@ -170,15 +167,9 @@ class EAlGIS(object):
             for schema_name in self.get_schemas():
                 geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
 
-                # @TODO Make this work using the inbuilt table relationships
-                for source, tableinfo in self.session.\
-                        query(source, tableinfo).\
-                        filter(source.tableinfo_id == tableinfo.id).all():
-                    name = "{}.{}".format(schema_name, tableinfo.name)
-                    source = dump_source(source, tableinfo)
-                    source['name'] = tableinfo.name
-                    source['schema_name'] = schema_name
-                    info[name] = source
+                for source in self.session.query(geometrysource).all():
+                    name = "{}.{}".format(schema_name, source.table_info.name)
+                    info[name] = dump_source(source)
             return info
 
         if self.datainfo is None:
