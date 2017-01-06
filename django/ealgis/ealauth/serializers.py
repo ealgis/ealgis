@@ -19,27 +19,26 @@ class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             description = data["description"],
             json = data["json"]
         )
-        map.set(map.json)
-        map.save()
+        self._set(map, map.json)
         return map
 
     def update(self, instance, data):
         # Will only be done if an existing object is being updated
-        instance.set(data["json"])
-        instance.save()
+        self._set(instance, data["json"])
         return instance
     
     def _set(self, map, json):
         try:
             map.set(json)
+            map.save()
         except ValueError as e:
-            return ValidationError(detail="Unknown value error ({})".format(e.message))
+            raise ValidationError(detail="Unknown value error ({})".format(e.message))
         except CompilationError as e:
-            return ValidationError(detail="Expression compilation failed ({})".format(e.message))
+            raise ValidationError(detail="Expression compilation failed ({})".format(e.message))
         except NoMatches as e:
-            return ValidationError(detail="Attribute could not be resolved ({})".format(e.message))
+            raise ValidationError(detail="Attribute could not be resolved ({})".format(e.message))
         except TooManyMatches as e:
-            return ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
+            raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
 
     class Meta:
         model = MapDefinition
