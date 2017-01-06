@@ -175,7 +175,7 @@ class DataExpression(object):
         # attempt to get a column in the desired SRID, this speeds things up
         if self.srid is not None:
             from ealgis.models import GeometrySource
-            self.geometry_column = GeometrySource.srid_column(geometry_source, self.srid)
+            self.geometry_column = GeometrySource.srid_column(self.geometry_source, self.srid)
         if self.geometry_column is None:
             self.geometry_column = self.geometry_source.column
             self.srid = self.geometry_source.srid
@@ -183,7 +183,7 @@ class DataExpression(object):
         self.filters = []
 
         self.joins = set()
-        self.tbl = self.get_table_class(geometry_source.table_info.name, geometry_source.schema_name)
+        self.tbl = self.get_table_class(geometry_source.table_info.name, geometry_source.__table__.schema)
 
         query_attrs = []
         if include_geometry:
@@ -233,7 +233,7 @@ class DataExpression(object):
 
     def lookup(self, attr_name):
         attr_column_linkage, attr_column_info = eal.resolve_attribute(self.geometry_source, attr_name)
-        attr_tbl = self.get_table_class(attr_column_info.table_info.name)
+        attr_tbl = self.get_table_class(attr_column_info.table_info.name, attr_column_info.__table__.schema)
         attr_attr = getattr(attr_tbl, attr_column_info.name)
         # and our join columns
         attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)

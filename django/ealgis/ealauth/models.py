@@ -49,8 +49,7 @@ class MapDefinition(models.Model):
             geometry_source,
             layer['fill'].get('expression', ''),
             layer['fill'].get('conditional', ''),
-            3857,
-            # int(self.eal.get_setting('map_srid')),
+            apps.get_app_config('ealauth').map_srid,
             **kwargs)
 
     def _private_clear(self, obj):

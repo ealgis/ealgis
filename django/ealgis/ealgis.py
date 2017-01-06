@@ -16,6 +16,17 @@ from sqlalchemy.orm import sessionmaker, subqueryload
 from sqlalchemy.ext.declarative import declarative_base
 from django.apps import apps
 
+class NoMatches(Exception):
+    pass
+
+
+class TooManyMatches(Exception):
+    pass
+
+
+class CompilationError(Exception):
+    pass
+
 class EAlGIS(object):
     "singleton with key application (eg. database connection) state"
     # pattern credit: http://stackoverflow.com/questions/42558/python-and-the-singleton-pattern
@@ -52,30 +63,31 @@ class EAlGIS(object):
             return 'postgres://%s:%s@%s:%s/%s' % (dbuser, dbpassword, dbhost, dbport, dbname)
         return 'postgres:///ealgis'
 
-    def have_table(self, table_name):
-        try:
-            self.get_table(table_name)
-            return True
-        except sqlalchemy.exc.NoSuchTableError:
-            return False
+    def get_table_classes(self, table_names, schema_name):
+        """
+        required for cases like eal.resolve_attribute() where one query needs to join
+        across multiple tables from the same Base
+        """
+        from sqlalchemy.ext.automap import automap_base
+        metadata = sqlalchemy.MetaData()
 
-    def get_table(self, table_name, schema_name):
-        return sqlalchemy.Table(table_name, sqlalchemy.MetaData(), autoload=True, autoload_with=self.db.engine, schema=schema_name)
+        onlylist = ["table_info", "column_info", "geometry_source_projected", "geometry_source", "geometry_linkage"]
+        for table_name in table_names:
+            if table_name not in onlylist:
+                onlylist.append(table_name)
 
-    def get_table_names(self):
-        "get a list of the table names in a database. NB: this is *expensive memory wise* on a complex DB"
-        metadata = self._get_metadata()
-        rv = list(metadata.tables.keys())
-        # can be HUGE
-        del metadata
-        return rv
+        metadata.reflect(bind=self.db.engine, only=onlylist, schema=schema_name)
+        b = automap_base(metadata=metadata)
+        b.prepare()
+
+        return [b.classes[t] for t in table_names]
 
     def get_table_class(self, table_name, schema_name):
-        # nothing bad happens if there is a clash, but it produces
-        # warnings
-        nm = str('tbl_%s_%s' % (table_name, hashlib.sha1(str("%s%g%g" % (table_name, random.random(), time.time())).encode('utf-8')).hexdigest()[:8]))
-        Base = declarative_base()
-        return type(nm, (Base,), {'__table__': self.get_table(table_name, schema_name)})
+        """
+        use SQLAlchemy's automap magic to reflect a table on-the-fly
+        saves having to reflect all tables on startup (the census alone us ~5,000 tables!)
+        """
+        return self.get_table_classes([table_name], schema_name)[0]
 
     def is_compliant_schema(self, schema_name):
         """determines if a given schema is EAlGIS-compliant"""
@@ -156,8 +168,7 @@ class EAlGIS(object):
             info = {}
 
             for schema_name in self.get_schemas():
-                source = self.get_table_class("geometry_source", schema_name)
-                tableinfo = self.get_table_class("table_info", schema_name)
+                geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
 
                 # @TODO Make this work using the inbuilt table relationships
                 for source, tableinfo in self.session.\
@@ -175,28 +186,36 @@ class EAlGIS(object):
         return self.datainfo
     
     def get_table_info(self, table_name, schema_name):
-        eal = apps.get_app_config('ealauth').eal
-        tableinfo = eal.get_table_class("table_info", schema_name)
-        return eal.session.query(tableinfo).filter_by(name=table_name).first()
-    
-    def get_geometry_source(self, geometry_source_name, schema_name):
-        eal = apps.get_app_config('ealauth').eal
-        tableinfo = eal.get_table_class("table_info", schema_name)
-        geometrysource = eal.get_table_class("geometry_source", schema_name)
+        tableinfo = self.get_table_class("table_info", schema_name)
+        return self.session.query(tableinfo).filter_by(name=table_name).first()
 
-        table = eal.session.query(tableinfo).filter_by(name=geometry_source_name).first()
-        geomsource = eal.session.query(geometrysource).filter_by(tableinfo_id=table.id).first()
-        geomsource.schema_name = "aus_census_2011"
-        geomsource.table_info = table
-        return geomsource
-    
-    def get_geometry_source_projections(self, geometry_source_id, schema_name):
-        eal = apps.get_app_config('ealauth').eal
-        geomsourceprojected = eal.get_table_class("geometry_source_projected", schema_name)
-
-        return eal.session.query(geomsourceprojected).filter_by(geometry_source_id=geometry_source_id).all()
+    def get_geometry_source(self, table_name, schema_name):
+        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).one()
 
     def get_geometry_source_by_id(self, id, schema_name):
-        eal = apps.get_app_config('ealauth').eal
         geometrysource = eal.get_table_class("geometry_source", schema_name)
-        return eal.session.query(geometrysource).filter_by(id=id).first()
+        return self.query(geometrysource).filter(geometrysource.id == id).one()
+
+    def resolve_attribute(self, geometry_source, attribute):
+        attribute = attribute.lower()  # upper case tables or columns seem unlikely, but a possible FIXME
+        # supports table_name.column_name OR just column_name
+        s = attribute.split('.', 1)
+
+        ColumnInfo, GeometryLinkage, TableInfo =  self.get_table_classes(["column_info", "geometry_linkage", "table_info"], geometry_source.__table__.schema)
+
+        q = self.session.query(ColumnInfo, GeometryLinkage.id).join(TableInfo).join(GeometryLinkage)
+        if len(s) == 2:
+            q = q.filter(TableInfo.name == s[0])
+            attr_name = s[1]
+        else:
+            attr_name = s[0]
+        q = q.filter(GeometryLinkage.geometry_source == geometry_source).filter(ColumnInfo.name == attr_name)
+        matches = q.all()
+        if len(matches) > 1:
+            raise TooManyMatches(attribute)
+        elif len(matches) == 0:
+            raise NoMatches(attribute)
+        else:
+            ci, linkage_id = matches[0]
+            return self.session.query(GeometryLinkage).get(linkage_id), ci

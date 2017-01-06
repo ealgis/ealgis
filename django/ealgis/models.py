@@ -1,12 +1,12 @@
 import sqlalchemy as db
 # from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import relationship, backref
 # from ealgis import EAlGIS
 # from ealgis.ealgis import EAlGIS
 from django.apps import apps
 
-Base = declarative_base()
+Base = automap_base()
 
 # model definitions; using Flask-SQLAlchemy; models use a subclass that is defined on the
 # db instance
@@ -22,7 +22,6 @@ class TableInfo(Base):
         backref=backref('table_info'),
         cascade="all",
         uselist=False)
-    # geometry_source = relationship("GeometrySource", back_populates("table_info"))
     column_info = relationship(
         'ColumnInfo',
         backref=backref('table_info'),
@@ -64,7 +63,6 @@ class GeometrySource(Base):
     column = db.Column(db.String(256), nullable=False)
     srid = db.Column(db.Integer, nullable=False)
     gid = db.Column(db.String(256), nullable=False)
-    # table_info = relationship("TableInfo", back_populates("geometry_source"))
     linkages = relationship(
         'GeometryLinkage',
         backref=backref('geometry_source'),
@@ -94,8 +92,7 @@ class GeometrySource(Base):
     def srid_column(self, srid):
         if self.srid == srid:
             return self.column
-        eal = apps.get_app_config('ealauth').eal
-        proj = [t for t in eal.get_geometry_source_projections(self.id, self.schema_name) if t.srid == srid]
+        proj = [t for t in self.geometry_source_projected_collection if t.srid == srid]
         if len(proj) == 1:
             return proj[0].column
         else:
