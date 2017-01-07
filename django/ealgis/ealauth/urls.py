@@ -3,7 +3,6 @@ from .views import (
     UserViewSet,
     MapDefinitionViewSet,
     TableInfoViewSet,
-    ColumnInfoViewSet,
     ColoursViewset,
     CurrentUserView,
     SchemasViewSet,
