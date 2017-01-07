@@ -7,7 +7,16 @@ from ealgis.ealgis import NoMatches, TooManyMatches, CompilationError
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = (
+            'url',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'is_staff',
+            'is_active',
+            'date_joined',
+            'groups')
 
 
 class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
