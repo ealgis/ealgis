@@ -101,15 +101,6 @@ class TableInfoViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class ColumnInfoViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows columns to be viewed or edited.
-    """
-    queryset = ColumnInfo.objects.all()
-    serializer_class = ColumnInfoSerializer
-    permission_classes = (IsAuthenticated,)
-
-
 class ColoursViewset(viewsets.ViewSet):
     """
     API endpoint that returns available colours scale for styling.
