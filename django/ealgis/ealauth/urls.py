@@ -6,7 +6,7 @@ from .views import (
     ColumnInfoViewSet,
     ColoursViewset,
     CurrentUserView,
-    SchemasViewSet
+    SchemasViewSet,
     api_not_found)
 from rest_framework import routers
 
