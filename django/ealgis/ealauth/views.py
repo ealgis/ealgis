@@ -81,8 +81,6 @@ class TableInfoViewSet(viewsets.ViewSet):
     # @TODO Make a Custom ViewSet that can handle common tasks like schema checking?
     def retrieve(self, request, format=None, pk=None):
         eal = apps.get_app_config('ealauth').eal
-
-<<<<<<< 4a0a353442c3d2c84f5a961fbb5920126212c082
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
@@ -101,7 +99,8 @@ class TableInfoViewSet(viewsets.ViewSet):
         
         serializer = TableInfoSerializer(table)
         return Response(serializer.data)
-=======
+
+
 class ColumnInfoViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows columns to be viewed or edited.
@@ -109,7 +108,6 @@ class ColumnInfoViewSet(viewsets.ModelViewSet):
     queryset = ColumnInfo.objects.all()
     serializer_class = ColumnInfoSerializer
     permission_classes = (IsAuthenticated,)
->>>>>>> add endpoint /api/0.1/self returning current user
 
 
 class ColoursViewset(viewsets.ViewSet):
