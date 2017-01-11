@@ -74,11 +74,14 @@ class TableInfoViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, format=None):
+        only_spatial = True if self.request.query_params.get('only_spatial', False) == "1" else False # Whether we filter to only show spatial data sources
+        
         eal = apps.get_app_config('ealauth').eal
-        tables = eal.get_datainfo()
+        tables = eal.get_datainfo(only_spatial=only_spatial)
         return Response(tables)
     
     # @TODO Make a Custom ViewSet that can handle common tasks like schema checking?
+    # Or handle via standard Django filtering?
     def retrieve(self, request, format=None, pk=None):
         eal = apps.get_app_config('ealauth').eal
         schema_name = request.query_params.get('schema', None)

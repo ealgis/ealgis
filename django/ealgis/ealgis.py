@@ -128,7 +128,7 @@ class EAlGIS(object):
             self.schemas = make_schemas()
         return self.schemas
 
-    def get_datainfo(self):
+    def get_datainfo(self, only_spatial=True):
         """grab a representation of the data available in the database
         result is cached, so after first call this is fast"""
 
@@ -143,19 +143,27 @@ class EAlGIS(object):
 
         def dump_source(source):
             if source.table_info.metadata_json is not None:
-                print("Load JSON")
                 source_info = json.loads(source.table_info.metadata_json)
-                print(source_info)
             else:
-                print("No JSON")
                 source_info = {'description': source.table_info.name}
             source_info['_id'] = source.id
 
             # source_info['tables'] = dict(dump_linkage(t) for t in source.linkages)
-            source_info['type'] = source.geometry_type
+            source_info['geometry_type'] = source.geometry_type
             source_info['name'] = source.table_info.name
             source_info['schema_name'] = source.__table__.schema
             return source_info
+        
+        def dump_table_info(table):
+            if table.metadata_json is not None:
+                table_info = json.loads(table.metadata_json)
+            else:
+                table_info = {'description': table.name}
+            table_info['_id'] = table.id
+
+            table_info['name'] = table.name
+            table_info['schema_name'] = table.__table__.schema
+            return table_info
 
         def make_datainfo():
             # our geography sources
@@ -167,6 +175,12 @@ class EAlGIS(object):
                 for source in self.session.query(geometrysource).all():
                     name = "{}.{}".format(schema_name, source.table_info.name)
                     info[name] = dump_source(source)
+                
+                if only_spatial == False:
+                    for table_info in self.session.query(tableinfo).all():
+                        name = "{}.{}".format(schema_name, table_info.name)
+                        if name not in info:
+                            info[name] = dump_table_info(table_info)
             return info
 
         if self.datainfo is None:
