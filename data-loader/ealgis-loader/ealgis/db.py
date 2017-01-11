@@ -16,6 +16,7 @@ import pyparsing
 import hashlib
 import time
 import random
+import datetime
 
 Base = declarative_base()
 
@@ -675,3 +676,11 @@ class MapDefinition(db.Model):
             return self._set(defn, **kwargs)
         except pyparsing.ParseException as e:
             raise CompilationError(str(e))
+
+
+class EALGISMetadata(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    version = db.Column(db.Float())
+    description = db.Column(db.Text())
+    date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)

@@ -4,7 +4,7 @@
 
 from ealgis.loaders import ZipAccess, ShapeLoader, RewrittenCSV, CSVLoader
 from ealgis.util import alistdir
-from ealgis.db import EAlGIS
+from ealgis.db import EAlGIS, EALGISMetadata
 from ealgis.util import cmdrun, piperun
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy_utils import database_exists, create_database, drop_database
@@ -254,6 +254,11 @@ def go(eal, tmpdir):
 
     eal.create_extensions()
     print "database initialisation complete"
+
+    first_version = EALGISMetadata(name="ABS Census 2011", version="1.0", description="The full 2011 Census data dump from the ABS.")
+    eal.db.session.add(first_version)
+    eal.db.session.commit()
+    print "created metadata record - version %s in `ealgis_metadata`" % (first_version.version)
 
     load_shapes()
 
