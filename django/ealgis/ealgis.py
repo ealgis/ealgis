@@ -102,11 +102,8 @@ class EAlGIS(object):
         if not set(required_tables).issubset(table_names):
             return False
         
-        # @TODO Do something with <version> later
-        for table_name in table_names:
-            match = re.match(r'^ealgis_metadata_v(?P<version>[0-9]+_[0-9])+$', table_name)
-            if match is not None:
-                return True
+        if "ealgis_metadata" in table_names:
+            return True
         
         return False
     

@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship, backref
 # from ealgis import EAlGIS
 # from ealgis.ealgis import EAlGIS
 from django.apps import apps
+import datetime
 
 Base = automap_base()
 
@@ -163,3 +164,13 @@ class GeometryRelation(Base):
     __table_args__ = (
         db.UniqueConstraint('geo_source_id', 'overlaps_with_id'),
         db.Index('georelation_lookup', geo_source_id, overlaps_with_id))
+
+
+class EALGISMetadata(Base):
+    "metadata table for a given set of datasets in a schema"
+    __tablename__ = 'ealgis_metadata'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    version = db.Column(db.Float())
+    description = db.Column(db.Text())
+    date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
