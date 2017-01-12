@@ -3,6 +3,7 @@ from .views import (
     UserViewSet,
     MapDefinitionViewSet,
     TableInfoViewSet,
+    DataInfoViewSet,
     ColoursViewset,
     CurrentUserView,
     SchemasViewSet,
@@ -19,6 +20,7 @@ router.register(r'maps', MapDefinitionViewSet, base_name='MapDefinition')
 router.register(r'colours', ColoursViewset, base_name='colours')
 router.register(r'schemas', SchemasViewSet, base_name='schemas')
 router.register(r'tableinfo', TableInfoViewSet, base_name='tableinfo')
+router.register(r'datainfo', DataInfoViewSet, base_name='datainfo')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),

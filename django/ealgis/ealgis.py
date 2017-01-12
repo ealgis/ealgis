@@ -51,6 +51,7 @@ class EAlGIS(object):
 
         self.schemas = None
         self.datainfo = None
+        self.tableinfo = None
 
     def _connection_string(self):
         # try and autoconfigure for running under docker
@@ -128,8 +129,8 @@ class EAlGIS(object):
             self.schemas = make_schemas()
         return self.schemas
 
-    def get_datainfo(self, only_spatial=True):
-        """grab a representation of the data available in the database
+    def get_datainfo(self):
+        """grab a representation of the spatial data available in the database
         result is cached, so after first call this is fast"""
 
         # def dump_linkage(linkage):
@@ -153,6 +154,26 @@ class EAlGIS(object):
             source_info['name'] = source.table_info.name
             source_info['schema_name'] = source.__table__.schema
             return source_info
+
+        def make_datainfo():
+            # our geography sources
+            info = {}
+
+            for schema_name in self.get_schemas():
+                geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+
+                for source in self.session.query(geometrysource).all():
+                    name = "{}.{}".format(schema_name, source.table_info.name)
+                    info[name] = dump_source(source)
+            return info
+
+        if self.datainfo is None:
+            self.datainfo = make_datainfo()
+        return self.datainfo
+
+    def get_tableinfo(self):
+        """grab a representation of the tabular data available in the database
+        result is cached, so after first call this is fast"""
         
         def dump_table_info(table):
             if table.metadata_json is not None:
@@ -165,31 +186,31 @@ class EAlGIS(object):
             table_info['schema_name'] = table.__table__.schema
             return table_info
 
-        def make_datainfo():
-            # our geography sources
+        def make_tableinfo():
+            # our tabular sources
             info = {}
 
             for schema_name in self.get_schemas():
-                geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
-
-                for source in self.session.query(geometrysource).all():
-                    name = "{}.{}".format(schema_name, source.table_info.name)
-                    info[name] = dump_source(source)
+                tableinfo =  self.get_table_class("table_info", schema_name)
+                geodata_tables = [v["name"] for (k, v) in self.get_datainfo().items()]
                 
-                if only_spatial == False:
-                    for table_info in self.session.query(tableinfo).all():
+                for table_info in self.session.query(tableinfo).all():
+                    if table_info.name not in geodata_tables:
                         name = "{}.{}".format(schema_name, table_info.name)
-                        if name not in info:
-                            info[name] = dump_table_info(table_info)
+                        info[name] = dump_table_info(table_info)
             return info
 
-        if self.datainfo is None:
-            self.datainfo = make_datainfo()
-        return self.datainfo
+        if self.tableinfo is None:
+            self.tableinfo = make_tableinfo()
+        return self.tableinfo
+    
+    def get_data_info(self, table_name, schema_name):
+        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).first().table_info
     
     def get_table_info(self, table_name, schema_name):
-        tableinfo = self.get_table_class("table_info", schema_name)
-        return self.session.query(tableinfo).filter_by(name=table_name).first()
+        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.tableinfo_id).filter(tableinfo.name == table_name).filter(geometrysource.tableinfo_id == None).first()
 
     def get_geometry_source(self, table_name, schema_name):
         geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)

@@ -70,3 +70,8 @@ class TableInfoSerializer(serializers.Serializer):
     name = serializers.CharField()
     metadata_json = JSONMetadataField()
     columns = serializers.JSONField()
+
+class DataInfoSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    metadata_json = JSONMetadataField()
