@@ -20,7 +20,7 @@ except ImportError:
     import json
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, ColumnInfoSerializer
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer
 from ealgis.colour_scale import definitions
 from django.http import HttpResponseNotFound
 

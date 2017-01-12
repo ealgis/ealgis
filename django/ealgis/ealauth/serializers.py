@@ -54,12 +54,19 @@ class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'name', 'description', 'json', 'owner_user_id')
 
 
-class ColumnInfoSerializer(serializers.Serializer):
-    name = serializers.CharField()
+class JSONMetadataField(serializers.Field):
+    """
+    JSON metadata objects are serialized into a JSON string, 
+    and from a string to a JSON object.
+    """
+    def to_representation(self, metadata_json):
+        return json.loads(metadata_json)
 
+    def to_internal_value(self, metadata_json):
+        return json.dumps(metadata_json)
 
 class TableInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    metadata_json = serializers.JSONField()
+    metadata_json = JSONMetadataField()
     columns = serializers.JSONField()
