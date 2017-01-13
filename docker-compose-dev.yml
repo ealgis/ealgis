@@ -14,6 +14,17 @@ services:
       # - ./dev/postgis/data:/var/lib/postgresql/data
     volumes_from:
       - dbdata
+  geoserver:
+    image: keithmoss/ealgis-geoserver:2.9.1
+    ports:
+      - "8080:8080"
+    links:
+      - db
+    environment:
+     - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
+    volumes:
+     - ./dev/geoserver/data:/opt/geoserver/data_dir
+     - ./geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
   frontend:
     build: frontend/
     command: webpack
