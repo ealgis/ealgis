@@ -25,6 +25,7 @@ services:
     volumes:
      - ./dev/geoserver/data:/opt/geoserver/data_dir
      - ./geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+     - ./geoserver/:/gs/ # Only needed the first time GeoServer runs
   frontend:
     build: frontend/
     command: webpack
