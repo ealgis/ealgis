@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
   dbdata:
     image: mdillon/postgis:9.6
@@ -18,7 +18,7 @@ services:
     image: keithmoss/ealgis-geoserver:2.9.1
     ports:
       - "8080:8080"
-    links:
+    depends_on:
       - db
     environment:
      - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
@@ -51,3 +51,16 @@ services:
       - web-variables.env
     depends_on:
       - db
+      - geoserver
+  nginx:
+    build: nginx/
+    volumes:
+      - ./nginx:/app
+      - ./nginx/web:/var/www/html
+    depends_on:
+      - geoserver
+    ports:
+      - "8443:443"
+    environment:
+      - GEOSERVER_HOST=geoserver
+      - GEOSERVER_PORT=8080
