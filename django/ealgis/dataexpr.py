@@ -265,8 +265,8 @@ class DataExpression(object):
     def get_printed_query(self):
         return printquery(self.query)
 
-    def get_mapserver_query(self):
-        return ("%s from (%s) as subquery using unique %s using srid=%d" % (self.geometry_column, self.get_printed_query(), self.geometry_source.gid, self.srid)).replace("\n", "")
+    def get_geoserver_query(self):
+        return ("%s" % (self.get_printed_query())).replace("\n", "")
 
 
 if __name__ == '__main__':
@@ -275,5 +275,5 @@ if __name__ == '__main__':
     print("Raw query::\n")
     print(''.join(["   " + t + '\n' for t in expr.get_printed_query().splitlines()]))
     print("\nMapserver query\n")
-    print('    ' + expr.get_mapserver_query())
+    print('    ' + expr.get_geoserver_query())
     print("Test:", len(expr.get_query()[:10]))

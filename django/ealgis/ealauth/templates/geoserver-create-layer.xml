@@ -1,0 +1,41 @@
+<featureType>
+    <name>${LAYER_NAME}</name>
+    <nativeName>${LAYER_NAME}</nativeName>
+    <namespace>
+        <name>cite</name>
+        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="${GEOSERVER_BASE_URL}/rest/namespaces/cite.xml" type="application/xml"/>
+    </namespace>
+    <title>${LAYER_NAME}</title>
+    <keywords>
+        <string>features</string>
+        <string>${LAYER_NAME}</string>
+    </keywords>
+    <srs>EPSG:3857</srs>
+    <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+    <enabled>true</enabled>
+
+    <metadata>
+        <entry key="cacheAgeMax">86400</entry>
+        <entry key="cachingEnabled">true</entry>
+        <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+                <name>${LAYER_NAME}</name>
+                <sql>${SQL}</sql>
+                <escapeSql>false</escapeSql>
+                <keyColumn>gid</keyColumn>
+                <geometry>
+                    <name>geom_3857</name>
+                    <type>MultiPolygon</type>
+                    <srid>3857</srid>
+                </geometry>
+            </virtualTable>
+        </entry>
+    </metadata>
+
+    <store class="dataStore">
+        <name>${STORE_NAME}</name>
+        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="${GEOSERVER_BASE_URL}/rest/workspaces/cite/datastores/${STORE_NAME}" type="application/xml"/>
+    </store>
+    <maxFeatures>0</maxFeatures>
+    <numDecimals>0</numDecimals>
+</featureType>

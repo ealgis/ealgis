@@ -68,7 +68,7 @@ class MapDefinition(models.Model):
                 if jump_to_obj is not None:
                     self._private_copy_over(v, jump_to_obj)
 
-    def _layer_build_mapserver_query(self, old_layer, layer, force):
+    def _layer_build_geoserver_query(self, old_layer, layer, force):
         def get_recurse(obj, *args):
             for v in args[:-1]:
                 obj = obj.get(v)
@@ -85,10 +85,10 @@ class MapDefinition(models.Model):
         if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional') or get_recurse(layer, 'fill', '_mapserver_epoch') != MAPSERVER_EPOCH:
             print("compiling query for layer:", layer.get('name'))
             expr = self.compile_expr(layer)
-            layer['fill']['_mapserver_query'] = expr.get_mapserver_query()
+            layer['fill']['_geoserver_query'] = expr.get_geoserver_query()
             layer['fill']['_mapserver_epoch'] = MAPSERVER_EPOCH
             print("... compilation complete; query:")
-            print(layer['fill']['_mapserver_query'])
+            print(layer['fill']['_geoserver_query'])
 
     def _layer_update_hash(self, layer):
         try:
@@ -117,7 +117,7 @@ class MapDefinition(models.Model):
             if old_layer is not None:
                 self._private_copy_over(old_layer, layer)
             # rebuild mapserver query
-            self._layer_build_mapserver_query(old_layer, layer, force)
+            self._layer_build_geoserver_query(old_layer, layer, force)
             # update layer hash
             self._layer_update_hash(layer)
         self.json = defn
