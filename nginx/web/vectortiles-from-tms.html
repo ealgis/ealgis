@@ -19,7 +19,16 @@
   <div id="map" class="map"></div>
   <script>
 
-  var style_simple = new ol.style.Style({
+  var style_simple1 = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: '#000000'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#880000',
+      width: 1
+    })
+  });
+  var style_simple2 = new ol.style.Style({
     fill: new ol.style.Fill({
       color: '#ADD8E6'
     }),
@@ -29,17 +38,21 @@
     })
   });
 
-  function simpleStyle(feature) {
-    return style_simple;
+  function simpleStyle(feature, resolution) {
+    q = feature.get("q");
+    if(q <= 15) {
+      return style_simple1;
+    }
+    return style_simple2;
   }
 
-  var layer = 'Test:sa4_2011_aust_pow_3857';
+  var layer = 'EALGIS:Carers per SA1 - volunteers';
   var projection_epsg_no = '900913';
   var map = new ol.Map({
     target: 'map',
     view: new ol.View({
         center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
-        zoom: 10
+        zoom: 13
     }),
     layers: [
         new ol.layer.VectorTile({
