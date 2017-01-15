@@ -5,7 +5,7 @@
   <WMTSEnabled>true</WMTSEnabled>
   <TMSEnabled>true</TMSEnabled>
   <securityEnabled>false</securityEnabled>
-  <innerCachingEnabled>false</innerCachingEnabled>
+  <innerCachingEnabled>true</innerCachingEnabled>
   <persistenceEnabled>true</persistenceEnabled>
   <cacheProviderClass>class org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider</cacheProviderClass>
   <cacheConfigurations>
