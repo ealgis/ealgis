@@ -1,0 +1,73 @@
+<!DOCTYPE html -->
+<html>
+<head>
+  <title>Vector tiles</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.19.1/ol.js"></script>
+  <!--<link rel="stylesheet" href="ol.css">-->
+  <style>
+    html, body {
+      font-family: sans-serif;
+      width: 100%;
+    }
+    .map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map" class="map"></div>
+  <script>
+
+  var style_simple = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: '#ADD8E6'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#880000',
+      width: 1
+    })
+  });
+
+  function simpleStyle(feature) {
+    return style_simple;
+  }
+
+  var layer = 'Test:sa4_2011_aust_pow_3857';
+  var projection_epsg_no = '900913';
+  var map = new ol.Map({
+    target: 'map',
+    view: new ol.View({
+        center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
+        zoom: 10
+    }),
+    layers: [
+        new ol.layer.VectorTile({
+            style: simpleStyle,
+            
+            renderMode: 'vector',
+            preload: Infinity,
+
+            source: new ol.source.VectorTile({
+                tilePixelRatio: 1, // oversampling when > 1
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 19}),
+                format: new ol.format.MVT(),
+                overlaps: false,
+                cacheSize: 256,
+                url: '/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@pbf/{z}/{x}/{-y}.pbf'
+            })
+        })
+
+        // new ol.layer.Tile({
+        // //   extent: [-13884991, 2870341, -7455066, 6338219],
+        //   source: new ol.source.TileWMS({
+        //     url: '/geoserver/wms',
+        //     params: {'LAYERS': layer, 'TILED': true},
+        //     serverType: 'geoserver'
+        //   })
+        // })
+    ]
+  });
+  </script>
+</body>
+</html>
