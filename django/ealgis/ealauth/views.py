@@ -65,47 +65,17 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         })
     
     @detail_route(methods=['get'])
-    def recreate(self, request, pk=None, format=None):
+    def foo(self, request, pk=None, format=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
 
         # map.set(map.json)
         # map.save()
 
-        import os
-        import requests
-        from requests.auth import HTTPBasicAuth
+        # from ealgis.ealauth.geoserver import GeoServerMap
 
-        geoserver_base_url = "https://localhost:8443/geoserver"
-        geoserver_base_url_docker = "http://geoserver:8080/geoserver"
-        workspace_name = "EALGIS"
-        store_name = "postgis"
-        create_layer_url = "{}/rest/workspaces/{}/datastores/{}/featuretypes".format(geoserver_base_url_docker, workspace_name, store_name)
-        geoserver_editor_username = "admin"
-        geoserver_editor_password = "geoserver"
-
-        for layer_id in map.json["layers"]:
-            layer = map.json["layers"][layer_id]
-            sql = layer["fill"]["_geoserver_query"]
-
-            with open("{}/ealgis/ealauth/templates/geoserver-create-layer.xml".format(os.getcwd()), "r") as f:
-                content_body_xml = f.read()
-            
-            content_body_xml = content_body_xml.replace("${LAYER_NAME}", "{} - {}".format(map.name, layer["name"]))
-            content_body_xml = content_body_xml.replace("${GEOSERVER_BASE_URL}", geoserver_base_url)
-            content_body_xml = content_body_xml.replace("${SQL}", sql)
-            content_body_xml = content_body_xml.replace("${STORE_NAME}", store_name)
-
-            r = requests.post(create_layer_url, 
-                data = content_body_xml,
-                headers = {
-                    "Content-type": "application/xml"
-                },
-                auth = HTTPBasicAuth(geoserver_editor_username, geoserver_editor_password)
-            )
-
-            if r.status_code != 201:
-                raise Exception("Unable to save layer '{}': {}".format(layer["name"], r.text))
+        # gsmap = GeoServerMap(map.name, map.owner_user_id, map.json["rev"], map.json)
+        # gsmap.create_layers()
 
         return Response({
             "updated": True

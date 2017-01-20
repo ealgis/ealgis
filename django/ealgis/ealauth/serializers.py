@@ -3,6 +3,7 @@ from .models import *
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from ealgis.ealgis import NoMatches, TooManyMatches, CompilationError
+from ealgis.ealauth.geoserver import GeoServerMap
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -29,12 +30,22 @@ class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             json = data["json"]
         )
         self._set(map, map.json)
+
+        # Create new layers in GeoServer
+        gsmap = GeoServerMap(map.name, map.owner_user_id, map.json["rev"], map.json)
+        gsmap.create_layers()
+
         return map
 
-    def update(self, instance, data):
+    def update(self, map, data):
         # Will only be done if an existing object is being updated
-        self._set(instance, data["json"])
-        return instance
+        self._set(map, data["json"])
+
+        # Recreate all layers in GeoServer
+        gsmap = GeoServerMap(map.name, map.owner_user_id, data.json["rev"], data.json)
+        gsmap.recreate_layers()
+
+        return map
     
     def _set(self, map, json):
         try:
