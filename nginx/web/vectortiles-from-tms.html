@@ -2,7 +2,12 @@
 <html>
 <head>
   <title>Vector tiles</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.19.1/ol.js"></script>
+  <link rel="stylesheet" href="https://openlayers.org/en/v3.20.1/css/ol.css" type="text/css">
+  <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+  /*<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>*/
+  <!--<script src="https://openlayers.org/en/v3.20.1/build/ol.js"></script>-->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol-debug.js"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
   <!--<link rel="stylesheet" href="ol.css">-->
   <style>
     html, body {
@@ -19,42 +24,97 @@
   <div id="map" class="map"></div>
   <script>
 
-  var style_simple1 = new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: '#000000'
-    }),
-    stroke: new ol.style.Stroke({
-      color: '#880000',
-      width: 1
-    })
-  });
-  var style_simple2 = new ol.style.Style({
-    fill: new ol.style.Fill({
-      color: '#ADD8E6'
-    }),
-    stroke: new ol.style.Stroke({
-      color: '#880000',
-      width: 1
-    })
-  });
+  // var style_black = new ol.style.Style({
+  //   fill: new ol.style.Fill({
+  //     color: '#ADD8E6'
+  //   }),
+  //   stroke: new ol.style.Stroke({
+  //     color: '#000000',
+  //     width: 1
+  //   })
+  // });
+  // var style_blue = new ol.style.Style({
+  //   fill: new ol.style.Fill({
+  //     color: '#ADD8E6'
+  //   }),
+  //   stroke: new ol.style.Stroke({
+  //     color: '#FF0000',
+  //     width: 1
+  //   })
+  // });
+  
+  var styleConfig = [{
+    name: "red",
+    colour: "#E61919"
+  },{
+    name: "orange",
+    colour: "#E6A219"
+  },{
+    name: "green",
+    colour: "#A2E619"
+  },{
+    name: "light_green",
+    colour: "#19E619"
+  },{
+    name: "aqua_green",
+    colour: "#19E6A2"
+  },{
+    name: "blue",
+    colour: "#19A2E6"
+  }]
+
+  var styles = [];
+  for(var i = 0; i < styleConfig.length; i++) {
+    var style = styleConfig[i];
+
+    var colour = ol.color.asArray(style["colour"]);
+    colour = colour.slice();
+    colour[3] = 0.8;  // change the alpha of the colour
+
+    styles[style["name"]] = new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: colour
+      }),
+      // stroke: new ol.style.Stroke({
+      //   color: colour,
+      //   width: 1
+      // })
+    });
+  }
 
   function simpleStyle(feature, resolution) {
     q = feature.get("q");
-    if(q <= 15) {
-      return style_simple1;
+    
+    if(q < 0) {
+      return styles["red"];
+    } else if(q < 7.5) {
+      return styles["orange"];
+    } else if(q < 15) {
+      return styles["green"];
+    } else if(q < 22.5) {
+      return styles["light_green"];
+    } else if(q < 30) {
+      return styles["aqua_green"];
+    } else {
+      return styles["blue"];
     }
-    return style_simple2;
   }
+
+  // var osm = new ol.layer.Tile({
+  //   source: new ol.source.OSM()
+  // });
 
   var layer = 'EALGIS:Carers per SA1 - volunteers';
   var projection_epsg_no = '900913';
   var map = new ol.Map({
+    // renderer: /** @type {ol.renderer.Type} */ ('webgl'),
     target: 'map',
     view: new ol.View({
         center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
         zoom: 13
     }),
     layers: [
+        // osm,
         new ol.layer.VectorTile({
             style: simpleStyle,
             
