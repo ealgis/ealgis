@@ -12,6 +12,7 @@ services:
     volumes:
       - ./data-loader:/data-loader
       - ./db/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
       # - ./dev/postgis/data:/var/lib/postgresql/data
     volumes_from:
       - dbdata
