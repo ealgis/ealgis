@@ -7,17 +7,17 @@ class GeoServerAPIError(Exception):
 
 class GeoServerManager(object):
     def __init__(self):
-        self.geoserver_base_url = "https://localhost:8443/geoserver"
-        self.geoserver_base_url_docker = "http://geoserver:8080/geoserver"
+        self.geoserver_public_url = os.environ["GEOSERVER_PUBLIC_URL"]
+        self.geoserver_internal_url = "http://geoserver:8080/geoserver" # Internal Docker URL
         self.workspace_name = "EALGIS"
         self.store_name = "postgis"
-        self.geoserver_editor_username = "admin"
-        self.geoserver_editor_password = "geoserver"
+        self.geoserver_editor_username = os.environ["GEOSERVER_ADMIN_USERNAME"]
+        self.geoserver_editor_password = os.environ["GEOSERVER_ADMIN_PASSWORD"]
         self.auth = HTTPBasicAuth(self.geoserver_editor_username, self.geoserver_editor_password)
     
     def send_post_request(self, url, body_xml):
         # Supply global GeoServer variables to the template
-        body_xml = body_xml.replace("${GEOSERVER_BASE_URL}", self.geoserver_base_url)
+        body_xml = body_xml.replace("${GEOSERVER_BASE_URL}", self.geoserver_public_url)
         body_xml = body_xml.replace("${STORE_NAME}", self.store_name)
 
         r = requests.post(url, 
@@ -100,7 +100,7 @@ class GeoServerLayer(object):
 
             # Issue a Create Layer API call to GeoServer
             create_layer_url = "{}/rest/workspaces/{}/datastores/{}/featuretypes".format(
-                self.manager.geoserver_base_url_docker,
+                self.manager.geoserver_internal_url,
                 self.manager.workspace_name,
                 self.manager.store_name
             )
@@ -118,7 +118,7 @@ class GeoServerLayer(object):
     #     """
 
     #     delete_layer_url = "{}/rest/layers/{}".format(
-    #         self.manager.geoserver_base_url_docker,
+    #         self.manager.geoserver_internal_url,
     #         self.layer_name
     #     )
     #     print("delete_layer_url: {}".format(delete_layer_url))
@@ -134,7 +134,7 @@ class GeoServerLayer(object):
         """
 
         get_layer_url = "{}/rest/layers/{}".format(
-            self.manager.geoserver_base_url_docker,
+            self.manager.geoserver_internal_url,
             self.layer_name
         )
         r = self.manager.send_head_request(get_layer_url)
