@@ -18,6 +18,7 @@ try:
     import simplejson as json
 except ImportError:
     import json
+import time
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from ealgis.colour_scale import definitions
@@ -62,6 +63,21 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         return Response({
             "exists": map is not None
+        })
+    
+    @detail_route(methods=['get'], permission_classes=[IsAdminUser])
+    def clone(self, request, pk=None, format=None):
+        print("clone")
+        queryset = self.get_queryset()
+        map = queryset.filter(id=pk).first()
+        
+        map.name = "{} Cloned {}".format(map.name, int(round(time.time() * 1000)))[:32]
+        map.pk = None
+        map.save()
+
+        return Response({
+            # "exists": map is not None
+            "new_map_id": map.id
         })
     
     @detail_route(methods=['get'])
