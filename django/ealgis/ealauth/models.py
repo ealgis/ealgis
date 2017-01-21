@@ -101,6 +101,9 @@ class MapDefinition(models.Model):
             "expression": layer["fill"]["expression"]
         }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
+    
+    def _layer_set_geoserver_workspace(self, layer):
+        layer["_geoserver_workspace"] = "EALGIS"
 
     def _set(self, defn, force=False):
         old_defn = self.get()
@@ -121,6 +124,8 @@ class MapDefinition(models.Model):
             self._layer_build_geoserver_query(old_layer, layer, force)
             # update layer hash
             self._layer_update_hash(layer)
+            # append GeoServer workspace
+            self._layer_set_geoserver_workspace(layer)
         self.json = defn
         return rev
 
