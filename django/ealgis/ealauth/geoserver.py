@@ -37,8 +37,14 @@ class GeoServerManager(object):
         r = requests.delete(url, 
             auth = self.auth
         )
-
         return r
+    
+    def send_head_request(self, url):
+        r = requests.head(url, 
+            auth = self.auth
+        )
+        return r
+
 
 class GeoServerMap(object):
     def __init__(self, name, owner_user_id, rev, defn):
@@ -54,28 +60,19 @@ class GeoServerMap(object):
     
     def create_layers(self):
         """
-        Create layers in GeoServer for a brand new map.
+        Create any layers this map has this don't already exist in GeoServer.
         """
-        if self.rev == 1:
-            for layer in self.layers:
-                layer.create()
+        for layer in self.layers:
+            layer.create()
     
-    def recreate_layers(self):
-        """
-        Rereate layers in GeoServer for an existing map.
-        """
-        if self.rev >= 1:
-            for layer in self.layers:
-                layer.remove()
-                layer.create()
-    
-    def remove_layers(self):
-        """
-        Delete layers in GeoServer for an existing map.
-        """
-        if self.rev >= 1:
-            for layer in self.layers:
-                layer.remove()
+    # Layers can be shared amongst maps - so we'll leave this stub here for 
+    # later use if we want to write layer cleaning up code.
+    # def remove_layers(self):
+    #     """
+    #     Delete layers in GeoServer for an existing map.
+    #     """
+    #     for layer in self.layers:
+    #         layer.remove()
 
 
 class GeoServerLayer(object):
@@ -83,13 +80,7 @@ class GeoServerLayer(object):
         self.manager = GeoServerManager()
         self.map = map
         self.defn = defn
-        # Owner User Id + Map Name + Layer Name + Map Revision defines a unique layer name
-        self.layer_name = "{}_{}_{}".format(
-            self.map.owner_user_id.id,
-            self.map.name,
-            self.defn["name"],
-            self.map.rev
-        )
+        self.layer_name = self.defn["hash"]
     
     def create(self):
         """
@@ -97,36 +88,55 @@ class GeoServerLayer(object):
         a custom SQL expression.
         """
 
-        # Populate the XML template describing the new layer
-        with open("{}/ealgis/ealauth/templates/geoserver-layer.xml".format(os.getcwd()), "r") as f:
-            layer_xml_defn = f.read()
-        
-        layer_xml_defn = layer_xml_defn.replace("${LAYER_NAME}", self.layer_name)
-        layer_xml_defn = layer_xml_defn.replace("${SQL}", self.defn["fill"]["_geoserver_query"])
+        # Only create a layer if it doesn't already exist. This can happen if it exists
+        # in another map, or if its map has been updated but this layer didn't change
+        if self.exists() == False:
+            # Populate the XML template describing the new layer
+            with open("{}/ealgis/ealauth/templates/geoserver-layer.xml".format(os.getcwd()), "r") as f:
+                layer_xml_defn = f.read()
+            
+            layer_xml_defn = layer_xml_defn.replace("${LAYER_NAME}", self.layer_name)
+            layer_xml_defn = layer_xml_defn.replace("${SQL}", self.defn["fill"]["_geoserver_query"])
 
-        # Issue a Create Layer API call to GeoServer
-        create_layer_url = "{}/rest/workspaces/{}/datastores/{}/featuretypes".format(
-            self.manager.geoserver_base_url_docker,
-            self.manager.workspace_name,
-            self.manager.store_name
-        )
-        r = self.manager.send_post_request(create_layer_url, layer_xml_defn)
+            # Issue a Create Layer API call to GeoServer
+            create_layer_url = "{}/rest/workspaces/{}/datastores/{}/featuretypes".format(
+                self.manager.geoserver_base_url_docker,
+                self.manager.workspace_name,
+                self.manager.store_name
+            )
+            r = self.manager.send_post_request(create_layer_url, layer_xml_defn)
 
-        if r.status_code != 201:
-            raise GeoServerAPIError("Unable to create layer '{}': {}".format(self.defn["name"], r.text))
+            if r.status_code != 201:
+                raise GeoServerAPIError("Unable to create layer '{}': {}".format(self.defn["name"], r.text))
         return True
     
-    def remove(self):
+    # Layers can be shared amongst maps - so we'll leave this stub here for 
+    # later use if we want to write layer cleaning up code.
+    # def remove(self):
+    #     """
+    #     Delete this Layer, and its associated FeaturType, from GeoServer.
+    #     """
+
+    #     delete_layer_url = "{}/rest/layers/{}".format(
+    #         self.manager.geoserver_base_url_docker,
+    #         self.layer_name
+    #     )
+    #     print("delete_layer_url: {}".format(delete_layer_url))
+    #     r = self.manager.send_delete_request(delete_layer_url)
+
+    #     if r.status_code != 200:
+    #         raise GeoServerAPIError("Unable to remove layer '{}': {}".format(self.defn["name"], r.text))
+    #     return True
+    
+    def exists(self):
         """
-        Delete this Layer, and its associated FeaturType, from GeoServer.
+        Check if this layer already exists in GeoServer.
         """
 
-        delete_layer_url = "{}/rest/layers/{}".format(
+        get_layer_url = "{}/rest/layers/{}".format(
             self.manager.geoserver_base_url_docker,
             self.layer_name
         )
-        r = self.manager.send_delete_request(delete_layer_url)
+        r = self.manager.send_head_request(get_layer_url)
 
-        if r.status_code != 200:
-            raise GeoServerAPIError("Unable to remove layer '{}': {}".format(self.defn["name"], r.text))
-        return True
+        return r.status_code == 200

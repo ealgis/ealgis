@@ -32,7 +32,6 @@ class MapDefinition(models.Model):
 
     def get(self):
         self.eal = apps.get_app_config('ealauth').eal
-        self.hash_exclude = ('name', 'visible')
         if self.json is not None:
             return self.json
         return {}
@@ -95,10 +94,12 @@ class MapDefinition(models.Model):
             del layer['hash']
         except KeyError:
             pass
-        hash_obj = layer.copy()
-        for k in self.hash_exclude:
-            if k in hash_obj:
-                del hash_obj[k]
+
+        hash_obj = {
+            "schema": layer["schema"],
+            "geometry": layer["geometry"],
+            "expression": layer["fill"]["expression"]
+        }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
 
     def _set(self, defn, force=False):
@@ -116,7 +117,7 @@ class MapDefinition(models.Model):
             self._private_clear(layer)
             if old_layer is not None:
                 self._private_copy_over(old_layer, layer)
-            # rebuild mapserver query
+            # rebuild geoserver query
             self._layer_build_geoserver_query(old_layer, layer, force)
             # update layer hash
             self._layer_update_hash(layer)
