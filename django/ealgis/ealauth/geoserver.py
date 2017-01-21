@@ -64,10 +64,18 @@ class GeoServerMap(object):
         """
         Rereate layers in GeoServer for an existing map.
         """
-        if self.rev > 1:
+        if self.rev >= 1:
             for layer in self.layers:
                 layer.remove()
                 layer.create()
+    
+    def remove_layers(self):
+        """
+        Delete layers in GeoServer for an existing map.
+        """
+        if self.rev >= 1:
+            for layer in self.layers:
+                layer.remove()
 
 
 class GeoServerLayer(object):
@@ -117,7 +125,6 @@ class GeoServerLayer(object):
             self.manager.geoserver_base_url_docker,
             self.layer_name
         )
-        print("delete_layer_url: {}".format(delete_layer_url))
         r = self.manager.send_delete_request(delete_layer_url)
 
         if r.status_code != 200:

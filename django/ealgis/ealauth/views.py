@@ -67,12 +67,12 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     
     @detail_route(methods=['get'], permission_classes=[IsAdminUser])
     def clone(self, request, pk=None, format=None):
-        print("clone")
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
         
         map.name = "{} Cloned {}".format(map.name, int(round(time.time() * 1000)))[:32]
         map.pk = None
+        map.json["rev"] = 0
         map.save()
 
         return Response({

@@ -21,45 +21,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
-    def create(self, data):
-        # Will only be done if a new object is being created
-        map = MapDefinition(
-            name = data["name"],
-            owner_user_id = data["owner_user_id"],
-            description = data["description"],
-            json = data["json"]
-        )
-        self._set(map, map.json)
-
-        # Create new layers in GeoServer
-        gsmap = GeoServerMap(map.name, map.owner_user_id, map.json["rev"], map.json)
-        gsmap.create_layers()
-
-        return map
-
-    def update(self, map, data):
-        # Will only be done if an existing object is being updated
-        self._set(map, data["json"])
-
-        # Recreate all layers in GeoServer
-        gsmap = GeoServerMap(map.name, map.owner_user_id, data.json["rev"], data.json)
-        gsmap.recreate_layers()
-
-        return map
-    
-    def _set(self, map, json):
-        try:
-            map.set(json)
-            map.save()
-        except ValueError as e:
-            raise ValidationError(detail="Unknown value error ({})".format(e.message))
-        except CompilationError as e:
-            raise ValidationError(detail="Expression compilation failed ({})".format(e.message))
-        except NoMatches as e:
-            raise ValidationError(detail="Attribute could not be resolved ({})".format(e.message))
-        except TooManyMatches as e:
-            raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
-
     class Meta:
         model = MapDefinition
         fields = ('id', 'name', 'description', 'json', 'owner_user_id')
