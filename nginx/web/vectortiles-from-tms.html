@@ -100,7 +100,7 @@
   //   source: new ol.source.OSM()
   // });
 
-  var layer = 'EALGIS:Carers per SA1 - volunteers';
+  var layer = 'EALGIS:93493a38'; // SA4s Only
   var projection_epsg_no = '900913';
   var map = new ol.Map({
     // renderer: /** @type {ol.renderer.Type} */ ('webgl'),
@@ -124,7 +124,7 @@
                 format: new ol.format.MVT(),
                 overlaps: false,
                 cacheSize: 256,
-                url: '/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@pbf/{z}/{x}/{-y}.pbf'
+                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@pbf/{z}/{x}/{-y}.pbf'
             })
         })
 

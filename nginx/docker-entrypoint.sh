@@ -37,7 +37,6 @@ function dockerwait {
 dockerwait $GEOSERVER_HOST $GEOSERVER_PORT
 
 CMD="$1"
-echo $CMD
 if [ "$CMD" = "nginx" ]; then
     nginx -g 'daemon off;'
 fi
