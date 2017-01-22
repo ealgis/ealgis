@@ -2,12 +2,12 @@
 <html>
 <head>
   <title>Vector tiles</title>
-  <link rel="stylesheet" href="https://openlayers.org/en/v3.20.1/css/ol.css" type="text/css">
+  <link rel="stylesheet" href="https://openlayers.org/en/v3.19.0/css/ol.css" type="text/css">
   <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
-  /*<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>*/
+  <!--<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>-->
   <!--<script src="https://openlayers.org/en/v3.20.1/build/ol.js"></script>-->
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol-debug.js"></script>-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.19.0/ol.js"></script>
   <!--<link rel="stylesheet" href="ol.css">-->
   <style>
     html, body {
@@ -71,10 +71,10 @@
       fill: new ol.style.Fill({
         color: style["colour"]
       }),
-      // stroke: new ol.style.Stroke({
-      //   color: colour,
-      //   width: 1
-      // })
+      stroke: new ol.style.Stroke({
+        color: style["colour"],
+        width: 1
+      })
     });
   }
 
@@ -101,30 +101,47 @@
   // });
 
   var layer = 'EALGIS:93493a38'; // SA4s Only
+  var layer = 'EALGIS:0a8f9ac7'; // Carers per SA1
   var projection_epsg_no = '900913';
+  var format = "pbf";
+  // var format = "geojson";
+  // var format = "topojson";
   var map = new ol.Map({
-    // renderer: /** @type {ol.renderer.Type} */ ('webgl'),
     target: 'map',
     view: new ol.View({
-        center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
-        zoom: 13
+        // center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
+        // zoom: 13
+
+        center: ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913'),
+        zoom: 4
     }),
     layers: [
         // osm,
         new ol.layer.VectorTile({
             style: simpleStyle,
             
-            renderMode: 'vector',
+            renderMode: 'hybrid',
             preload: Infinity,
             opacity: 0.7,
 
+            // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
+            extent: ol.proj.transformExtent([96.81694140800035, -43.740509602057664, 159.10921900799997, -9.142175976703564], 'EPSG:4326', 'EPSG:900913'),
+
             source: new ol.source.VectorTile({
                 tilePixelRatio: 1, // oversampling when > 1
-                tileGrid: ol.tilegrid.createXYZ({maxZoom: 19}),
-                format: new ol.format.MVT(),
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 25}),
+                format: function() {
+                  if(format == "pbf") {
+                    return new ol.format.MVT();
+                  } else if(format == "geojson") {
+                    return new ol.format.GeoJSON({defaultDataProjection: "EPSG:900913"});
+                  } else if(format == "topojson") {
+                    return new ol.format.TopoJSON({defaultDataProjection: "EPSG:900913"});
+                  }
+                }(),
                 overlaps: false,
                 cacheSize: 256,
-                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@pbf/{z}/{x}/{-y}.pbf'
+                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
             })
         })
 
