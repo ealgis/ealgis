@@ -100,8 +100,15 @@
   //   source: new ol.source.OSM()
   // });
 
-  var layer = 'EALGIS:93493a38'; // SA4s Only
-  var layer = 'EALGIS:0a8f9ac7'; // Carers per SA1
+  var key = 'pk.eyJ1Ijoia2VpdGhtb3NzIiwiYSI6IjkxMTViNjcxN2U5ZDBjMTYzYzY2MzQwNTJkZjM1NGFkIn0.HS40UI-OD5lQWBxUCZOwZg';
+  var mapbox = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      url: 'https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=' + key
+    })
+  });
+
+  var layer1 = 'EALGIS:93493a38'; // SA4s Only
+  var layer2 = 'EALGIS:0a8f9ac7'; // Carers per SA1
   var projection_epsg_no = '900913';
   var format = "pbf";
   // var format = "geojson";
@@ -109,27 +116,29 @@
   var map = new ol.Map({
     target: 'map',
     view: new ol.View({
-        // center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
-        // zoom: 13
+        center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
+        zoom: 13
 
-        center: ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913'),
-        zoom: 4
+        // center: ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913'),
+        // zoom: 4
     }),
     layers: [
         // osm,
+        mapbox,
+
         new ol.layer.VectorTile({
             style: simpleStyle,
             
             renderMode: 'hybrid',
-            preload: Infinity,
-            opacity: 0.7,
+            // preload: Infinity,
+            opacity: 0.6,
 
             // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
             extent: ol.proj.transformExtent([96.81694140800035, -43.740509602057664, 159.10921900799997, -9.142175976703564], 'EPSG:4326', 'EPSG:900913'),
 
             source: new ol.source.VectorTile({
                 tilePixelRatio: 1, // oversampling when > 1
-                tileGrid: ol.tilegrid.createXYZ({maxZoom: 25}),
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 22}),
                 format: function() {
                   if(format == "pbf") {
                     return new ol.format.MVT();
@@ -141,18 +150,93 @@
                 }(),
                 overlaps: false,
                 cacheSize: 256,
-                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
+                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer2 + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
             })
-        })
+        }),
 
-        // new ol.layer.Tile({
-        // //   extent: [-13884991, 2870341, -7455066, 6338219],
-        //   source: new ol.source.TileWMS({
-        //     url: '/geoserver/wms',
-        //     params: {'LAYERS': layer, 'TILED': true},
-        //     serverType: 'geoserver'
-        //   })
-        // })
+        new ol.layer.VectorTile({
+            style: function() {
+              return new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                  color: '#006DFF',
+                  width: 3
+                })
+              });
+            },
+            
+            renderMode: 'hybrid',
+            // preload: Infinity,
+
+            // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
+            extent: ol.proj.transformExtent([96.81694140800035, -43.740509602057664, 159.10921900799997, -9.142175976703564], 'EPSG:4326', 'EPSG:900913'),
+
+            source: new ol.source.VectorTile({
+                tilePixelRatio: 1, // oversampling when > 1
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 22}),
+                format: function() {
+                  if(format == "pbf") {
+                    return new ol.format.MVT();
+                  } else if(format == "geojson") {
+                    return new ol.format.GeoJSON({defaultDataProjection: "EPSG:900913"});
+                  } else if(format == "topojson") {
+                    return new ol.format.TopoJSON({defaultDataProjection: "EPSG:900913"});
+                  }
+                }(),
+                overlaps: false,
+                cacheSize: 256,
+                url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer1 + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
+            })
+        }),
+
+        /*new ol.layer.Tile({
+        //   extent: [-13884991, 2870341, -7455066, 6338219],
+          opacity: 0.6,
+          // preload: Infinity,
+          source: new ol.source.TileWMS({
+            // url: '/geoserver/wms',
+            urls: [
+              'https://gs1.localhost:8443/geoserver/wms',
+              'https://gs2.localhost:8443/geoserver/wms',
+              'https://gs3.localhost:8443/geoserver/wms',
+              'https://gs4.localhost:8443/geoserver/wms',
+            ],
+            params: {'LAYERS': layer1, 'TILED': true, 'SRS': 'EPSG:900913'},
+            serverType: 'geoserver',
+            cacheSize: 256,
+          })
+        }),*/
+
+
+        /*new ol.layer.Tile({
+          opacity: 0.6,
+          // preload: Infinity,
+          source: new ol.source.TileWMS({
+            urls: [
+              'https://gs1.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs2.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs3.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs4.localhost:8443/geoserver/gwc/service/wms',
+            ],
+            params: {'LAYERS': layer1, 'TILED': true, 'SRS': 'EPSG:900913'},
+            serverType: 'geoserver',
+            cacheSize: 256,
+          })
+        }),
+        new ol.layer.Tile({
+          opacity: 0.6,
+          // preload: Infinity,
+          source: new ol.source.TileWMS({
+            urls: [
+              'https://gs1.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs2.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs3.localhost:8443/geoserver/gwc/service/wms',
+              'https://gs4.localhost:8443/geoserver/gwc/service/wms',
+            ],
+            params: {'LAYERS': layer2, 'TILED': true, 'SRS': 'EPSG:900913'},
+            serverType: 'geoserver',
+            cacheSize: 256,
+          })
+        })*/
     ]
   });
   </script>
