@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.apps import apps
+from ealgis.ealauth.geoserver import GeoServerLayer
 import pyparsing
 import hashlib
 
@@ -104,6 +105,9 @@ class MapDefinition(models.Model):
     
     def _layer_set_geoserver_workspace(self, layer):
         layer["_geoserver_workspace"] = "EALGIS"
+    
+    def _layer_set_latlon_bbox(self, layer, bbox):
+        layer["_geoserver_layer_bbox"] = bbox
 
     def _set(self, defn, force=False):
         old_defn = self.get()
@@ -126,6 +130,10 @@ class MapDefinition(models.Model):
             self._layer_update_hash(layer)
             # append GeoServer workspace
             self._layer_set_geoserver_workspace(layer)
+            # create layer in GeoServer if necessary
+            gslayer = GeoServerLayer(layer)
+            gslayer.create()
+            self._layer_set_latlon_bbox(layer, gslayer.get_latlon_bbox())
         self.json = defn
         return rev
 

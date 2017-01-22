@@ -44,6 +44,12 @@ class GeoServerManager(object):
             auth = self.auth
         )
         return r
+    
+    def send_get_request(self, url):
+        r = requests.get(url, 
+            auth = self.auth
+        )
+        return r
 
 
 class GeoServerMap(object):
@@ -56,7 +62,7 @@ class GeoServerMap(object):
         self.layers = []
 
         for layer_id in defn["layers"]:
-            self.layers.append(GeoServerLayer(self, defn["layers"][layer_id]))
+            self.layers.append(GeoServerLayer(defn["layers"][layer_id]))
     
     def create_layers(self):
         """
@@ -76,9 +82,8 @@ class GeoServerMap(object):
 
 
 class GeoServerLayer(object):
-    def __init__(self, map, defn):
+    def __init__(self, defn):
         self.manager = GeoServerManager()
-        self.map = map
         self.defn = defn
         self.layer_name = self.defn["hash"]
     
@@ -109,6 +114,26 @@ class GeoServerLayer(object):
             if r.status_code != 201:
                 raise GeoServerAPIError("Unable to create layer '{}': {}".format(self.defn["name"], r.text))
         return True
+    
+    def get_latlon_bbox(self):
+        """
+        Get the lat lon bounding box of a layer's featuretype.
+        """
+
+        if self.exists() == True:
+            get_featuretype_url = "{}/rest/workspaces/{}/datastores/{}/featuretypes/{}.json".format(
+                self.manager.geoserver_internal_url,
+                self.manager.workspace_name,
+                self.manager.store_name,
+                self.layer_name
+            )
+            r = self.manager.send_get_request(get_featuretype_url)
+
+            if r.status_code == 200:
+                bbox = r.json()["featureType"]["latLonBoundingBox"]
+                del bbox["crs"] # Discard complex CRS definition for now
+                return bbox
+        raise GeoServerAPIError("Layer '{}' does not exist.".format(layer["name"]))
     
     # Layers can be shared amongst maps - so we'll leave this stub here for 
     # later use if we want to write layer cleaning up code.

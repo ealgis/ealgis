@@ -19,12 +19,6 @@ def pre_save_map(sender, instance, raw, using, update_fields, **kwargs):
     except TooManyMatches as e:
         raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
 
-
-@receiver(post_save, sender=MapDefinition)
-def save_map(sender, instance, created, **kwargs):
-    gsmap = GeoServerMap(instance.name, instance.owner_user_id, instance.json["rev"], instance.json)
-    gsmap.create_layers()
-
 # Layers can be shared amongst maps - so we'll leave this stub here for 
 # later use if we want to write layer cleaning up code.
 # @receiver(post_delete, sender=MapDefinition)
