@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GeoJSON</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v3.20.1/css/ol.css" type="text/css">
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v3.20.1/build/ol.js"></script>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <script>
+      var image = new ol.style.Circle({
+        radius: 5,
+        fill: null,
+        stroke: new ol.style.Stroke({color: 'red', width: 1})
+      });
+
+      var styles = {
+        'Point': new ol.style.Style({
+          image: image
+        }),
+        'Polygon': new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: 'blue',
+            width: 3
+          }),
+          fill: new ol.style.Fill({
+            color: 'rgba(0, 0, 255, 0.1)'
+          })
+        })
+      };
+
+      var styleFunction = function(feature) {
+        return styles[feature.getGeometry().getType()];
+      };
+
+      var geojsonObject = {
+        "type": "FeatureCollection",
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:EPSG::3857"
+          }
+        },
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    12777825.144376345,
+                    -2749287.0332758226
+                  ],
+                  [
+                    13218102.427298961,
+                    -2397065.206947627
+                  ],
+                  [
+                    13643703.800790818,
+                    -2548716.271061105
+                  ],
+                  [
+                    12983287.876406897,
+                    -3008561.4332121327
+                  ],
+                  [
+                    12777825.144376345,
+                    -2749287.0332758226
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    13937221.989405898,
+                    -2724827.1842252393
+                  ],
+                  [
+                    14861804.283543393,
+                    -2289441.871125205
+                  ],
+                  [
+                    15443948.690963292,
+                    -2338361.5692263036
+                  ],
+                  [
+                    15351001.264568517,
+                    -2695475.365364543
+                  ],
+                  [
+                    14988995.498609923,
+                    -2856910.369098411
+                  ],
+                  [
+                    13937221.989405898,
+                    -2724827.1842252393
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              
+            },
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    13379537.431037249,
+                    -3204240.22561706
+                  ],
+                  [
+                    14274767.906313235,
+                    -3253159.923718313
+                  ],
+                  [
+                    13981249.71769816,
+                    -3571137.96137669
+                  ],
+                  [
+                    13687731.529083088,
+                    -3639625.538718543
+                  ],
+                  [
+                    13257238.185780974,
+                    -3566245.9915665574
+                  ],
+                  [
+                    13379537.431037249,
+                    -3204240.22561706
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      };
+
+      var vectorSource = new ol.source.Vector({
+        features: (new ol.format.GeoJSON()).readFeatures(geojsonObject)
+      });
+
+      var vectorLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: styleFunction
+      });
+
+      var map = new ol.Map({
+        renderer: "webgl",
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),
+          vectorLayer
+        ],
+        target: 'map',
+        view: new ol.View({
+          center: [0, 0],
+          zoom: 2
+        })
+      });
+    </script>
+  </body>
+</html>
