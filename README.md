@@ -30,7 +30,15 @@ EAlGIS offers:
 Installation
 ------------
 
-EAlGIS is intended to be run within docker. To get started:
+EAlGIS is intended to be run within docker.
+
+To get started create this directory structure in the root directory:
+
+    dev/
+      pg_log/
+      geoserver/
+
+Then just:
 
     docker-compose up
 

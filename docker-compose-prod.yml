@@ -1,0 +1,29 @@
+version: '2'
+services:
+  db:
+    image: mdillon/postgis:9.6
+  frontend:
+    build: frontend/
+    command: webpack
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "35729:35729"
+  web:
+    build: django/
+    command: runserver
+    volumes:
+      - ./django/:/app
+      - ./frontend:/frontend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    env_file:
+      - web-variables.env
+    depends_on:
+      - db
