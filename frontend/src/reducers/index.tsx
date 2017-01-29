@@ -2,7 +2,9 @@ import { combineReducers, Reducer } from 'redux';
 import { REQUEST_USER, RECEIVE_USER } from '../actions'
 
 function user(state = {
-    user: {}
+    user: {
+        url: null
+    }
 }, action: any) {
     switch (action.type) {
         case REQUEST_USER:

@@ -28,8 +28,8 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 <AppBar title={user.username} />
             </div>
             <div className="page-content">
-                <LoginDialog />
-                {this.props.children || <p><Link to="/login">Log in</Link></p>}
+                <LoginDialog open={user.url === null} />
+                {this.props.children || <div></div>}
             </div>
         </div>
         </MuiThemeProvider>;
