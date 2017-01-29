@@ -8,7 +8,7 @@ export interface LoginDialogState { open: boolean }
 
 export class LoginDialog extends React.Component<LoginDialogProps, LoginDialogState> {
     state = {
-        open: true,
+        open: false,
     };
     render() {
         const buttonStyle = {

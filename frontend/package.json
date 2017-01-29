@@ -10,12 +10,15 @@
   "license": "GPL-3.0",
   "repository": "https://github.com/ealgis/ealgis.git",
   "dependencies": {
+    "@types/core-js": "^0.9.35",
     "@types/material-ui": "^0.16.44",
+    "@types/promise-polyfill": "^6.0.0",
     "@types/react": "^0.14.55",
     "@types/react-dom": "^0.14.19",
     "@types/react-redux": "^4.4.35",
     "@types/react-router": "^2.0.41",
     "@types/react-router-redux": "^4.0.36",
+    "@types/whatwg-fetch": "0.0.33",
     "material-ui": "^0.16.7",
     "promise-polyfill": "^6.0.2",
     "react": "^15.4.1",
@@ -25,6 +28,7 @@
     "react-router-redux": "^4.0.7",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
+    "redux-thunk": "^2.2.0",
     "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {
