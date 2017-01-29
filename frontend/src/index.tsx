@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { combineReducers, createStore, applyMiddleware } from 'redux';
+import { compose, combineReducers, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
@@ -13,14 +13,15 @@ import EalContainerWrapped from "./components/EalContainer";
 import { MapList } from "./components/MapList";
 import thunkMiddleware from 'redux-thunk'
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
     combineReducers({
         ...reducers,
         routing: routerReducer,
     }),
-    applyMiddleware(
+    composeEnhancers(applyMiddleware(
         thunkMiddleware
-    )
+    ))
 );
 
 const history = syncHistoryWithStore(browserHistory, store);
