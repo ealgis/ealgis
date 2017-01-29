@@ -16,14 +16,16 @@
     "@types/react-redux": "^4.4.35",
     "@types/react-router": "^2.0.41",
     "@types/react-router-redux": "^4.0.36",
-    "material-ui": "^0.16.5",
+    "material-ui": "^0.16.7",
+    "promise-polyfill": "^6.0.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-redux": "^5.0.1",
     "react-router": "^3.0.0",
     "react-router-redux": "^4.0.7",
     "react-tap-event-plugin": "^2.0.1",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.0-beta.17",
