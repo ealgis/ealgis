@@ -5,12 +5,13 @@ import AppBar from 'material-ui/AppBar';
 import { Router, Route, Link, browserHistory } from 'react-router';
 import { LoginDialog } from './LoginDialog';
 import { connect } from 'react-redux';
-import { fetchUser } from '../actions';
+import { fetchUser, fetchMaps } from '../actions';
 
 import './FixedLayout.css';
 
 export interface EalContainerProps {
     user: any,
+    maps: any,
     dispatch: Function
 }
 
@@ -18,10 +19,11 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     componentDidMount() {
         const { dispatch } = this.props
         dispatch(fetchUser())
+        dispatch(fetchMaps())
     }
 
     render() {
-        const { user } = this.props
+        const { user, maps } = this.props
         return <MuiThemeProvider>
         <div className="page">
             <div className="page-header">
@@ -30,6 +32,9 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
             <div className="page-content">
                 <LoginDialog open={user.url === null} />
                 {this.props.children || <div></div>}
+                <ul>
+                    {maps.map((m) => <li key={m.id}>{m.name}</li>}
+                </ul>
             </div>
         </div>
         </MuiThemeProvider>;
@@ -37,9 +42,10 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any) => {
-    const { user } = state
+    const { user, maps } = state
     return {
-        user
+        user,
+        maps
     }
 }
 
