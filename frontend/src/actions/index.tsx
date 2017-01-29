@@ -13,15 +13,16 @@ export function requestUser() {
 export function receiveUser(json: any) {
     return {
         type: RECEIVE_USER,
-        user: json
+        json
     }
 }
 
 export function fetchUser() {
-    console.log('fetchUser')
     return (dispatch: any) => {
         dispatch(requestUser())
-        return fetch('http://localhost:8000/api/0.1/self')
+        return fetch('http://localhost:8000/api/0.1/self', {
+            credentials: 'same-origin'
+        })
             .then((response: any) => response.json())
             .then((json: any) => dispatch(receiveUser(json)))
     }

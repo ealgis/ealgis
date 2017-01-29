@@ -13,7 +13,6 @@ import EalContainerWrapped from "./components/EalContainer";
 import { MapList } from "./components/MapList";
 import thunkMiddleware from 'redux-thunk'
 
-
 const store = createStore(
     combineReducers({
         ...reducers,

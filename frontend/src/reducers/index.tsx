@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 import { REQUEST_USER, RECEIVE_USER } from '../actions'
 
 function user(state = {
@@ -8,17 +8,12 @@ function user(state = {
         case REQUEST_USER:
             return state;
         case RECEIVE_USER:
-            return {
-                ...state,
-                user: action.user
-            }
+            return action.json
         default:
             return state
     }
 }
 
-const ealApp = combineReducers ({
-    user
-});
-
-export default ealApp;
+export default {
+    user    
+};

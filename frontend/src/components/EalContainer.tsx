@@ -10,22 +10,22 @@ import { fetchUser } from '../actions';
 import './FixedLayout.css';
 
 export interface EalContainerProps {
-    user: string,
+    user: any,
     dispatch: Function
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
     componentDidMount() {
-        console.log('componentDidMount')
         const { dispatch } = this.props
         dispatch(fetchUser())
     }
 
     render() {
+        const { user } = this.props
         return <MuiThemeProvider>
         <div className="page">
             <div className="page-header">
-                <AppBar title="ealgis" />
+                <AppBar title={user.username} />
             </div>
             <div className="page-content">
                 <LoginDialog />
@@ -37,8 +37,9 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any) => {
+    const { user } = state
     return {
-        user: state.user
+        user
     }
 }
 
