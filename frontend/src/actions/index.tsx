@@ -50,7 +50,7 @@ export function receiveMapDefinition(json: any) {
 export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
-        return fetch('http://localhost:8000/api/0.1/self', {
+        return fetch('/api/0.1/self', {
             credentials: 'same-origin'
         })
             .then((response: any) => response.json())
@@ -61,7 +61,7 @@ export function fetchUser() {
 export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
-        return fetch('http://localhost:8000/api/0.1/maps/', {
+        return fetch('/api/0.1/maps/', {
             credentials: 'same-origin'
         })
             .then((response: any) => response.json())
@@ -72,8 +72,7 @@ export function fetchMaps() {
 export function fetchMapDefinition(mapId: Number) {
     return (dispatch: any) => {
         dispatch(requestMapDefinition())
-        // FIXME: we should URL escape here
-        return fetch('http://localhost:8000/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
+        return fetch('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
             credentials: 'same-origin'
         })
             .then((response: any) => response.json())
