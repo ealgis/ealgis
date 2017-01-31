@@ -1,5 +1,5 @@
 import { combineReducers, Reducer } from 'redux';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS } from '../actions'
+import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION } from '../actions'
 
 function user(state = {
     user: {
@@ -27,7 +27,19 @@ function maps(state = [], action: any) {
     }
 }
 
+function map_definition(state = {}, action: any) {
+    switch (action.type) {
+        case REQUEST_MAP_DEFINITION:
+            return state
+        case RECEIVE_MAP_DEFINITION:
+            return action.json
+        default:
+            return state
+    }
+}
+
 export default {
     user,
-    maps
+    maps,
+    map_definition
 };

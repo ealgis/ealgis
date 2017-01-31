@@ -5,6 +5,8 @@ export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
 export const RECEIVE_MAPS = 'RECEIVE_MAPS'
+export const REQUEST_MAP_DEFINITION = 'REQUEST_MAP_DEFINITION'
+export const RECEIVE_MAP_DEFINITION = 'RECEIVE_MAP_DEFINITION'
 
 export function requestUser() {
     return {
@@ -32,6 +34,19 @@ export function receiveMaps(json: any) {
     }
 }
 
+export function requestMapDefinition() {
+    return {
+        type: REQUEST_MAP_DEFINITION
+    }
+}
+
+export function receiveMapDefinition(json: any) {
+    return {
+        type: RECEIVE_MAP_DEFINITION,
+        json
+    }
+}
+
 export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
@@ -51,5 +66,17 @@ export function fetchMaps() {
         })
             .then((response: any) => response.json())
             .then((json: any) => dispatch(receiveMaps(json)))
+    }
+}
+
+export function fetchMapDefinition(mapId: Number) {
+    return (dispatch: any) => {
+        dispatch(requestMapDefinition())
+        // FIXME: we should URL escape here
+        return fetch('http://localhost:8000/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
+            credentials: 'same-origin'
+        })
+            .then((response: any) => response.json())
+            .then((json: any) => dispatch(receiveMapDefinition(json)))
     }
 }

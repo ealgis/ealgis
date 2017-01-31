@@ -3,14 +3,29 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
 import AppBar from 'material-ui/AppBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
-import { Router, Route, Link, browserHistory } from 'react-router';
+import { Link } from 'react-router';
+import { connect } from 'react-redux';
 
-export interface MapListProps { }
+export interface MapListProps { maps: any }
 
 export class MapList extends React.Component<MapListProps, undefined> {
     render() {
+        const { maps } = this.props
         return <ul>
-        <li>it is a map</li>
-        </ul>
+            {maps.map((m) => <li key={m.id}><Link to={`/map/${m.id}`}>{m.name}</Link></li>}
+            </ul>;
     }
 }
+
+const mapStateToProps = (state: any) => {
+    const { maps } = state
+    return {
+        maps
+    }
+}
+
+const MapListWrapped = connect(
+    mapStateToProps
+)(MapList)
+
+export default MapListWrapped
