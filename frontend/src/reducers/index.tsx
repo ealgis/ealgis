@@ -16,7 +16,7 @@ function user(state = {
     }
 }
 
-function maps(state = [], action: any) {
+function maps(state: any[] = [], action: any) {
     switch (action.type) {
         case REQUEST_MAPS:
             return state
