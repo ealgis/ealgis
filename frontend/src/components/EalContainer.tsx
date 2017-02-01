@@ -25,7 +25,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     render() {
         const { user, children } = this.props
         return <MuiThemeProvider>
-        <EalUI user={user} children={children}></EalUI>
+            <EalUI user={user} children={children}></EalUI>
         </MuiThemeProvider>;
     }
 }

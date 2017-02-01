@@ -12,8 +12,10 @@ export class MapList extends React.Component<MapListProps, undefined> {
     render() {
         const { maps } = this.props
         return <ul>
-            {maps.map((m) => <li key={m.id}><Link to={`/map/${m.id}`}>{m.name}</Link></li>}
-            </ul>;
+            {maps.map((m: any) => 
+                <li key={m.id}><Link to={`/map/${m.id}`}>{m.name}</Link></li>
+            }
+        </ul>;
     }
 }
 
