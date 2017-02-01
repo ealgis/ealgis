@@ -39,7 +39,6 @@ services:
       # Enable this mapping and create ./dev/geoserver/ for easier access to GeoServer's data directory.
       # NB: This will cause GeoServer to create a NEW data directory.
       # - ./dev/geoserver/data:/opt/geoserver/data_dir
-    entrypoint: /app/docker-entrypoint.sh
   frontend:
     build: frontend/
     command: webpack
