@@ -32,15 +32,12 @@ Installation
 
 EAlGIS is intended to be run within docker.
 
-To get started create this directory structure in the root directory:
+To get started:
 
-    dev/
-      pg_log/
-      geoserver/
+> docker-compose up
 
-Then just:
-
-    docker-compose up
+Django Setup
+-----------
 
 Add a [Python Social Auth](http://python-social-auth.readthedocs.io/en/latest) backend of your choice. e.g. [Social backends](http://python-social-auth.readthedocs.io/en/latest/backends/index.html#social-backends).
 
@@ -55,10 +52,12 @@ Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/lates
 - Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
 - Add the resulting Client Id and Secret to `django/web-variables.env`
 - Nuke and restart your Docker containers
-- Navigate to `http://localhost:8000/login/google-oauth2/` and you be sent through the Google OAuth flow and end up back at `http://localhost:8000/`
+- Navigate to `http://localhost:8000/`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `http://localhost:8000/` with your username displayed on the app.
 
 Now you're up and running!
 
+Becoming An Admin
+-----------------
 Making yourself an admin:
 
 Hop into your running `django_web` Docker container:
@@ -78,6 +77,28 @@ user.save()
 ```
 
 Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
+
+
+GeoServer Config
+----------------
+The first time GeoServer runs it initialises all of its configuration files in the GeoServer Data Directory. The default GeoServer configuration is insecure, has verbose logging, and lacks workspace configuration that EALGIS requires.
+
+To setup GeoServer for use by EALGIS you need to run a once-off shell script - `/geoserver/first-run.sh`.
+
+First, uncomment the volume mapping `./geoserver:/app` for the `geoserver` container in `docker-compose.yml`.
+
+Then `docker-compose up`, and in a separate terminal window hop in to your running GeoServer container and execute:
+
+```
+docker exec -it ealgis_geoserver_1 /bin/bash
+cd /app/
+chmod +x firstrun.sh
+./firstrun.sh
+```
+
+Follow the on-screen instructions that `firstrun.sh` prints out, and then you're done.
+
+Congratulations! GeoServer is now setup with some sensible configuration defaults.
 
 
 Get some data

@@ -11,9 +11,14 @@ services:
       - "5432:5432"
     volumes:
       - ./data-loader:/data-loader
-      - ./db/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
-      - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
-      # - ./dev/postgis/data:/var/lib/postgresql/data
+
+      # FOR DEVELOPMENT ONLY
+      # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
+      # NB: PostgreSQL MUST already be initialised with at least one database before you enable this.
+      # - ./db/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+
+      # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
+      # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
     volumes_from:
       - dbdata
   geoserver:
@@ -25,9 +30,16 @@ services:
     environment:
      - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
     volumes:
-     - ./dev/geoserver/data:/opt/geoserver/data_dir
-     - ./geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
-     - ./geoserver/:/gs/ # Only needed the first time GeoServer runs
+      - ./geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+
+      # FOR DEVELOPMENT ONLY
+      # For setting up GeoServer for the first time. Refer to ./README.md
+      # - ./geoserver:/app
+
+      # Enable this mapping and create ./dev/geoserver/ for easier access to GeoServer's data directory.
+      # NB: This will cause GeoServer to create a NEW data directory.
+      # - ./dev/geoserver/data:/opt/geoserver/data_dir
+    entrypoint: /app/docker-entrypoint.sh
   frontend:
     build: frontend/
     command: webpack
