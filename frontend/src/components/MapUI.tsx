@@ -7,6 +7,7 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { Map, View, layer, source, Feature, geom } from 'ol-react';
 import TileWMS from '../ol/TileWMS';
+import ImageWMS from '../ol/ImageWMS';
 import * as ol from 'openlayers';
 
 export interface MapUIProps { defn: any }
@@ -25,10 +26,10 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
                 <layer.Tile>
                     <source.OSM />
                 </layer.Tile>
-                <layer.Tile>
-                    <TileWMS>
-                    </TileWMS>
-                </layer.Tile>
+                <layer.Image>
+                    <ImageWMS>
+                    </ImageWMS>
+                </layer.Image>
             </Map>
         }
 

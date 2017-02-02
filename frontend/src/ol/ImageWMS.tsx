@@ -50,14 +50,15 @@ export class TileWMS extends React.Component<MapContainerProps, undefined> {
     }
 
     static defaultProps = {
-        urls: [
-            'https://gs1.localhost:8443/geoserver/gwc/service/wms',
-            'https://gs2.localhost:8443/geoserver/gwc/service/wms',
-            'https://gs3.localhost:8443/geoserver/gwc/service/wms',
-            'https://gs4.localhost:8443/geoserver/gwc/service/wms',
-            // 'https://localhost:8443/geoserver/EALGIS/wms'
-        ],
-        params: {'LAYERS': 'EALGIS:93493a38', 'TILED': true, 'SRS': 'EPSG:900913'},
+        // urls: [
+        //     // 'https://gs1.localhost:8443/geoserver/gwc/service/wms',
+        //     // 'https://gs2.localhost:8443/geoserver/gwc/service/wms',
+        //     // 'https://gs3.localhost:8443/geoserver/gwc/service/wms',
+        //     // 'https://gs4.localhost:8443/geoserver/gwc/service/wms',
+        //     'https://localhost:8443/geoserver/EALGIS/wms'
+        // ],
+        url: 'https://localhost:8443/geoserver/EALGIS/wms',
+        params: {'LAYERS': 'EALGIS:93493a38', 'SRS': 'EPSG:900913'},
         serverType: 'geoserver',
         // cacheSize: 256,
         // hdpi: false
@@ -77,9 +78,7 @@ export class TileWMS extends React.Component<MapContainerProps, undefined> {
         console.log("layer", this.props.params["LAYERS"])
 
         // const source = ;
-        this.context.layer.setSource(new ol.source.TileWMS(Object.assign({}, this.props)))
-        console.log("pixelRatio", this.context.map.getProperties())
-        this.context.map.set("pixelRatio", 1)
+        this.context.layer.setSource(new ol.source.ImageWMS(Object.assign({}, this.props)))
     }
 
     getChildContext() {
