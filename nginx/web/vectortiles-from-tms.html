@@ -126,7 +126,7 @@
         // osm,
         mapbox,
 
-        new ol.layer.VectorTile({
+        /*new ol.layer.VectorTile({
             style: simpleStyle,
             
             renderMode: 'hybrid',
@@ -186,7 +186,7 @@
                 cacheSize: 256,
                 url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer1 + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
             })
-        }),
+        }),*/
 
         /*new ol.layer.Tile({
         //   extent: [-13884991, 2870341, -7455066, 6338219],
@@ -237,6 +237,14 @@
             cacheSize: 256,
           })
         })*/
+
+        new ol.layer.Image({
+          source: new ol.source.ImageWMS({
+            url: 'https://localhost:8443/geoserver/EALGIS/wms',
+            params: {'LAYERS': layer1},
+            serverType: 'geoserver'
+          })
+        })
     ]
   });
   </script>
