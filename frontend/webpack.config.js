@@ -4,10 +4,21 @@ var fs = require("fs");
 
 module.exports = {
     entry: "./src/index.tsx",
+    entry: {
+        app: "./src/index.tsx",
+        vendor: ["react",  "redux", "react-redux", "react-dom", "react-router", "react-router-redux", "redux-thunk", "material-ui", "openlayers"],
+    },
     plugins: [
         new LiveReloadPlugin({'appendScriptTag': false, 'cert': fs.readFileSync('/nginx/foobar.crt'), 'key': fs.readFileSync('/nginx/foobar.key')}),
         new webpack.DefinePlugin({
             DEVELOPMENT: JSON.stringify(true),
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: "vendor",
+            filename: "vendor.bundle.js",
+            // (with more entries, this ensures that no other module
+            //  goes into the vendor chunk)
+            minChunks: Infinity,
         })
     ],
     output: {
