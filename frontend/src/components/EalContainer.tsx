@@ -20,6 +20,15 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
         const { dispatch } = this.props
         dispatch(fetchUser())
         dispatch(fetchMaps())
+
+        // Because LiveReload still hardcodes HTTP by default
+        // https://github.com/statianzo/webpack-livereload-plugin/issues/23
+        if(DEVELOPMENT === true) {
+            const script = document.createElement("script");
+            script.src = "//localhost:35729/livereload.js";
+            script.async = true;
+            document.body.appendChild(script);
+        }
     }
 
     render() {
