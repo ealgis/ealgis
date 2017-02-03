@@ -32,12 +32,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
             </div>
             <div className="page-content">
                 <LoginDialog open={user.url === null} />
-                <main className="page-main-content">
-                    {this.props.children || <div></div>}
-                </main>
-                <nav className="page-nav">
-                    Navigation<br/>
-                </nav>
+                {this.props.children || <div></div>}
             </div>
         </div>
     }

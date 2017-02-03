@@ -1,6 +1,7 @@
 import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
+import Divider from 'material-ui/Divider';
 import AppBar from 'material-ui/AppBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import { Router, Route, Link, browserHistory } from 'react-router';
@@ -30,16 +31,31 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
                 layerObjs.push(defn.json.layers[l])
             }
 
-            return <olr.Map view={view}>
-                <olr.layer.Tile>
-                    <olr.source.XYZ url={mapbox_url} />
-                </olr.layer.Tile>
-                <div style={{display: 'none'}}>
+            return <div style={{display: 'flex', flex: "1 1 auto"}}>
+                <main className="page-main-content">
+                    <olr.Map view={view}>
+                        <olr.layer.Tile>
+                            <olr.source.XYZ url={mapbox_url} />
+                        </olr.layer.Tile>
+                        <div style={{display: 'none'}}>
+                            {layerObjs.map((l: any) => {
+                                return <LayerContainerWrapped key={l.hash} map={defn} layer={l}></LayerContainerWrapped>
+                            })}
+                        </div>
+                    </olr.Map>
+                </main>
+                <nav className="page-nav">
                     {layerObjs.map((l: any) => {
-                        return <LayerContainerWrapped key={l.hash} map={defn} layer={l}></LayerContainerWrapped>
+                        return l.name
                     })}
-                </div>
-            </olr.Map>
+
+                    <Divider style={{marginTop: 25, marginBottom: 25}} />
+
+                    <Link to="/">
+                        <RaisedButton label="Close Map" secondary={true} />
+                    </Link>
+                </nav>
+            </div>
         }
 
         return <div></div>
