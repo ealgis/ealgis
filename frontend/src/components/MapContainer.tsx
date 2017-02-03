@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { fetchMapDefinition } from '../actions';
 
 import './FixedLayout.css';
+import 'openlayers/css/ol.css';
 
 interface MapContainerRouteParams {
     mapId: Number
