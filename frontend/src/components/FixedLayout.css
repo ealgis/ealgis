@@ -7,6 +7,7 @@ body,
 
 body {
   overflow: hidden;
+  margin: 0;
 }
 
 p {
@@ -24,9 +25,26 @@ p {
 }
 
 .page-content {
-  flex: 1 1 auto;
-  position: relative;/* need this to position inner content */
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-nav {
+  order: -1;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    flex-direction: row;
+    flex: 1;
+  }
+  .page-main-content {
+    flex: 1;
+  }
+  .page-nav {
+    /* 12em is the width of the column */
+    flex: 0 0 12em;
+  }
 }
 
 .page-footer {

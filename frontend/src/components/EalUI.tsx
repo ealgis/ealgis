@@ -16,7 +16,7 @@ export interface EalUIProps {
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
         const { user } = this.props
-        return <div className="page">
+        {/*return <div className="page">
             <div className="page-header">
                 <AppBar title={user.username} />
             </div>
@@ -24,7 +24,22 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                 <LoginDialog open={user.url === null} />
                 {this.props.children || <div></div>}
             </div>
-        </div>;
+        </div>;*/}
+
+        return <div className="page">
+            <div className="page-header">
+                <AppBar title={user.username} />
+            </div>
+            <div className="page-content">
+                <LoginDialog open={user.url === null} />
+                <main className="page-main-content">
+                    {this.props.children || <div></div>}
+                </main>
+                <nav className="page-nav">
+                    Navigation<br/>
+                </nav>
+            </div>
+        </div>
     }
 }
 
