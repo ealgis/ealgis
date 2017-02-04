@@ -9,8 +9,9 @@ import * as injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 import reducers from './reducers/index';
-import EalContainerWrapped from "./components/EalContainer";
-import MapContainerWrapped from "./components/MapContainer";
+import EalUIContainerWrapped from "./components/EalUIContainer";
+import MapUIContainerWrapped from "./components/MapUIContainer";
+import MapUINavContainerWrapped from "./components/MapUINavContainer";
 import MapList from "./components/MapList";
 import thunkMiddleware from 'redux-thunk'
 
@@ -30,9 +31,9 @@ const history = syncHistoryWithStore(browserHistory, store);
 ReactDOM.render(
     <Provider store={store}>
         <Router history={history}>
-            <Route path="/" component={EalContainerWrapped}>
-                <Route path="map/:mapId" component={MapContainerWrapped}/>
-                <IndexRoute component={MapList}/>
+            <Route path="/" component={EalUIContainerWrapped}>
+                <Route path="map/:mapId" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>
+                <IndexRoute components={{ content: MapList }}/>
             </Route>
         </Router>
     </Provider>,

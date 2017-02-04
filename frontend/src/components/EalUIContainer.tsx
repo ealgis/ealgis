@@ -1,10 +1,6 @@
 import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
-import AppBar from 'material-ui/AppBar';
 import EalUI from "./EalUI";
-import { Router, Route, Link, browserHistory } from 'react-router';
-import { LoginDialog } from './LoginDialog';
 import { connect } from 'react-redux';
 import { fetchUser, fetchMaps } from '../actions';
 
@@ -12,7 +8,9 @@ import './FixedLayout.css';
 
 export interface EalContainerProps {
     user: any,
-    dispatch: Function
+    dispatch: Function,
+    content: any,
+    sidebar: any
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
@@ -32,9 +30,10 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { user, children } = this.props
+        const { user, children, content, sidebar } = this.props
+        
         return <MuiThemeProvider>
-            <EalUI user={user} children={children}></EalUI>
+            <EalUI user={user} children={children} content={content} sidebar={sidebar}></EalUI>
         </MuiThemeProvider>;
     }
 }
