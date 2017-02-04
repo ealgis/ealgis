@@ -7,6 +7,7 @@ export const REQUEST_MAPS = 'REQUEST MAPS'
 export const RECEIVE_MAPS = 'RECEIVE_MAPS'
 export const REQUEST_MAP_DEFINITION = 'REQUEST_MAP_DEFINITION'
 export const RECEIVE_MAP_DEFINITION = 'RECEIVE_MAP_DEFINITION'
+export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
 
 export function requestUser() {
     return {
@@ -44,6 +45,20 @@ export function receiveMapDefinition(json: any) {
     return {
         type: RECEIVE_MAP_DEFINITION,
         json
+    }
+}
+
+export function receiveChangeLayerVisibility(mapId: number, layerHash: string) {
+    return {
+        type: CHANGE_LAYER_VISIBILITY,
+        mapId,
+        layerHash,
+    }
+}
+
+export function changeLayerVisibility(mapId: number, layerHash: string) {
+    return (dispatch: any) => {
+        dispatch(receiveChangeLayerVisibility(mapId, layerHash))
     }
 }
 

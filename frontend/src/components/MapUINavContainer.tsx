@@ -7,21 +7,20 @@ interface MapUINavContainerRouteParams {
 }
 
 export interface MapUINavContainerProps {
-    params: any,
-    mapDefinition: MapUINavContainerRouteParams,
+    map_definition: MapUINavContainerRouteParams,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     render() {
-        const { mapDefinition, children } = this.props
-        return <MapUINav defn={mapDefinition}/>;
+        const { map_definition } = this.props
+        return <MapUINav defn={map_definition} />;
     }
 }
 
 const mapStateToProps = (state: any) => {
     const { map_definition } = state
     return {
-        mapDefinition: map_definition
+        map_definition: map_definition
     }
 }
 

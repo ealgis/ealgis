@@ -1,10 +1,14 @@
 import * as React from "react";
-import { Router, Route, Link, browserHistory } from 'react-router';
+import { Link } from 'react-router';
+import Subheader from 'material-ui/Subheader';
+import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
-import Divider from 'material-ui/Divider';
-import LayerContainerWrapped from './LayerContainer';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import LayerToggle from './LayerToggleContainer';
 
-export interface MapUINavProps { defn: any }
+export interface MapUINavProps {
+    defn: any
+}
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
@@ -18,14 +22,28 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             }
 
             return <div>
-                {layerObjs.map((l: any) => {
-                    return l.name
-                })}
-
-                <Divider style={{marginTop: 25, marginBottom: 25}} />
+                <List>
+                    <Subheader>Layers</Subheader>
+                    {layerObjs.map((l: any) => {
+                        return <ListItem 
+                                key={l.hash}
+                                disableTouchRipple={true}
+                            >
+                            <LayerToggle
+                                l={l}
+                                mapId={defn.id}
+                            />
+                        </ListItem>
+                    })}
+                </List>
 
                 <Link to="/">
-                    <RaisedButton label="Close Map" secondary={true} />
+                    <RaisedButton 
+                        label="Close Map" 
+                        secondary={true}
+                        icon={<NavigationClose />}
+                        style={{marginTop: 20, marginLeft: "25%"}}
+                    />
                 </Link>
             </div>
         }

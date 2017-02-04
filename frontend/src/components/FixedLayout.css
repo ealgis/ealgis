@@ -46,7 +46,7 @@ p {
   }
   .page-nav {
     /* 12em is the width of the column */
-    flex: 0 0 14em;
+    flex: 0 0 18em;
   }
 }
 
