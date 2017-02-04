@@ -18,12 +18,14 @@ export interface MapContainerProps {
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     componentDidMount() {
         const { dispatch, params } = this.props
-        dispatch(fetchMapDefinition(params.mapId))
+        if(params.mapId !== undefined) {
+            dispatch(fetchMapDefinition(params.mapId))
+        }
     }
 
     render() {
-        const { mapDefinition, children } = this.props
-        return <MapUI defn={mapDefinition}/>;
+        const { mapDefinition } = this.props
+        return <MapUI defn={mapDefinition} />;
     }
 }
 

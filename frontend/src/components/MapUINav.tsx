@@ -8,11 +8,12 @@ import LayerToggle from './LayerToggleContainer';
 
 export interface MapUINavProps {
     defn: any
+    onCloseMap: Function,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn } = this.props
+        const { defn, onCloseMap } = this.props
 
         if(defn.json !== undefined) {
             // FIXME Layers should be an array, not an object
@@ -38,14 +39,14 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     })}
                 </List>
 
-                <Link to="/">
-                    <RaisedButton 
-                        label="Close Map" 
-                        secondary={true}
-                        icon={<NavigationClose />}
-                        style={{marginTop: 20, marginLeft: "25%"}}
-                    />
-                </Link>
+                <RaisedButton 
+                    label="Close Map" 
+                    secondary={true}
+                    icon={<NavigationClose />}
+                    containerElement={<Link to={`/`} />}
+                    style={{marginTop: 20, marginLeft: "25%"}}
+                    onClick={onCloseMap}
+                />
             </div>
         }
 

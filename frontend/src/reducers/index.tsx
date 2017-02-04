@@ -1,5 +1,5 @@
 import { combineReducers, Reducer } from 'redux';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CHANGE_LAYER_VISIBILITY } from '../actions'
+import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CLOSE_MAP, CHANGE_LAYER_VISIBILITY } from '../actions'
 
 function user(state = {
     user: {
@@ -33,6 +33,8 @@ function map_definition(state = {}, action: any) {
             return state
         case RECEIVE_MAP_DEFINITION:
             return action.json
+        case CLOSE_MAP:
+            return {}
         case CHANGE_LAYER_VISIBILITY:
             // FIXME Layers should be an array, not an object
             let layerId: number?: null

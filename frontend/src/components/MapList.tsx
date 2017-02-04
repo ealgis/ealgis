@@ -55,7 +55,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
 
                 <GridTile
                     key={"abc"}
-                    containerElement={<Link to={"/"} />}
+                    containerElement={<Link to={"/new/map/"} />}
                     title={"Create New Map"}
                     cols={1.5}
                 >

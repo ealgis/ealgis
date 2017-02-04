@@ -7,6 +7,7 @@ export const REQUEST_MAPS = 'REQUEST MAPS'
 export const RECEIVE_MAPS = 'RECEIVE_MAPS'
 export const REQUEST_MAP_DEFINITION = 'REQUEST_MAP_DEFINITION'
 export const RECEIVE_MAP_DEFINITION = 'RECEIVE_MAP_DEFINITION'
+export const CLOSE_MAP = 'CLOSE_MAP'
 export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
 
 export function requestUser() {
@@ -59,6 +60,14 @@ export function receiveChangeLayerVisibility(mapId: number, layerHash: string) {
 export function changeLayerVisibility(mapId: number, layerHash: string) {
     return (dispatch: any) => {
         dispatch(receiveChangeLayerVisibility(mapId, layerHash))
+    }
+}
+
+export function closeMap() {
+    return (dispatch: any) => {
+        dispatch({
+            type: CLOSE_MAP
+        })
     }
 }
 
