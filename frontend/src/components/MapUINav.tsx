@@ -22,6 +22,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             }
 
             return <div>
+                <h2 style={{textAlign: "center"}}>{defn.name}</h2>
                 <List>
                     <Subheader>Layers</Subheader>
                     {layerObjs.map((l: any) => {
