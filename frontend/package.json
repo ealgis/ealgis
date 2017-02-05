@@ -41,7 +41,7 @@
     "css-loader": "^0.26.1",
     "source-map-loader": "^0.1.5",
     "style-loader": "^0.13.1",
-    "typescript": "^2.1.4",
+    "typescript": "^2.1.5",
     "webpack": "^1.14.0",
     "webpack-livereload-plugin": "^0.9.0"
   }
