@@ -28,7 +28,7 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onToggle: () => {
+    onCloseMap: () => {
         dispatch(closeMap());
     }
   };
