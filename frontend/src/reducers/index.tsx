@@ -1,5 +1,5 @@
 import { combineReducers, Reducer } from 'redux';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CLOSE_MAP, CHANGE_LAYER_VISIBILITY } from '../actions'
+import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CLOSE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY } from '../actions'
 
 function user(state = {
     user: {
@@ -61,6 +61,20 @@ function map_definition(state = {}, action: any) {
                         [layerId]: {
                             ...state.json.layers[layerId],
                             visible: !state.json.layers[layerId].visible,
+                        }
+                    }
+                }
+            }
+        case COMPILED_LAYER_STYLE:
+            return {
+                ...state,
+                json: {
+                    ...state.json,
+                    layers: {
+                        ...state.json.layers,
+                        [layerId]: {
+                            ...state.json.layers[layerId],
+                            olStyle: action.json,
                         }
                     }
                 }

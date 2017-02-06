@@ -45,7 +45,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
         const cacheSize = 256
         const visible = layer.visible
 
-        return <olr.layer.VectorTile visible={visible} extent={extent}>
+        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle}>
             <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize}>
             </olr.source.VectorTile>
         </olr.layer.VectorTile>
