@@ -6,12 +6,12 @@ from .models import *
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, detail_route
+from rest_framework.decorators import api_view, detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import NotFound, ValidationError
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer
-from ealgis.colour_scale import definitions
+from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
 try:
@@ -55,6 +55,48 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
+        
+    def retrieve(self, request, format=None, pk=None):        
+        queryset = self.get_queryset()
+        map = queryset.filter(id=pk).first()
+
+        # Compile layer fill styles and attach an olStyleDef for consumption by the UI
+        for k, l in map.json["layers"].items():
+            fill = l['fill']
+            do_fill = (fill['expression'] != '')
+
+            # Line styles are simple and can already be read from the existing JSON object
+            if do_fill:
+                scale_min = float(fill['scale_min'])
+                scale_max = float(fill['scale_max'])
+                opacity = float(fill['opacity'])
+                l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
+
+        serializer = self.serializer_class(map, context={"request": request})
+        return Response(serializer.data)
+    
+    @list_route(methods=['get'])
+    def compileStyle(self, request, format=None):
+        qp = request.query_params
+
+        # We only need the fill params on the layer to compile the style
+        layer = {
+            "fill": {
+                "opacity": qp["opacity"],
+                "scale_max": qp["scale_max"],
+                "scale_min": qp["scale_min"],
+                "expression": qp["expression"],
+                "scale_flip": qp["scale_flip"],
+                "scale_name": qp["scale_name"],
+                "scale_nlevels": qp["scale_nlevels"],
+            }
+        }
+        
+        scale_min = float(layer["fill"]['scale_min'])
+        scale_max = float(layer["fill"]['scale_max'])
+        opacity = float(layer["fill"]['opacity'])
+
+        return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
     
     @detail_route(methods=['get'])
     def exists(self, request, pk=None, format=None):
@@ -171,6 +213,10 @@ class ColoursViewset(viewsets.ViewSet):
 
     def list(self, request, format=None):
         return Response(definitions.get_json())
+    
+    @list_route(methods=['get'])
+    def defs(self, request):
+        return Response(definitions.get_defs_json())
 
 
 class SchemasViewSet(viewsets.ViewSet):

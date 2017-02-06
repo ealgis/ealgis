@@ -225,6 +225,14 @@ class CannedColourDefinitions(object):
             r[name].sort()
         return r
 
+    def get_defs_json(self):
+        r = {}
+        for name, nlevels in self.defs:
+            if name not in r:
+                r[name] = {}
+            r[name][nlevels] = self.get(name, nlevels).interpolated
+        return r
+
     def register(self, name, defn):
         self.defs[(name, defn.get_nlevels())] = defn
 
@@ -284,6 +292,60 @@ def colour_for_layer(defn):
         scale_flip)
     return scale
 
+
+def make_colour_scale(self, layer, attr, cmin, cmax, opacity):
+    scale = colour_for_layer(layer)
+    olStyle = []
+
+    def add_class(rgb, expr):
+        rgb *= 255.
+
+        # Ignore styles below 0 that shouldn't exist (?)
+        if expr[1] == "<" and expr[2] == 0.0: # op and v
+            return
+
+        style = {
+            "expr": {
+                "from": {
+                    "attr": expr[0],
+                    "op": expr[1],
+                    "v": expr[2],
+                },
+            },
+            "rgb": [
+                int(rgb.r),
+                int(rgb.g),
+                int(rgb.b),
+            ],
+            "opacity": opacity,
+        }
+
+        if len(expr) > 3:
+            style["expr"]["to"] = {
+                "attr": expr[3],
+                "op": expr[4],
+                "v": expr[5],
+            }
+
+        olStyle.append(style)
+
+    # below cmin
+    inc = float(cmax - cmin) / (scale.nlevels - 2)
+    add_class(scale.lookup(cmin - inc), (attr, "<", cmin))
+
+    # intermediate "within range" levels
+    for idx in range(1, scale.nlevels - 1):
+        vfrom = cmin + (idx - 1) * inc
+        vto = vfrom + inc
+        # we hedge on any floating-point rounding issues with a have increment jump into our level
+        # for the colour lookup
+        add_class(scale.lookup(vfrom + inc / 2.), (attr, ">=", vfrom, attr, "<", vto))
+    
+    # above cmin
+    add_class(scale.lookup(cmax + inc), (attr, ">=", cmax))
+    return olStyle
+
+    
 if __name__ == '__main__':
     scale = definitions.get("Accent", 8)
     with open('html/accent.png', 'w') as fd:
