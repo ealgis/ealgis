@@ -34,7 +34,7 @@ services:
 
       # FOR DEVELOPMENT ONLY
       # For setting up GeoServer for the first time. Refer to ./README.md
-      # - ./geoserver:/app
+      - ./geoserver:/app
 
       # Enable this mapping and create ./dev/geoserver/ for easier access to GeoServer's data directory.
       # NB: This will cause GeoServer to create a NEW data directory.
