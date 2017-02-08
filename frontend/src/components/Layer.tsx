@@ -34,11 +34,12 @@ export class Layer extends React.Component<LayerProps, undefined> {
         // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
         const bbox = layer._geoserver_layer_bbox
         const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], 'EPSG:4326', 'EPSG:900913')
+        const renderMode = "hybrid"
 
         const projection_epsg_no = '900913';
         const format = "pbf";
         const layerName = layer._geoserver_workspace + ":" + layer.hash;
-        const url = "https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/" + layerName + "@EPSG%3A" + projection_epsg_no + "@" + format + "/{z}/{x}/{-y}." + format
+        const url = "https://localhost:8443/geoserver/gwc/service/tms/1.0.0/" + layerName + "@EPSG%3A" + projection_epsg_no + "@" + format + "/{z}/{x}/{-y}." + format
         const formatObj = new ol.format.MVT()
         const tileGrid = ol.tilegrid.createXYZ({maxZoom: 22})
         const overlaps = false
@@ -119,7 +120,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
             }
         }*/
 
-        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle}>
+        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} opacity={layer.fill.opacity}>
             <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize}>
             </olr.source.VectorTile>
         </olr.layer.VectorTile>
