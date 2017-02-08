@@ -293,7 +293,7 @@ def colour_for_layer(defn):
     return scale
 
 
-def make_colour_scale(self, layer, attr, cmin, cmax, opacity):
+def make_colour_scale(layer, attr, cmin, cmax, opacity):
     scale = colour_for_layer(layer)
     olStyle = []
 
