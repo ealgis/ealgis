@@ -15,7 +15,7 @@ export interface LayerProps {
 
 export class Layer extends React.Component<LayerProps, undefined> {
     render() {
-        const { layer } = this.props
+        const { map, layer } = this.props
 
         // For ImageWMS (Single image tile.)
         // const url = "https://localhost:8443/geoserver/EALGIS/wms"
@@ -32,15 +32,14 @@ export class Layer extends React.Component<LayerProps, undefined> {
 
         // For VectorTiles
         // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
-        const bbox = layer._geoserver_layer_bbox
+        const bbox = layer.latlon_bbox
         const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], 'EPSG:4326', 'EPSG:900913')
         const renderMode = "hybrid"
 
         const projection_epsg_no = '900913';
-        const format = "pbf";
-        const layerName = layer._geoserver_workspace + ":" + layer.hash;
-        const url = "https://localhost:8443/geoserver/gwc/service/tms/1.0.0/" + layerName + "@EPSG%3A" + projection_epsg_no + "@" + format + "/{z}/{x}/{-y}." + format
-        const formatObj = new ol.format.MVT()
+        const format = "geojson";
+        const url = "/api/0.1/maps/" + map.id + "/tiles.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}&format=" + format
+        const formatObj = new ol.format.GeoJSON()
         const tileGrid = ol.tilegrid.createXYZ({maxZoom: 22})
         const overlaps = false
         const cacheSize = 256
