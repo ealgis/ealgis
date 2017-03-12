@@ -1,5 +1,7 @@
 import Promise from 'promise-polyfill'
 import 'whatwg-fetch'
+import { browserHistory } from 'react-router';
+import cookie from 'react-cookie'
 import { compileLayerStyle } from '../utils/OLStyle'
 
 export const REQUEST_USER = 'REQUEST USER'
@@ -8,7 +10,8 @@ export const REQUEST_MAPS = 'REQUEST MAPS'
 export const RECEIVE_MAPS = 'RECEIVE_MAPS'
 export const REQUEST_MAP_DEFINITION = 'REQUEST_MAP_DEFINITION'
 export const RECEIVE_MAP_DEFINITION = 'RECEIVE_MAP_DEFINITION'
-export const CLOSE_MAP = 'CLOSE_MAP'
+export const DELETE_MAP = 'DELETE_MAP'
+export const CREATE_MAP = 'CREATE_MAP'
 export const COMPILED_LAYER_STYLE = 'COMPILED_LAYER_STYLE'
 export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
 
@@ -65,10 +68,20 @@ export function changeLayerVisibility(mapId: number, layerHash: string) {
     }
 }
 
-export function closeMap() {
+export function receiveDeleteMap(mapId: number) {
     return (dispatch: any) => {
         dispatch({
-            type: CLOSE_MAP
+            type: DELETE_MAP,
+            mapId
+        })
+    }
+}
+
+export function receiveCreatedMap(map: object) {
+    return (dispatch: any) => {
+        dispatch({
+            type: CREATE_MAP,
+            map
         })
     }
 }
@@ -98,7 +111,7 @@ export function fetchCompiledLayerStyle(l: Object) {
             Object.keys(params).forEach((key, value) => { url.searchParams.append(key, params[key]) })
 
             fetch(url, {
-                credentials: 'same-origin',
+                credentials: "same-origin",
             })
                 .then((response: any) => response.json())
                 .then((json: any) => {
@@ -114,7 +127,7 @@ export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
         return fetch('/api/0.1/self', {
-            credentials: 'same-origin'
+            credentials: "same-origin",
         })
             .then((response: any) => response.json())
             .then((json: any) => dispatch(receiveUser(json)))
@@ -125,7 +138,7 @@ export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
         return fetch('/api/0.1/maps/', {
-            credentials: 'same-origin'
+            credentials: "same-origin",
         })
             .then((response: any) => response.json())
             .then((json: any) => dispatch(receiveMaps(json)))
@@ -136,7 +149,7 @@ export function fetchMapDefinition(mapId: Number) {
     return (dispatch: any) => {
         dispatch(requestMapDefinition())
         return fetch('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
-            credentials: 'same-origin'
+            credentials: "same-origin",
         })
             .then((response: any) => response.json())
             .then((defn: any) => {
@@ -148,5 +161,75 @@ export function fetchMapDefinition(mapId: Number) {
                 return defn
             })
             .then((json: any) => dispatch(receiveMapDefinition(json)))
+    }
+}
+
+export function createMap(values: any/*, cb: Function*/) {
+    return (dispatch: any) => {
+        return fetch('/api/0.1/maps/', {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": cookie.load("csrftoken")
+            },
+            body: JSON.stringify(Object.assign(values, {
+                "json": {
+                    "map_defaults": {
+                        "lat": "-27.121915157767",
+                        "lon": "133.21253738715",
+                        "zoom": "4"
+                    }
+                }
+            })),
+        })
+            .then((response: any) => response.json())
+            .then((json: any) => {
+                dispatch(receiveCreatedMap(json))
+                // cb(json.id)
+                browserHistory.push("/map/" + json.id)
+            })
+    }
+}
+
+/*
+So, there seems to be two approaches to handling the "How do I do some action on the site (like using React-Router to change pages)?" question.
+
+1. Pass a callback function in and call that from the action.
+
+2. Call react-router directly from the action.
+
+Some further reading on the subject:
+
+- https://github.com/reactjs/redux/issues/291
+- http://stackoverflow.com/questions/36886506/redux-change-url-when-an-async-action-is-dispatched
+*/
+export function deleteMapSuccess(mapId: number) {
+  return (dispatch: any) => {
+    dispatch(receiveDeleteMap(mapId))
+    browserHistory.push("/");
+  };
+}
+
+export function deleteMap(mapId: number/*, cb: Function*/) {
+    return (dispatch: any) => {
+        return fetch('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
+            method: "DELETE",
+            credentials: "same-origin",
+            headers: {
+                "X-CSRFToken": cookie.load("csrftoken")
+            },
+        })
+            .then(((response: any) => {
+                if(response.status == 204) {
+                    dispatch(deleteMapSuccess(mapId))
+                } else {
+                    var error = new Error(response.statusText)
+                    error.response = response
+                    // dispatch(deleteMapError(error));
+                    throw error
+                }
+            }))
+            .catch(error => { console.log('request failed', error); }); // This could be handled at a higher level through a factory (as per early examples we investigated)
     }
 }
