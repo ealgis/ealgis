@@ -50,15 +50,20 @@ export function compileLayerStyle(l: Object) {
             // console.log("q=", q, "from=", rule["expr"]["from"]["v"], (rule["expr"]["to"] !== undefined) ? "to= " + rule["expr"]["to"]["v"] : "")
 
             if(rgb.length > 0) {
-                styleCache[styleId] = new ol.style.Style({
+                const olStyle = new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: `rgba(${line.colour.r},${line.colour.g},${line.colour.b},${line.colour.a})`,
-                        width: line.width
                     })
                 });
+
+                if(line.width > 0) {
+                    olStyle.setStroke(new ol.style.Stroke({
+                        color: `rgba(${line.colour.r},${line.colour.g},${line.colour.b},${line.colour.a})`,
+                        width: line.width
+                    }))
+                }
+
+                styleCache[styleId] = olStyle
                 return styleCache[styleId]
             }
 
