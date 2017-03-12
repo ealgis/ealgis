@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from .models import *
 
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, detail_route, list_route
 from rest_framework.response import Response
@@ -55,6 +55,25 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
+
+    def create(self, request):
+        # request.data is from the POST object. We want to take these
+        # values and supplement it with the user.id that's defined
+        # in our URL parameter
+        data = {
+            'name': request.data['name'],
+            'description': request.data['description'],
+            'json': request.data['json'] if "json" in request.data else {},
+            'owner_user_id': self.request.user.id
+        }
+
+        serializer = MapDefinitionSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     def retrieve(self, request, format=None, pk=None):        
         queryset = self.get_queryset()
