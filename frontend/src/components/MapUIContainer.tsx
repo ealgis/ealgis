@@ -16,23 +16,16 @@ export interface MapContainerProps {
 }
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
-    componentDidMount() {
-        const { dispatch, params } = this.props
-        if(params.mapId !== undefined) {
-            dispatch(fetchMapDefinition(params.mapId))
-        }
-    }
-
     render() {
         const { mapDefinition } = this.props
         return <MapUI defn={mapDefinition} />;
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { map_definition } = state
+const mapStateToProps = (state: any, ownProps: any) => {
+    const { map_definition, maps } = state
     return {
-        mapDefinition: map_definition
+        mapDefinition: maps[ownProps.params.mapId]
     }
 }
 

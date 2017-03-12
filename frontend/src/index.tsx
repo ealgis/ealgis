@@ -4,6 +4,9 @@ import { compose, combineReducers, createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
+import thunkMiddleware from 'redux-thunk'
+
+import { reducer as formReducer } from 'redux-form'
 
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -14,13 +17,13 @@ import MapUIContainerWrapped from "./components/MapUIContainer";
 import MapUINavContainerWrapped from "./components/MapUINavContainer";
 import CreateMapContainerWrapped from "./components/CreateMapContainer";
 import MapList from "./components/MapList";
-import thunkMiddleware from 'redux-thunk'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
     combineReducers({
         ...reducers,
         routing: routerReducer,
+        form: formReducer
     }),
     composeEnhancers(applyMiddleware(
         thunkMiddleware

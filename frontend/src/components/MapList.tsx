@@ -40,32 +40,32 @@ export class MapList extends React.Component<MapListProps, undefined> {
                     cellHeight={200}
                     padding={10}
                 >
-                {maps.map((m: any) => 
                     <GridTile
-                        key={m.id}
-                        containerElement={<Link to={`/map/${m.id}`} />}
-                        title={m.name}
-                        subtitle={m.description}
+                        key={"abc"}
+                        containerElement={<Link to={"/new/map/"} />}
+                        title={"Create New Map"}
                         cols={1.5}
-                        titleBackground={'rgba(0, 188, 212, 0.7)'}
                     >
-                        <MapCoverImage mapDefinition={m} width={250} height={185} />
+                        <FlatButton
+                            backgroundColor={'rgba(205, 205, 205, 0.7)'}
+                            hoverColor={'rgba(154, 154, 154, 0.7)'}
+                            icon={<MapsLayers color={fullWhite} style={{width: "15%", height: "15%", marginBottom: 25}} />}
+                            style={style}
+                        />
                     </GridTile>
-                }
 
-                <GridTile
-                    key={"abc"}
-                    containerElement={<Link to={"/new/map/"} />}
-                    title={"Create New Map"}
-                    cols={1.5}
-                >
-                    <FlatButton
-                        backgroundColor={'rgba(205, 205, 205, 0.7)'}
-                        hoverColor={'rgba(154, 154, 154, 0.7)'}
-                        icon={<MapsLayers color={fullWhite} style={{width: "15%", height: "15%", marginBottom: 25}} />}
-                        style={style}
-                    />
-                </GridTile>
+                    {Object.entries(maps).map(([key, m]) => 
+                        <GridTile
+                            key={key}
+                            containerElement={<Link to={`/map/${m.id}`} />}
+                            title={m.name}
+                            subtitle={m.description}
+                            cols={1.5}
+                            titleBackground={'rgba(0, 188, 212, 0.7)'}
+                        >
+                            <MapCoverImage mapDefinition={m} width={250} height={185} />
+                        </GridTile>
+                    )}
             </GridList>
         </div>
     }

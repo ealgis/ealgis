@@ -1,5 +1,5 @@
 import { combineReducers, Reducer } from 'redux';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CLOSE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY } from '../actions'
+import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, CHANGE_FORM_MODEL } from '../actions'
 
 function user(state = {
     user: {
@@ -16,30 +16,26 @@ function user(state = {
     }
 }
 
-function maps(state: any[] = [], action: any) {
+function maps(state: any = {}, action: any) {
     switch (action.type) {
         case REQUEST_MAPS:
             return state
         case RECEIVE_MAPS:
-            return action.json
-        default:
-            return state
-    }
-}
-
-function map_definition(state = {}, action: any) {
-    switch (action.type) {
-        case REQUEST_MAP_DEFINITION:
-            return state
-        case RECEIVE_MAP_DEFINITION:
-            return action.json
-        case CLOSE_MAP:
-            return {}
+            return Object.assign(...action.json.map(d => ({[d.id: d})))
+            // return new Map(action.json.map((i: any) => [i.id, i]))
+        case CREATE_MAP:
+            return {
+                ...state,
+                [action.map.id]: action.map
+            }
+        case DELETE_MAP:
+            let { [action.mapId]: deletedItem, ...rest } = state
+            return rest
         case CHANGE_LAYER_VISIBILITY:
             // FIXME Layers should be an array, not an object
             let layerId: number?: null
-            for (let l in state.json.layers) {
-                if(state.json.layers[l].hash === action.layerHash) {
+            for (let l in state[action.mapId].json.layers) {
+                if(state[action.mapId].json.layers[l].hash === action.layerHash) {
                     layerId = l
                     break
                 }
@@ -52,15 +48,19 @@ function map_definition(state = {}, action: any) {
             // https://github.com/reactjs/redux/issues/57#issuecomment-109764580
             // http://redux.js.org/docs/Troubleshooting.html#nothing-happens-when-i-dispatch-an-action
             // http://redux.js.org/docs/recipes/reducers/ImmutableUpdatePatterns.html#updating-nested-objects
+            // Ideas for a better approach -> http://redux.js.org/docs/recipes/reducers/ImmutableUpdatePatterns.html
             return {
                 ...state,
-                json: {
-                    ...state.json,
-                    layers: {
-                        ...state.json.layers,
-                        [layerId]: {
-                            ...state.json.layers[layerId],
-                            visible: !state.json.layers[layerId].visible,
+                [action.mapId]: {
+                    ...state[action.mapId],
+                    json: {
+                        ...state[action.mapId].json,
+                        layers: {
+                            ...state[action.mapId].json.layers,
+                            [layerId]: {
+                                ...state[action.mapId].json.layers[layerId],
+                                visible: !state[action.mapId].json.layers[layerId].visible,
+                            }
                         }
                     }
                 }
@@ -68,13 +68,16 @@ function map_definition(state = {}, action: any) {
         case COMPILED_LAYER_STYLE:
             return {
                 ...state,
-                json: {
-                    ...state.json,
-                    layers: {
-                        ...state.json.layers,
-                        [layerId]: {
-                            ...state.json.layers[layerId],
-                            olStyle: action.json,
+                [action.mapId]: {
+                    ...state[action.mapId],
+                    json: {
+                        ...state[action.mapId].json,
+                        layers: {
+                            ...state[action.mapId].json.layers,
+                            [layerId]: {
+                                ...state[action.mapId].json.layers[layerId],
+                                olStyle: action.json,
+                            }
                         }
                     }
                 }
@@ -87,5 +90,4 @@ function map_definition(state = {}, action: any) {
 export default {
     user,
     maps,
-    map_definition
 };
