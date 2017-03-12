@@ -118,26 +118,108 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         map.save()
 
         return Response({
-            # "exists": map is not None
             "new_map_id": map.id
         })
     
     @detail_route(methods=['get'])
-    def foo(self, request, pk=None, format=None):
+    def tiles(self, request, pk=None, format=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
+        qp = request.query_params
+        
+        # Validate required params for serving a vector tile
+        ## Layer OK?
+        layer = None
+        for key, l in map.json["layers"].items():
+            if l["hash"] == qp["layer"]:
+                layer = l
+                break
+        
+        if layer is None:
+            raise ValidationError(detail="Layer not found.")
+        
+        ## Format OK?
+        if "format" not in qp or qp["format"] not in ["geojson", "pbf"]:
+            raise ValidationError(detail="Unknown format '{format}".format(format=format))
+        
+        ## Has Tile Coordinates OK?
+        if not("x" in qp and "y" in qp and "z" in qp):
+            raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
+        
+        # OK, generate a GeoJSON Vector Tile
+        def row_to_dict(row):
+            def f(item):
+                return not item[0] == 'geom'
+            return dict(i for i in row.items() if f(i))
+        
+        def to_geojson_feature(row):
+            def process_geometry(geometry):
+                return json.loads(geometry)
 
-        # map.set(map.json)
-        # map.save()
+            return {
+                "type": "Feature",
+                "geometry": process_geometry(row["geom"]),
+                "properties": row_to_dict(row),
+            }
+        
+        def to_pbf_feature(row):
+            def process_geometry(geometry):
+                return geometry
+            
+            return {
+                "geometry": process_geometry(row['geom']),
+                "properties": row_to_dict(row)
+            }
+        
+        from django.core.cache import cache
+        format = qp["format"]
+        cache_key = "layer_{}_{}_{}_{}".format(qp["layer"], qp["x"], qp["y"], qp["z"])
+        print(cache_key)
+        cache_time = 60*60*24*365 # time to live in seconds
+        memcachedEnabled = False if "no_memcached" in qp else True
+        fromMemcached = False
 
-        # from ealgis.ealauth.geoserver import GeoServerMap
+        if memcachedEnabled:
+            features = cache.get(cache_key)
+            if features is not None:
+                fromMemcached = True
 
-        # gsmap = GeoServerMap(map.name, map.owner_user_id, map.json["rev"], map.json)
-        # gsmap.create_layers()
+        if memcachedEnabled is False or features is None:
+            eal = apps.get_app_config('ealauth').eal
+            results = eal.get_tile(layer["_postgis_query"], int(qp["x"]), int(qp["y"]), int(qp["z"]))
 
-        return Response({
-            "updated": True
-        })
+            if qp["format"] == "geojson":
+                features = [to_geojson_feature(row) for row in results]
+            elif qp["format"] == "pbf":
+                layers = [{
+                    "name": "Layer A",
+                    "features": [to_pbf_feature(row) for row in results]
+                }]
+
+                # Is sloooooooow
+                import mapbox_vector_tile
+                features = mapbox_vector_tile.encode(layers)
+            
+            if memcachedEnabled:
+                cache.set(cache_key, features, cache_time)
+
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+            "X-From-Memcached": fromMemcached,
+        }
+
+        if qp["format"] == "geojson":
+            return Response({
+                "type": "FeatureCollection",
+                "features": features
+            }, headers=headers)
+
+        elif qp["format"] == "pbf":
+            from django.http.response import HttpResponse
+            response = HttpResponse(features, content_type="application/x-protobuf")
+            for key, val in headers.items():
+                response[key] = val
+            return response
 
 
 class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

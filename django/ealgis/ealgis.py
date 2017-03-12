@@ -23,7 +23,6 @@ class NoMatches(Exception):
 class TooManyMatches(Exception):
     pass
 
-
 class CompilationError(Exception):
     pass
 
@@ -242,3 +241,96 @@ class EAlGIS(object):
         else:
             ci, linkage_id = matches[0]
             return self.session.query(GeometryLinkage).get(linkage_id), ci
+    
+    def get_tile(self, query, x, y, z):
+        def create_vectortile_sql(query, bounds):
+            # Sets the number of decimal places per GeoJSON coordinate to reduce response size
+            # (e.g. 10 decimal places per lat/long in 100 polygons with 50 sets of coords is 2 * 10 * 100 * 50 = 100,000 bytes uncompressed
+            # dropping 6 decimal places would save 60,000 bytes per request) 
+            def setDecimalPlaces():
+                # Sets the tolerance in degrees to thin (aka simplify or generalise) the vector data on the server before it's returned
+                def tolerance():
+                    # Standard width of a single 256 pixel map tile at zoom level one
+                    stdTileWidth = 78271.52
+                    # Rough (based on equatorial radius of the Earth), but more than adequate for online mapping
+                    metres2Degrees = (2 * math.pi * 6378137) / 360
+
+                    return (stdTileWidth / math.pow(2, z - 1)) / metres2Degrees
+
+                tolerance = tolerance()
+                places = 0
+                precision = 1.0
+
+                while (precision > tolerance):
+                    places += 1
+                    precision /= 10
+
+                return places
+
+            import math
+
+            srid = "3857"
+            west, south = mercantile.xy(bounds.west, bounds.south)
+            east, north = mercantile.xy(bounds.east, bounds.north)
+
+            decimalPlaces = setDecimalPlaces()
+
+            resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, z)
+            tolerance = resolution / 20
+
+            # A bit of a hack - assign the minimum area a feature must have to be visible at each zoom level.
+            # if(z <= 4):
+            #     min_area = 2500000
+            # elif(z <= 8):
+            #     # min_area = 350000
+            #     min_area = 1000000
+            # elif(z <= 12):
+            #     min_area = 50000
+            # elif(z <= 16):
+            #     min_area = 2000
+            # else:
+            #     min_area = 0 # Display all features beyond zoom 16
+            
+            # Marginally less hacky - scale the min area based on the resolution
+            min_area = resolution * 1000
+
+            # For PBF in Python-land
+            # SCALE = 4096
+            # geomtrans = 'ST_AsText(ST_TransScale(%s, %.12f, %.12f, %.12f, %.12f)) AS geom' % ("_clip_geom", -west, -south, SCALE / (east - west), SCALE / (north - south))
+
+            # @TODO Replace ST_Intersection() with ST_ClipByBox2d() when we upgrade PostGIS/GEOS (Wrap around ST_Simplify(...)).
+            SQL_TEMPLATE = """
+                WITH _conf AS (
+                    SELECT
+                        20 AS magic,
+                        {res} AS res,
+                        {decimalPlaces} AS decimal_places,
+                        {min_area} AS min_area,
+                        {tolerance} AS tolerance,
+                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+                    ),
+                    -- end conf
+                    _geom AS (
+                        SELECT ST_Simplify(
+                            ST_SnapToGrid(
+                                CASE WHEN ST_CoveredBy(geom_3857, extent) = FALSE THEN geom_3857 ELSE ST_Intersection(geom_3857, extent) END,
+                            res/magic, res/magic),
+                            tolerance) AS _clip_geom, 
+                        * FROM (
+                            -- main query
+                            {query}
+                            ) _wrap, _conf 
+                        WHERE geom_3857 && extent AND ST_Area(geom_3857) >= min_area
+                    )
+                    -- end geom
+                SELECT gid, q,
+                    ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
+                    FROM _geom, _conf 
+                    WHERE NOT ST_IsEmpty(_clip_geom)"""
+
+            return SQL_TEMPLATE.format(res=resolution, decimalPlaces=decimalPlaces, min_area=min_area, tolerance=tolerance, query=query, west=west, south=south, east=east, north=north, srid=srid)
+        
+        # Wrap EALGIS query in a PostGIS query to produce a vector tile
+        import mercantile
+        vt_query = create_vectortile_sql(query, bounds=mercantile.bounds(x, y, z))
+        return self.session.execute(vt_query)

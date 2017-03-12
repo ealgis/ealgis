@@ -14,6 +14,10 @@ RUN mkdir /app
 
 WORKDIR /app
 
+# Upgrade SetupTools from 28.8 to latest due to a bug installing python-memcached on Python 3.6
+# c.f. https://github.com/pypa/setuptools/issues/866
+RUN pip3 install -U setuptools
+
 ADD requirements.txt /app/
 RUN pip install -r requirements.txt
 ADD . /app/
