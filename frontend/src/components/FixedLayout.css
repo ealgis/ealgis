@@ -30,6 +30,7 @@ p {
 .page-content {
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
 .page-nav {
@@ -45,8 +46,8 @@ p {
     flex: 1;
   }
   .page-nav {
-    /* 12em is the width of the column */
-    flex: 0 0 18em;
+    /* Third param is the width of the column */
+    flex: 0 0 24em;
   }
 }
 
