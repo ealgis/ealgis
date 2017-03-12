@@ -15,27 +15,6 @@ function dockerwait {
     exec 6<&-
 }
 
-# function geoserverwait {
-#     while true
-#     do
-#         status_code=$(curl --write-out %{http_code} --silent --output /dev/null http://$1:$2)
-#         case "$status_code" in
-#             200)
-#                 break;;
-#             *)
-#                 echo "$(date) - waiting to connect $1 $2"
-#                 sleep 5;;
-#         esac
-#     done
-
-#     echo "$(date) - connected to $1 $2"
-
-#     exec 6>&-
-#     exec 6<&-
-# }
-
-dockerwait $GEOSERVER_HOST $GEOSERVER_PORT
-
 CMD="$1"
 if [ "$CMD" = "nginx" ]; then
     nginx -g 'daemon off;'

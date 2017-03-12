@@ -21,24 +21,6 @@ services:
       # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
     volumes_from:
       - dbdata
-  geoserver:
-    image: keithmoss/ealgis-geoserver:2.9.1
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-     - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
-    volumes:
-      - ./geoserver/setenv.sh:/usr/local/tomcat/bin/setenv.sh
-
-      # FOR DEVELOPMENT ONLY
-      # For setting up GeoServer for the first time. Refer to ./README.md
-      - ./geoserver:/app
-
-      # Enable this mapping and create ./dev/geoserver/ for easier access to GeoServer's data directory.
-      # NB: This will cause GeoServer to create a NEW data directory.
-      # - ./dev/geoserver/data:/opt/geoserver/data_dir
   frontend:
     build: frontend/
     command: webpack
@@ -47,6 +29,10 @@ services:
       - ./nginx/nginx:/nginx
     ports:
       - "35729:35729"
+  memcached:
+    image: memcached
+    expose:
+      - "11211"
   web:
     build: django/
     command: runserver
@@ -65,7 +51,7 @@ services:
       - web-variables.env
     depends_on:
       - db
-      - geoserver
+      - memcached
       - frontend
   nginx:
     build: nginx/
@@ -73,10 +59,6 @@ services:
       - ./nginx:/app
       - ./nginx/web:/var/www/html
     depends_on:
-      - geoserver
       - web
     ports:
       - "8443:443"
-    environment:
-      - GEOSERVER_HOST=geoserver
-      - GEOSERVER_PORT=8080

@@ -6,7 +6,6 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.apps import apps
-from ealgis.ealauth.geoserver import GeoServerLayer
 import pyparsing
 import hashlib
 
@@ -68,7 +67,7 @@ class MapDefinition(models.Model):
                 if jump_to_obj is not None:
                     self._private_copy_over(v, jump_to_obj)
 
-    def _layer_build_geoserver_query(self, old_layer, layer, force):
+    def _layer_build_postgis_query(self, old_layer, layer, force):
         def get_recurse(obj, *args):
             for v in args[:-1]:
                 obj = obj.get(v)
@@ -85,10 +84,10 @@ class MapDefinition(models.Model):
         if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional') or get_recurse(layer, 'fill', '_mapserver_epoch') != MAPSERVER_EPOCH:
             print("compiling query for layer:", layer.get('name'))
             expr = self.compile_expr(layer)
-            layer['fill']['_geoserver_query'] = expr.get_geoserver_query()
-            layer['fill']['_mapserver_epoch'] = MAPSERVER_EPOCH
+            layer['_postgis_query'] = expr.get_postgis_query()
+            layer['_mapserver_epoch'] = MAPSERVER_EPOCH
             print("... compilation complete; query:")
-            print(layer['fill']['_geoserver_query'])
+            print(layer['_postgis_query'])
 
     def _layer_update_hash(self, layer):
         try:
@@ -103,11 +102,29 @@ class MapDefinition(models.Model):
         }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
     
-    def _layer_set_geoserver_workspace(self, layer):
-        layer["_geoserver_workspace"] = "EALGIS"
-    
     def _layer_set_latlon_bbox(self, layer, bbox):
-        layer["_geoserver_layer_bbox"] = bbox
+        layer["latlon_bbox"] = bbox
+    
+    def _get_latlon_bbox(self, layer):
+        bbox_query = """
+            SELECT 
+                ST_XMin(latlon_bbox) AS minx, 
+                ST_XMax(latlon_bbox) AS maxx, 
+                ST_YMin(latlon_bbox) AS miny, 
+                ST_YMax(latlon_bbox) as maxy 
+            FROM (
+                SELECT 
+                    -- Eugh
+                    Box2D(ST_GeomFromText(ST_AsText(ST_Transform(ST_SetSRID(ST_Extent(geom_3857), 3857), 4326)))) AS latlon_bbox 
+                FROM (
+                    {query}
+                ) AS exp
+            ) AS bbox;
+        """.format(query=layer['_postgis_query'])
+        
+        eal = apps.get_app_config('ealauth').eal
+        results = eal.session.execute(bbox_query)
+        return dict(results.first())
 
     def _set(self, defn, force=False):
         old_defn = self.get()
@@ -124,16 +141,12 @@ class MapDefinition(models.Model):
             self._private_clear(layer)
             if old_layer is not None:
                 self._private_copy_over(old_layer, layer)
-            # rebuild geoserver query
-            self._layer_build_geoserver_query(old_layer, layer, force)
+            # rebuild postgis query
+            self._layer_build_postgis_query(old_layer, layer, force)
             # update layer hash
             self._layer_update_hash(layer)
-            # append GeoServer workspace
-            self._layer_set_geoserver_workspace(layer)
-            # create layer in GeoServer if necessary
-            gslayer = GeoServerLayer(layer)
-            gslayer.create()
-            self._layer_set_latlon_bbox(layer, gslayer.get_latlon_bbox())
+            # calculate latlon bounding box of the expression
+            self._layer_set_latlon_bbox(layer, self._get_latlon_bbox(layer))
         self.json = defn
         return rev
 

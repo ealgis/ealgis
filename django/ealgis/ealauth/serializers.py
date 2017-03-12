@@ -3,7 +3,6 @@ from .models import *
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from ealgis.ealgis import NoMatches, TooManyMatches, CompilationError
-from ealgis.ealauth.geoserver import GeoServerMap
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -20,7 +19,21 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'groups')
 
 
-class MapDefinitionSerializer(serializers.HyperlinkedModelSerializer):
+class MapDefinitionSerializer(serializers.ModelSerializer):
+    # def create(self, data):
+    #     # Will only be done if a new object is being created
+    #     print("data", data)
+    #     print("user", self.request.user)
+    #     map = MapDefinition(
+    #         name = data["name"],
+    #         owner_user_id = data["owner_user_id"],
+    #         description = data["description"],
+    #         json = data["json"]
+    #     )
+    #     # self._set(map, map.json)
+
+    #     return map
+
     class Meta:
         model = MapDefinition
         fields = ('id', 'name', 'description', 'json', 'owner_user_id')

@@ -3,7 +3,6 @@ from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
 from ealgis.ealauth.models import MapDefinition
-from ealgis.ealauth.geoserver import GeoServerMap
 from ealgis.ealgis import NoMatches, TooManyMatches, CompilationError
 
 @receiver(pre_save, sender=MapDefinition)

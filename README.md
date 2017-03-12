@@ -79,28 +79,6 @@ user.save()
 Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
 
 
-GeoServer Config
-----------------
-The first time GeoServer runs it initialises all of its configuration files in the GeoServer Data Directory. The default GeoServer configuration is insecure, has verbose logging, and lacks workspace configuration that EALGIS requires.
-
-To setup GeoServer for use by EALGIS you need to run a once-off shell script - `/geoserver/first-run.sh`.
-
-First, uncomment the volume mapping `./geoserver:/app` for the `geoserver` container in `docker-compose.yml`.
-
-Then `docker-compose up`, and in a separate terminal window hop in to your running GeoServer container and execute:
-
-```
-docker exec -it ealgis_geoserver_1 /bin/bash
-cd /app/
-chmod +x firstrun.sh
-./firstrun.sh
-```
-
-Follow the on-screen instructions that `firstrun.sh` prints out, and then you're done.
-
-Congratulations! GeoServer is now setup with some sensible configuration defaults.
-
-
 Get some data
 ------------
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.

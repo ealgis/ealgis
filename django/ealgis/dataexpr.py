@@ -265,7 +265,7 @@ class DataExpression(object):
     def get_printed_query(self):
         return printquery(self.query)
 
-    def get_geoserver_query(self):
+    def get_postgis_query(self):
         return ("%s" % (self.get_printed_query())).replace("\n", "")
 
 
@@ -274,6 +274,6 @@ if __name__ == '__main__':
     expr = DataExpression('CommandLine', src, sys.argv[1], sys.argv[2])
     print("Raw query::\n")
     print(''.join(["   " + t + '\n' for t in expr.get_printed_query().splitlines()]))
-    print("\nMapserver query\n")
-    print('    ' + expr.get_geoserver_query())
+    print("\PostGIS query\n")
+    print('    ' + expr.get_postgis_query())
     print("Test:", len(expr.get_query()[:10]))
