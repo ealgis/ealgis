@@ -3,6 +3,7 @@ import 'whatwg-fetch'
 import { browserHistory } from 'react-router';
 import cookie from 'react-cookie'
 import { compileLayerStyle } from '../utils/OLStyle'
+import { SubmissionError } from 'redux-form'
 
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
@@ -164,30 +165,58 @@ export function fetchMapDefinition(mapId: Number) {
     }
 }
 
-export function createMap(values: any/*, cb: Function*/) {
+export function createMap(values: Array<undefined>) {
     return (dispatch: any) => {
         return fetch('/api/0.1/maps/', {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": cookie.load("csrftoken")
-            },
-            body: JSON.stringify(Object.assign(values, {
-                "json": {
-                    "map_defaults": {
-                        "lat": "-27.121915157767",
-                        "lon": "133.21253738715",
-                        "zoom": "4"
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": cookie.load("csrftoken")
+                },
+                body: JSON.stringify(Object.assign(values, {
+                    "json": {
+                        // FIXME
+                        "map_defaults": {
+                            "lat": "-27.121915157767",
+                            "lon": "133.21253738715",
+                            "zoom": "4"
+                        }
                     }
+                })),
+            })
+            .then((response: any) => response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+            .then(({ response, json }: any) => {
+                console.log("then", json)
+                
+                if(response.status === 201) {
+                    dispatch(receiveCreatedMap(json))
+                    browserHistory.push("/map/" + json.id)
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
-            })),
-        })
-            .then((response: any) => response.json())
-            .then((json: any) => {
-                dispatch(receiveCreatedMap(json))
-                // cb(json.id)
-                browserHistory.push("/map/" + json.id)
+            })
+            .catch((error: any) => {
+                if(error instanceof SubmissionError) {
+                    throw error;
+                } else {
+                    throw new SubmissionError({_error: error.message});
+                }
             })
     }
 }

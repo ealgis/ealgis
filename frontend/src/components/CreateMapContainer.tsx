@@ -1,30 +1,34 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import CreateMap from "./CreateMap";
-
-interface CreateMapContainerRouteParams {
-    mapId: Number
-}
+import { createMap } from '../actions'
 
 export interface CreateMapContainerProps {
-    map_definition: CreateMapContainerRouteParams,
+    onSubmit: Function,
 }
 
 export class CreateMapContainer extends React.Component<CreateMapContainerProps, undefined> {
     render() {
-        return <CreateMap />;
+        const { onSubmit } = this.props
+        return <CreateMap onSubmit={onSubmit} />;
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { map_definition } = state
-    return {
-        map_definition: map_definition
-    }
+const mapStateToProps = (state: any) => ({
+    
+})
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    onSubmit: (values: Array<undefined>) => {
+        return dispatch(createMap(values));
+    },
+  };
 }
 
 const CreateMapContainerWrapped = connect(
-    mapStateToProps
-)(CreateMapContainer)
+    mapStateToProps,
+    mapDispatchToProps
+)(CreateMapContainer as any)
 
 export default CreateMapContainerWrapped

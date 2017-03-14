@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from .models import *
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueTogetherValidator
 from ealgis.ealgis import NoMatches, TooManyMatches, CompilationError
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -37,6 +38,13 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = MapDefinition
         fields = ('id', 'name', 'description', 'json', 'owner_user_id')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=MapDefinition.objects.all(),
+                fields=('name', 'owner_user_id'),
+                message='Please choose a map name that you haven\'t used before.'
+            )
+        ]
 
 
 class JSONMetadataField(serializers.Field):
