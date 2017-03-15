@@ -11,9 +11,6 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import {red500} from 'material-ui/styles/colors';
 
 const required = value => value ? undefined : 'Required'
-const maxLength = max => value =>
-  value && value.length > max ? `Must be ${max} characters or less` : undefined
-const maxLength15 = maxLength(15)
 
 export interface CreateMapProps {
     onSubmit: Function,
@@ -46,7 +43,7 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
                     hintText="Give your map a name..."
                     floatingLabelText="Map name"
                     floatingLabelFixed={true}
-                    validate={[ required, maxLength15 ]}
+                    validate={[ required ]}
                     fullWidth={true}
                     autoComplete="off"
                 />
