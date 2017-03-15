@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY } from '../actions';
+import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, RECEIVE_DATA_INFO, RECEIVE_COLOUR_INFO } from '../actions';
 
 function user(state = {
     user: {
@@ -79,7 +79,27 @@ function maps(state: any = {}, action: any) {
     }
 }
 
+function datainfo(state = {}, action: any) {
+    switch (action.type) {
+        case RECEIVE_DATA_INFO:
+            return action.json
+        default:
+            return state
+    }
+}
+
+function colourinfo(state = {}, action: any) {
+    switch (action.type) {
+        case RECEIVE_COLOUR_INFO:
+            return action.json
+        default:
+            return state
+    }
+}
+
 export default {
     user,
     maps,
+    datainfo,
+    colourinfo,
 };

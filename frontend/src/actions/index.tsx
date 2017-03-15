@@ -15,6 +15,8 @@ export const DELETE_MAP = 'DELETE_MAP'
 export const CREATE_MAP = 'CREATE_MAP'
 export const COMPILED_LAYER_STYLE = 'COMPILED_LAYER_STYLE'
 export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
+export const RECEIVE_DATA_INFO = 'RECEIVE_DATA_INFO'
+export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
 
 export function requestUser() {
     return {
@@ -83,6 +85,20 @@ export function receiveCreatedMap(map: object) {
 export function receiveCompiledLayerStyle(json: any) {
     return {
         type: COMPILED_LAYER_STYLE,
+        json
+    }
+}
+
+export function receiveDataInfo(json: any) {
+    return {
+        type: RECEIVE_DATA_INFO,
+        json
+    }
+}
+
+export function receiveColourInfo(json: any) {
+    return {
+        type: RECEIVE_COLOUR_INFO,
         json
     }
 }
@@ -234,5 +250,27 @@ export function deleteMap(mapId: number/*, cb: Function*/) {
                 }
             }))
             .catch(error => { console.log('request failed', error); }); // This could be handled at a higher level through a factory (as per early examples we investigated)
+    }
+}
+
+export function fetchDataInfo() {
+    return (dispatch: any) => {
+        dispatch(requestUser())
+        return fetch('/api/0.1/datainfo/', {
+            credentials: "same-origin",
+        })
+            .then((response: any) => response.json())
+            .then((json: any) => dispatch(receiveDataInfo(json)))
+    }
+}
+
+export function fetchColourInfo() {
+    return (dispatch: any) => {
+        dispatch(requestUser())
+        return fetch('/api/0.1/colours/', {
+            credentials: "same-origin",
+        })
+            .then((response: any) => response.json())
+            .then((json: any) => dispatch(receiveColourInfo(json)))
     }
 }
