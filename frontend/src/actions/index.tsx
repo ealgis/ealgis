@@ -48,13 +48,6 @@ export function requestMapDefinition() {
     }
 }
 
-export function receiveMapDefinition(json: any) {
-    return {
-        type: RECEIVE_MAP_DEFINITION,
-        json
-    }
-}
-
 export function receiveChangeLayerVisibility(mapId: number, layerHash: string) {
     return {
         type: CHANGE_LAYER_VISIBILITY,
@@ -143,25 +136,6 @@ export function fetchMaps() {
         })
             .then((response: any) => response.json())
             .then((json: any) => dispatch(receiveMaps(json)))
-    }
-}
-
-export function fetchMapDefinition(mapId: Number) {
-    return (dispatch: any) => {
-        dispatch(requestMapDefinition())
-        return fetch('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
-            credentials: "same-origin",
-        })
-            .then((response: any) => response.json())
-            .then((defn: any) => {
-                // FIXME Layers should be an array, not an object
-                for (let k in defn.json.layers) {
-                    const l = defn.json.layers[k]
-                    l.olStyle = compileLayerStyle(l)
-                }
-                return defn
-            })
-            .then((json: any) => dispatch(receiveMapDefinition(json)))
     }
 }
 
