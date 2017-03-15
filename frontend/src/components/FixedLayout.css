@@ -30,11 +30,12 @@ p {
 .page-content {
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .page-nav {
   order: -1;
+  overflow: auto;
 }
 
 @media (min-width: 768px) {
@@ -44,6 +45,10 @@ p {
   }
   .page-main-content {
     flex: 1;
+  }
+  .page-main-content > div,
+  .page-main-content > div > div {
+    height: 100%
   }
   .page-nav {
     /* Third param is the width of the column */
