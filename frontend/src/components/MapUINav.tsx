@@ -47,12 +47,6 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
         const { defn, onDeleteMap } = this.props
 
         if(defn !== undefined && defn.json !== undefined) {
-            // FIXME Layers should be an array, not an object
-            let layerObjs = []
-            for (let l in defn.json.layers) {
-                layerObjs.push(defn.json.layers[l])
-            }
-
             return <div>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
@@ -61,15 +55,15 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                         <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
-                        <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={`/`} />}><NavigationClose /></IconButton>
+                        <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
                     </ToolbarGroup>
                 </Toolbar>
                 
                 <h2 style={{textAlign: "center"}}>{defn.name}</h2>
 
                 <List>
-                    <ListItem primaryText="Layers" leftIcon={<MapsLayers />} rightIconButton={<IconButton tooltip="Add a new layer"><MapsAddLocation /></IconButton>} />
-                    {layerObjs.map((l: any) => 
+                    <ListItem primaryText="Layers" leftIcon={<MapsLayers />} rightIconButton={<IconButton tooltip="Add a new layer" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>} />
+                    {defn.json.layers.map((l: any) => 
                         <ListItem 
                             key={l.hash}
                             rightIconButton={rightIconMenu}

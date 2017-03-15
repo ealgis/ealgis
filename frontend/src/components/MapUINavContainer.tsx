@@ -9,21 +9,21 @@ interface MapUINavContainerRouteParams {
 }
 
 export interface MapUINavContainerProps {
-    map_definition: MapUINavContainerRouteParams,
+    mapDefinition: MapUINavContainerRouteParams,
     onDeleteMap: Function,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     render() {
-        const { map_definition, onDeleteMap } = this.props
-        return <MapUINav defn={map_definition} onDeleteMap={() => onDeleteMap(map_definition.id)} />;
+        const { mapDefinition, onDeleteMap } = this.props
+        return <MapUINav defn={mapDefinition} onDeleteMap={() => onDeleteMap(mapDefinition.id)} />;
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { map_definition, maps } = state
+    const { maps } = state
     return {
-        map_definition: maps[ownProps.params.mapId]
+        mapDefinition: maps[ownProps.params.mapId]
     }
 }
 

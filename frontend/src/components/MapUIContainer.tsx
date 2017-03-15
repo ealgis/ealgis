@@ -1,7 +1,6 @@
 import * as React from "react";
 import MapUI from "./MapUI";
 import { connect } from 'react-redux';
-import { fetchMapDefinition } from '../actions';
 
 import 'openlayers/css/ol.css';
 
@@ -23,7 +22,7 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { map_definition, maps } = state
+    const { maps } = state
     return {
         mapDefinition: maps[ownProps.params.mapId]
     }

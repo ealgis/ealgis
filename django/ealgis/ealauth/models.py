@@ -129,13 +129,13 @@ class MapDefinition(models.Model):
     def _set(self, defn, force=False):
         old_defn = self.get()
         if 'layers' not in old_defn:
-            old_defn['layers'] = {}
+            old_defn['layers'] = []
         rev = old_defn.get('rev', 0) + 1
         defn['rev'] = rev
-        for k, layer in defn['layers'].items():
+        for layer in defn['layers']:
             # compile layer SQL expression (this is sometimes slow, so best to do
             # just the once)
-            old_layer = old_defn['layers'].get(k)
+            old_layer = old_defn['layers']
             # private variables we don't allow the client to set; we simply clear & copy over
             # from the last object in the database
             self._private_clear(layer)
