@@ -29,8 +29,8 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
                 <olr.source.XYZ url={mapbox_url} />
             </olr.layer.Tile>
             <div>
-                {defn.json.layers.map((l: any) => {
-                    return <LayerContainerWrapped key={l.hash} map={defn} layer={l}></LayerContainerWrapped>
+                {defn.json.layers.map((l: any, key: number) => {
+                    return <LayerContainerWrapped key={key} map={defn} layer={l}></LayerContainerWrapped>
                 })}
             </div>
         </olr.Map>

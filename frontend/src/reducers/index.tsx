@@ -1,6 +1,22 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, RECEIVE_DATA_INFO, RECEIVE_COLOUR_INFO } from '../actions';
+import { RECEIVE_APP_LOADED, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
+
+function app(state = {
+    loading: true
+}, action: any) {
+    switch (action.type) {
+        case REQUEST_USER:
+        case REQUEST_MAPS:
+        case REQUEST_DATA_INFO:
+        case REQUEST_COLOUR_INFO:
+            return {loading: true}
+        case RECEIVE_APP_LOADED:
+            return {loading: false}
+        default:
+            return state;
+    }
+}
 
 function user(state = {
     user: {
@@ -22,9 +38,9 @@ function maps(state: any = {}, action: any) {
         case REQUEST_MAPS:
             return state
         case RECEIVE_MAPS:
-            // Map our array into an object where mapIds are the key
-            return Object.assign(...action.json.map(d => ({[d.id: d})))
-            // return new Map(action.json.map((i: any) => [i.id, i]))
+            return action.maps
+        case RECEIVE_UPDATED_MAP:
+            return dotProp.set(state, `${action.map.id}`, action.map)
         case CREATE_MAP:
             return {
                 ...state,
@@ -33,27 +49,31 @@ function maps(state: any = {}, action: any) {
         case DELETE_MAP:
             let { [action.mapId]: deletedItem, ...rest } = state
             return rest
+        case RECEIVE_DELETE_MAP_LAYER:
+            return dotProp.delete(state, `${action.mapId}.json.layers.${action.layerId}`)
         case CHANGE_LAYER_VISIBILITY:
-            // FIXME This fails (layerHash as gid) if we have two layers with the same geom and expression
-            let layerKey: number?: null
-            let layer: object
-            for (let l in state[action.mapId].json.layers) {
-                if(state[action.mapId].json.layers[l].hash === action.layerHash) {
-                    layerKey = l
-                    layer = state[action.mapId].json.layers[l]
-                    break
-                }
-            }
+            return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
+        // case RECEIVE_LAYER_UPSERT:
+        //     console.log("RECEIVE_LAYER_UPSERT")
+        //     console.log(state)
+        //     console.log(action)
 
-            if(layerKey === null) {
-                return state
-            }
-
-            // https://github.com/reactjs/redux/issues/57#issuecomment-109764580
-            // http://redux.js.org/docs/Troubleshooting.html#nothing-happens-when-i-dispatch-an-action
-            // http://redux.js.org/docs/recipes/reducers/ImmutableUpdatePatterns.html#updating-nested-objects
-            // Ideas for a better approach -> http://redux.js.org/docs/recipes/reducers/ImmutableUpdatePatterns.html
-            return dotProp.set(state, `${action.mapId}.json.layers.${layerKey}.visible`, !layer.visible)
+            
+        //     if(action.layerId === undefined) {
+        //         console.log("Adding new layer")
+        //         let list = state[action.mapId]["json"]["layers"]
+        //         console.log(list)
+        //         if(list.length >= 1) {
+        //             console.log("Existing layers list")
+        //             return dotProp.set(state, '${action.mapId}.json.layers', list => [...list, action.layer])
+        //         } else {
+        //             console.log("New layers list")
+        //             return dotProp.set(state, `${action.mapId}.json.layers`, [action.layer])
+        //         }
+        //     } else {
+        //         console.log("Updating existing layer")
+        //         return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
+        //     }
         case COMPILED_LAYER_STYLE:
             // FIXME Make this work
             return dotProp.set(state, `${action.mapId}.json.layers.${layerKey}.olStyle`, action.json)
@@ -98,6 +118,7 @@ function colourinfo(state = {}, action: any) {
 }
 
 export default {
+    app,
     user,
     maps,
     datainfo,

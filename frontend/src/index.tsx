@@ -15,6 +15,7 @@ import reducers from './reducers/index';
 import EalUIContainerWrapped from "./components/EalUIContainer";
 import MapUIContainerWrapped from "./components/MapUIContainer";
 import MapUINavContainerWrapped from "./components/MapUINavContainer";
+import LayerFormContainerWrapped from "./components/LayerFormContainer";
 import CreateMapContainerWrapped from "./components/CreateMapContainer";
 import MapList from "./components/MapList";
 
@@ -37,6 +38,7 @@ ReactDOM.render(
         <Router history={history}>
             <Route path="/" component={EalUIContainerWrapped}>
                 <Route path="map/:mapId" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>
+                <Route path="map/:mapId/layer(/:layerId)" components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}/>
                 <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: CreateMapContainerWrapped }}/>
                 <IndexRoute components={{ content: MapList }}/>
             </Route>

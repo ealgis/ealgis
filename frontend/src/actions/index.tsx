@@ -5,6 +5,7 @@ import cookie from 'react-cookie'
 import { compileLayerStyle } from '../utils/OLStyle'
 import { SubmissionError } from 'redux-form'
 
+export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -15,8 +16,13 @@ export const DELETE_MAP = 'DELETE_MAP'
 export const CREATE_MAP = 'CREATE_MAP'
 export const COMPILED_LAYER_STYLE = 'COMPILED_LAYER_STYLE'
 export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
+export const REQUEST_DATA_INFO = 'REQUEST_DATA_INFO'
 export const RECEIVE_DATA_INFO = 'RECEIVE_DATA_INFO'
+export const REQUEST_COLOUR_INFO = 'REQUEST_COLOUR_INFO'
 export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
+export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
+export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
+export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 
 export function requestUser() {
     return {
@@ -37,10 +43,10 @@ export function requestMaps() {
     }
 }
 
-export function receiveMaps(json: any) {
+export function receiveMaps(maps: object) {
     return {
         type: RECEIVE_MAPS,
-        json
+        maps
     }
 }
 
@@ -50,17 +56,18 @@ export function requestMapDefinition() {
     }
 }
 
-export function receiveChangeLayerVisibility(mapId: number, layerHash: string) {
+export function receiveChangeLayerVisibility(mapId: number, layerId: number) {
     return {
         type: CHANGE_LAYER_VISIBILITY,
         mapId,
-        layerHash,
+        layerId,
     }
 }
 
-export function changeLayerVisibility(mapId: number, layerHash: string) {
-    return (dispatch: any) => {
-        dispatch(receiveChangeLayerVisibility(mapId, layerHash))
+export function changeLayerVisibility(map: object, layerId: number) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(receiveChangeLayerVisibility(map["id"], layerId))
+        dispatch(updateMap(getState().maps[map["id"]]))
     }
 }
 
@@ -89,6 +96,12 @@ export function receiveCompiledLayerStyle(json: any) {
     }
 }
 
+export function requestDataInfo() {
+    return {
+        type: REQUEST_DATA_INFO
+    }
+}
+
 export function receiveDataInfo(json: any) {
     return {
         type: RECEIVE_DATA_INFO,
@@ -100,6 +113,195 @@ export function receiveColourInfo(json: any) {
     return {
         type: RECEIVE_COLOUR_INFO,
         json
+    }
+}
+
+export function requestColourInfo() {
+    return {
+        type: REQUEST_COLOUR_INFO
+    }
+}
+
+export function receiveLayerUpsert(mapId: number, layerId: number, layer: object) {
+    return {
+        type: RECEIVE_LAYER_UPSERT,
+        mapId,
+        layerId,
+        layer
+    }
+}
+
+export function receieveUpdatedMap(map: object) {
+    return {
+        type: RECEIVE_UPDATED_MAP,
+        map
+    }
+}
+
+export function receiveDeleteMapLayer(mapId: number, layerId: number) {
+    return {
+        type: RECEIVE_DELETE_MAP_LAYER,
+        mapId,
+        layerId
+    }
+}
+
+export function receiveAppLoaded() {
+    return {
+        type: RECEIVE_APP_LOADED,
+    }
+}
+
+export function updateMap(map: object) {
+    return (dispatch: any) => {
+        return fetch('/api/0.1/maps/' + map["id"] + "/", {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": cookie.load("csrftoken")
+                },
+                body: JSON.stringify(map),
+            })
+            .then((response: any) => response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+            .then(({ response, json }: any) => {
+                // FIXME Cleanup and decide how to handle error at a component and application-level
+                
+                if(response.status === 200) {
+                    // dispatch(receieveUpdatedMap(json))
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            })
+            .catch((error: any) => {
+                // if(error instanceof SubmissionError) {
+                throw error;
+                // } else {
+                    // throw new SubmissionError({_error: error.message});
+                // }
+            })
+    }
+}
+
+export function layerUpsert(map: object, layerId: number, layer: object) {
+    return (dispatch: any) => {
+        // Upsert
+        let mapCopy: object = JSON.parse(JSON.stringify(map))
+        if(layerId === undefined) {
+            mapCopy["json"]["layers"].push(layer)
+        } else {
+            mapCopy["json"]["layers"][layerId] = layer
+        }
+
+        fetch('/api/0.1/maps/' + mapCopy["id"] + "/", {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": cookie.load("csrftoken")
+                },
+                body: JSON.stringify(mapCopy),
+            })
+            .then((response: any) => response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+            .then(({ response, json }: any) => {
+                if(response.status === 200) {
+                    dispatch(receieveUpdatedMap(json))
+                    
+                    if(layerId === undefined) {
+                        browserHistory.push("/map/" + json.id)
+                    }
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            })
+            .catch((error: any) => {
+                // if(error instanceof SubmissionError) {
+                throw error;
+                // } else {
+                    // throw new SubmissionError({_error: error.message});
+                // }
+            })
+    }
+}
+
+export function deleteMapLayer(map: object, layerId: number) {
+    return (dispatch: any) => {
+        let mapCopy: object = JSON.parse(JSON.stringify(map))
+        if(mapCopy["json"]["layers"][layerId] !== undefined) {
+            mapCopy["json"]["layers"].splice(layerId, 1);
+        }
+
+        fetch('/api/0.1/maps/' + mapCopy["id"] + "/", {
+                method: "PUT",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": cookie.load("csrftoken")
+                },
+                body: JSON.stringify(mapCopy),
+            })
+            .then((response: any) => response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+            .then(({ response, json }: any) => {
+                // FIXME Cleanup and decide how to handle error at a component and application-level
+                if(response.status === 200) {
+                    dispatch(receiveDeleteMapLayer(map.id, layerId))
+                    // browserHistory.push("/map/" + json.id)
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            })
+            .catch((error: any) => {
+                // if(error instanceof SubmissionError) {
+                throw error;
+                // } else {
+                    // throw new SubmissionError({_error: error.message});
+                // }
+            })
     }
 }
 
@@ -133,6 +335,25 @@ export function fetchCompiledLayerStyle(l: Object) {
     }
 }
 
+export function fetchUserMapsDataAndColourInfo() {
+    // https://github.com/reactjs/redux/issues/1676
+    // Again, Redux Thunk will inject dispatch here.
+    // It also injects a second argument called getState() that lets us read the current state.
+    return (dispatch: any, getState: Function) => {
+        // Remember I told you dispatch() can now handle thunks?
+        return dispatch(fetchUser()).then(() => {
+            // And we can dispatch() another thunk now!
+            return dispatch(fetchMaps()).then(() => {
+                return dispatch(fetchDataInfo()).then(() => {
+                    return dispatch(fetchColourInfo()).then(() => {
+                        dispatch(receiveAppLoaded())
+                    })
+                })
+            })
+        })
+    }
+}
+
 export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
@@ -150,13 +371,44 @@ export function fetchMaps() {
         return fetch('/api/0.1/maps/', {
             credentials: "same-origin",
         })
-            .then((response: any) => response.json())
-            .then((json: any) => dispatch(receiveMaps(json)))
+        .then((response: any) => response.json().then((json: any) => ({
+            response: response,
+            json: json,
+        }))
+        .then(({ response, json }: any) => {
+            // FIXME Cleanup and decide how to handle error at a component and application-level
+            if(response.status === 200) {
+                // Map maps from an array of objects to a dict keyed by mapId
+                const maps = Object.assign(...json.map(d => ({[d.id: d})))
+                dispatch(receiveMaps(maps))
+            }
+            // throw new Error(`Error ${response.status}: Failed to retrieve maps.`)
+            // return json
+        })
+        .catch((error: any) => {
+            // if(error instanceof SubmissionError) {
+            throw error;
+            // } else {
+                // throw new SubmissionError({_error: error.message});
+            // }
+        })
+            // .then((response: any) => response.json())
+            // .then((json: any) => dispatch(receiveMaps(json)))
     }
 }
 
-export function createMap(values: Array<undefined>) {
+export function createMap(map: object) {
     return (dispatch: any) => {
+        let mapCopy: object = JSON.parse(JSON.stringify(map))
+        mapCopy["json"] = {
+            // FIXME
+            "map_defaults": {
+                "lat": "-27.121915157767",
+                "lon": "133.21253738715",
+                "zoom": "4"
+            }
+        }
+
         return fetch('/api/0.1/maps/', {
                 method: "POST",
                 credentials: "same-origin",
@@ -164,23 +416,14 @@ export function createMap(values: Array<undefined>) {
                     "Content-Type": "application/json",
                     "X-CSRFToken": cookie.load("csrftoken")
                 },
-                body: JSON.stringify(Object.assign(values, {
-                    "json": {
-                        // FIXME
-                        "map_defaults": {
-                            "lat": "-27.121915157767",
-                            "lon": "133.21253738715",
-                            "zoom": "4"
-                        }
-                    }
-                })),
+                body: JSON.stringify(mapCopy),
             })
             .then((response: any) => response.json().then((json: any) => ({
                 response: response,
                 json: json,
             }))
             .then(({ response, json }: any) => {
-                console.log("then", json)
+                // FIXME Cleanup and decide how to handle error at a component and application-level
                 
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
@@ -255,18 +498,25 @@ export function deleteMap(mapId: number/*, cb: Function*/) {
 
 export function fetchDataInfo() {
     return (dispatch: any) => {
-        dispatch(requestUser())
+        dispatch(requestDataInfo())
         return fetch('/api/0.1/datainfo/', {
             credentials: "same-origin",
         })
             .then((response: any) => response.json())
+            .then((json: any) => {
+                const ordered = {};
+                Object.keys(json).sort().forEach(function(key) {
+                    ordered[key] = json[key];
+                });
+                return ordered
+            })
             .then((json: any) => dispatch(receiveDataInfo(json)))
     }
 }
 
 export function fetchColourInfo() {
     return (dispatch: any) => {
-        dispatch(requestUser())
+        dispatch(requestColourInfo())
         return fetch('/api/0.1/colours/', {
             credentials: "same-origin",
         })

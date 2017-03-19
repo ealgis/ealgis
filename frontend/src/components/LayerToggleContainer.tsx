@@ -4,28 +4,30 @@ import LayerToggle from "./LayerToggle";
 import { changeLayerVisibility } from '../actions';
 
 export interface LayerToggleContainerProps {
-    l: Object,
+    layerDefinition: Object,
+    layerId: number,
     mapId: number,
+    mapDefinition: object,
     onToggle: Function,
 }
 
 export class LayerToggleContainer extends React.Component<LayerToggleContainerProps, undefined> {
     render() {
-        const { l, mapId, onToggle } = this.props
-        return <LayerToggle l={l} mapId={mapId} onToggle={() => onToggle(mapId, l)} />;
+        const { layerDefinition, layerId, mapId, mapDefinition, onToggle } = this.props
+        return <LayerToggle layerDefinition={layerDefinition} mapId={mapId} onToggle={() => onToggle(mapDefinition, layerId)} />;
     }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: any, ownProps: object) => {
     return {
-        
+        mapDefinition: state.maps[ownProps.mapId]
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onToggle: (mapId: any, l: any) => {
-        dispatch(changeLayerVisibility(mapId, l.hash));
+    onToggle: (map: object, layerId: number) => {
+        dispatch(changeLayerVisibility(map, layerId));
     }
   };
 }

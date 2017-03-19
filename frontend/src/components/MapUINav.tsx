@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router';
+import LayerUINav from "./LayerUINavContainer";
 import Subheader from 'material-ui/Subheader';
 import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -21,22 +22,6 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
-const iconButtonElement = (
-  <IconButton
-    touch={true}
-  >
-    <MoreVertIcon color={grey400} />
-  </IconButton>
-);
-
-const rightIconMenu = (
-  <IconMenu iconButtonElement={iconButtonElement}>
-    <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} />
-    <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} />
-    <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} />
-  </IconMenu>
-);
-
 export interface MapUINavProps {
     defn: any
     onDeleteMap: Function,
@@ -46,40 +31,32 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
         const { defn, onDeleteMap } = this.props
 
-        if(defn !== undefined && defn.json !== undefined) {
-            return <div>
-                <Toolbar>
-                    <ToolbarGroup firstChild={true}>
-                        <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right"><ContentCopy /></IconButton>
-                        <IconButton tooltip="Set the default extents for this map to the current view" tooltipPosition="bottom-right"><ActionBookmark /></IconButton>
-                        <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
-                    </ToolbarGroup>
-                    <ToolbarGroup lastChild={true}>
-                        <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
-                    </ToolbarGroup>
-                </Toolbar>
-                
-                <h2 style={{textAlign: "center"}}>{defn.name}</h2>
+        return <div>
+            <Toolbar>
+                <ToolbarGroup firstChild={true}>
+                    <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right"><ContentCopy /></IconButton>
+                    <IconButton tooltip="Set the default extents for this map to the current view" tooltipPosition="bottom-right"><ActionBookmark /></IconButton>
+                    <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
+                </ToolbarGroup>
+                <ToolbarGroup lastChild={true}>
+                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
+                </ToolbarGroup>
+            </Toolbar>
+            
+            <h2 style={{textAlign: "center"}}>{defn.name}</h2>
 
-                <List>
-                    <ListItem primaryText="Layers" leftIcon={<MapsLayers />} rightIconButton={<IconButton tooltip="Add a new layer" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>} />
-                    {defn.json.layers.map((l: any) => 
-                        <ListItem 
-                            key={l.hash}
-                            rightIconButton={rightIconMenu}
-                            rightToggle={
-                                <LayerToggle
-                                    l={l}
-                                    mapId={defn.id}
-                                />
-                            }
-                        />
-                    )}
-                </List>
-            </div>
-        }
-
-        return <div></div>
+            <List>
+                <ListItem primaryText="Layers" leftIcon={<MapsLayers />} rightIconButton={<IconButton tooltip="Add a new layer" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>} />
+                {defn.json.layers.map((l: any, key: number) => 
+                    <LayerUINav 
+                        key={key}
+                        layerId={key}
+                        layerDefinition={l}
+                        mapId={defn.id}
+                    />
+                )}
+            </List>
+        </div>
     }
 }
 
