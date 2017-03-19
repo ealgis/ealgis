@@ -18,7 +18,11 @@ export interface MapContainerProps {
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     render() {
         const { mapDefinition } = this.props
-        return <MapUI defn={mapDefinition} />;
+
+        if(mapDefinition !== undefined) {
+            return <MapUI defn={mapDefinition} />;
+        }
+        return <div></div>
     }
 }
 
