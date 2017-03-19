@@ -12,6 +12,7 @@ export interface MapContainerProps {
     dispatch: Function,
     params: any,
     mapDefinition: MapContainerRouteParams,
+    app: object,
 }
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
@@ -22,8 +23,9 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps } = state
+    const { app, maps } = state
     return {
+        app: app,
         mapDefinition: maps[ownProps.params.mapId]
     }
 }

@@ -6,6 +6,7 @@ import { compileLayerStyle } from '../utils/OLStyle'
 import { SubmissionError } from 'redux-form'
 
 export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
+export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -149,6 +150,12 @@ export function receiveDeleteMapLayer(mapId: number, layerId: number) {
 export function receiveAppLoaded() {
     return {
         type: RECEIVE_APP_LOADED,
+    }
+}
+
+export function receiveSidebarState() {
+    return {
+        type: RECEIVE_TOGGLE_SIDEBAR_STATE,
     }
 }
 
