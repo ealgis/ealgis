@@ -44,7 +44,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
                     rightIconButton={
                         <IconMenu iconButtonElement={iconButtonElement}>
                             <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
-                            <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} />
+                            <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} disabled={true} />
                             <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
                         </IconMenu>
                     }
