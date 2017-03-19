@@ -4,6 +4,7 @@ import { browserHistory } from 'react-router';
 import cookie from 'react-cookie'
 import { compileLayerStyle } from '../utils/OLStyle'
 import { SubmissionError } from 'redux-form'
+import { EALGISApiClient } from '../helpers/EALGISApiClient';
 
 export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
 export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
@@ -24,6 +25,8 @@ export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
 export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
 export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
+
+const ealapi = new EALGISApiClient()
 
 export function requestUser() {
     return {
@@ -161,19 +164,7 @@ export function receiveSidebarState() {
 
 export function updateMap(map: object) {
     return (dispatch: any) => {
-        return fetch('/api/0.1/maps/' + map["id"] + "/", {
-                method: "PUT",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": cookie.load("csrftoken")
-                },
-                body: JSON.stringify(map),
-            })
-            .then((response: any) => response.json().then((json: any) => ({
-                response: response,
-                json: json,
-            }))
+        return ealapi.put('/api/0.1/maps/' + map["id"] + "/", map)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 
@@ -194,14 +185,7 @@ export function updateMap(map: object) {
                     // our Error will get passed straight to `.catch()`
                     throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
-            })
-            .catch((error: any) => {
-                // if(error instanceof SubmissionError) {
-                throw error;
-                // } else {
-                    // throw new SubmissionError({_error: error.message});
-                // }
-            })
+            });
     }
 }
 
@@ -215,19 +199,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
             mapCopy["json"]["layers"][layerId] = layer
         }
 
-        fetch('/api/0.1/maps/' + mapCopy["id"] + "/", {
-                method: "PUT",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": cookie.load("csrftoken")
-                },
-                body: JSON.stringify(mapCopy),
-            })
-            .then((response: any) => response.json().then((json: any) => ({
-                response: response,
-                json: json,
-            }))
+        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy)
             .then(({ response, json }: any) => {
                 if(response.status === 200) {
                     dispatch(receieveUpdatedMap(json))
@@ -250,14 +222,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
                     // our Error will get passed straight to `.catch()`
                     throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
-            })
-            .catch((error: any) => {
-                // if(error instanceof SubmissionError) {
-                throw error;
-                // } else {
-                    // throw new SubmissionError({_error: error.message});
-                // }
-            })
+            });
     }
 }
 
@@ -268,19 +233,7 @@ export function deleteMapLayer(map: object, layerId: number) {
             mapCopy["json"]["layers"].splice(layerId, 1);
         }
 
-        fetch('/api/0.1/maps/' + mapCopy["id"] + "/", {
-                method: "PUT",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": cookie.load("csrftoken")
-                },
-                body: JSON.stringify(mapCopy),
-            })
-            .then((response: any) => response.json().then((json: any) => ({
-                response: response,
-                json: json,
-            }))
+        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 if(response.status === 200) {
@@ -301,14 +254,7 @@ export function deleteMapLayer(map: object, layerId: number) {
                     // our Error will get passed straight to `.catch()`
                     throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
-            })
-            .catch((error: any) => {
-                // if(error instanceof SubmissionError) {
-                throw error;
-                // } else {
-                    // throw new SubmissionError({_error: error.message});
-                // }
-            })
+            });
     }
 }
 
@@ -329,6 +275,7 @@ export function fetchCompiledLayerStyle(l: Object) {
             }
             Object.keys(params).forEach((key, value) => { url.searchParams.append(key, params[key]) })
 
+            // FIXME Use ealapi
             fetch(url, {
                 credentials: "same-origin",
             })
@@ -364,43 +311,29 @@ export function fetchUserMapsDataAndColourInfo() {
 export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
-        return fetch('/api/0.1/self', {
-            credentials: "same-origin",
-        })
-            .then((response: any) => response.json())
-            .then((json: any) => dispatch(receiveUser(json)))
+
+        return ealapi.get('/api/0.1/self')
+            .then(({ response, json }: any) => {
+                dispatch(receiveUser(json))
+            });
     }
 }
 
 export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
-        return fetch('/api/0.1/maps/', {
-            credentials: "same-origin",
-        })
-        .then((response: any) => response.json().then((json: any) => ({
-            response: response,
-            json: json,
-        }))
-        .then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-            if(response.status === 200) {
-                // Map maps from an array of objects to a dict keyed by mapId
-                const maps = Object.assign(...json.map(d => ({[d.id: d})))
-                dispatch(receiveMaps(maps))
-            }
-            // throw new Error(`Error ${response.status}: Failed to retrieve maps.`)
-            // return json
-        })
-        .catch((error: any) => {
-            // if(error instanceof SubmissionError) {
-            throw error;
-            // } else {
-                // throw new SubmissionError({_error: error.message});
-            // }
-        })
-            // .then((response: any) => response.json())
-            // .then((json: any) => dispatch(receiveMaps(json)))
+
+        return ealapi.get('/api/0.1/maps/')
+            .then(({ response, json }: any) => {
+                // FIXME Cleanup and decide how to handle error at a component and application-level
+                if(response.status === 200) {
+                    // Map maps from an array of objects to a dict keyed by mapId
+                    const maps = Object.assign(...json.map(d => ({[d.id: d})))
+                    dispatch(receiveMaps(maps))
+                }
+                // throw new Error(`Error ${response.status}: Failed to retrieve maps.`)
+                // return json
+            })
     }
 }
 
@@ -416,19 +349,7 @@ export function createMap(map: object) {
             }
         }
 
-        return fetch('/api/0.1/maps/', {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": cookie.load("csrftoken")
-                },
-                body: JSON.stringify(mapCopy),
-            })
-            .then((response: any) => response.json().then((json: any) => ({
-                response: response,
-                json: json,
-            }))
+        return ealapi.post('/api/0.1/maps/', mapCopy)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 
@@ -457,7 +378,7 @@ export function createMap(map: object) {
                 } else {
                     throw new SubmissionError({_error: error.message});
                 }
-            })
+            });
     }
 }
 
@@ -480,16 +401,10 @@ export function deleteMapSuccess(mapId: number) {
   };
 }
 
-export function deleteMap(mapId: number/*, cb: Function*/) {
+export function deleteMap(mapId: number) {
     return (dispatch: any) => {
-        return fetch('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', {
-            method: "DELETE",
-            credentials: "same-origin",
-            headers: {
-                "X-CSRFToken": cookie.load("csrftoken")
-            },
-        })
-            .then(((response: any) => {
+        return ealapi.delete('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/')
+            .then((response: any) => {
                 if(response.status == 204) {
                     dispatch(deleteMapSuccess(mapId))
                 } else {
@@ -498,36 +413,33 @@ export function deleteMap(mapId: number/*, cb: Function*/) {
                     // dispatch(deleteMapError(error));
                     throw error
                 }
-            }))
-            .catch(error => { console.log('request failed', error); }); // This could be handled at a higher level through a factory (as per early examples we investigated)
+            });
     }
 }
 
 export function fetchDataInfo() {
     return (dispatch: any) => {
         dispatch(requestDataInfo())
-        return fetch('/api/0.1/datainfo/', {
-            credentials: "same-origin",
-        })
-            .then((response: any) => response.json())
-            .then((json: any) => {
+
+        return ealapi.get('/api/0.1/datainfo/')
+            .then(({ response, json }: any) => {
                 const ordered = {};
                 Object.keys(json).sort().forEach(function(key) {
                     ordered[key] = json[key];
                 });
-                return ordered
-            })
-            .then((json: any) => dispatch(receiveDataInfo(json)))
+                
+                dispatch(receiveDataInfo(ordered))
+            });
     }
 }
 
 export function fetchColourInfo() {
     return (dispatch: any) => {
         dispatch(requestColourInfo())
-        return fetch('/api/0.1/colours/', {
-            credentials: "same-origin",
-        })
-            .then((response: any) => response.json())
-            .then((json: any) => dispatch(receiveColourInfo(json)))
+
+        return ealapi.get('/api/0.1/colours/')
+            .then(({ response, json }: any) => {
+                dispatch(receiveColourInfo(json))
+            });
     }
 }

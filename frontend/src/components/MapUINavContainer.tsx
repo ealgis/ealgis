@@ -16,7 +16,10 @@ export interface MapUINavContainerProps {
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     render() {
         const { mapDefinition, onDeleteMap } = this.props
-        return <MapUINav defn={mapDefinition} onDeleteMap={() => onDeleteMap(mapDefinition.id)} />;
+        if(mapDefinition !== undefined) {
+            return <MapUINav defn={mapDefinition} onDeleteMap={() => onDeleteMap(mapDefinition.id)} />;
+        }
+        return <div></div>
     }
 }
 
