@@ -1,9 +1,11 @@
 import * as React from "react";
 import reactCSS from 'reactcss';
-import { ChromePicker } from 'react-color';
+import { SwatchesPicker } from 'react-color';
 
 export interface ColourPickerProps {
     input: any,
+    displayColorPicker: boolean,
+    color: object,
 }
 
 class ColourPicker extends React.Component<ColourPickerProps, undefined> {
@@ -23,6 +25,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
     const { input: { onChange } } = this.props
     onChange(color.rgb)
     this.setState({ color: color.rgb })
+    this.handleClose()
   };
 
   constructor(props: any) {
@@ -70,7 +73,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
         </div>
         { this.state.displayColorPicker ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ this.handleClose }/>
-          <ChromePicker color={ this.state.color } onChange={ this.handleChange } />
+          <SwatchesPicker color={ this.state.color } onChange={ this.handleChange } />
         </div> : null }
 
       </div>
