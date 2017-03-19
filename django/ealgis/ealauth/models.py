@@ -132,10 +132,10 @@ class MapDefinition(models.Model):
             old_defn['layers'] = []
         rev = old_defn.get('rev', 0) + 1
         defn['rev'] = rev
-        for layer in defn['layers']:
+        for key, layer in enumerate(defn['layers']):
             # compile layer SQL expression (this is sometimes slow, so best to do
             # just the once)
-            old_layer = old_defn['layers']
+            old_layer = old_defn['layers'][key]
             # private variables we don't allow the client to set; we simply clear & copy over
             # from the last object in the database
             self._private_clear(layer)
