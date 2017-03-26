@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import LayerUINav from "./LayerUINav";
-import { deleteMapLayer } from '../actions';
+import { toggleModal } from '../actions';
 
 interface LayerUINavContainerRouteParams {
     id: Number
@@ -18,9 +18,10 @@ export interface LayerUINavContainerProps {
 
 export class LayerUINavContainer extends React.Component<LayerUINavContainerProps, undefined> {
     render() {
-        const { layerDefinition, mapDefinition, mapId, layerId, onDeleteLayer } = this.props
+        const { layerDefinition, mapId, layerId, onDeleteLayer } = this.props
+        const deleteConfirmModalId = "LayerDeleteConfirmDialog"
         
-        return <LayerUINav defn={layerDefinition} layerId={layerId} mapId={mapId} onDeleteLayer={() => onDeleteLayer(mapDefinition, layerId, layerDefinition)} />;
+        return <LayerUINav defn={layerDefinition} layerId={layerId} mapId={mapId} onDeleteLayer={() => onDeleteLayer(deleteConfirmModalId)} deleteConfirmModalId={deleteConfirmModalId} />;
     }
 }
 
@@ -29,14 +30,13 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {
         layerDefinition: ownProps.layerDefinition,
         mapId: ownProps.mapId,
-        mapDefinition: maps[ownProps.mapId],
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onDeleteLayer: (map: object, layerId: number, layer: object) => {
-        dispatch(deleteMapLayer(map, layerId));
+    onDeleteLayer: (modalId: string) => {
+        dispatch(toggleModal(modalId))
     },
   };
 }

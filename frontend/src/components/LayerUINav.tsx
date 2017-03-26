@@ -5,6 +5,7 @@ import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import LayerToggle from './LayerToggleContainer';
+import LayerDeleteConfirmDialog from "./LayerDeleteConfirmDialogContainer";
 
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
@@ -33,29 +34,34 @@ export interface LayerUINavProps {
     defn: any
     layerId: number,
     mapId: number,
-    onDeleteLayer: Function,
+    onDeleteLayer: any,
+    deleteConfirmModalId: string,
 }
 
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
-        const { defn, layerId, mapId, onDeleteLayer } = this.props
+        const { defn, layerId, mapId, onDeleteLayer, deleteConfirmModalId } = this.props
 
-        return <ListItem 
-                    rightIconButton={
-                        <IconMenu iconButtonElement={iconButtonElement}>
-                            <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
-                            <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} disabled={true} />
-                            <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
-                        </IconMenu>
-                    }
-                    rightToggle={
-                        <LayerToggle
-                            layerDefinition={defn}
-                            layerId={layerId}
-                            mapId={mapId}
-                        />
-                    }
-                />
+        return <div>
+            <ListItem 
+                rightIconButton={
+                    <IconMenu iconButtonElement={iconButtonElement}>
+                        <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
+                        <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} disabled={true} />
+                        <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
+                    </IconMenu>
+                }
+                rightToggle={
+                    <LayerToggle
+                        layerDefinition={defn}
+                        layerId={layerId}
+                        mapId={mapId}
+                    />
+                }
+            />
+
+            <LayerDeleteConfirmDialog modalId={deleteConfirmModalId} mapId={mapId} layerId={layerId} layerDefinition={defn}></LayerDeleteConfirmDialog>
+        </div>
     }
 }
 
