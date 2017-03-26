@@ -2,7 +2,7 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState } from '../actions';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import './FixedLayout.css';
@@ -14,6 +14,7 @@ export interface EalContainerProps {
     content: any,
     sidebar: any,
     onTapAppBarLeft: Function,
+    handleRequestClose: Function,
     fetchStuff: Function,
 }
 
@@ -33,13 +34,16 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft } = this.props
-        
+        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose } = this.props
+
+        if(app.loading === true) {
+            return <MuiThemeProvider>
+                <CircularProgress style={{marginLeft: "48%", marginTop: "40%"}} />
+            </MuiThemeProvider>
+        }
+
         return <MuiThemeProvider>
-            {app.loading === true ? 
-                <CircularProgress style={{marginLeft: "48%", marginTop: "40%"}} /> : 
-                <EalUI app={app} user={user} children={children} content={content} sidebar={sidebar} onTapAppBarLeft={onTapAppBarLeft}></EalUI>
-            }
+            <EalUI app={app} user={user} children={children} content={content} sidebar={sidebar} onTapAppBarLeft={onTapAppBarLeft} handleRequestClose={handleRequestClose}></EalUI>
         </MuiThemeProvider>;
     }
 }
@@ -60,6 +64,11 @@ const mapDispatchToProps = (dispatch: any) => {
     onTapAppBarLeft: () => {
         dispatch(receiveSidebarState());
     },
+    handleRequestClose: (reason: string) => {
+        if(reason === "timeout") {
+            dispatch(handleIterateSnackbar())
+        }
+    }
   };
 }
 

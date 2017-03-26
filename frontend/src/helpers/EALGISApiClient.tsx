@@ -1,8 +1,23 @@
 import 'whatwg-fetch'
 import cookie from 'react-cookie'
+import { addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar } from '../actions'
 
 export class EALGISApiClient {
-    public get(url: string) {
+    // Only handles fatal errors from the API
+    // FIXME Refactor to be able to handle errors that the calling action can't handle
+    public handleError(error: any, url: string, dispatch: any) {
+        dispatch(addNewSnackbarMessageAndStartIfNeeded({
+            message: `Error from ${url}`,
+            // key: "SomeUID",
+            action: "Dismiss",
+            autoHideDuration: 4000,
+            onActionTouchTap: () => {
+                dispatch(handleIterateSnackbar())
+            },
+        }));
+    }
+
+    public get(url: string, dispatch: any) {
         return fetch(url, {
             credentials: "same-origin",
         })
@@ -10,16 +25,10 @@ export class EALGISApiClient {
             response: response,
             json: json,
         })))
-        .catch((error: any) => {
-            // if(error instanceof SubmissionError) {
-            throw error;
-            // } else {
-                // throw new SubmissionError({_error: error.message});
-            // }
-        })
+        .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
-    public post(url: string, body: object) {
+    public post(url: string, body: object, dispatch: any) {
         return fetch(url, {
             method: "POST",
             credentials: "same-origin",
@@ -33,9 +42,10 @@ export class EALGISApiClient {
             response: response,
             json: json,
         })))
+        .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
-    public put(url: string, body: object) {
+    public put(url: string, body: object, dispatch: any) {
         return fetch(url, {
             method: "PUT",
             credentials: "same-origin",
@@ -49,9 +59,10 @@ export class EALGISApiClient {
             response: response,
             json: json,
         })))
+        .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
-    public delete(url: string) {
+    public delete(url: string, dispatch: any) {
         return fetch(url, {
             method: "DELETE",
             credentials: "same-origin",
@@ -59,5 +70,6 @@ export class EALGISApiClient {
                 "X-CSRFToken": cookie.load("csrftoken")
             },
         })
+        .catch((error: any) => this.handleError(error, url, dispatch))
     }
 }

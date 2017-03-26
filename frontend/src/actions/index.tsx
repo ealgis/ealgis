@@ -8,6 +8,9 @@ import { EALGISApiClient } from '../helpers/EALGISApiClient';
 
 export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
 export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
+export const RECEIVE_NEW_SNACKBAR_MESSAGE = 'RECEIVE_NEW_SNACKBAR_MESSAGE'
+export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDED'
+export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -162,9 +165,41 @@ export function receiveSidebarState() {
     }
 }
 
+export function receiveIterateSnackbar() {
+    return {
+        type: RECEIVE_ITERATE_SNACKBAR,
+    }
+}
+
+export function receiveStartSnackbarIfNeeded() {
+    return {
+        type: RECEIVE_START_SNACKBAR_IF_NEEDED,
+    }
+}
+
+export function receiveNewSnackbarMessage(message: object) {
+    return {
+        type: RECEIVE_NEW_SNACKBAR_MESSAGE,
+        message
+    }
+}
+
+export function handleIterateSnackbar() {
+    return (dispatch: any) => {
+        return dispatch(receiveIterateSnackbar())
+    }
+}
+
+export function addNewSnackbarMessageAndStartIfNeeded(message: object) {
+    return (dispatch: any) => {
+        dispatch(receiveNewSnackbarMessage(message))
+        return dispatch(receiveStartSnackbarIfNeeded())
+    }
+}
+
 export function updateMap(map: object) {
     return (dispatch: any) => {
-        return ealapi.put('/api/0.1/maps/' + map["id"] + "/", map)
+        return ealapi.put('/api/0.1/maps/' + map["id"] + "/", map, dispatch)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 
@@ -199,7 +234,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
             mapCopy["json"]["layers"][layerId] = layer
         }
 
-        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy)
+        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy, dispatch)
             .then(({ response, json }: any) => {
                 if(response.status === 200) {
                     dispatch(receieveUpdatedMap(json))
@@ -233,7 +268,7 @@ export function deleteMapLayer(map: object, layerId: number) {
             mapCopy["json"]["layers"].splice(layerId, 1);
         }
 
-        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy)
+        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy, dispatch)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 if(response.status === 200) {
@@ -312,7 +347,7 @@ export function fetchUser() {
     return (dispatch: any) => {
         dispatch(requestUser())
 
-        return ealapi.get('/api/0.1/self')
+        return ealapi.get('/api/0.1/self', dispatch)
             .then(({ response, json }: any) => {
                 dispatch(receiveUser(json))
             });
@@ -323,7 +358,7 @@ export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
 
-        return ealapi.get('/api/0.1/maps/')
+        return ealapi.get('/api/0.1/maps/', dispatch)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 if(response.status === 200) {
@@ -349,9 +384,10 @@ export function createMap(map: object) {
             }
         }
 
-        return ealapi.post('/api/0.1/maps/', mapCopy)
+        return ealapi.post('/api/0.1/maps/', mapCopy, dispatch)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
+                // throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
@@ -403,7 +439,7 @@ export function deleteMapSuccess(mapId: number) {
 
 export function deleteMap(mapId: number) {
     return (dispatch: any) => {
-        return ealapi.delete('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/')
+        return ealapi.delete('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', dispatch)
             .then((response: any) => {
                 if(response.status == 204) {
                     dispatch(deleteMapSuccess(mapId))
@@ -421,7 +457,7 @@ export function fetchDataInfo() {
     return (dispatch: any) => {
         dispatch(requestDataInfo())
 
-        return ealapi.get('/api/0.1/datainfo/')
+        return ealapi.get('/api/0.1/datainfo/', dispatch)
             .then(({ response, json }: any) => {
                 const ordered = {};
                 Object.keys(json).sort().forEach(function(key) {
@@ -437,7 +473,7 @@ export function fetchColourInfo() {
     return (dispatch: any) => {
         dispatch(requestColourInfo())
 
-        return ealapi.get('/api/0.1/colours/')
+        return ealapi.get('/api/0.1/colours/', dispatch)
             .then(({ response, json }: any) => {
                 dispatch(receiveColourInfo(json))
             });

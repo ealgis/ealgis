@@ -1,10 +1,17 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
 
 function app(state = {
     loading: true,
     sidebarOpen: true,
+    snackbar: {
+        open: false,
+        active: {
+            message: ""
+        },
+        messages: [],
+    }
 }, action: any) {
     switch (action.type) {
         case REQUEST_USER:
@@ -16,6 +23,29 @@ function app(state = {
             return dotProp.set(state, "loading", false)
         case RECEIVE_TOGGLE_SIDEBAR_STATE:
             return dotProp.toggle(state, "sidebarOpen")
+        case RECEIVE_NEW_SNACKBAR_MESSAGE:
+            state.snackbar.messages.push(action.message)
+            return dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
+        case RECEIVE_START_SNACKBAR_IF_NEEDED:
+            if(state.snackbar.open === false && state.snackbar.messages.length > 0) {
+                // Pop the first message off the front of the queue
+                const message = state.snackbar.messages.shift()
+                state = dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
+                state = dotProp.set(state, `snackbar.active`, message)
+                state = dotProp.set(state, `snackbar.open`, true)
+            }
+            return state
+        case RECEIVE_ITERATE_SNACKBAR:
+            if(state.snackbar.messages.length > 0) {
+                // Pop the first message off the front of the queue
+                const message = state.snackbar.messages.shift()
+                state = dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
+                state = dotProp.set(state, `snackbar.active`, message)
+                return dotProp.set(state, `snackbar.open`, true)
+            } else {
+                state = dotProp.set(state, `snackbar.active`, {message: ""})
+                return dotProp.set(state, `snackbar.open`, false)
+            }
         default:
             return state;
     }
