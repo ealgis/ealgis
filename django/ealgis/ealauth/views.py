@@ -149,19 +149,19 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             "exists": map is not None
         })
     
-    @detail_route(methods=['get'], permission_classes=[IsAdminUser])
+    @detail_route(methods=['put'])
     def clone(self, request, pk=None, format=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
         
-        map.name = "{} Cloned {}".format(map.name, int(round(time.time() * 1000)))[:32]
-        map.pk = None
+        map.name = "{} Copied {}".format(map.name, int(round(time.time() * 1000)))[:32]
         map.json["rev"] = 0
+        map.id = None
+        map.pk = None
         map.save()
 
-        return Response({
-            "new_map_id": map.id
-        })
+        serializer = self.serializer_class(map)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):

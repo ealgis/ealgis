@@ -24,17 +24,18 @@ import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
 export interface MapUINavProps {
     defn: any
+    onDuplicateMap: Function,
     onDeleteMap: Function,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onDeleteMap } = this.props
+        const { defn, onDuplicateMap, onDeleteMap } = this.props
 
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
-                    <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" disabled={true}><ContentCopy /></IconButton>
+                    <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default extents for this map to the current view" tooltipPosition="bottom-right" disabled={true}><ActionBookmark /></IconButton>
                     <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
                 </ToolbarGroup>

@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import MapUINav from "./MapUINav";
-import { closeMap, deleteMap } from '../actions';
+import { duplicateMap, deleteMap } from '../actions';
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -10,14 +10,15 @@ interface MapUINavContainerRouteParams {
 
 export interface MapUINavContainerProps {
     mapDefinition: MapUINavContainerRouteParams,
+    onDuplicateMap: Function,
     onDeleteMap: Function,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     render() {
-        const { mapDefinition, onDeleteMap } = this.props
+        const { mapDefinition, onDuplicateMap, onDeleteMap } = this.props
         if(mapDefinition !== undefined) {
-            return <MapUINav defn={mapDefinition} onDeleteMap={() => onDeleteMap(mapDefinition.id)} />;
+            return <MapUINav defn={mapDefinition} onDuplicateMap={() => onDuplicateMap(mapDefinition.id)} onDeleteMap={() => onDeleteMap(mapDefinition.id)} />;
         }
         return <div></div>
     }
@@ -32,6 +33,9 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    onDuplicateMap: (mapId: number) => {
+        dispatch(duplicateMap(mapId))
+    },
     onDeleteMap: (mapId: number/*, cb: Function*/) => {
         dispatch(deleteMap(mapId/*, cb*/));
     },

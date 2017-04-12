@@ -432,6 +432,23 @@ export function createMap(map: object) {
     }
 }
 
+export function duplicateMap(mapId: number) {
+    return (dispatch: any) => {
+        return ealapi.put('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/clone/', null, dispatch)
+            .then(({ response, json }: any) => {
+                if(response.status === 201) {
+                    dispatch(receiveCreatedMap(json))
+                    browserHistory.push("/map/" + json.id)
+                    
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error cloning map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            })
+    }
+}
+
 /*
 So, there seems to be two approaches to handling the "How do I do some action on the site (like using React-Router to change pages)?" question.
 
