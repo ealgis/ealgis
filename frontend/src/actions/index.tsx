@@ -438,6 +438,10 @@ export function duplicateMap(mapId: number) {
             .then(({ response, json }: any) => {
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
+                    dispatch(addNewSnackbarMessageAndStartIfNeeded({
+                        message: "Map duplicated successfully.",
+                        autoHideDuration: 2500,
+                    }))
                     browserHistory.push("/map/" + json.id)
                     
                 } else {
