@@ -97,10 +97,12 @@ export function receiveCreatedMap(map: object) {
     }
 }
 
-export function receiveCompiledLayerStyle(json: any) {
+export function receiveCompiledLayerStyle(mapId: number, layerId: number, layer: any) {
     return {
         type: COMPILED_LAYER_STYLE,
-        json
+        mapId,
+        layerId,
+        layer,
     }
 }
 
@@ -307,10 +309,17 @@ export function deleteMapLayer(map: object, layerId: number) {
     }
 }
 
-export function fetchCompiledLayerStyle(l: Object) {
+export function fetchCompiledLayerStyle(mapId: number, layerId: number, l: Object) {
     return (dispatch: any) => {
+        // console.log("fetchCompiledLayerStyle")
+        dispatch(receiveCompiledLayerStyle(mapId, layerId, l))
+        return
+
         let do_fill = (l['fill']['expression'] != '')
         if(do_fill) {
+            console.log("Do fill")
+            return
+
             // Ugly as sin, but apparently fetch doesn't natively support attaching a params object?!
             // https://github.com/github/fetch/issues/256
             let url = new URL("https://localhost:8443/api/0.1/maps/compileStyle/"), params = {

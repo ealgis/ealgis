@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import LayerForm from "./LayerForm";
-import { layerUpsert } from '../actions'
+import { fetchCompiledLayerStyle, layerUpsert } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,
@@ -20,6 +20,7 @@ export interface LayerFormContainerProps {
     datainfo: object,
     colourinfo: object,
     onSubmit: Function,
+    onChange: Function,
 }
 
 export class LayerFormContainer extends React.Component<LayerFormContainerProps, undefined> {
@@ -56,7 +57,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         }
     }
 
-    private deriveLayerFromLayerFormValues(formValues: Array<undefined>) {
+    public static deriveLayerFromLayerFormValues(formValues: Array<undefined>) {
         return {
             "fill": {
                 "opacity": formValues["fillOpacity"] / 100,
@@ -86,7 +87,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, mapDefinition, layerDefinition, onSubmit, datainfo, colourinfo } = this.props
+        const { layerId, mapDefinition, layerDefinition, onSubmit, onChange, datainfo, colourinfo } = this.props
         
         // Initiable values either comes from defaultProps (creating a new layer)
         // or from our layerDef (editing an existing layer)
@@ -102,7 +103,8 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             onSubmit={
                 (formValues: Array<undefined>) => 
                     onSubmit(mapDefinition, layerId, this.deriveLayerFromLayerFormValues(formValues))
-            } 
+            }
+            onChange={(formValues: object) => onChange(formValues, mapDefinition.id, layerId, layerDefinition)}
             datainfo={datainfo} 
             colourinfo={colourinfo} 
         />;
@@ -126,6 +128,21 @@ const mapDispatchToProps = (dispatch: any) => {
     onSubmit: (mapDefinition: object, layerId: number, layer: object) => {
         dispatch(layerUpsert(mapDefinition, layerId, layer));
     },
+    onChange: (formValues: Array<undefined>, mapId: number, layerId: number, layer: object) => {
+        if("name" in formValues) { // Ignore change events from Fields (Not sure why these trigger form onChange)
+            const newLayer = LayerFormContainer.deriveLayerFromLayerFormValues(formValues)
+            // const newLayer = Object.assign(...json.map(d => ({[d.id: d})))
+            // console.log(layer)
+            // console.log(newLayer)
+            // console.log(layer.line, newLayer.line)
+            layer.line.width = 2
+            console.log("newLayer.line.width", newLayer.line.width)
+
+            if(layer.line != newLayer.line) {
+                dispatch(fetchCompiledLayerStyle(mapId, layerId, layer))
+            }
+        }
+    }
   };
 }
 

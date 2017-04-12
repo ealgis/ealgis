@@ -13,6 +13,7 @@ export interface LayerContainerProps {
 export class LayerContainer extends React.Component<LayerContainerProps, undefined> {
     render() {
         const { map, layer } = this.props
+        console.log("Recompile layer.olStyle", layer.line.width)
         layer.olStyle = compileLayerStyle(layer)
         return <Layer map={map} layer={layer}/>;
     }

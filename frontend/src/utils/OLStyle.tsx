@@ -73,6 +73,7 @@ export function compileLayerStyle(l: Object) {
         
     } else {
         // No fill
+        console.log("compileLayerStyle -> Set style width to", line.width)
         return new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: `rgba(${line.colour.r},${line.colour.g},${line.colour.b},${line.colour.a})`,

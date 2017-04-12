@@ -26,6 +26,7 @@ export interface CreateMapProps {
     layerId: number,
     initialValues: object,
     onSubmit: Function,
+    onChange: Function,
     datainfo: object,
     colourinfo: object,
 }
@@ -50,7 +51,7 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, onSubmit } = this.props
+        const { mapId, layerId, onSubmit, onChange } = this.props
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
 
@@ -97,7 +98,7 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
                 </ToolbarGroup>
             </Toolbar>
 
-            <form style={{margin: 10}} onSubmit={(val) => handleSubmit(onSubmit)}>
+            <form style={{margin: 10}} onSubmit={(val) => handleSubmit(onSubmit)} onChange={onChange}>
                 <Field 
                     name="name" 
                     component={TextField} 
@@ -259,7 +260,7 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
 }
 
 // Decorate the form component
-let LayerForm reduxForm({
+let LayerForm = reduxForm({
   form: 'layerForm', // a unique name for this form
   enableReinitialize: true,
 })(CreateMap)

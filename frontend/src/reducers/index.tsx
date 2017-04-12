@@ -112,6 +112,14 @@ function maps(state: any = {}, action: any) {
         //         return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
         //     }
         case COMPILED_LAYER_STYLE:
+            console.log("COMPILED_LAYER_STYLE", action)
+            console.log("action.layer.line.width", action.layer.line.width)
+            // const newLayer = dotProp.merge(`${action.mapId}.json.layers.${action.layerId}`, ``, action.layer)
+            // console.log(newLayer)
+            console.log(action.layer.line.width, "action.layer.line.width")
+            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
+            return state
+
             // FIXME Make this work
             return dotProp.set(state, `${action.mapId}.json.layers.${layerKey}.olStyle`, action.json)
 
