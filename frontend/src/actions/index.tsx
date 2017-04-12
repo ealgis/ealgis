@@ -12,6 +12,7 @@ export const RECEIVE_NEW_SNACKBAR_MESSAGE = 'RECEIVE_NEW_SNACKBAR_MESSAGE'
 export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDED'
 export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
 export const RECEIVE_TOGGLE_MODAL = 'RECEIVE_TOGGLE_MODAL'
+export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -208,6 +209,13 @@ export function receiveToggleModal(modalId: string) {
 export function toggleModal(modalId: string) {
     return (dispatch: any) => {
         return dispatch(receiveToggleModal(modalId))
+    }
+}
+
+export function receiveMapPosition(position: any) {
+    return {
+        type: RECEIVE_MAP_POSITION,
+        position
     }
 }
 

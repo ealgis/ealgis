@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
 
 function app(state = {
     loading: true,
@@ -12,7 +12,8 @@ function app(state = {
         },
         messages: [],
     },
-    dialogs: {}
+    dialogs: {},
+    mapPosition: {},
 }, action: any) {
     switch (action.type) {
         case REQUEST_USER:
@@ -50,6 +51,13 @@ function app(state = {
         case RECEIVE_TOGGLE_MODAL:
             console.log("RECEIVE_TOGGLE_MODAL", action.modalId)
             return dotProp.toggle(state, `dialogs.${action.modalId}`)
+        case RECEIVE_MAP_POSITION:
+            if("center" in action.position) {
+                return dotProp.set(state, `mapPosition.center`, action.position.center)
+            } else if("zoom" in action.position) {
+                return dotProp.set(state, `mapPosition.zoom`, action.position.zoom)
+            }
+            return state
         default:
             return state;
     }
