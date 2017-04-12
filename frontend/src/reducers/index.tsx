@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER } from '../actions';
 
 function app(state = {
     loading: true,
@@ -98,6 +98,12 @@ function maps(state: any = {}, action: any) {
             return dotProp.delete(state, `${action.mapId}.json.layers.${action.layerId}`)
         case CHANGE_LAYER_VISIBILITY:
             return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
+        case RECEIVE_SET_MAP_ORIGIN:
+            return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
+                lat: action.position.center.lat,
+                lon: action.position.center.lon,
+                zoom: action.position.zoom,
+            })
         // case RECEIVE_LAYER_UPSERT:
         //     console.log("RECEIVE_LAYER_UPSERT")
         //     console.log(state)

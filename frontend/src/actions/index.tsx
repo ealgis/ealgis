@@ -13,6 +13,7 @@ export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDE
 export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
 export const RECEIVE_TOGGLE_MODAL = 'RECEIVE_TOGGLE_MODAL'
 export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
+export const RECEIVE_SET_MAP_ORIGIN = 'RECEIVE_SET_MAP_ORIGIN'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -219,6 +220,14 @@ export function receiveMapPosition(position: any) {
     }
 }
 
+export function setMapOrigin(mapId: number, position: any) {
+    return {
+        type: RECEIVE_SET_MAP_ORIGIN,
+        mapId,
+        position,
+    }
+}
+
 export function updateMap(map: object) {
     return (dispatch: any) => {
         return ealapi.put('/api/0.1/maps/' + map["id"] + "/", map, dispatch)
@@ -343,6 +352,17 @@ export function fetchCompiledLayerStyle(l: Object) {
                 })
                 .then((json: any) => dispatch(receiveCompiledLayerStyle(json)))
         }
+    }
+}
+
+export function updateMapOrigin(map: object, position: any) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(setMapOrigin(map.id, position))
+        dispatch(updateMap(getState().maps[map.id])) // FIXME This *can't* be best practice
+        dispatch(addNewSnackbarMessageAndStartIfNeeded({
+            message: "Map origin updated successfully.",
+            autoHideDuration: 2500,
+        }))
     }
 }
 
