@@ -15,14 +15,9 @@ export class MapList extends React.Component<MapListProps, undefined> {
 
         const styles = {
             root: {
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-around',
-                marginTop: 30,
+                padding: 10
             },
             gridList: {
-                // width: 500,
-                // height: 450,
                 overflowY: 'auto',
             },
         };
@@ -34,17 +29,16 @@ export class MapList extends React.Component<MapListProps, undefined> {
 
         return <div style={styles.root}>
             <GridList
-                    cellHeight={180}
                     style={styles.gridList}
-                    cols={4}
-                    cellHeight={200}
+                    cols={1}
+                    cellHeight={140}
                     padding={10}
                 >
                     <GridTile
                         key={"abc"}
                         containerElement={<Link to={"/new/map/"} />}
                         title={"Create New Map"}
-                        cols={1.5}
+                        cols={1}
                     >
                         <FlatButton
                             backgroundColor={'rgba(205, 205, 205, 0.7)'}
@@ -60,7 +54,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                             containerElement={<Link to={`/map/${m.id}`} />}
                             title={m.name}
                             subtitle={m.description}
-                            cols={1.5}
+                            cols={1}
                             titleBackground={'rgba(0, 188, 212, 0.7)'}
                         >
                             <MapCoverImage mapDefinition={m} width={250} height={185} />

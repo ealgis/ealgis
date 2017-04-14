@@ -23,10 +23,7 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
     render() {
         const { mapDefinition, onNavigation } = this.props
 
-        if(mapDefinition !== undefined) {
-            return <MapUI defn={mapDefinition} onNavigation={(evt: any) => onNavigation(evt)} />;
-        }
-        return <div></div>
+        return <MapUI defn={mapDefinition} onNavigation={(evt: any) => onNavigation(evt)} />
     }
 }
 
