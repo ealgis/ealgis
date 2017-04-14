@@ -21,7 +21,7 @@ import { red500, grey400 } from 'material-ui/styles/colors';
 
 const required = value => value || value === 0 ? undefined : 'Required'
 
-export interface CreateMapProps {
+export interface LayerFormProps {
     mapId: number,
     layerId: number,
     initialValues: object,
@@ -30,7 +30,7 @@ export interface CreateMapProps {
     colourinfo: object,
 }
 
-export class CreateMap extends React.Component<CreateMapProps, undefined> {
+export class LayerForm extends React.Component<LayerFormProps, undefined> {
     geometryTables: Array<JSX.Element>
     colourSchemes: Array<JSX.Element>
 
@@ -262,6 +262,6 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
 let LayerForm reduxForm({
   form: 'layerForm', // a unique name for this form
   enableReinitialize: true,
-})(CreateMap)
+})(LayerForm)
 
 export default LayerForm

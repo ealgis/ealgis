@@ -12,19 +12,24 @@ import {red500} from 'material-ui/styles/colors';
 
 const required = value => value ? undefined : 'Required'
 
-export interface CreateMapProps {
+export interface MapFormProps {
+    mapDefinition: any,
     onSubmit: Function,
+    initialValues: any,
 }
 
-export class CreateMap extends React.Component<CreateMapProps, undefined> {
+export class MapForm extends React.Component<MapFormProps, undefined> {
     render() {
-        const { error, handleSubmit, pristine, reset, submitting, onSubmit } = this.props // from react-form
+        const { error, handleSubmit, pristine, reset, submitting, onSubmit, initialValues } = this.props // from react-form
+        const { mapDefinition } = this.props
+
+        let closeLink = (mapDefinition === undefined) ? <Link to={`/`} /> : <Link to={`/map/${mapDefinition.id}`} />
 
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <RaisedButton 
-                        label="Create Map" 
+                        label={mapDefinition === undefined ? "Create Map" : "Save Map"}
                         disabled={submitting}
                         primary={true}
                         onClick={handleSubmit(onSubmit)}
@@ -32,7 +37,7 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
                 </ToolbarGroup>
 
                 <ToolbarGroup lastChild={true}>
-                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={`/`} />}><NavigationClose /></IconButton>
+                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={closeLink}><NavigationClose /></IconButton>
                 </ToolbarGroup>
             </Toolbar>
 
@@ -77,5 +82,5 @@ export class CreateMap extends React.Component<CreateMapProps, undefined> {
 
 // Decorate the form component
 export default reduxForm({
-  form: 'createMap', // a unique name for this form
-})(CreateMap),
+  form: 'mapForm', // a unique name for this form
+})(MapForm)

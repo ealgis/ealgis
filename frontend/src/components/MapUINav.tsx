@@ -19,6 +19,7 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionBookmark from 'material-ui/svg-icons/action/bookmark';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
@@ -36,6 +37,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
+                    <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default extents for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
                     <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>

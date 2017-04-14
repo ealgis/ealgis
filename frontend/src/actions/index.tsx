@@ -434,6 +434,45 @@ export function fetchMaps() {
     }
 }
 
+export function mapUpsert(map: object) {
+    return (dispatch: any) => {
+        // Upsert
+        if(map.id === undefined) {
+            return dispatch(createMap(map))
+        }
+        let mapCopy: object = JSON.parse(JSON.stringify(map))
+
+        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy, dispatch)
+            .then(({ response, json }: any) => {
+                // FIXME Cleanup and decide how to handle error at a component and application-level
+                // throw new Error('Unhandled error updating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                
+                if(response.status === 200) {
+                    dispatch(receieveUpdatedMap(json))
+                    browserHistory.push("/map/" + json.id)
+                    dispatch(addNewSnackbarMessageAndStartIfNeeded({
+                        message: "Map saved successfully.",
+                        autoHideDuration: 2500,
+                    }))
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error updating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            });
+    }
+}
+
 export function createMap(map: object) {
     return (dispatch: any) => {
         let mapCopy: object = JSON.parse(JSON.stringify(map))
