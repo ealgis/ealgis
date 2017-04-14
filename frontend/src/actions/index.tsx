@@ -31,6 +31,7 @@ export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
 export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
 export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
+export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
 
 const ealapi = new EALGISApiClient()
 
@@ -151,6 +152,14 @@ export function receieveUpdatedMap(map: object) {
 export function receiveDeleteMapLayer(mapId: number, layerId: number) {
     return {
         type: RECEIVE_DELETE_MAP_LAYER,
+        mapId,
+        layerId
+    }
+}
+
+export function receiveCloneMapLayer(mapId: number, layerId: number) {
+    return {
+        type: RECEIVE_CLONE_MAP_LAYER,
         mapId,
         layerId
     }
@@ -289,6 +298,17 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
                     throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
             });
+    }
+}
+
+export function cloneMapLayer(mapId: number, layerId: number) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(receiveCloneMapLayer(mapId, layerId))
+        dispatch(updateMap(getState().maps[mapId]))
+        dispatch(addNewSnackbarMessageAndStartIfNeeded({
+            message: "Layer cloned successfully.",
+            autoHideDuration: 2500,
+        }))
     }
 }
 

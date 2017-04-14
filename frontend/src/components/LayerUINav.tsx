@@ -34,20 +34,21 @@ export interface LayerUINavProps {
     defn: any
     layerId: number,
     mapId: number,
+    onCloneLayer: any,
     onDeleteLayer: any,
     deleteConfirmModalId: string,
 }
 
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
-        const { defn, layerId, mapId, onDeleteLayer, deleteConfirmModalId } = this.props
+        const { defn, layerId, mapId, onCloneLayer, onDeleteLayer, deleteConfirmModalId } = this.props
 
         return <div>
             <ListItem 
                 rightIconButton={
                     <IconMenu iconButtonElement={iconButtonElement}>
                         <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
-                        <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} disabled={true} />
+                        <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} onClick={onCloneLayer} />
                         <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
                     </IconMenu>
                 }
