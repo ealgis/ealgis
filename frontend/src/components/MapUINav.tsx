@@ -18,6 +18,7 @@ import MapsAddLocation from 'material-ui/svg-icons/maps/add-location';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionBookmark from 'material-ui/svg-icons/action/bookmark';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
+import ContentUndo from 'material-ui/svg-icons/content/undo';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 
@@ -27,19 +28,21 @@ export interface MapUINavProps {
     defn: any
     onDuplicateMap: Function,
     onSetOrigin: Function,
+    onResetOrigin: Function,
     onDeleteMap: Function,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onDuplicateMap, onSetOrigin, onDeleteMap } = this.props
+        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap } = this.props
 
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
-                    <IconButton tooltip="Set the default extents for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
+                    <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
+                    <IconButton tooltip="Reset the position for this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
                     <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>

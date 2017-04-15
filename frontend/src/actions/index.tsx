@@ -14,6 +14,8 @@ export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
 export const RECEIVE_TOGGLE_MODAL = 'RECEIVE_TOGGLE_MODAL'
 export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
 export const RECEIVE_SET_MAP_ORIGIN = 'RECEIVE_SET_MAP_ORIGIN'
+export const RECEIVE_RESET_MAP_POSITION = 'RECEIVE_RESET_MAP_POSITION'
+export const RECEIVE_TOGGLE_MAP_VIEW_SETTING = 'RECEIVE_TOGGLE_MAP_VIEW_SETTING'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -237,6 +239,19 @@ export function setMapOrigin(mapId: number, position: any) {
     }
 }
 
+export function setMapPositionToDefault(mapDefaults: any) {
+    return {
+        type: RECEIVE_RESET_MAP_POSITION,
+        mapDefaults,
+    }
+}
+
+export function toggleAllowMapViewSetting() {
+    return {
+        type: RECEIVE_TOGGLE_MAP_VIEW_SETTING
+    }
+}
+
 export function updateMap(map: object) {
     return (dispatch: any) => {
         return ealapi.put('/api/0.1/maps/' + map["id"] + "/", map, dispatch)
@@ -383,6 +398,15 @@ export function updateMapOrigin(map: object, position: any) {
             message: "Map origin updated successfully.",
             autoHideDuration: 2500,
         }))
+    }
+}
+
+export function resetMapPosition(mapDefaults: any) {
+    return (dispatch: any) => {
+        dispatch(toggleAllowMapViewSetting())
+        dispatch(setMapPositionToDefault(mapDefaults))
+        // The permission to modify the map is toggled back off in MapUIContainer ->
+        // onNavigation()
     }
 }
 

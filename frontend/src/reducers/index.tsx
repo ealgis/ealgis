@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, RECEIVE_RESET_MAP_POSITION, RECEIVE_TOGGLE_MAP_VIEW_SETTING, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER } from '../actions';
 
 function app(state = {
     loading: true,
@@ -14,6 +14,7 @@ function app(state = {
     },
     dialogs: {},
     mapPosition: {},
+    allowMapViewSetting: false,
 }, action: any) {
     switch (action.type) {
         case REQUEST_USER:
@@ -58,6 +59,16 @@ function app(state = {
                 return dotProp.set(state, `mapPosition.zoom`, action.position.zoom)
             }
             return state
+        case RECEIVE_RESET_MAP_POSITION:
+            return dotProp.set(state, `mapPosition`, {
+                "center": {
+                    "lon": action.mapDefaults.lon,
+                    "lat": action.mapDefaults.lat,
+                },
+                "zoom": action.mapDefaults.zoom,
+            })
+        case RECEIVE_TOGGLE_MAP_VIEW_SETTING:
+            return dotProp.toggle(state, `allowMapViewSetting`)
         default:
             return state;
     }
