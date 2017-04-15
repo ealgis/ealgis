@@ -34,6 +34,7 @@ export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
 export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
+export const RECEIVE_UPDATE_DATA_INSPECTOR = 'RECEIVE_UPDATE_DATA_INSPECTOR'
 
 const ealapi = new EALGISApiClient()
 
@@ -628,6 +629,57 @@ export function fetchColourInfo() {
         return ealapi.get('/api/0.1/colours/', dispatch)
             .then(({ response, json }: any) => {
                 dispatch(receiveColourInfo(json))
+            });
+    }
+}
+
+
+
+
+export function updateDataInspector(dataRows: Array<any>) {
+    return {
+        type: RECEIVE_UPDATE_DATA_INSPECTOR,
+        dataRows,
+    }
+}
+
+export function sendToDataInspector(features: Array<undefined>) {
+    return (dispatch: any, getState: Function) => {
+        console.log("features", features)
+        const geomIds = features.map((feature: any, key: number) => {
+            return feature.gid
+        });
+        console.log("geomIds", geomIds)
+
+        return dispatch(fetchGeomInfo(geomIds)).then(() => {
+            console.log("pre-updateDataInspector()")
+            let dataRows: Array<any> = []
+            features.forEach((feature: any) => {
+                let properties = feature.getProperties()
+                
+                dataRows.push({
+                    "primaryText": properties.q,
+                    "secondaryText": "Value",
+                })
+                dataRows.push({
+                    "primaryText": properties.gid,
+                    "secondaryText": "GID",
+                })
+            })
+            console.log("dataRows", dataRows)
+            dispatch(updateDataInspector(dataRows))
+        })
+    }
+}
+
+export function fetchGeomInfo(geomIds: Array<number>) {
+    return (dispatch: any) => {
+        // dispatch(requestUser())
+        console.log("fetchGeomInfo", geomIds)
+
+        return ealapi.get('/api/0.1/self', dispatch)
+            .then(({ response, json }: any) => {
+                // dispatch(receiveUser(json))
             });
     }
 }

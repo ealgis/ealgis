@@ -23,6 +23,7 @@ import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import ContentUndo from 'material-ui/svg-icons/content/undo';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
+import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
@@ -34,11 +35,12 @@ export interface MapUINavProps {
     onDeleteMap: Function,
     onToggleDeleteModalState: Function,
     deleteModalOpen: boolean,
+    dataInspector: Array<any>,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen } = this.props
+        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -77,6 +79,17 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                         layerId={key}
                         layerDefinition={l}
                         mapId={defn.id}
+                    />
+                )}
+            </List>
+
+            <List>
+                <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} />
+                {dataInspector.map((row: any, key: number) =>
+                    <ListItem
+                        key={key}
+                        primaryText={row.primaryText.toString()}
+                        secondaryText={row.secondaryText}
                     />
                 )}
             </List>

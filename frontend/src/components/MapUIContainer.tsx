@@ -2,7 +2,7 @@ import * as React from "react";
 import MapUI from "./MapUI";
 import { connect } from 'react-redux';
 import { proj } from 'openlayers';
-import { receiveMapPosition, toggleAllowMapViewSetting } from '../actions';
+import { receiveMapPosition, toggleAllowMapViewSetting, sendToDataInspector } from '../actions';
 
 
 import 'openlayers/css/ol.css';
@@ -15,6 +15,7 @@ export interface MapContainerProps {
     dispatch: Function,
     params: any,
     mapDefinition: MapContainerRouteParams,
+    onSelect: Function,
     onNavigation: Function,
     app: object,
     allowMapViewSetting: boolean,
@@ -22,9 +23,14 @@ export interface MapContainerProps {
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     render() {
-        const { mapDefinition, onNavigation, allowMapViewSetting } = this.props
+        const { mapDefinition, onSelect, onNavigation, allowMapViewSetting } = this.props
 
-        return <MapUI defn={mapDefinition} onNavigation={(evt: any) => onNavigation(evt, allowMapViewSetting)} allowMapViewSetting={allowMapViewSetting} />
+        return <MapUI
+                    defn={mapDefinition}
+                    onSelect={(evt: any) => onSelect(evt)}
+                    onNavigation={(evt: any) => onNavigation(evt, allowMapViewSetting)}
+                    allowMapViewSetting={allowMapViewSetting}
+                />
     }
 }
 
@@ -39,6 +45,15 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    onSelect: (evt: any) => {
+        console.log("onSelect", evt)
+        console.log(evt.mapBrowserEvent.pixel)
+        evt.selected.forEach((feature: any) => {
+            console.log(feature.getProperties())
+        })
+
+        dispatch(sendToDataInspector(evt.selected))
+    },
     onNavigation: (mapCentreOrResolution: any, allowMapViewSetting: boolean) => {
         // Prevent infinite loops - if we've received a prompt to update the app's
         // mapPosition from the map then always reset the toggleAllowMapViewSetting

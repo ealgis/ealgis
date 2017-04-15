@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import MapUINav from "./MapUINav";
-import { duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState } from '../actions';
+import { duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector } from '../actions';
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -17,11 +17,18 @@ export interface MapUINavContainerProps {
     onDeleteMap: Function,
     onToggleDeleteModalState: Function,
     deleteModalOpen: boolean,
+    dataInspector: Array<any>,
+    resetDataInspector: Function,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
+    componentDidMount() {
+        const { resetDataInspector } = this.props
+        resetDataInspector()
+    }
+
     render() {
-        const { mapDefinition, mapPosition, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen } = this.props
+        const { mapDefinition, mapPosition, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
         if(mapDefinition !== undefined) {
             return <MapUINav
                         defn={mapDefinition}
@@ -31,6 +38,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                         onDeleteMap={() => onDeleteMap(mapDefinition.id)}
                         onToggleDeleteModalState={() => onToggleDeleteModalState()}
                         deleteModalOpen={deleteModalOpen}
+                        dataInspector={dataInspector}
                     />;
         }
         return <div></div>
@@ -43,6 +51,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
         mapDefinition: maps[ownProps.params.mapId],
         mapPosition: app.mapPosition,
         deleteModalOpen: app.dialogs["deleteMap"] || false,
+        dataInspector: app.dataInspector,
     }
 }
 
@@ -63,6 +72,9 @@ const mapDispatchToProps = (dispatch: any) => {
     onDeleteMap: (mapId: number/*, cb: Function*/) => {
         dispatch(deleteMap(mapId/*, cb*/));
     },
+    resetDataInspector: () => {
+        dispatch(updateDataInspector([]))
+    }
     // onSuccessDeleteMap: () => {
     //     browserHistory.push("/")
     // }
