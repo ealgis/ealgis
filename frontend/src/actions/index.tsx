@@ -11,7 +11,6 @@ export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
 export const RECEIVE_NEW_SNACKBAR_MESSAGE = 'RECEIVE_NEW_SNACKBAR_MESSAGE'
 export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDED'
 export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
-export const RECEIVE_TOGGLE_MODAL = 'RECEIVE_TOGGLE_MODAL'
 export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
 export const RECEIVE_SET_MAP_ORIGIN = 'RECEIVE_SET_MAP_ORIGIN'
 export const RECEIVE_RESET_MAP_POSITION = 'RECEIVE_RESET_MAP_POSITION'
@@ -34,6 +33,7 @@ export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
 export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
+export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
 
 const ealapi = new EALGISApiClient()
 
@@ -211,13 +211,6 @@ export function addNewSnackbarMessageAndStartIfNeeded(message: object) {
     }
 }
 
-export function receiveToggleModal(modalId: string) {
-    return {
-        type: RECEIVE_TOGGLE_MODAL,
-        modalId
-    }
-}
-
 export function toggleModal(modalId: string) {
     return (dispatch: any) => {
         return dispatch(receiveToggleModal(modalId))
@@ -249,6 +242,19 @@ export function setMapPositionToDefault(mapDefaults: any) {
 export function toggleAllowMapViewSetting() {
     return {
         type: RECEIVE_TOGGLE_MAP_VIEW_SETTING
+    }
+}
+
+export function receiveToggleModalState(modalId: string) {
+    return {
+        type: RECEIVE_TOGGLE_MODAL_STATE,
+        modalId,
+    }
+}
+
+export function toggleModalState(modalId: string) {
+    return (dispatch: any) => {
+        dispatch(receiveToggleModalState(modalId))
     }
 }
 

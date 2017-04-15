@@ -3,7 +3,9 @@ import { Link } from 'react-router';
 import LayerUINav from "./LayerUINavContainer";
 import Subheader from 'material-ui/Subheader';
 import { List, ListItem } from 'material-ui/List';
+import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import LayerToggle from './LayerToggleContainer';
 
@@ -30,11 +32,26 @@ export interface MapUINavProps {
     onSetOrigin: Function,
     onResetOrigin: Function,
     onDeleteMap: Function,
+    onToggleDeleteModalState: Function,
+    deleteModalOpen: boolean,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap } = this.props
+        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen } = this.props
+
+        const deleteMapActions = [
+            <FlatButton
+                label="Close"
+                primary={true}
+                onTouchTap={onToggleDeleteModalState}
+            />,
+            <FlatButton
+                label="Yes"
+                primary={true}
+                onTouchTap={onDeleteMap}
+            />,
+        ];
 
         return <div>
             <Toolbar>
@@ -43,7 +60,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
                     <IconButton tooltip="Reset the position for this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
-                    <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onDeleteMap}><ActionDelete /></IconButton>
+                    <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
                     <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
@@ -63,6 +80,15 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     />
                 )}
             </List>
+
+            <Dialog
+                title="Delete Map"
+                actions={deleteMapActions}
+                modal={true}
+                open={deleteModalOpen}
+            >
+                Are you sure you want to delete this map?
+            </Dialog>
         </div>
     }
 }

@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_TOGGLE_MODAL, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, RECEIVE_RESET_MAP_POSITION, RECEIVE_TOGGLE_MAP_VIEW_SETTING, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, RECEIVE_RESET_MAP_POSITION, RECEIVE_TOGGLE_MAP_VIEW_SETTING, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER, RECEIVE_TOGGLE_MODAL_STATE } from '../actions';
 
 function app(state = {
     loading: true,
@@ -49,9 +49,6 @@ function app(state = {
                 state = dotProp.set(state, `snackbar.active`, {message: ""})
                 return dotProp.set(state, `snackbar.open`, false)
             }
-        case RECEIVE_TOGGLE_MODAL:
-            console.log("RECEIVE_TOGGLE_MODAL", action.modalId)
-            return dotProp.toggle(state, `dialogs.${action.modalId}`)
         case RECEIVE_MAP_POSITION:
             if("center" in action.position) {
                 return dotProp.set(state, `mapPosition.center`, action.position.center)
@@ -69,6 +66,8 @@ function app(state = {
             })
         case RECEIVE_TOGGLE_MAP_VIEW_SETTING:
             return dotProp.toggle(state, `allowMapViewSetting`)
+        case RECEIVE_TOGGLE_MODAL_STATE:
+            return dotProp.toggle(state, `dialogs.${action.modalId}`)
         default:
             return state;
     }
