@@ -1,6 +1,9 @@
 import * as React from "react";
+import { Link } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import Snackbar from 'material-ui/Snackbar';
+import { ToolbarGroup } from 'material-ui/Toolbar';
+import FlatButton from 'material-ui/FlatButton';
 import { LoginDialog } from './LoginDialog';
 
 export interface EalUISnackbarNotificationProps {
@@ -32,13 +35,25 @@ export interface EalUIProps {
     handleRequestClose: any,
 }
 
+const appBarButtonStyle = {
+    "color": "#ffffff",
+    "margin": "4px 0px",
+}
+
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
         const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose } = this.props
 
         return <div className="page">
             <div className="page-header">
-                <AppBar title={user.username} onLeftIconButtonTouchTap={onTapAppBarLeft} />
+                <AppBar 
+                    title={user.username}
+                    onLeftIconButtonTouchTap={onTapAppBarLeft}
+                    iconElementRight={<ToolbarGroup>
+                        <FlatButton label="Home" containerElement={<Link to={"/"} />} style={appBarButtonStyle} />
+                        <FlatButton label="About" containerElement={<Link to={"/about"} />} style={appBarButtonStyle} />
+                    </ToolbarGroup>}
+                />
             </div>
             <div className="page-content" style={{"display": app.sidebarOpen ? "flex" : "block"}}>
                 <LoginDialog open={user.url === null} />
