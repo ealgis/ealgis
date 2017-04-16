@@ -219,6 +219,19 @@ class EAlGIS(object):
         geometrysource = eal.get_table_class("geometry_source", schema_name)
         return self.query(geometrysource).filter(geometrysource.id == id).one()
 
+    def get_geometry_source_info_by_gid(self, table_name, gid, schema_name):
+        table = self.get_table_class(table_name, schema_name)
+        row = self.session.query(table).filter(table.gid == gid).first()
+
+        # FIXME Ugly hack
+        dict = row.__dict__
+        del dict["geom"]
+        del dict["geom_3857"]
+        del dict["geom_3112"]
+        del dict["_sa_instance_state"]
+
+        return dict
+
     def resolve_attribute(self, geometry_source, attribute):
         attribute = attribute.lower()  # upper case tables or columns seem unlikely, but a possible FIXME
         # supports table_name.column_name OR just column_name

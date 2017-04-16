@@ -314,6 +314,14 @@ class DataInfoViewSet(ReadOnlyGenericTableInfoViewSet):
         tables = eal.get_datainfo()
         return Response(tables)
 
+    def retrieve(self, request, format=None, pk=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+        
+        gid = request.query_params.get('gid', None)
+        row = eal.get_geometry_source_info_by_gid(pk, gid, schema_name)
+        return Response(row)
+
 
 class TableInfoViewSet(ReadOnlyGenericTableInfoViewSet):
     """
