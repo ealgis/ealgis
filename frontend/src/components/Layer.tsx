@@ -10,12 +10,13 @@ import * as ol from 'openlayers';
 
 export interface LayerProps {
     map: any,
-    layer: any
+    layer: any,
+    layerId: number,
 }
 
 export class Layer extends React.Component<LayerProps, undefined> {
     render() {
-        const { map, layer } = this.props
+        const { map, layer, layerId } = this.props
 
         // For ImageWMS (Single image tile.)
         // const url = "https://localhost:8443/geoserver/EALGIS/wms"
@@ -35,6 +36,10 @@ export class Layer extends React.Component<LayerProps, undefined> {
         const bbox = layer.latlon_bbox
         const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], 'EPSG:4326', 'EPSG:900913')
         const renderMode = "hybrid"
+        const layerPropreties = {
+            "mapId": map.id,
+            "layerId": layerId,
+        }
 
         const projection_epsg_no = '900913';
         const format = "geojson";
@@ -119,7 +124,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
             }
         }*/
 
-        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} opacity={layer.fill.opacity}>
+        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} opacity={layer.fill.opacity} properties={layerPropreties}>
             <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize}>
             </olr.source.VectorTile>
         </olr.layer.VectorTile>

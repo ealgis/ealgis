@@ -30,7 +30,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
                 </olr.layer.Tile>
                 <div>
                     {defn.json.layers.map((l: any, key: number) => {
-                        return <LayerContainerWrapped key={key} map={defn} layer={l}></LayerContainerWrapped>
+                        return <LayerContainerWrapped key={key} layerId={key} map={defn} layer={l} />
                     })}
                 </div>
             </olr.Map>
