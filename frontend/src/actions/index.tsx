@@ -450,9 +450,11 @@ export function fetchMaps() {
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 if(response.status === 200) {
-                    // Map maps from an array of objects to a dict keyed by mapId
-                    const maps = Object.assign(...json.map(d => ({[d.id: d})))
-                    dispatch(receiveMaps(maps))
+                    if (json.length > 0) {
+                        // Map maps from an array of objects to a dict keyed by mapId
+                        const maps = Object.assign(...json.map(d => ({[d.id: d})))
+                        dispatch(receiveMaps(maps))
+                    }
                 }
                 // throw new Error(`Error ${response.status}: Failed to retrieve maps.`)
                 // return json
