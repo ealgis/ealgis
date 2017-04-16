@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import LayerUINav from "./LayerUINav";
-import { cloneMapLayer, toggleModal } from '../actions';
+import { cloneMapLayer, toggleModalState } from '../actions';
 
 interface LayerUINavContainerRouteParams {
     id: Number
@@ -20,7 +20,7 @@ export interface LayerUINavContainerProps {
 export class LayerUINavContainer extends React.Component<LayerUINavContainerProps, undefined> {
     render() {
         const { layerDefinition, mapId, layerId, onCloneLayer, onDeleteLayer } = this.props
-        const deleteConfirmModalId = "LayerDeleteConfirmDialog"
+        const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
         
         return <LayerUINav 
                     defn={layerDefinition} 
@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(cloneMapLayer(mapId, layerId))
     },
     onDeleteLayer: (modalId: string) => {
-        dispatch(toggleModal(modalId))
+        dispatch(toggleModalState(modalId))
     },
   };
 }

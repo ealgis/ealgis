@@ -212,12 +212,6 @@ export function addNewSnackbarMessageAndStartIfNeeded(message: object) {
     }
 }
 
-export function toggleModal(modalId: string) {
-    return (dispatch: any) => {
-        return dispatch(receiveToggleModal(modalId))
-    }
-}
-
 export function receiveMapPosition(position: any) {
     return {
         type: RECEIVE_MAP_POSITION,
