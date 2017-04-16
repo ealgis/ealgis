@@ -84,12 +84,21 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             </List>
 
             <List>
-                <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} />
+                <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} disabled={true} />
                 {dataInspector.map((row: any, key: number) =>
                     <ListItem
                         key={key}
-                        primaryText={row.primaryText.toString()}
-                        secondaryText={row.secondaryText}
+                        primaryText={row.name}
+                        leftIcon={<MapsLayers />}
+                        initiallyOpen={true}
+                        primaryTogglesNestedList={true}
+                        nestedItems={row.properties.map((propRow: any, key: any) =>
+                            <ListItem
+                                key={key}
+                                primaryText={propRow.value.toString()}
+                                secondaryText={propRow.name}
+                            />
+                        )}
                     />
                 )}
             </List>

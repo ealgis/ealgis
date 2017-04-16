@@ -35,6 +35,7 @@ export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
 export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
 export const RECEIVE_UPDATE_DATA_INSPECTOR = 'RECEIVE_UPDATE_DATA_INSPECTOR'
+export const RECEIVE_RESET_DATA_INSPECTOR = 'RECEIVE_RESET_DATA_INSPECTOR'
 
 const ealapi = new EALGISApiClient()
 
@@ -627,9 +628,6 @@ export function fetchColourInfo() {
     }
 }
 
-
-
-
 export function updateDataInspector(dataRows: Array<any>) {
     return {
         type: RECEIVE_UPDATE_DATA_INSPECTOR,
@@ -637,43 +635,40 @@ export function updateDataInspector(dataRows: Array<any>) {
     }
 }
 
-export function sendToDataInspector(features: Array<undefined>) {
-    return (dispatch: any, getState: Function) => {
-        console.log("features", features)
-        const geomIds = features.map((feature: any, key: number) => {
-            return feature.gid
-        });
-        console.log("geomIds", geomIds)
-
-        return dispatch(fetchGeomInfo(geomIds)).then(() => {
-            console.log("pre-updateDataInspector()")
-            let dataRows: Array<any> = []
-            features.forEach((feature: any) => {
-                let properties = feature.getProperties()
-                
-                dataRows.push({
-                    "primaryText": properties.q,
-                    "secondaryText": "Value",
-                })
-                dataRows.push({
-                    "primaryText": properties.gid,
-                    "secondaryText": "GID",
-                })
-            })
-            console.log("dataRows", dataRows)
-            dispatch(updateDataInspector(dataRows))
-        })
+export function resetDataInspector() {
+    return {
+        type: RECEIVE_RESET_DATA_INSPECTOR
     }
 }
 
-export function fetchGeomInfo(geomIds: Array<number>) {
-    return (dispatch: any) => {
-        // dispatch(requestUser())
-        console.log("fetchGeomInfo", geomIds)
+export function sendToDataInspector(features: Array<undefined>) {
+    return (dispatch: any, getState: Function) => {
+        features.forEach((feature: any) => {
+            const featureProps = feature.featureProps
+            const map = getState().maps[feature.mapId]
+            const layer = map.json.layers[feature.layerId]
 
-        return ealapi.get('/api/0.1/self', dispatch)
-            .then(({ response, json }: any) => {
-                // dispatch(receiveUser(json))
-            });
+            ealapi.get(`/api/0.1/datainfo/${layer.geometry}/?schema=${layer.schema}&gid=${featureProps.gid}`, dispatch)
+                .then(({ response, json }: any) => {
+                    let dataRowProps: Array<any> = [{
+                        "name": "Value",
+                        "value": featureProps.q,
+                    }]
+
+                    for(let key in json) {
+                        if(key !== "gid") {
+                            dataRowProps.push({
+                                "name": key,
+                                "value": json[key]
+                            })
+                        }
+                    }
+                    
+                    dispatch(updateDataInspector([{
+                        "name": `Layer ${layer.name}`,
+                        "properties": dataRowProps,
+                    }]))
+                })
+        })
     }
 }

@@ -15,7 +15,7 @@ export interface MapContainerProps {
     dispatch: Function,
     params: any,
     mapDefinition: MapContainerRouteParams,
-    onSelect: Function,
+    onSingleClick: Function,
     onNavigation: Function,
     app: object,
     allowMapViewSetting: boolean,
@@ -23,11 +23,11 @@ export interface MapContainerProps {
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     render() {
-        const { mapDefinition, onSelect, onNavigation, allowMapViewSetting } = this.props
+        const { mapDefinition, onSingleClick, onNavigation, allowMapViewSetting } = this.props
 
         return <MapUI
                     defn={mapDefinition}
-                    onSelect={(evt: any) => onSelect(evt)}
+                    onSingleClick={(evt: any) => onSingleClick(evt)}
                     onNavigation={(evt: any) => onNavigation(evt, allowMapViewSetting)}
                     allowMapViewSetting={allowMapViewSetting}
                 />
@@ -45,14 +45,21 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onSelect: (evt: any) => {
-        console.log("onSelect", evt)
-        console.log(evt.mapBrowserEvent.pixel)
-        evt.selected.forEach((feature: any) => {
-            console.log(feature.getProperties())
+    onSingleClick: (evt: any) => {
+        let features: Array<any> = []
+        evt.map.forEachFeatureAtPixel(evt.pixel, function(feature: any, layer: any) {
+            const layerProps = layer.getProperties().properties
+            const featureProps = feature.getProperties()
+            delete featureProps.geometry
+            
+            features.push({
+                "mapId": layerProps["mapId"],
+                "layerId": layerProps["layerId"],
+                "featureProps": featureProps
+            });
         })
-
-        dispatch(sendToDataInspector(evt.selected))
+        
+        dispatch(sendToDataInspector(features))
     },
     onNavigation: (mapCentreOrResolution: any, allowMapViewSetting: boolean) => {
         // Prevent infinite loops - if we've received a prompt to update the app's

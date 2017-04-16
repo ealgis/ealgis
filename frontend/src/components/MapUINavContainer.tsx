@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import MapUINav from "./MapUINav";
-import { duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector } from '../actions';
+import { duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector } from '../actions';
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -73,7 +73,7 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(deleteMap(mapId/*, cb*/));
     },
     resetDataInspector: () => {
-        dispatch(updateDataInspector([]))
+        dispatch(resetDataInspector())
     }
     // onSuccessDeleteMap: () => {
     //     browserHistory.push("/")
