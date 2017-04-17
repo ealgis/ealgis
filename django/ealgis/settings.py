@@ -70,6 +70,7 @@ def get_env(k, d=None):
     v = os.environ[k]
     return v
 
+
 SOCIAL_AUTH_TWITTER_KEY = get_env('SOCIAL_AUTH_TWITTER_KEY')
 SOCIAL_AUTH_TWITTER_SECRET = get_env('SOCIAL_AUTH_TWITTER_SECRET')
 

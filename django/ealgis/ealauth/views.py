@@ -1,27 +1,19 @@
-from django.views.generic import TemplateView
-from django.db.models import Q
-
 from django.contrib.auth.models import User
-from .models import *
+from .models import MapDefinition
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, detail_route, list_route
-from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 import time
-from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from ealgis.colour_scale import definitions
 from django.http import HttpResponseNotFound
 
 
@@ -74,7 +66,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
     def list(self, request, format=None):
         # FIXME Compile all this client-side
         def compileLayerStyles(map):
@@ -88,16 +80,16 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                     scale_max = float(fill['scale_max'])
                     opacity = float(fill['opacity'])
                     l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
-            
+
             return map
 
         serializer = self.get_serializer(self.get_queryset(), many=True)
         for map in serializer.data:
             map = compileLayerStyles(map)
-        
+
         return Response(serializer.data)
 
-    def retrieve(self, request, format=None, pk=None):        
+    def retrieve(self, request, format=None, pk=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
 
@@ -116,7 +108,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         serializer = self.serializer_class(map, context={"request": request})
         return Response(serializer.data)
-    
+
     @list_route(methods=['get'])
     def compileStyle(self, request, format=None):
         qp = request.query_params
@@ -133,13 +125,13 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                 "scale_nlevels": qp["scale_nlevels"],
             }
         }
-        
+
         scale_min = float(layer["fill"]['scale_min'])
         scale_max = float(layer["fill"]['scale_max'])
         opacity = float(layer["fill"]['opacity'])
 
         return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
-    
+
     @detail_route(methods=['get'])
     def exists(self, request, pk=None, format=None):
         queryset = self.get_queryset()
@@ -148,12 +140,12 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response({
             "exists": map is not None
         })
-    
+
     @detail_route(methods=['put'])
     def clone(self, request, pk=None, format=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
-        
+
         map.name = "{} Copied {}".format(map.name, int(round(time.time() * 1000)))[:32]
         map.json["rev"] = 0
         map.id = None
@@ -162,38 +154,38 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         serializer = self.serializer_class(map)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
         qp = request.query_params
-        
+
         # Validate required params for serving a vector tile
-        ## Layer OK?
+        # Layer OK?
         layer = None
         for l in map.json["layers"]:
             if l["hash"] == qp["layer"]:
                 layer = l
                 break
-        
+
         if layer is None:
             raise ValidationError(detail="Layer not found.")
-        
-        ## Format OK?
+
+        # Format OK?
         if "format" not in qp or qp["format"] not in ["geojson", "pbf"]:
             raise ValidationError(detail="Unknown format '{format}".format(format=format))
-        
-        ## Has Tile Coordinates OK?
+
+        # Has Tile Coordinates OK?
         if not("x" in qp and "y" in qp and "z" in qp):
             raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
-        
+
         # OK, generate a GeoJSON Vector Tile
         def row_to_dict(row):
             def f(item):
                 return not item[0] == 'geom'
             return dict(i for i in row.items() if f(i))
-        
+
         def to_geojson_feature(row):
             def process_geometry(geometry):
                 return json.loads(geometry)
@@ -216,7 +208,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         from django.core.cache import cache
         format = qp["format"]
         cache_key = "layer_{}_{}_{}_{}".format(qp["layer"], qp["x"], qp["y"], qp["z"])
-        cache_time = 60*60*24*365 # time to live in seconds
+        cache_time = 60 * 60 * 24 * 365  # time to live in seconds
         memcachedEnabled = False if "no_memcached" in qp else True
         fromMemcached = False
 
@@ -240,7 +232,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                 # Is sloooooooow
                 import mapbox_vector_tile
                 features = mapbox_vector_tile.encode(layers)
-            
+
             if memcachedEnabled:
                 cache.set(cache_key, features, cache_time)
 
@@ -265,7 +257,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
 class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, format=None, pk=None):
-        eal = apps.get_app_config('ealauth').eal
         schema_name = self.get_schema_from_request(request)
 
         table = self.getter_method(pk, schema_name)
@@ -286,7 +277,7 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         elif schema_name not in eal.get_schemas():
             raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
-    
+
     def add_columns_to_table(self, table, schema_name):
         eal = apps.get_app_config('ealauth').eal
 
@@ -294,7 +285,7 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         columns = {}
         for column in eal.session.query(columninfo).filter_by(tableinfo_id=table.id).all():
             columns[column.name] = json.loads(column.metadata_json)
-        
+
         if len(columns) > 0:
             table.columns = columns
         return table
@@ -316,7 +307,7 @@ class DataInfoViewSet(ReadOnlyGenericTableInfoViewSet):
     def retrieve(self, request, format=None, pk=None):
         eal = apps.get_app_config('ealauth').eal
         schema_name = self.get_schema_from_request(request)
-        
+
         gid = request.query_params.get('gid', None)
         row = eal.get_geometry_source_info_by_gid(pk, gid, schema_name)
         return Response(row)
@@ -344,7 +335,7 @@ class ColoursViewset(viewsets.ViewSet):
 
     def list(self, request, format=None):
         return Response(definitions.get_json())
-    
+
     @list_route(methods=['get'])
     def defs(self, request):
         return Response(definitions.get_defs_json())

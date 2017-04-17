@@ -1,17 +1,10 @@
 import sqlalchemy as db
-# from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import relationship, backref
-# from ealgis import EAlGIS
-# from ealgis.ealgis import EAlGIS
-from django.apps import apps
 import datetime
 
 Base = automap_base()
 
-# model definitions; using Flask-SQLAlchemy; models use a subclass that is defined on the
-# db instance
-# db = EAlGIS().db
 
 class TableInfo(Base):
     "metadata for each table that has been loaded into the system"

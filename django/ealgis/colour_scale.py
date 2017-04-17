@@ -3,15 +3,10 @@ import cairocffi as cairo
 import colorsys
 import csv
 from io import StringIO
-# from util import pairwise
+from ealgis.util import pairwise
 
 RGBBase = namedtuple('RGB', ['r', 'g', 'b'])
 
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
 
 class RGB(RGBBase):
     def __mul__(self, s):
@@ -276,6 +271,7 @@ class CannedColourDefinitions(object):
                     colours.append(RGB(r(row), g(row), b(row)))
                 self.register(name, DiscreteColourScale(colours))
 
+
 definitions = CannedColourDefinitions()
 
 
@@ -301,7 +297,7 @@ def make_colour_scale(layer, attr, cmin, cmax, opacity):
         rgb *= 255.
 
         # Ignore styles below 0 that shouldn't exist (?)
-        if expr[1] == "<" and expr[2] == 0.0: # op and v
+        if expr[1] == "<" and expr[2] == 0.0:  # op and v
             return
 
         style = {
@@ -340,12 +336,12 @@ def make_colour_scale(layer, attr, cmin, cmax, opacity):
         # we hedge on any floating-point rounding issues with a have increment jump into our level
         # for the colour lookup
         add_class(scale.lookup(vfrom + inc / 2.), (attr, ">=", vfrom, attr, "<", vto))
-    
+
     # above cmin
     add_class(scale.lookup(cmax + inc), (attr, ">=", cmax))
     return olStyle
 
-    
+
 if __name__ == '__main__':
     scale = definitions.get("Accent", 8)
     with open('html/accent.png', 'w') as fd:

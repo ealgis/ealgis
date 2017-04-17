@@ -1,4 +1,5 @@
-from django.db.models.signals import pre_save, post_save, post_delete
+from django.db.models.signals import pre_save
+from rest_framework.exceptions import ValidationError
 from django.dispatch import receiver
 
 from ealgis.ealauth.models import MapDefinition
@@ -18,7 +19,7 @@ def pre_save_map(sender, instance, raw, using, update_fields, **kwargs):
     except TooManyMatches as e:
         raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
 
-# Layers can be shared amongst maps - so we'll leave this stub here for 
+# Layers can be shared amongst maps - so we'll leave this stub here for
 # later use if we want to write layer cleaning up code.
 # @receiver(post_delete, sender=MapDefinition)
 # def delete_map(sender, instance, **kwargs):

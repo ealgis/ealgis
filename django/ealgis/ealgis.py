@@ -1,20 +1,10 @@
-try:
-    import simplejson as json
-except ImportError:
-    import json
-import sys
+import json
 import os
-import hashlib
-import time
-import random
-import re
 
-import ealgis.models as models
 import sqlalchemy as sqlalchemy
 from sqlalchemy import create_engine, inspect
-from sqlalchemy.orm import sessionmaker, subqueryload
-from sqlalchemy.ext.declarative import declarative_base
-from django.apps import apps
+from sqlalchemy.orm import sessionmaker
+
 
 class NoMatches(Exception):
     pass
@@ -23,8 +13,10 @@ class NoMatches(Exception):
 class TooManyMatches(Exception):
     pass
 
+
 class CompilationError(Exception):
     pass
+
 
 class EAlGIS(object):
     "singleton with key application (eg. database connection) state"
@@ -91,22 +83,22 @@ class EAlGIS(object):
 
     def is_compliant_schema(self, schema_name):
         """determines if a given schema is EAlGIS-compliant"""
-        
+
         # Tables required for a schemas to be EAlGIS-compliant
         required_tables = ["table_info", "column_info", "geometry_linkage",
-                            "geometry_source", "geometry_source_projected"]
+                           "geometry_source", "geometry_source_projected"]
 
         inspector = inspect(self.db)
         table_names = inspector.get_table_names(schema=schema_name)
 
         if not set(required_tables).issubset(table_names):
             return False
-        
+
         if "ealgis_metadata" in table_names:
             return True
-        
+
         return False
-    
+
     def get_schemas(self, skip_cache=False):
         """identify and load EAlGIS-compliant schemas available in the database"""
 
@@ -158,7 +150,7 @@ class EAlGIS(object):
             info = {}
 
             for schema_name in self.get_schemas():
-                geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+                geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
 
                 for source in self.session.query(geometrysource).all():
                     name = "{}.{}".format(schema_name, source.table_info.name)
@@ -172,7 +164,7 @@ class EAlGIS(object):
     def get_tableinfo(self):
         """grab a representation of the tabular data available in the database
         result is cached, so after first call this is fast"""
-        
+
         def dump_table_info(table):
             if table.metadata_json is not None:
                 table_info = json.loads(table.metadata_json)
@@ -189,9 +181,9 @@ class EAlGIS(object):
             info = {}
 
             for schema_name in self.get_schemas():
-                tableinfo =  self.get_table_class("table_info", schema_name)
+                tableinfo = self.get_table_class("table_info", schema_name)
                 geodata_tables = [v["name"] for (k, v) in self.get_datainfo().items()]
-                
+
                 for table_info in self.session.query(tableinfo).all():
                     if table_info.name not in geodata_tables:
                         name = "{}.{}".format(schema_name, table_info.name)
@@ -201,21 +193,21 @@ class EAlGIS(object):
         if self.tableinfo is None:
             self.tableinfo = make_tableinfo()
         return self.tableinfo
-    
+
     def get_data_info(self, table_name, schema_name):
-        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
         return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).first().table_info
-    
+
     def get_table_info(self, table_name, schema_name):
-        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
-        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.tableinfo_id).filter(tableinfo.name == table_name).filter(geometrysource.tableinfo_id == None).first()
+        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.tableinfo_id).filter(tableinfo.name == table_name).filter(geometrysource.tableinfo_id is None).first()
 
     def get_geometry_source(self, table_name, schema_name):
-        geometrysource, tableinfo =  self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
         return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).one()
 
     def get_geometry_source_by_id(self, id, schema_name):
-        geometrysource = eal.get_table_class("geometry_source", schema_name)
+        geometrysource = self.get_table_class("geometry_source", schema_name)
         return self.query(geometrysource).filter(geometrysource.id == id).one()
 
     def get_geometry_source_info_by_gid(self, table_name, gid, schema_name):
@@ -236,7 +228,7 @@ class EAlGIS(object):
         # supports table_name.column_name OR just column_name
         s = attribute.split('.', 1)
 
-        ColumnInfo, GeometryLinkage, TableInfo =  self.get_table_classes(["column_info", "geometry_linkage", "table_info"], geometry_source.__table__.schema)
+        ColumnInfo, GeometryLinkage, TableInfo = self.get_table_classes(["column_info", "geometry_linkage", "table_info"], geometry_source.__table__.schema)
 
         q = self.session.query(ColumnInfo, GeometryLinkage.id).join(TableInfo).join(GeometryLinkage)
         if len(s) == 2:
@@ -253,12 +245,12 @@ class EAlGIS(object):
         else:
             ci, linkage_id = matches[0]
             return self.session.query(GeometryLinkage).get(linkage_id), ci
-    
+
     def get_tile(self, query, x, y, z):
         def create_vectortile_sql(query, bounds):
             # Sets the number of decimal places per GeoJSON coordinate to reduce response size
             # (e.g. 10 decimal places per lat/long in 100 polygons with 50 sets of coords is 2 * 10 * 100 * 50 = 100,000 bytes uncompressed
-            # dropping 6 decimal places would save 60,000 bytes per request) 
+            # dropping 6 decimal places would save 60,000 bytes per request)
             def setDecimalPlaces():
                 # Sets the tolerance in degrees to thin (aka simplify or generalise) the vector data on the server before it's returned
                 def tolerance():
@@ -302,7 +294,7 @@ class EAlGIS(object):
             #     min_area = 2000
             # else:
             #     min_area = 0 # Display all features beyond zoom 16
-            
+
             # Marginally less hacky - scale the min area based on the resolution
             min_area = resolution * 1000
 
@@ -327,21 +319,21 @@ class EAlGIS(object):
                             ST_SnapToGrid(
                                 CASE WHEN ST_CoveredBy(geom_3857, extent) = FALSE THEN geom_3857 ELSE ST_Intersection(geom_3857, extent) END,
                             res/magic, res/magic),
-                            tolerance) AS _clip_geom, 
+                            tolerance) AS _clip_geom,
                         * FROM (
                             -- main query
                             {query}
-                            ) _wrap, _conf 
+                            ) _wrap, _conf
                         WHERE geom_3857 && extent AND ST_Area(geom_3857) >= min_area
                     )
                     -- end geom
                 SELECT gid, q,
                     ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
-                    FROM _geom, _conf 
+                    FROM _geom, _conf
                     WHERE NOT ST_IsEmpty(_clip_geom)"""
 
             return SQL_TEMPLATE.format(res=resolution, decimalPlaces=decimalPlaces, min_area=min_area, tolerance=tolerance, query=query, west=west, south=south, east=east, north=north, srid=srid)
-        
+
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         import mercantile
         vt_query = create_vectortile_sql(query, bounds=mercantile.bounds(x, y, z))

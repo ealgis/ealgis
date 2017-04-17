@@ -26,7 +26,7 @@ def printquery(query):
 def operatorOperands(tokenlist):
     "generator to extract operators and operands in pairs"
     it = iter(tokenlist)
-    while 1:
+    while True:
         try:
             o1 = next(it)
             o2 = next(it)
@@ -37,6 +37,7 @@ def operatorOperands(tokenlist):
 
 class EvalConstant():
     "Class to evaluate a parsed constant or variable"
+
     def __init__(self, tokens):
         self.value = tokens[0]
 
@@ -54,6 +55,7 @@ class EvalConstant():
 
 class EvalSignOp():
     "Class to evaluate expressions with a leading + or - sign"
+
     def __init__(self, tokens):
         self.sign, self.value = tokens[0]
 
@@ -64,6 +66,7 @@ class EvalSignOp():
 
 class EvalMultOp():
     "Class to evaluate multiplication and division expressions"
+
     def __init__(self, tokens):
         self.value = tokens[0]
 
@@ -87,6 +90,7 @@ class EvalMultOp():
 
 class EvalAddOp():
     "Class to evaluate addition and subtraction expressions"
+
     def __init__(self, tokens):
         self.value = tokens[0]
 
@@ -142,9 +146,9 @@ class EvalLogicalOp():
 
 class DataExpression(object):
     integer = Word(nums)
-    real = (Combine(Word(nums) + Optional("." + Word(nums))
-            + oneOf("E e") + Optional(oneOf('+ -')) + Word(nums))
-            | Combine(Word(nums) + "." + Word(nums)))
+    real = (Combine(Word(nums) + Optional("." + Word(nums)) +
+            oneOf("E e") + Optional(oneOf('+ -')) + Word(nums)) |
+            Combine(Word(nums) + "." + Word(nums)))
 
     variable = Word(alphanums + '._')
     operand = real | integer | variable

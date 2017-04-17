@@ -1,7 +1,4 @@
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
@@ -19,6 +16,10 @@ logger = make_logger(__name__)
 MAPSERVER_EPOCH = 2
 
 
+class CompilationError(Exception):
+    pass
+
+
 class MapDefinition(models.Model):
     "map definition - all state for a EAlGIS map"
     name = models.CharField(max_length=32)
@@ -28,13 +29,6 @@ class MapDefinition(models.Model):
 
     class Meta:
         unique_together = ('name', 'owner_user_id')
-
-    @classmethod
-    def get_by_name(self, map_name):
-        try:
-            return MapDefinition.query.filter(MapDefinition.name == map_name).one()
-        except sqlalchemy.orm.exc.NoResultFound:
-            return None
 
     def get(self):
         self.eal = apps.get_app_config('ealauth').eal
@@ -61,14 +55,14 @@ class MapDefinition(models.Model):
         for k, v in obj.copy().items():
             if k.startswith('_'):
                 del obj[k]
-            elif type(v) == dict:
+            elif isinstance(v, dict):
                 self._private_clear(v)
 
     def _private_copy_over(self, from_obj, to_obj):
         for k, v in from_obj.items():
             if k.startswith('_'):
                 to_obj[k] = v
-            elif type(v) == dict:
+            elif isinstance(v, dict):
                 jump_to_obj = to_obj.get(k)
                 if jump_to_obj is not None:
                     self._private_copy_over(v, jump_to_obj)
