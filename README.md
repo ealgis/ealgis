@@ -1,12 +1,12 @@
-
-EAlGIS
-======
+# EAlGIS
 
 ![Unemployment % in Perth, Australia](https://raw.github.com/grahame/ealgis/master/doc/screenshots/unemployment.png "Unemployment % in Perth, Australia")
 
+# Build status
 
-Interactive Data Analysis
--------------------------
+[![Build Status](https://travis-ci.org/ealgis/ealgis.svg?branch=django)](https://travis-ci.org/ealgis/ealgis)
+
+# Interactive Data Analysis
 
 EAlGIS offers:
 
@@ -27,8 +27,7 @@ EAlGIS offers:
  * framework for off-line analysis work
      - perform complex analysis outside of EAlGIS, and then load the results in to visualise them on a map
 
-Installation
-------------
+# Installation
 
 EAlGIS is intended to be run within docker.
 
@@ -36,8 +35,7 @@ To get started:
 
 > docker-compose up
 
-Django Setup
------------
+# Django Setup
 
 Add a [Python Social Auth](http://python-social-auth.readthedocs.io/en/latest) backend of your choice. e.g. [Social backends](http://python-social-auth.readthedocs.io/en/latest/backends/index.html#social-backends).
 
@@ -56,8 +54,8 @@ Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/lates
 
 Now you're up and running!
 
-Becoming An Admin
------------------
+# Becoming An Admin
+
 Making yourself an admin:
 
 Hop into your running `django_web` Docker container:
@@ -79,8 +77,8 @@ user.save()
 Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
 
 
-Get some data
-------------
+# Get some data
+
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
 You may wish to start with the 2011 Australian Census: https://github.com/grahame/ealgis-aus-census-2011
 
