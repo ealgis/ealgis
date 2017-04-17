@@ -38,7 +38,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
 
         if(app.loading === true) {
             return <MuiThemeProvider>
-                <CircularProgress style={{marginLeft: "48%", marginTop: "40%"}} />
+                <CircularProgress style={{marginLeft: "48%", marginTop: "24%"}} />
             </MuiThemeProvider>
         }
 
