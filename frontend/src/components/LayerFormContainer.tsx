@@ -39,16 +39,18 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             }
         }
     }
-    
+
     private deriveLayerFormValuesFromLayer = function(layer: object, datainfo: object) {
         return {
-            "borderSize": layer["line"]["width"],
-            "fillColourSchemeLevels": layer["fill"]["scale_nlevels"],
-            "fillColourScaleFlip": layer["fill"]["scale_flip"],
             "fillOpacity": layer["fill"]["opacity"] * 100,
             "scaleMin": layer["fill"]["scale_min"],
             "scaleMax": layer["fill"]["scale_max"],
+            "valueExpression": layer["fill"]["expression"],
+            "fillColourScaleFlip": layer["fill"]["scale_flip"],
             "fillColourScheme": layer["fill"]["scale_name"],
+            "filterExpression": layer["fill"]["conditional"],
+            "fillColourSchemeLevels": layer["fill"]["scale_nlevels"],
+            "borderSize": layer["line"]["width"],
             "borderColour": layer["line"]["colour"],
             "name": layer["name"],
             "description": layer["description"],
@@ -77,10 +79,6 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             "schema": formValues["geometry"]["schema_name"],
             "visible": true, // New layers are always visible
             "geometry": formValues["geometry"]["name"],
-            // FIXME Wot is this?
-            "background": {
-                "label": null
-            },
             "description": formValues["description"],
         }
     }
