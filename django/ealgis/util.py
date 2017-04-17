@@ -1,8 +1,5 @@
 import itertools
 import logging
-import os.path
-import os
-from sqlalchemy import inspect
 
 
 def pairwise(iterable):
