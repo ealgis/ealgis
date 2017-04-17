@@ -82,7 +82,7 @@ class MapDefinition(models.Model):
             return old != new
 
         if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional') or get_recurse(layer, 'fill', '_mapserver_epoch') != MAPSERVER_EPOCH:
-            logger.debug("compiling query for layer:", layer.get('name'))
+            logger.debug("compiling query for layer: {}".format(layer.get('name')))
             expr = self.compile_expr(layer)
             layer['_postgis_query'] = expr.get_postgis_query()
             layer['_mapserver_epoch'] = MAPSERVER_EPOCH
