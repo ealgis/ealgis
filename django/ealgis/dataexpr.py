@@ -203,10 +203,8 @@ class DataExpression(object):
         if expr == '':
             # bodge bodge bodge, keep 'q' working
             expr = sqlalchemy.func.abs(0)
-            self.trivial = True
         else:
             parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[0]
-            self.trivial = False
             # + 0 is to stop non-binary expressions breaking with sqlalchemy's label() -- bodge, fixme
             expr = parsed.eval(self) + 0
         query_attrs.append(sqlalchemy.sql.expression.label('q', expr))
@@ -226,12 +224,6 @@ class DataExpression(object):
 
     def __repr__(self):
         return "DataExpression<%s>" % self.name
-
-    def is_trivial(self):
-        return self.trivial
-
-    def get_name(self):
-        return self.name
 
     def get_table_class(self, table_name, schema_name):
         key = "{}.{}".format(table_name, schema_name)
@@ -254,18 +246,6 @@ class DataExpression(object):
 
     def get_query(self):
         return self.query
-
-    def get_query_bounds(self, ne, sw, srid):
-        ymin, xmin = sw
-        ymax, xmax = ne
-        proj_srid = int(eal.get_setting('projected_srid'))
-        proj_column = self.geometry_source.srid_column(proj_srid)
-        q = self.query.filter(sqlalchemy.func.st_intersects(
-            sqlalchemy.func.st_transform(
-                sqlalchemy.func.st_makeenvelope(xmin, ymin, xmax, ymax, srid),
-                proj_srid),
-            getattr(self.tbl, proj_column)))
-        return q
 
     def get_geometry_source(self):
         return self.geometry_source
