@@ -4,7 +4,7 @@ export class About extends React.Component<undefined, undefined> {
     render() {
         return <div>
             <p>
-            Copyright 2013 Grahame Bowland
+            Copyright 2013-17 Grahame Bowland and Keith Moss
             </p>
 
             <p>

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    author="Grahame Bowland",
+    author="Grahame Bowland and Keith Moss",
     author_email="grahame@angrygoats.net",
     description="ealgis",
     license="GPL3",
