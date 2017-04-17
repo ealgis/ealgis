@@ -1,9 +1,15 @@
 from django.apps import AppConfig
 from ealgis.ealgis import EAlGIS
 
+from ealgis.util import make_logger
+
+
+logger = make_logger(__name__)
+
+
 class EalauthConfig(AppConfig):
     name = 'ealgis.ealauth'
-    
+
     def ready(self):
         import ealgis.ealauth.signals  # noqa
 
@@ -12,4 +18,4 @@ class EalauthConfig(AppConfig):
         self.projected_srid = 3112
 
         schema_names = self.eal.get_schemas()
-        print("Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))
+        logger.info("Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))

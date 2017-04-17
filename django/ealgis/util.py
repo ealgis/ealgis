@@ -1,11 +1,13 @@
 import subprocess as sp
 import itertools
+import logging
 import os.path
 import os
 import re
 from sqlalchemy import inspect
 
 table_name_re = re.compile(r'^[A-Za-z0-9_]+$')
+
 
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
@@ -38,3 +40,13 @@ def table_name_valid(table_name):
 # Courtesy http://stackoverflow.com/a/37350445/7368493
 def object_as_dict(obj):
     return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
+
+
+def make_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler()
+    fmt = logging.Formatter("%(asctime)s [%(levelname)-7s] [%(threadName)s]  %(message)s")
+    handler.setFormatter(fmt)
+    logger.addHandler(handler)
+    return logger

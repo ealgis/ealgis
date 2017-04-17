@@ -6,12 +6,18 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.apps import apps
+from ealgis.util import make_logger
 import pyparsing
 import hashlib
+
+
+logger = make_logger(__name__)
+
 
 # Create your models here.
 # mapserver epoch; allows us to force re-compilation when things are changed
 MAPSERVER_EPOCH = 2
+
 
 class MapDefinition(models.Model):
     "map definition - all state for a EAlGIS map"
@@ -82,12 +88,12 @@ class MapDefinition(models.Model):
             return old != new
 
         if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional') or get_recurse(layer, 'fill', '_mapserver_epoch') != MAPSERVER_EPOCH:
-            print("compiling query for layer:", layer.get('name'))
+            logger.debug("compiling query for layer:", layer.get('name'))
             expr = self.compile_expr(layer)
             layer['_postgis_query'] = expr.get_postgis_query()
             layer['_mapserver_epoch'] = MAPSERVER_EPOCH
-            print("... compilation complete; query:")
-            print(layer['_postgis_query'])
+            logger.debug("... compilation complete; query:")
+            logger.debug(layer['_postgis_query'])
 
     def _layer_update_hash(self, layer):
         try:
@@ -101,27 +107,27 @@ class MapDefinition(models.Model):
             "expression": layer["fill"]["expression"]
         }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
-    
+
     def _layer_set_latlon_bbox(self, layer, bbox):
         layer["latlon_bbox"] = bbox
-    
+
     def _get_latlon_bbox(self, layer):
         bbox_query = """
-            SELECT 
-                ST_XMin(latlon_bbox) AS minx, 
-                ST_XMax(latlon_bbox) AS maxx, 
-                ST_YMin(latlon_bbox) AS miny, 
-                ST_YMax(latlon_bbox) as maxy 
+            SELECT
+                ST_XMin(latlon_bbox) AS minx,
+                ST_XMax(latlon_bbox) AS maxx,
+                ST_YMin(latlon_bbox) AS miny,
+                ST_YMax(latlon_bbox) as maxy
             FROM (
-                SELECT 
+                SELECT
                     -- Eugh
-                    Box2D(ST_GeomFromText(ST_AsText(ST_Transform(ST_SetSRID(ST_Extent(geom_3857), 3857), 4326)))) AS latlon_bbox 
+                    Box2D(ST_GeomFromText(ST_AsText(ST_Transform(ST_SetSRID(ST_Extent(geom_3857), 3857), 4326)))) AS latlon_bbox
                 FROM (
                     {query}
                 ) AS exp
             ) AS bbox;
         """.format(query=layer['_postgis_query'])
-        
+
         eal = apps.get_app_config('ealauth').eal
         results = eal.session.execute(bbox_query)
         return dict(results.first())

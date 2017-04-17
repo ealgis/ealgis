@@ -21,20 +21,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MapDefinitionSerializer(serializers.ModelSerializer):
-    # def create(self, data):
-    #     # Will only be done if a new object is being created
-    #     print("data", data)
-    #     print("user", self.request.user)
-    #     map = MapDefinition(
-    #         name = data["name"],
-    #         owner_user_id = data["owner_user_id"],
-    #         description = data["description"],
-    #         json = data["json"]
-    #     )
-    #     # self._set(map, map.json)
-
-    #     return map
-
     class Meta:
         model = MapDefinition
         fields = ('id', 'name', 'description', 'json', 'owner_user_id')
@@ -57,6 +43,7 @@ class JSONMetadataField(serializers.Field):
 
     def to_internal_value(self, metadata_json):
         return json.dumps(metadata_json)
+
 
 class TableInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()

@@ -9,8 +9,12 @@ import sys
 from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from django.apps import apps
+from ealgis.util import make_logger
+
 
 eal = apps.get_app_config('ealauth').eal
+logger = make_logger(__name__)
+
 
 def printquery(query):
     from sqlalchemy.dialects import postgresql
@@ -272,8 +276,8 @@ class DataExpression(object):
 if __name__ == '__main__':
     src = eal.get_table_info('sa1_2011_aust').geometry_source
     expr = DataExpression('CommandLine', src, sys.argv[1], sys.argv[2])
-    print("Raw query::\n")
-    print(''.join(["   " + t + '\n' for t in expr.get_printed_query().splitlines()]))
-    print("\PostGIS query\n")
-    print('    ' + expr.get_postgis_query())
-    print("Test:", len(expr.get_query()[:10]))
+    logger.debug("Raw query::\n")
+    logger.debug(''.join(["   " + t + '\n' for t in expr.get_printed_query().splitlines()]))
+    logger.debug("\PostGIS query\n")
+    logger.debug('    ' + expr.get_postgis_query())
+    logger.debug("Test:", len(expr.get_query()[:10]))

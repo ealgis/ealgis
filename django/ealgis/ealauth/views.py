@@ -203,20 +203,19 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                 "geometry": process_geometry(row["geom"]),
                 "properties": row_to_dict(row),
             }
-        
+
         def to_pbf_feature(row):
             def process_geometry(geometry):
                 return geometry
-            
+
             return {
                 "geometry": process_geometry(row['geom']),
                 "properties": row_to_dict(row)
             }
-        
+
         from django.core.cache import cache
         format = qp["format"]
         cache_key = "layer_{}_{}_{}_{}".format(qp["layer"], qp["x"], qp["y"], qp["z"])
-        print(cache_key)
         cache_time = 60*60*24*365 # time to live in seconds
         memcachedEnabled = False if "no_memcached" in qp else True
         fromMemcached = False

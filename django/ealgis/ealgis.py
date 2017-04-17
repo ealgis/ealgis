@@ -111,7 +111,6 @@ class EAlGIS(object):
         """identify and load EAlGIS-compliant schemas available in the database"""
 
         def make_schemas():
-            print("Scanning!")
             # PostgreSQL and PostGIS system schemas
             system_schemas = ["information_schema", "tiger", "tiger_data", "topology", "public"]
 
@@ -123,7 +122,7 @@ class EAlGIS(object):
                     if self.is_compliant_schema(schema_name):
                         schemas.append(schema_name)
             return schemas
-        
+
         if skip_cache is True or self.schemas is None:
             self.schemas = make_schemas()
         return self.schemas
