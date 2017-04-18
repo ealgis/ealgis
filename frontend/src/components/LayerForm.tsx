@@ -50,7 +50,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, onSubmit } = this.props
+        const { mapId, layerId, onSubmit, colourinfo } = this.props
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
 
