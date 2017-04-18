@@ -213,6 +213,15 @@ export function addNewSnackbarMessageAndStartIfNeeded(message: object) {
     }
 }
 
+export function sendSnackbarNotification(message: string) {
+    return (dispatch: any) => {
+        return dispatch(addNewSnackbarMessageAndStartIfNeeded({
+            message: message,
+            autoHideDuration: 2500,
+        }))
+    }
+}
+
 export function receiveMapPosition(position: any) {
     return {
         type: RECEIVE_MAP_POSITION,
@@ -295,6 +304,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
             .then(({ response, json }: any) => {
                 if(response.status === 200) {
                     dispatch(receieveUpdatedMap(json))
+                    dispatch(sendSnackbarNotification("Layer saved successfully"))
                     
                     if(layerId === undefined) {
                         browserHistory.push("/map/" + json.id)
@@ -322,10 +332,7 @@ export function cloneMapLayer(mapId: number, layerId: number) {
     return (dispatch: any, getState: Function) => {
         dispatch(receiveCloneMapLayer(mapId, layerId))
         dispatch(updateMap(getState().maps[mapId]))
-        dispatch(addNewSnackbarMessageAndStartIfNeeded({
-            message: "Layer cloned successfully.",
-            autoHideDuration: 2500,
-        }))
+        dispatch(sendSnackbarNotification("Layer cloned successfully"))
     }
 }
 
@@ -396,10 +403,7 @@ export function updateMapOrigin(map: object, position: any) {
     return (dispatch: any, getState: Function) => {
         dispatch(setMapOrigin(map.id, position))
         dispatch(updateMap(getState().maps[map.id])) // FIXME This *can't* be best practice
-        dispatch(addNewSnackbarMessageAndStartIfNeeded({
-            message: "Map origin updated successfully.",
-            autoHideDuration: 2500,
-        }))
+        dispatch(sendSnackbarNotification("Map origin updated successfully"))
     }
 }
 
@@ -478,10 +482,7 @@ export function mapUpsert(map: object) {
                 if(response.status === 200) {
                     dispatch(receieveUpdatedMap(json))
                     browserHistory.push("/map/" + json.id)
-                    dispatch(addNewSnackbarMessageAndStartIfNeeded({
-                        message: "Map saved successfully.",
-                        autoHideDuration: 2500,
-                    }))
+                    dispatch(sendSnackbarNotification("Map saved successfully"))
                     
                 } else if(response.status === 400) {
                     // We expect that the server will return the shape:
@@ -553,10 +554,7 @@ export function duplicateMap(mapId: number) {
             .then(({ response, json }: any) => {
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
-                    dispatch(addNewSnackbarMessageAndStartIfNeeded({
-                        message: "Map duplicated successfully.",
-                        autoHideDuration: 2500,
-                    }))
+                    dispatch(sendSnackbarNotification("Map duplicated successfully"))
                     browserHistory.push("/map/" + json.id)
                     
                 } else {

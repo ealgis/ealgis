@@ -97,7 +97,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                 </ToolbarGroup>
             </Toolbar>
 
-            <form style={{margin: 10}} onSubmit={(val) => handleSubmit(onSubmit)}>
+            <form style={{margin: 10}} onSubmit={handleSubmit(onSubmit)}>
                 <Field 
                     name="name" 
                     component={TextField} 
@@ -253,6 +253,8 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     min="0"
                     max="100"
                 />
+
+                <button type="submit" style={{"display": "none"}} />
             </form>
         </div>
     }
