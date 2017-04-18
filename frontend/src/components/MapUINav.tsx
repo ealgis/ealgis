@@ -58,6 +58,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
+                    <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>
                     <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
@@ -72,7 +73,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             <h2 style={{textAlign: "center"}}>{defn.name}</h2>
 
             <List>
-                <ListItem primaryText="Layers" leftIcon={<MapsLayers />} rightIconButton={<IconButton tooltip="Add a new layer" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>} />
+                <ListItem primaryText="Layers" leftIcon={<MapsLayers />} disabled={true} />
                 {defn.json.layers.map((l: any, key: number) => 
                     <LayerUINav 
                         key={key}
