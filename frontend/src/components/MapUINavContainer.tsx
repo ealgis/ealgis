@@ -70,6 +70,7 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(toggleModalState("deleteMap"))
     },
     onDeleteMap: (mapId: number/*, cb: Function*/) => {
+        dispatch(toggleModalState("deleteMap"))
         dispatch(deleteMap(mapId/*, cb*/));
     },
     resetDataInspector: () => {
