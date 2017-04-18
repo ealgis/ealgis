@@ -4,7 +4,7 @@ from .models import (
     MapDefinition)
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
+from ealgis.colour_scale import definitions, make_colour_scale
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -33,6 +33,23 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def to_representation(self, obj):
+        map = super(serializers.ModelSerializer, self).to_representation(obj)
+
+        # FIXME Compile all this client-side
+        # Compile layer fill styles and attach an olStyleDef for consumption by the UI
+        for l in map["json"]["layers"]:
+            fill = l['fill']
+            do_fill = (fill['expression'] != '')
+
+            # Line styles are simple and can already be read from the existing JSON object
+            if do_fill:
+                scale_min = float(fill['scale_min'])
+                scale_max = float(fill['scale_max'])
+                opacity = float(fill['opacity'])
+                l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
+        
+        return map
 
 class JSONMetadataField(serializers.Field):
     """

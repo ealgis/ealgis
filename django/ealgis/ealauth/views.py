@@ -67,48 +67,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def list(self, request, format=None):
-        # FIXME Compile all this client-side
-        def compileLayerStyles(map):
-            for l in map["json"]["layers"]:
-                fill = l['fill']
-                do_fill = (fill['expression'] != '')
-
-                # Line styles are simple and can already be read from the existing JSON object
-                if do_fill:
-                    scale_min = float(fill['scale_min'])
-                    scale_max = float(fill['scale_max'])
-                    opacity = float(fill['opacity'])
-                    l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
-
-            return map
-
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        for map in serializer.data:
-            map = compileLayerStyles(map)
-
-        return Response(serializer.data)
-
-    def retrieve(self, request, format=None, pk=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
-
-        # FIXME Compile all this client-side
-        # Compile layer fill styles and attach an olStyleDef for consumption by the UI
-        for l in map.json["layers"]:
-            fill = l['fill']
-            do_fill = (fill['expression'] != '')
-
-            # Line styles are simple and can already be read from the existing JSON object
-            if do_fill:
-                scale_min = float(fill['scale_min'])
-                scale_max = float(fill['scale_max'])
-                opacity = float(fill['opacity'])
-                l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
-
-        serializer = self.serializer_class(map, context={"request": request})
-        return Response(serializer.data)
-
     @list_route(methods=['get'])
     def compileStyle(self, request, format=None):
         qp = request.query_params
