@@ -1,6 +1,5 @@
 Django==1.11
 psycopg2==2.7.1
-python-social-auth==0.2.21
 djangorestframework==3.6.2
 cairocffi==0.8.0
 git+git://github.com/tiran/defusedxml
@@ -10,3 +9,5 @@ pyparsing==2.1.10
 requests==2.13.0
 python-memcached==1.58
 mercantile==0.9.0
+social-auth-app-django==1.1.0
+social-auth-core==1.2.0
