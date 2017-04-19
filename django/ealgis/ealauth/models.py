@@ -6,16 +6,13 @@ from django.apps import apps
 from ealgis.util import make_logger
 import pyparsing
 import hashlib
+import copy
 
 
 logger = make_logger(__name__)
 
 
 # Create your models here.
-# mapserver epoch; allows us to force re-compilation when things are changed
-MAPSERVER_EPOCH = 2
-
-
 class CompilationError(Exception):
     pass
 
@@ -81,11 +78,10 @@ class MapDefinition(models.Model):
             new = get_recurse(layer, *args)
             return old != new
 
-        if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional') or get_recurse(layer, 'fill', '_mapserver_epoch') != MAPSERVER_EPOCH:
+        if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
             logger.debug("compiling query for layer: {}".format(layer.get('name')))
             expr = self.compile_expr(layer)
             layer['_postgis_query'] = expr.get_postgis_query()
-            layer['_mapserver_epoch'] = MAPSERVER_EPOCH
             logger.debug("... compilation complete; query:")
             logger.debug(layer['_postgis_query'])
 
@@ -98,7 +94,8 @@ class MapDefinition(models.Model):
         hash_obj = {
             "schema": layer["schema"],
             "geometry": layer["geometry"],
-            "expression": layer["fill"]["expression"]
+            "expression": layer["fill"]["expression"],
+            "expression": layer["fill"]["conditional"],
         }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
 
@@ -127,7 +124,7 @@ class MapDefinition(models.Model):
         return dict(results.first())
 
     def _set(self, defn, force=False):
-        old_defn = self.get()
+        old_defn = copy.deepcopy(self.get()) # Otherwise _private_clear() ends up removing private properties from old_layer too
         if 'layers' not in old_defn:
             old_defn['layers'] = []
         rev = old_defn.get('rev', 0) + 1
