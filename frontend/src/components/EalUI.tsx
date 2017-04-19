@@ -4,6 +4,11 @@ import AppBar from 'material-ui/AppBar';
 import Snackbar from 'material-ui/Snackbar';
 import { ToolbarGroup } from 'material-ui/Toolbar';
 import FlatButton from 'material-ui/FlatButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Toggle from 'material-ui/Toggle';
 import { LoginDialog } from './LoginDialog';
 
 export interface EalUISnackbarNotificationProps {
@@ -33,6 +38,7 @@ export interface EalUIProps {
     content: any,
     onTapAppBarLeft: any,
     handleRequestClose: any,
+    onDebugToggle: any,
 }
 
 const appBarButtonStyle = {
@@ -42,7 +48,7 @@ const appBarButtonStyle = {
 
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
-        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose } = this.props
+        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, onDebugToggle } = this.props
 
         return <div className="page">
             <div className="page-header">
@@ -52,6 +58,22 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                     iconElementRight={<ToolbarGroup>
                         <FlatButton label="Home" containerElement={<Link to={"/"} />} style={appBarButtonStyle} />
                         <FlatButton label="About" containerElement={<Link to={"/about"} />} style={appBarButtonStyle} />
+                        {user.is_staff ? 
+                            <IconMenu
+                                iconButtonElement={<IconButton><MoreVertIcon color={"white"} /></IconButton>}
+                                anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                            >
+                                <MenuItem>
+                                    <Toggle
+                                        label="Debug"
+                                        toggled={app.debug}
+                                        onToggle={onDebugToggle}
+                                    />
+                                </MenuItem>
+                            </IconMenu>
+                            :
+                            <div></div>}
                     </ToolbarGroup>}
                 />
             </div>

@@ -2,7 +2,7 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar } from '../actions';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import './FixedLayout.css';
@@ -16,6 +16,7 @@ export interface EalContainerProps {
     onTapAppBarLeft: Function,
     handleRequestClose: Function,
     fetchStuff: Function,
+    onDebugToggle: Function,
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
@@ -34,7 +35,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose } = this.props
+        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, onDebugToggle } = this.props
 
         if(app.loading === true) {
             return <MuiThemeProvider>
@@ -43,7 +44,16 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
         }
 
         return <MuiThemeProvider>
-            <EalUI app={app} user={user} children={children} content={content} sidebar={sidebar} onTapAppBarLeft={onTapAppBarLeft} handleRequestClose={handleRequestClose}></EalUI>
+            <EalUI
+                app={app}
+                user={user}
+                children={children}
+                content={content}
+                sidebar={sidebar}
+                onTapAppBarLeft={onTapAppBarLeft}
+                handleRequestClose={handleRequestClose}
+                onDebugToggle={onDebugToggle}
+            />
         </MuiThemeProvider>;
     }
 }
@@ -68,7 +78,10 @@ const mapDispatchToProps = (dispatch: any) => {
         if(reason === "timeout") {
             dispatch(handleIterateSnackbar())
         }
-    }
+    },
+    onDebugToggle: () => {
+        dispatch(toggleDebugMode())
+    },
   };
 }
 

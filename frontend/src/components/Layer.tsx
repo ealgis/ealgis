@@ -12,11 +12,12 @@ export interface LayerProps {
     map: any,
     layer: any,
     layerId: number,
+    debugMode: boolean,
 }
 
 export class Layer extends React.Component<LayerProps, undefined> {
     render() {
-        const { map, layer, layerId } = this.props
+        const { map, layer, layerId, debugMode } = this.props
 
         // For ImageWMS (Single image tile.)
         // const url = "https://localhost:8443/geoserver/EALGIS/wms"
@@ -43,7 +44,10 @@ export class Layer extends React.Component<LayerProps, undefined> {
 
         const projection_epsg_no = '900913';
         const format = "geojson";
-        const url = "/api/0.1/maps/" + map.id + "/tiles.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}&format=" + format
+        let url = "/api/0.1/maps/" + map.id + "/tiles.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}&format=" + format
+        if(debugMode === true) {
+            url = url + "&debug=1"
+        }
         const formatObj = new ol.format.GeoJSON()
         const tileGrid = ol.tilegrid.createXYZ({maxZoom: 22})
         const overlaps = false

@@ -36,6 +36,7 @@ export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
 export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
 export const RECEIVE_UPDATE_DATA_INSPECTOR = 'RECEIVE_UPDATE_DATA_INSPECTOR'
 export const RECEIVE_RESET_DATA_INSPECTOR = 'RECEIVE_RESET_DATA_INSPECTOR'
+export const RECEIVE_TOGGLE_DEBUG_MODE = 'RECEIVE_TOGGLE_DEBUG_MODE'
 
 const ealapi = new EALGISApiClient()
 
@@ -673,5 +674,11 @@ export function sendToDataInspector(features: Array<undefined>) {
                     }]))
                 })
         })
+    }
+}
+
+export function toggleDebugMode() {
+    return {
+        type: RECEIVE_TOGGLE_DEBUG_MODE
     }
 }

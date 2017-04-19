@@ -9,19 +9,21 @@ export interface LayerContainerProps {
     map: any,
     layer: any,
     layerId: number,
+    debugMode: boolean,
 }
 
 export class LayerContainer extends React.Component<LayerContainerProps, undefined> {
     render() {
-        const { map, layer, layerId } = this.props
-        layer.olStyle = compileLayerStyle(layer)
-        return <Layer map={map} layer={layer} layerId={layerId} />;
+        const { map, layer, layerId, debugMode } = this.props
+        layer.olStyle = compileLayerStyle(layer, debugMode)
+        return <Layer map={map} layer={layer} layerId={layerId} debugMode={debugMode} />;
     }
 }
 
 const mapStateToProps = (state: any) => {
+    const { app } = state
     return {
-        
+        debugMode: app.debug,
     }
 }
 
