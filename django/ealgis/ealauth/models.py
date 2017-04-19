@@ -48,22 +48,6 @@ class MapDefinition(models.Model):
             apps.get_app_config('ealauth').map_srid,
             **kwargs)
 
-    def _private_clear(self, obj):
-        for k, v in obj.copy().items():
-            if k.startswith('_'):
-                del obj[k]
-            elif isinstance(v, dict):
-                self._private_clear(v)
-
-    def _private_copy_over(self, from_obj, to_obj):
-        for k, v in from_obj.items():
-            if k.startswith('_'):
-                to_obj[k] = v
-            elif isinstance(v, dict):
-                jump_to_obj = to_obj.get(k)
-                if jump_to_obj is not None:
-                    self._private_copy_over(v, jump_to_obj)
-
     def _layer_build_postgis_query(self, old_layer, layer, force):
         def get_recurse(obj, *args):
             for v in args[:-1]:
@@ -124,20 +108,43 @@ class MapDefinition(models.Model):
         return dict(results.first())
 
     def _set(self, defn, force=False):
-        old_defn = copy.deepcopy(self.get()) # Otherwise _private_clear() ends up removing private properties from old_layer too
+        def _private_clear(obj):
+            "clear all fields beginning with an _ (recursively down the tree)"
+            for k, v in obj.copy().items():
+                if k.startswith('_'):
+                    del obj[k]
+                elif isinstance(v, dict):
+                    _private_clear(v)
+
+        def _private_copy_over(from_obj, to_obj):
+            "copy private keys from old object to new object"
+            for k, v in from_obj.items():
+                if k.startswith('_'):
+                    to_obj[k] = v
+                elif isinstance(v, dict):
+                    jump_to_obj = to_obj.get(k)
+                    if jump_to_obj is not None:
+                        _private_copy_over(v, jump_to_obj)
+
+        old_defn = copy.deepcopy(self.get())  # Otherwise _private_clear() ends up removing private properties from old_layer too
+        if 'layers' not in defn:
+            defn['layers'] = []
         if 'layers' not in old_defn:
             old_defn['layers'] = []
         rev = old_defn.get('rev', 0) + 1
         defn['rev'] = rev
-        for key, layer in enumerate(defn['layers']):
-            # compile layer SQL expression (this is sometimes slow, so best to do
-            # just the once)
-            old_layer = old_defn['layers'][key]
-            # private variables we don't allow the client to set; we simply clear & copy over
-            # from the last object in the database
-            self._private_clear(layer)
+        for idx, layer in enumerate(defn['layers']):
+            # we don't allow the client to set private variables (security)
+            # we simply clear & copy over from the last object in the database
+            # FIXME: private variables should be removed (no need for frontend to see them)
+            _private_clear(layer)
+            old_layer = None
+            try:
+                old_layer = old_defn['layers'][idx]
+            except IndexError:
+                pass
             if old_layer is not None:
-                self._private_copy_over(old_layer, layer)
+                _private_copy_over(old_layer, layer)
             # rebuild postgis query
             self._layer_build_postgis_query(old_layer, layer, force)
             # update layer hash
