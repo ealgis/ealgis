@@ -23,8 +23,9 @@ export interface MapUINavContainerProps {
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     componentDidMount() {
-        const { resetDataInspector } = this.props
+        const { resetDataInspector, onResetOrigin, mapDefinition } = this.props
         resetDataInspector()
+        onResetOrigin(mapDefinition.json.map_defaults)
     }
 
     render() {

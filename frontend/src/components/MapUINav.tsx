@@ -62,7 +62,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
-                    <IconButton tooltip="Reset the position for this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
+                    <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
                     <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
