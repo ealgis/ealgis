@@ -62,7 +62,7 @@ class MapDefinition(models.Model):
             new = get_recurse(layer, *args)
             return old != new
 
-        if force or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
+        if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
             logger.debug("compiling query for layer: {}".format(layer.get('name')))
             expr = self.compile_expr(layer)
             layer['_postgis_query'] = expr.get_postgis_query()
@@ -79,7 +79,7 @@ class MapDefinition(models.Model):
             "schema": layer["schema"],
             "geometry": layer["geometry"],
             "expression": layer["fill"]["expression"],
-            "expression": layer["fill"]["conditional"],
+            "conditional": layer["fill"]["conditional"],
         }
         layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
 
