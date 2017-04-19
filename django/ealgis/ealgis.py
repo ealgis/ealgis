@@ -334,3 +334,330 @@ class EAlGIS(object):
         import mercantile
         vt_query = create_vectortile_sql(query, bounds=mercantile.bounds(x, y, z))
         return self.session.execute(vt_query)
+
+    def get_tile_mv(self, layer, x, y, z):
+        def create_vectortile_sql(layer, bounds):
+            # Sets the number of decimal places per GeoJSON coordinate to reduce response size
+            # (e.g. 10 decimal places per lat/long in 100 polygons with 50 sets of coords is 2 * 10 * 100 * 50 = 100,000 bytes uncompressed
+            # dropping 6 decimal places would save 60,000 bytes per request)
+            def setDecimalPlaces():
+                # Sets the tolerance in degrees to thin (aka simplify or generalise) the vector data on the server before it's returned
+                def tolerance():
+                    # Standard width of a single 256 pixel map tile at zoom level one
+                    stdTileWidth = 78271.52
+                    # Rough (based on equatorial radius of the Earth), but more than adequate for online mapping
+                    metres2Degrees = (2 * math.pi * 6378137) / 360
+
+                    return (stdTileWidth / math.pow(2, z - 1)) / metres2Degrees
+
+                tolerance = tolerance()
+                places = 0
+                precision = 1.0
+
+                while (precision > tolerance):
+                    places += 1
+                    precision /= 10
+
+                return places
+
+            import math
+
+            srid = "3857"
+            west, south = mercantile.xy(bounds.west, bounds.south)
+            east, north = mercantile.xy(bounds.east, bounds.north)
+
+            decimalPlaces = setDecimalPlaces()
+
+            resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, z)
+            tolerance = resolution / 20
+
+            # A bit of a hack - assign the minimum area a feature must have to be visible at each zoom level.
+            # if(z <= 4):
+            #     min_area = 2500000
+            # elif(z <= 8):
+            #     # min_area = 350000
+            #     min_area = 1000000
+            # elif(z <= 12):
+            #     min_area = 50000
+            # elif(z <= 16):
+            #     min_area = 2000
+            # else:
+            #     min_area = 0 # Display all features beyond zoom 16
+
+            # Marginally less hacky - scale the min area based on the resolution
+            min_area = resolution * 1000
+
+            # For PBF in Python-land
+            # SCALE = 4096
+            # geomtrans = 'ST_AsText(ST_TransScale(%s, %.12f, %.12f, %.12f, %.12f)) AS geom' % ("_clip_geom", -west, -south, SCALE / (east - west), SCALE / (north - south))
+
+            # @TODO Replace ST_Intersection() with ST_ClipByBox2d() when we upgrade PostGIS/GEOS (Wrap around ST_Simplify(...)).
+            # SQL_TEMPLATE = """
+            #     WITH _conf AS (
+            #         SELECT
+            #             20 AS magic,
+            #             {res} AS res,
+            #             {decimalPlaces} AS decimal_places,
+            #             {min_area} AS min_area,
+            #             {tolerance} AS tolerance,
+            #             ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+            #         ),
+            #         -- end conf
+            #         _geom AS (
+            #             SELECT ST_Simplify(
+            #                 ST_SnapToGrid(
+            #                     CASE WHEN ST_CoveredBy(geom_3857, extent) = FALSE THEN geom_3857 ELSE ST_Intersection(geom_3857, extent) END,
+            #                 res/magic, res/magic),
+            #                 tolerance) AS _clip_geom,
+            #             * FROM (
+            #                 -- main query
+            #                 {query}
+            #                 ) _wrap, _conf
+            #             WHERE geom_3857 && extent AND ST_Area(geom_3857) >= min_area
+            #         )
+            #         -- end geom
+            #     SELECT gid, q,
+            #         ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
+                    
+            #         FROM _geom, _conf
+            #         WHERE NOT ST_IsEmpty(_clip_geom)"""
+            
+            SQL_TEMPLATE_NO_SIMPLIFICATION = """
+                WITH _conf AS (
+                    SELECT
+                        {decimalPlaces} AS decimal_places,
+                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+                    ),
+                    -- end conf
+                    _geom AS (
+                        SELECT geom_3857 AS _clip_geom,
+                        * FROM (
+                            -- main query
+                            {query}
+                            ) _wrap, _conf
+                        WHERE geom_3857 && extent
+                    )
+                    -- end geom
+                SELECT gid, q,
+                    ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
+                    FROM _geom, _conf
+                    WHERE NOT ST_IsEmpty(_clip_geom)"""
+            
+            SQL_TEMPLATE_MATVIEW = """
+                WITH _conf AS (
+                    SELECT
+                        {decimalPlaces} AS decimal_places,
+                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+                    ),
+                    -- end conf
+                    _geom AS (
+                        SELECT
+                            {geom_column_name},
+                            gid, q
+                        FROM (
+                        -- main query
+                        {query}
+                        ) _wrap, _conf
+                        WHERE {geom_column_name} && extent
+                    )
+                    -- end geom
+                SELECT gid, q,
+                    ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
+                    FROM _geom, _conf"""
+            
+            # For server-side GeoJSON creation
+            # Access with:
+            # return Response(results.fetchone()["jsonb_build_object"], headers=headers)
+            # SQL_TEMPLATE_MATVIEW_JSONB = """
+            #     WITH _conf AS (
+            #         SELECT
+            #             {decimalPlaces} AS decimal_places,
+            #             ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+            #         ),
+            #         -- end conf
+            #         _geom AS (
+            #             SELECT
+            #                 {geom_column_name},
+            #                 gid, q
+            #             FROM (
+            #             -- main query
+            #             {query}
+            #             ) _wrap, _conf
+            #             WHERE {geom_column_name} && extent
+            #         )
+            #         -- end geom
+            #     SELECT 
+            #         jsonb_build_object(
+            #             'type',     'FeatureCollection',
+            #             'features', jsonb_agg(features.jsonb_build_object)
+            #         )
+            #     FROM 
+            #         (SELECT
+            #             jsonb_build_object(
+            #                 'type',       'Feature',
+            #                 'id',         gid,
+            #                 'geometry',   ST_AsGeoJSON({geom_column_name}, _conf.decimal_places)::jsonb,
+            #                 'properties', to_jsonb(row) - 'gid' - '{geom_column_name}'
+            #             ) 
+            #         FROM 
+            #             (SELECT 
+            #                 gid, q,
+            #                 ST_Transform({geom_column_name}, 4326) AS geom
+            #                 FROM _geom, _conf
+            #             ) AS row, _conf
+            #         ) AS features"""
+            
+            def get_geom_column_name(layer_hash, zoom_level):
+                if zoom_level <= 5:
+                    return "geom_3857_z5"
+                elif zoom_level <= 7:
+                    return "geom_3857_z7"
+                elif zoom_level <= 9:
+                    return "geom_3857_z9"
+                elif zoom_level <= 11:
+                    return "geom_3857_z11"
+                else:
+                    return "geom_3857"
+
+            # Use materialised view
+            if True:
+                geomColumnName = get_geom_column_name(layer["hash"], z)
+
+                # Substitute our materialised view table in the stored query
+                geomTableName = "{schema_name}.{geometry_name}".format(geometry_name=layer["geometry"], schema_name=layer["schema"])
+                matViewName = "{schema_name}.{geometry_name}_view".format(schema_name=layer["schema"], geometry_name=layer["geometry"])
+                query = layer["_postgis_query"].replace(geomTableName, matViewName)
+
+                # Substitute in our zoom-level specific geom column name
+                query = query.replace(".geom_3857", ".{geom_column_name}".format(geom_column_name=geomColumnName))
+
+                # print("Use matview column {} for zoom {}".format(geomColumnName, z))
+                sql = SQL_TEMPLATE_MATVIEW.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid)
+                # print(sql)
+                return sql
+
+            # Use raw query
+            else:
+                print("Use raw query")
+                return SQL_TEMPLATE_NO_SIMPLIFICATION.format(res=resolution, decimalPlaces=decimalPlaces, min_area=min_area, tolerance=tolerance, query=layer["_postgis_query"], west=west, south=south, east=east, north=north, srid=srid)
+
+        # Wrap EALGIS query in a PostGIS query to produce a vector tile
+        import mercantile
+        vt_query = create_vectortile_sql(layer, bounds=mercantile.bounds(x, y, z))
+        return self.session.execute(vt_query)
+    
+    def create_materialised_view_for_table(self, table_name, schema_name, execute):
+        # Zoom levels to generate geometry columns for
+        ZOOM_LEVELS = [5, 7, 9, 11]
+        sqlLog = [] # For dumping SQL back to the client
+
+        def getViewName(table_name):
+            return "{table_name}_view".format(table_name=table_name)
+
+        def getGeomColumnDefinition(table_name, schema_name, zoom_level):
+            # FIXME If we end up keeping this approach then do some math that isn't purely back-of-the-napkin
+            # to work out the area of a pixel at each zoom level so we can do a better job of ejecting and
+            # simplifying features.
+
+            import math
+            resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, zoom_level)
+            tolerance = resolution / 20
+            if zoom_level <= 7:
+                min_area = resolution * 200
+            elif zoom_level <= 9:
+                min_area = resolution * 400
+            else:
+                min_area = resolution * 500
+
+            GEOM_COLUMN_DEF = """
+                CASE WHEN ST_Area(geomtable.geom_3857) >= {min_area} THEN
+                    ST_Simplify(
+                        ST_SnapToGrid(geomtable.geom_3857, {res}/20, {res}/20),
+                        {tolerance}
+                    )
+                ELSE NULL END AS geom_3857_z{zoom_level},"""
+            
+            return GEOM_COLUMN_DEF.format(min_area=min_area, res=resolution, tolerance=tolerance, zoom_level=zoom_level)
+
+        def getGeomColumnIndexDefinition(view_name, schema_name, zoom_level):
+            GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_3857_z{zoom_level}_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_3857_z{zoom_level}")'
+            return GEOM_COLUMN_IDX.format(view_name=view_name, schema_name=schema_name, zoom_level=zoom_level)
+
+        
+        view_name = getViewName(table_name)
+
+        # Nuke the view if it exists already
+        NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name}".format(schema_name=schema_name, view_name=view_name)
+        
+        if execute:
+            self.session.execute(NUKE_EXISTING_MATVIEW)
+            self.session.commit()
+        else:
+            sqlLog.append(NUKE_EXISTING_MATVIEW)
+
+        # Create the materialised view
+        geomColumnDefsSQL = []
+        for zoom_level in ZOOM_LEVELS:
+            geomColumnDefsSQL.append(getGeomColumnDefinition(table_name, schema_name, zoom_level))
+        
+        MATVIEW_SQL_DEF = """
+            CREATE MATERIALIZED VIEW {schema_name}.{view_name} AS
+                SELECT 
+                    {geom_column_defs}
+                    geomtable.*
+                FROM {schema_name}.{table_name} AS geomtable"""
+        MATVIEW_SQL_DEF = MATVIEW_SQL_DEF.format(schema_name=schema_name, view_name=view_name, geom_column_defs="".join(geomColumnDefsSQL), table_name=table_name)
+        
+        if execute:
+            self.session.execute(MATVIEW_SQL_DEF)
+        else:
+            sqlLog.append(MATVIEW_SQL_DEF)
+
+        # Create indexes on our zoom-level specific geometry columns
+        # @TODO Wot does the "default to the original geom" query use?
+        for zoom_level in ZOOM_LEVELS:
+            GEOM_COLUMN_IDX = getGeomColumnIndexDefinition(view_name, schema_name, zoom_level)
+            
+            if execute:
+                self.session.execute(GEOM_COLUMN_IDX)
+            else:
+                sqlLog.append(GEOM_COLUMN_IDX)
+
+        # Copy non-geometry indexes from the original table
+        from sqlalchemy.engine import reflection
+        insp = reflection.Inspector.from_engine(self.db)
+
+        for index in insp.get_indexes(table_name, schema=schema_name):
+            index_name = index["name"].replace(table_name, table_name + "_view")
+
+            if "dialect_options" in index and "postgresql_using" in index["dialect_options"]:
+                index_type = index["dialect_options"]["postgresql_using"]
+                IDX_DEF = 'CREATE INDEX "{index_name}" ON "{schema_name}"."{view_name}" USING {index_type} ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, index_type=index_type, column_name=index["column_names"][0])
+            elif "unique" in index and index["unique"] == True:
+                IDX_DEF = 'CREATE UNIQUE INDEX "{index_name}" ON "{schema_name}"."{view_name}" ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, column_name=index["column_names"][0])
+            else:
+                # print("Skipping {}".format(index_name))
+                # print(index)
+                continue
+
+            if execute:
+                self.session.execute(IDX_DEF)
+            else:
+                sqlLog.append(IDX_DEF)
+        
+        # And, lastly, an index for the primary key on the master table
+        GID_IDX_DEF = 'CREATE UNIQUE INDEX "{view_name}_gid_idx" ON "{schema_name}"."{view_name}" ("gid");'.format(schema_name=schema_name, view_name=view_name)
+        if execute:
+            self.session.execute(GID_IDX_DEF)
+        else:
+            sqlLog.append(GID_IDX_DEF)
+
+        # Now commit everything in one go
+        if execute:
+            self.session.commit()
+            return "{schema_name}.{view_name}".format(schema_name=schema_name, view_name=view_name)
+        else:
+            return {
+                "name": "{schema_name}.{view_name}".format(schema_name=schema_name, view_name=view_name),
+                "sql": ";\n".join(sqlLog),
+            }

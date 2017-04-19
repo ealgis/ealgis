@@ -115,6 +115,50 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):
+        # Used to inject features for debugging vector tile performance
+        def debug_features(features, x, y, z):
+            import mercantile
+            bounds = mercantile.bounds(x, y, z)
+
+            # Centre of the tile
+            lon = bounds[0] + ((bounds[2] - bounds[0]) / 2)
+            lat = bounds[3] - ((bounds[3] - bounds[1]) / 2)
+
+            # Polygon bounding box of the tile
+            polygon = [[
+                [bounds[0], bounds[1]], # BL
+                [bounds[2], bounds[1]], # BR
+                [bounds[2], bounds[3]], # TR
+                [bounds[0], bounds[3]], # TL
+                [bounds[0], bounds[1]], # BL
+            ]]
+
+            return [{
+                "type": "Feature",
+                "id": "tile_centroid",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [lon, lat],
+                },
+                "properties": {
+                    "debug": True,
+                    "label": "{},{},{} / {}".format(x, y, z, len(features)),
+                }
+            },
+            {
+                "type": "Feature",
+                "id": "tile_bounds",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": polygon,
+                },
+                "properties": {
+                    "debug": True,
+                }
+            }]
+        
+        
+        # tileRequestStartTime = int(round(time.time() * 1000))
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
         qp = request.query_params
@@ -167,7 +211,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         format = qp["format"]
         cache_key = "layer_{}_{}_{}_{}".format(qp["layer"], qp["x"], qp["y"], qp["z"])
         cache_time = 60 * 60 * 24 * 365  # time to live in seconds
-        memcachedEnabled = False if "no_memcached" in qp else True
+        debugMode = True if "debug" in qp else False
+        memcachedEnabled = False if "no_memcached" in qp or debugMode is True else True
         fromMemcached = False
 
         if memcachedEnabled:
@@ -177,10 +222,14 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         if memcachedEnabled is False or features is None:
             eal = apps.get_app_config('ealauth').eal
-            results = eal.get_tile(layer["_postgis_query"], int(qp["x"]), int(qp["y"]), int(qp["z"]))
+            # tileSQLStartTime = int(round(time.time() * 1000))
+            results = eal.get_tile_mv(layer, int(qp["x"]), int(qp["y"]), int(qp["z"]))
+            # tileSQLEndTime = int(round(time.time() * 1000))
 
             if qp["format"] == "geojson":
+                # tileToGeoJSONStartTime = int(round(time.time() * 1000))
                 features = [to_geojson_feature(row) for row in results]
+                # tileToGeoJSONEndTime = int(round(time.time() * 1000))
             elif qp["format"] == "pbf":
                 layers = [{
                     "name": "Layer A",
@@ -199,7 +248,21 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             "X-From-Memcached": fromMemcached,
         }
 
+        # tileRequestEndTime = int(round(time.time() * 1000))
+        # tileSQLTime = 0
+        # if 'tileSQLEndTime' in vars():
+        #     tileSQLTime = tileSQLEndTime - tileSQLStartTime
+        # tileGeoJSONTime = 0
+        # if 'tileToGeoJSONEndTime' in vars():
+        #     tileGeoJSONTime = tileToGeoJSONEndTime - tileToGeoJSONStartTime
+        # tileRequestTime = tileRequestEndTime - tileRequestStartTime
+        # print("{}: SQLTime = {}ms; GeoJSON Time = {}ms; Total Time = {}ms".format(cache_key, tileSQLTime, tileGeoJSONTime, tileRequestTime))
+
         if qp["format"] == "geojson":
+            # Inject features in debug mode to allow OpenLayers to style the tile coordinates and feature count
+            if debugMode:
+                features = features + debug_features(features, int(qp["x"]), int(qp["y"]), int(qp["z"]))
+
             return Response({
                 "type": "FeatureCollection",
                 "features": features
@@ -249,7 +312,7 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         return table
 
 
-class DataInfoViewSet(ReadOnlyGenericTableInfoViewSet):
+class DataInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tabular tables to be viewed or edited.
     """
@@ -269,6 +332,44 @@ class DataInfoViewSet(ReadOnlyGenericTableInfoViewSet):
         gid = request.query_params.get('gid', None)
         row = eal.get_geometry_source_info_by_gid(pk, gid, schema_name)
         return Response(row)
+
+    def get_schema_from_request(self, request):
+        eal = apps.get_app_config('ealauth').eal
+
+        schema_name = request.query_params.get('schema', None)
+        if schema_name is None or not schema_name:
+            raise ValidationError(detail="No schema name provided.")
+        elif schema_name not in eal.get_schemas():
+            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
+        return schema_name
+    
+    @list_route(methods=['get'])
+    def create_views(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+        qp = request.query_params
+        execute = True if "execute" in qp else False
+
+        viewNames = []
+        if "table_name" in qp and "schema_name" in qp:
+            table = eal.get_data_info(qp["table_name"], qp["schema_name"])
+            tables = "{}.{}".format(qp["schema_name"], table.name)
+            viewNames.append(eal.create_materialised_view_for_table(table.name, qp["schema_name"], execute))
+        elif "all_tables" in qp:
+            tables = eal.get_datainfo()
+            for key in tables:
+                viewNames.append(eal.create_materialised_view_for_table(tables[key]["name"], tables[key]["schema_name"], execute))
+        else:
+            raise ValidationError(detail="Invalid query - must specify table_name or all_tables and schema_name.")
+        
+        if execute:
+            return Response({"views": viewNames})
+        else:
+            sqlAllViews = []
+            for view in viewNames:
+                sqlAllViews.append(view["sql"])
+
+            from django.http.response import HttpResponse
+            return HttpResponse("\n\n\n".join(sqlAllViews), content_type="text/plain")
 
 
 class TableInfoViewSet(ReadOnlyGenericTableInfoViewSet):
