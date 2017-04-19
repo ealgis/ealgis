@@ -85,7 +85,7 @@ export function compileLayerStyle(l: Object, debugMode: boolean) {
                     if(line.width > 0) {
                         let olStyle = new ol.style.Style({
                             fill: new ol.style.Fill({
-                                color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`,
+                                color: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`,
                             }),
                             stroke: new ol.style.Stroke({
                                 color: `rgba(${line.colour.r}, ${line.colour.g}, ${line.colour.b}, ${line.colour.a})`,
@@ -96,7 +96,7 @@ export function compileLayerStyle(l: Object, debugMode: boolean) {
                     } else {
                         let olStyle = new ol.style.Style({
                             fill: new ol.style.Fill({
-                                color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`,
+                                color: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`,
                             }),
                         });
                     }
