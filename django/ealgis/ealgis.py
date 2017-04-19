@@ -418,10 +418,10 @@ class EAlGIS(object):
             #         -- end geom
             #     SELECT gid, q,
             #         ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
-                    
+
             #         FROM _geom, _conf
             #         WHERE NOT ST_IsEmpty(_clip_geom)"""
-            
+
             SQL_TEMPLATE_NO_SIMPLIFICATION = """
                 WITH _conf AS (
                     SELECT
@@ -442,7 +442,7 @@ class EAlGIS(object):
                     ST_AsGeoJSON(ST_Transform(_clip_geom, 4326), _conf.decimal_places) AS geom
                     FROM _geom, _conf
                     WHERE NOT ST_IsEmpty(_clip_geom)"""
-            
+
             SQL_TEMPLATE_MATVIEW = """
                 WITH _conf AS (
                     SELECT
@@ -464,7 +464,7 @@ class EAlGIS(object):
                 SELECT gid, q,
                     ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
                     FROM _geom, _conf"""
-            
+
             # For server-side GeoJSON creation
             # Access with:
             # return Response(results.fetchone()["jsonb_build_object"], headers=headers)
@@ -486,27 +486,27 @@ class EAlGIS(object):
             #             WHERE {geom_column_name} && extent
             #         )
             #         -- end geom
-            #     SELECT 
+            #     SELECT
             #         jsonb_build_object(
             #             'type',     'FeatureCollection',
             #             'features', jsonb_agg(features.jsonb_build_object)
             #         )
-            #     FROM 
+            #     FROM
             #         (SELECT
             #             jsonb_build_object(
             #                 'type',       'Feature',
             #                 'id',         gid,
             #                 'geometry',   ST_AsGeoJSON({geom_column_name}, _conf.decimal_places)::jsonb,
             #                 'properties', to_jsonb(row) - 'gid' - '{geom_column_name}'
-            #             ) 
-            #         FROM 
-            #             (SELECT 
+            #             )
+            #         FROM
+            #             (SELECT
             #                 gid, q,
             #                 ST_Transform({geom_column_name}, 4326) AS geom
             #                 FROM _geom, _conf
             #             ) AS row, _conf
             #         ) AS features"""
-            
+
             def get_geom_column_name(layer_hash, zoom_level):
                 if zoom_level <= 5:
                     return "geom_3857_z5"
@@ -545,11 +545,11 @@ class EAlGIS(object):
         import mercantile
         vt_query = create_vectortile_sql(layer, bounds=mercantile.bounds(x, y, z))
         return self.session.execute(vt_query)
-    
+
     def create_materialised_view_for_table(self, table_name, schema_name, execute):
         # Zoom levels to generate geometry columns for
         ZOOM_LEVELS = [5, 7, 9, 11]
-        sqlLog = [] # For dumping SQL back to the client
+        sqlLog = []  # For dumping SQL back to the client
 
         def getViewName(table_name):
             return "{table_name}_view".format(table_name=table_name)
@@ -576,19 +576,18 @@ class EAlGIS(object):
                         {tolerance}
                     )
                 ELSE NULL END AS geom_3857_z{zoom_level},"""
-            
+
             return GEOM_COLUMN_DEF.format(min_area=min_area, res=resolution, tolerance=tolerance, zoom_level=zoom_level)
 
         def getGeomColumnIndexDefinition(view_name, schema_name, zoom_level):
             GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_3857_z{zoom_level}_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_3857_z{zoom_level}")'
             return GEOM_COLUMN_IDX.format(view_name=view_name, schema_name=schema_name, zoom_level=zoom_level)
 
-        
         view_name = getViewName(table_name)
 
         # Nuke the view if it exists already
         NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name}".format(schema_name=schema_name, view_name=view_name)
-        
+
         if execute:
             self.session.execute(NUKE_EXISTING_MATVIEW)
             self.session.commit()
@@ -599,15 +598,15 @@ class EAlGIS(object):
         geomColumnDefsSQL = []
         for zoom_level in ZOOM_LEVELS:
             geomColumnDefsSQL.append(getGeomColumnDefinition(table_name, schema_name, zoom_level))
-        
+
         MATVIEW_SQL_DEF = """
             CREATE MATERIALIZED VIEW {schema_name}.{view_name} AS
-                SELECT 
+                SELECT
                     {geom_column_defs}
                     geomtable.*
                 FROM {schema_name}.{table_name} AS geomtable"""
         MATVIEW_SQL_DEF = MATVIEW_SQL_DEF.format(schema_name=schema_name, view_name=view_name, geom_column_defs="".join(geomColumnDefsSQL), table_name=table_name)
-        
+
         if execute:
             self.session.execute(MATVIEW_SQL_DEF)
         else:
@@ -617,7 +616,7 @@ class EAlGIS(object):
         # @TODO Wot does the "default to the original geom" query use?
         for zoom_level in ZOOM_LEVELS:
             GEOM_COLUMN_IDX = getGeomColumnIndexDefinition(view_name, schema_name, zoom_level)
-            
+
             if execute:
                 self.session.execute(GEOM_COLUMN_IDX)
             else:
@@ -633,7 +632,7 @@ class EAlGIS(object):
             if "dialect_options" in index and "postgresql_using" in index["dialect_options"]:
                 index_type = index["dialect_options"]["postgresql_using"]
                 IDX_DEF = 'CREATE INDEX "{index_name}" ON "{schema_name}"."{view_name}" USING {index_type} ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, index_type=index_type, column_name=index["column_names"][0])
-            elif "unique" in index and index["unique"] == True:
+            elif "unique" in index and index["unique"] is True:
                 IDX_DEF = 'CREATE UNIQUE INDEX "{index_name}" ON "{schema_name}"."{view_name}" ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, column_name=index["column_names"][0])
             else:
                 # print("Skipping {}".format(index_name))
@@ -644,7 +643,7 @@ class EAlGIS(object):
                 self.session.execute(IDX_DEF)
             else:
                 sqlLog.append(IDX_DEF)
-        
+
         # And, lastly, an index for the primary key on the master table
         GID_IDX_DEF = 'CREATE UNIQUE INDEX "{view_name}_gid_idx" ON "{schema_name}"."{view_name}" ("gid");'.format(schema_name=schema_name, view_name=view_name)
         if execute:

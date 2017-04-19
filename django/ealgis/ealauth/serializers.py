@@ -4,7 +4,8 @@ from .models import (
     MapDefinition)
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from ealgis.colour_scale import definitions, make_colour_scale
+from ealgis.colour_scale import make_colour_scale
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -48,8 +49,8 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
                 scale_max = float(fill['scale_max'])
                 opacity = float(fill['opacity'])
                 l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
-        
         return map
+
 
 class JSONMetadataField(serializers.Field):
     """

@@ -126,11 +126,11 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
             # Polygon bounding box of the tile
             polygon = [[
-                [bounds[0], bounds[1]], # BL
-                [bounds[2], bounds[1]], # BR
-                [bounds[2], bounds[3]], # TR
-                [bounds[0], bounds[3]], # TL
-                [bounds[0], bounds[1]], # BL
+                [bounds[0], bounds[1]],  # BL
+                [bounds[2], bounds[1]],  # BR
+                [bounds[2], bounds[3]],  # TR
+                [bounds[0], bounds[3]],  # TL
+                [bounds[0], bounds[1]],  # BL
             ]]
 
             return [{
@@ -144,8 +144,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                     "debug": True,
                     "label": "{},{},{} / {}".format(x, y, z, len(features)),
                 }
-            },
-            {
+            }, {
                 "type": "Feature",
                 "id": "tile_bounds",
                 "geometry": {
@@ -156,9 +155,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                     "debug": True,
                 }
             }]
-        
-        
-        # tileRequestStartTime = int(round(time.time() * 1000))
+
+        #  tileRequestStartTime = int(round(time.time() * 1000))
         queryset = self.get_queryset()
         map = queryset.filter(id=pk).first()
         qp = request.query_params
@@ -342,7 +340,7 @@ class DataInfoViewSet(viewsets.ViewSet):
         elif schema_name not in eal.get_schemas():
             raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
-    
+
     @list_route(methods=['get'])
     def create_views(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
@@ -360,7 +358,7 @@ class DataInfoViewSet(viewsets.ViewSet):
                 viewNames.append(eal.create_materialised_view_for_table(tables[key]["name"], tables[key]["schema_name"], execute))
         else:
             raise ValidationError(detail="Invalid query - must specify table_name or all_tables and schema_name.")
-        
+
         if execute:
             return Response({"views": viewNames})
         else:
