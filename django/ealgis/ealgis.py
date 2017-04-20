@@ -18,6 +18,10 @@ class CompilationError(Exception):
     pass
 
 
+class ValueError(Exception):
+    pass
+
+
 class EAlGIS(object):
     "singleton with key application (eg. database connection) state"
     # pattern credit: http://stackoverflow.com/questions/42558/python-and-the-singleton-pattern

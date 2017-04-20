@@ -11,8 +11,6 @@ class EalauthConfig(AppConfig):
     name = 'ealgis.ealauth'
 
     def ready(self):
-        import ealgis.ealauth.signals  # noqa
-
         self.eal = EAlGIS()
         self.map_srid = 3857
         self.projected_srid = 3112

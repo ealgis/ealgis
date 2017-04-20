@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 from .models import (
     MapDefinition)
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from ealgis.colour_scale import make_colour_scale
+from ealgis.ealgis import ValueError, NoMatches, TooManyMatches, CompilationError
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,11 +36,31 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def update(self, instance, data):
+        self._set(instance, data["json"])
+        instance.save()
+        return instance
+        
+    def _set(self, map, json):
+        try:
+            map.set(json)
+        except ValueError as e:
+            raise ValidationError(detail="Unknown value error ({})".format(e.message))
+        except CompilationError as e:
+            raise ValidationError(detail="Expression compilation failed ({})".format(e.message))
+        except NoMatches as e:
+            raise ValidationError(detail="Attribute could not be resolved ({})".format(e))
+        except TooManyMatches as e:
+            raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
+
     def to_representation(self, obj):
         map = super(serializers.ModelSerializer, self).to_representation(obj)
 
         # FIXME Compile all this client-side
         # Compile layer fill styles and attach an olStyleDef for consumption by the UI
+        if "layers" not in map["json"]:
+            map["json"]["layers"] = []
+        
         for l in map["json"]["layers"]:
             fill = l['fill']
             do_fill = (fill['expression'] != '')
