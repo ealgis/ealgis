@@ -40,7 +40,7 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         self._set(instance, data["json"])
         instance.save()
         return instance
-        
+
     def _set(self, map, json):
         try:
             map.set(json)
@@ -60,7 +60,7 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         # Compile layer fill styles and attach an olStyleDef for consumption by the UI
         if "layers" not in map["json"]:
             map["json"]["layers"] = []
-        
+
         for l in map["json"]["layers"]:
             fill = l['fill']
             do_fill = (fill['expression'] != '')
