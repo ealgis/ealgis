@@ -7,6 +7,8 @@ import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import LinearProgress from 'material-ui/LinearProgress';
+import {cyanA400} from 'material-ui/styles/colors';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Toggle from 'material-ui/Toggle';
 import { LoginDialog } from './LoginDialog';
@@ -50,8 +52,16 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
         const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, onDebugToggle } = this.props
 
+        const linearProgressStyle = {
+            "position": "fixed",
+            "top": "0px",
+            "zIndex": 1200,
+            "display": app.requestsInProgress > 0 ? "block": "none",
+        }
+
         return <div className="page">
             <div className="page-header">
+                <LinearProgress mode="indeterminate" color={cyanA400} style={linearProgressStyle} />
                 <AppBar 
                     title={user.username}
                     onLeftIconButtonTouchTap={onTapAppBarLeft}

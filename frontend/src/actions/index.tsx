@@ -37,6 +37,8 @@ export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
 export const RECEIVE_UPDATE_DATA_INSPECTOR = 'RECEIVE_UPDATE_DATA_INSPECTOR'
 export const RECEIVE_RESET_DATA_INSPECTOR = 'RECEIVE_RESET_DATA_INSPECTOR'
 export const RECEIVE_TOGGLE_DEBUG_MODE = 'RECEIVE_TOGGLE_DEBUG_MODE'
+export const RECEIVE_REQUEST_BEGIN_FETCH = 'RECEIVE_REQUEST_BEGIN_FETCH'
+export const RECEIVE_REQUEST_FINISH_FETCH = 'RECEIVE_REQUEST_FINISH_FETCH'
 
 const ealapi = new EALGISApiClient()
 
@@ -263,6 +265,19 @@ export function toggleModalState(modalId: string) {
         dispatch(receiveToggleModalState(modalId))
     }
 }
+
+export function receiveBeginFetch() {
+    return {
+        type: RECEIVE_REQUEST_BEGIN_FETCH
+    }
+}
+
+export function receiveFinishFetch() {
+    return {
+        type: RECEIVE_REQUEST_FINISH_FETCH
+    }
+}
+
 
 export function updateMap(map: object) {
     return (dispatch: any) => {

@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 import cookie from 'react-cookie'
-import { addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar } from '../actions'
+import { addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, receiveBeginFetch, receiveFinishFetch } from '../actions'
 
 export class EALGISApiClient {
     // Only handles fatal errors from the API
@@ -18,17 +18,24 @@ export class EALGISApiClient {
     }
 
     public get(url: string, dispatch: any) {
+        dispatch(receiveBeginFetch())
+
         return fetch(url, {
             credentials: "same-origin",
         })
-        .then((response: any) => response.json().then((json: any) => ({
-            response: response,
-            json: json,
-        })))
+        .then((response: any) => {
+            dispatch(receiveFinishFetch())
+            return response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+        })
         .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
     public post(url: string, body: object, dispatch: any) {
+        dispatch(receiveBeginFetch())
+
         return fetch(url, {
             method: "POST",
             credentials: "same-origin",
@@ -38,14 +45,19 @@ export class EALGISApiClient {
             },
             body: JSON.stringify(body),
         })
-        .then((response: any) => response.json().then((json: any) => ({
-            response: response,
-            json: json,
-        })))
+        .then((response: any) => {
+            dispatch(receiveFinishFetch())
+            return response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+        })
         .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
     public put(url: string, body: object, dispatch: any) {
+        dispatch(receiveBeginFetch())
+
         return fetch(url, {
             method: "PUT",
             credentials: "same-origin",
@@ -55,20 +67,29 @@ export class EALGISApiClient {
             },
             body: JSON.stringify(body),
         })
-        .then((response: any) => response.json().then((json: any) => ({
-            response: response,
-            json: json,
-        })))
+        .then((response: any) => {
+            dispatch(receiveFinishFetch())
+            return response.json().then((json: any) => ({
+                response: response,
+                json: json,
+            }))
+        })
         .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
     public delete(url: string, dispatch: any) {
+        dispatch(receiveBeginFetch())
+        
         return fetch(url, {
             method: "DELETE",
             credentials: "same-origin",
             headers: {
                 "X-CSRFToken": cookie.load("csrftoken")
             },
+        })
+        .then((response: any) => {
+            dispatch(receiveFinishFetch())
+            return response
         })
         .catch((error: any) => this.handleError(error, url, dispatch))
     }
