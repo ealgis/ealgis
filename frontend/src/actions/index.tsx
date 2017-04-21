@@ -540,6 +540,7 @@ export function createMap(map: object) {
                 
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
+                    dispatch(sendSnackbarNotification(`Map created successfully`))
                     browserHistory.push("/map/" + json.id)
                     
                 } else if(response.status === 400) {
