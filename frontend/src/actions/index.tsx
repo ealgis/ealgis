@@ -540,7 +540,6 @@ export function createMap(map: object) {
                 
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
-                    dispatch(sendSnackbarNotification(`Map created successfully`))
                     browserHistory.push("/map/" + json.id)
                     
                 } else if(response.status === 400) {
@@ -601,6 +600,7 @@ Some further reading on the subject:
 export function deleteMapSuccess(mapId: number) {
   return (dispatch: any) => {
     dispatch(receiveDeleteMap(mapId))
+    dispatch(sendSnackbarNotification("Map deleted successfully"))
     browserHistory.push("/");
   };
 }
