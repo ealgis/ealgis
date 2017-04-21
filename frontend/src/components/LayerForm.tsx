@@ -309,7 +309,6 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 fullWidth={true}
                                 type="number"
                                 min="0"
-                                max="100"
                             />
 
                             <Field 
@@ -322,7 +321,6 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 fullWidth={true}
                                 type="number"
                                 min="0"
-                                max="100"
                             />
                         </div>
                     </Tab>
