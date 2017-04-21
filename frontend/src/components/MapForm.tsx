@@ -12,6 +12,20 @@ import {red500} from 'material-ui/styles/colors';
 
 const required = value => value ? undefined : 'Required'
 
+const styles = {
+    form: {
+        "margin": "10px",
+    },
+    formErrorText: {
+        "fontSize": "12px",
+        "color": red500,
+        "marginTop": "40px",
+    },
+    hiddenSubmitButton: {
+        "display": "none",
+    },
+}
+
 export interface MapFormProps {
     mapDefinition: any,
     onSubmit: Function,
@@ -41,7 +55,7 @@ export class MapForm extends React.Component<MapFormProps, undefined> {
                 </ToolbarGroup>
             </Toolbar>
 
-            <form style={{margin: 10}} onSubmit={(val) => handleSubmit(onSubmit)}>
+            <form style={styles.form} onSubmit={handleSubmit(onSubmit)}>
                 <Field 
                     name="name" 
                     component={TextField}
@@ -66,15 +80,9 @@ export class MapForm extends React.Component<MapFormProps, undefined> {
                     autoComplete="off"
                 />
 
-                {error && <strong style={{"fontSize": "12px", "color": red500, "marginTop": "40px"}}>{error}</strong>}
+                {error && <strong style={styles.formErrorText}>{error}</strong>}
 
-                {/*<RaisedButton 
-                    label="Create Map" 
-                    primary={true}
-                    style={{marginTop: 20, marginLeft: "1%"}}
-                    containerElement={<Link to={`/`} />}
-                    onClick={this.handleSubmit}
-                />*/}
+                <button type="submit" style={styles.hiddenSubmitButton} />
             </form>
         </div>
     }

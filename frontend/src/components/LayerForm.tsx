@@ -28,7 +28,10 @@ const required = value => value || value === 0 ? undefined : 'Required'
 const styles = {
   tabBody: {
       margin: "10px",
-  }
+  },
+  hiddenSubmitButton: {
+      "display": "none",
+  },
 }
 
 export interface LayerFormProps {
@@ -293,7 +296,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     {/* END VISUALISE TAB */}
                 </Tabs>
 
-                <button type="submit" style={{"display": "none"}} />
+                <button type="submit" style={styles.hiddenSubmitButton} />
             </form>
         </div>
     }
