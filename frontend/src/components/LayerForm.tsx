@@ -37,6 +37,7 @@ const styles = {
 export interface LayerFormProps {
     mapId: number,
     layerId: number,
+    tabId: string,
     initialValues: object,
     onSubmit: Function,
     datainfo: object,
@@ -63,7 +64,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, onSubmit, colourinfo } = this.props
+        const { mapId, layerId, tabId, onSubmit, colourinfo } = this.props
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
 
@@ -111,11 +112,14 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
             </Toolbar>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Tabs>
+                <Tabs
+                    initialSelectedIndex={(tabId === undefined) ? 0 : parseInt(tabId)}
+                >
                     {/* START DESCRIBE TAB */}
                     <Tab
                         icon={<ContentCreate />}
                         label="DESCRIBE"
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -161,6 +165,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<EditorInsertChart />}
                         label="DATA"
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/1`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -194,6 +199,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ImagePalette />}
                         label="VISUALISE"
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/2`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 

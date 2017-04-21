@@ -40,7 +40,7 @@ ReactDOM.render(
             <Route path="/" component={EalUIContainerWrapped}>
                 <Route path="map/:mapId" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>
                 <Route path="map/:mapId/edit" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
-                <Route path="map/:mapId/layer(/:layerId)" components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}/>
+                <Route path="map/:mapId/layer(/:layerId)(/:tabId)" components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}/>
                 <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
                 <Route path="about" components={{ content: About }} />
                 <IndexRoute components={{ content: MapUIContainerWrapped, sidebar: MapList }}/>

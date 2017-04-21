@@ -16,6 +16,7 @@ export interface LayerDefinitionProps {
 export interface LayerFormContainerProps {
     mapDefinition: object,
     layerId: number,
+    tabId: string,
     layerDefinition: LayerDefinitionProps,
     datainfo: object,
     colourinfo: object,
@@ -84,7 +85,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, mapDefinition, layerDefinition, onSubmit, datainfo, colourinfo } = this.props
+        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, datainfo, colourinfo } = this.props
         
         // Initiable values either comes from defaultProps (creating a new layer)
         // or from our layerDef (editing an existing layer)
@@ -95,7 +96,8 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 
         return <LayerForm 
             mapId={mapDefinition.id} 
-            layerId={layerId} 
+            layerId={layerId}
+            tabId={tabId}
             initialValues={initialValues} 
             onSubmit={
                 (formValues: Array<undefined>) => 
@@ -113,6 +115,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     return {
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
+        tabId: ownProps.params.tabId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         datainfo: datainfo,
         colourinfo: colourinfo,
