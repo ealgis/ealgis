@@ -32,6 +32,27 @@ const styles = {
   hiddenSubmitButton: {
       "display": "none",
   },
+  // FIXME What is the proper way to do CSS styling in JSX?
+  flexboxContainer: {
+    "display": "-ms-flex",
+    "display": "-webkit-flex",
+    "display": "flex",
+    "justifyContent": "center",
+    "alignItems": "center",
+  },
+  flexboxFirstColumn: {
+    "flex": "1",
+    "marginRight": "20px",
+  },
+  flexboxSecondColumn: {
+    "flex": "1",
+    "textAlign": "center",
+  },
+  fauxFiedlLabel: {
+      "fontSize": "12px",
+      "color": grey400,
+      "marginBottom": "10px",
+  },
 }
 
 export interface LayerFormProps {
@@ -202,28 +223,34 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                         containerElement={<Link to={`/map/${mapId}/layer/${layerId}/2`}/>}
                     >
                         <div style={styles.tabBody}>
-                            <Field 
-                                name="borderSize" 
-                                component={TextField} 
-                                hintText="Border size (pixels)"
-                                floatingLabelText="Border size"
-                                floatingLabelFixed={true}
-                                validate={[ required ]}
-                                fullWidth={true}
-                                type="number"
-                                min="0"
-                                max="20"
-                            />
+                            <div style={styles.flexboxContainer}>
+                                <div style={styles.flexboxFirstColumn}>
+                                    <Field 
+                                        name="borderSize" 
+                                        component={TextField} 
+                                        hintText="Border size (pixels)"
+                                        floatingLabelText="Border size"
+                                        floatingLabelFixed={true}
+                                        validate={[ required ]}
+                                        fullWidth={true}
+                                        type="number"
+                                        min="0"
+                                        max="20"
+                                    />
+                                </div>
 
-                            <h5 style={{"fontSize": "12px", "color": grey400}}>Border colour</h5>
-                            <Field
-                                name="borderColour"
-                                component={ColourPicker}
-                                color={initialValues["borderColour"]}
-                            />
+                                <div style={styles.flexboxSecondColumn}>
+                                    <h5 style={styles.fauxFiedlLabel}>Border colour</h5>
+                                    <Field
+                                        name="borderColour"
+                                        component={ColourPicker}
+                                        color={initialValues["borderColour"]}
+                                    />
+                                </div>
+                            </div>
 
-                            <div style={{"display": "flex", "width": "100%", "marginBottom": 10, "marginTop": 10}}>
-                                <div style={{"flex": 1, "flexBasis": "auto"}}>
+                            <div style={styles.flexboxContainer}>
+                                <div style={styles.flexboxFirstColumn}>
                                     <Field
                                         name="fillColourScheme"
                                         component={SelectField}
@@ -237,12 +264,12 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                     </Field>
                                 </div>
 
-                                <div style={{"flex": 1, "flexBasis": "auto"}}>
-                                    <h5 style={{"fontSize": "12px", "color": grey400, "marginLeft": "45%"}}>Flip colours</h5>
+                                <div style={styles.flexboxSecondColumn}>
+                                    <h5 style={styles.fauxFiedlLabel}>Flip colours</h5>
                                     <Field
                                         name="fillColourScaleFlip"
                                         component={Toggle}
-                                        style={{"marginLeft": "45%"}}
+                                        style={{"marginLeft": "35%"}}
                                     />
                                 </div>
                             </div>
