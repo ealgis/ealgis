@@ -214,7 +214,7 @@ class EAlGIS(object):
         table = self.get_table_class(table_name, schema_name)
         row = self.session.query(table).filter(table.gid == gid).first()
 
-        # FIXME Ugly hack
+        # FIXME Ugly hack - We have no models for the indivudal geom tables, but could use reflection?
         dict = row.__dict__
         del dict["geom"]
         del dict["geom_3857"]
