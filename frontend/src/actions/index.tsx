@@ -391,9 +391,7 @@ export function fetchCompiledLayerStyle(l: Object) {
     return (dispatch: any) => {
         let do_fill = (l['fill']['expression'] != '')
         if(do_fill) {
-            // Ugly as sin, but apparently fetch doesn't natively support attaching a params object?!
-            // https://github.com/github/fetch/issues/256
-            let url = new URL("https://localhost:8443/api/0.1/maps/compileStyle/"), params = {
+            const params = {
                 "opacity": fill.opacity,
                 "scale_max": fill.scale_max,
                 "scale_min": fill.scale_min,
@@ -402,14 +400,9 @@ export function fetchCompiledLayerStyle(l: Object) {
                 "scale_name": fill.scale_name,
                 "scale_nlevels": fill.scale_nlevels,
             }
-            Object.keys(params).forEach((key, value) => { url.searchParams.append(key, params[key]) })
 
-            // FIXME Use ealapi
-            fetch(url, {
-                credentials: "same-origin",
-            })
-                .then((response: any) => response.json())
-                .then((json: any) => {
+            return ealapi.get("/api/0.1/maps/compileStyle/", dispatch, params)
+                .then(({ response, json }: any) => {
                     l.olStyleDef = json
                     return compileLayerStyle(l)
                 })

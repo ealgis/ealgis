@@ -27,6 +27,7 @@
     "ol-react": "git+https://github.com/ealgis/ol-react.git",
     "openlayers": "3.19.0",
     "promise-polyfill": "~6.0.2",
+    "qs": "^6.4.0",
     "react": "~15.4.1",
     "react-color": "~2.11.3",
     "react-cookie": "~1.0.4",

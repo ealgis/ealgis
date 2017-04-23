@@ -1,4 +1,5 @@
 import 'whatwg-fetch'
+import * as qs from 'qs'
 import cookie from 'react-cookie'
 import { addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, receiveBeginFetch, receiveFinishFetch } from '../actions'
 
@@ -17,8 +18,14 @@ export class EALGISApiClient {
         }));
     }
 
-    public get(url: string, dispatch: any) {
+    public get(url: string, dispatch: Function, params: object={}) {
         dispatch(receiveBeginFetch())
+
+        if(Object.keys(params).length > 0) {
+            // Yay, a library just to do query string operations for fetch()
+            // https://github.com/github/fetch/issues/256
+            url += "?" + qs.stringify(params)
+        }
 
         return fetch(url, {
             credentials: "same-origin",
