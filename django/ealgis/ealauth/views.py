@@ -8,7 +8,7 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
@@ -375,13 +375,130 @@ class TableInfoViewSet(ReadOnlyGenericTableInfoViewSet):
     API endpoint that allows data tables to be viewed or edited.
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = TableInfoSerializer
+    serializer_class = TableInfoWithColumnsSerializer
     getter_method = apps.get_app_config('ealauth').eal.get_table_info
 
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
         tables = eal.get_tableinfo()
         return Response(tables)
+
+
+class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint that allows data columns to be viewed.
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ColumnInfoSerializer
+
+    def get_queryset(self):
+        pass
+
+    def retrieve(self, request, format=None, pk=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+
+        # e.g. https://localhost:8443/api/0.1/columninfo/40353/?schema=aus_census_2011
+        # Counted_at_home_on_Census_Night_Age_0_14_years
+        row = eal.get_column_info(pk, schema_name)
+        if row is None:
+            raise NotFound()
+
+        serializer = self.serializer_class(row)
+        return Response(serializer.data)
+
+    @list_route(methods=['get'])
+    def by_name(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+        qp = request.query_params
+
+        if "geo_source_id" in qp:
+            # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011
+            # All "Indigenous: Males" (i13) columns in the whole 2011 Census schema
+            query = eal.get_column_info_by_name(qp["name"], schema_name, qp["geo_source_id"])
+        else:
+            # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011&geo_source_id=4
+            # Find the "Indigenous: Males" (i13) column for the SA3 geometry source in the 2011 Census schema
+            query = eal.get_column_info_by_name(qp["name"], schema_name)
+
+        columns = []
+        for (column, geomlinkage) in query:
+            col = self.serializer_class(column).data
+            col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
+            columns.append(col)
+
+        if len(columns) == 0:
+            raise NotFound()
+        return Response({
+            "columns": columns,
+        })
+
+    @list_route(methods=['get'])
+    def search(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+        qp = request.query_params
+
+        columninfo, geometrylinkage, tableinfo = eal.get_table_classes(["column_info", "geometry_linkage", "table_info"], schema_name)
+        search_terms = qp["search"].split(",")
+
+        # Constrain our search window to a given geometry source (e.g. All columns relating to SA3s)
+        # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced&schema=aus_census_2011&geo_source_id=4
+        # Find all columns mentioning "diploma" and "advanced" at SA3 level
+        if "geo_source_id" in qp:
+            datainfo_id = qp["geo_source_id"]
+            query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
+                        .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                        .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
+                        .filter(geometrylinkage.geo_source_id == datainfo_id)
+
+        elif "tableinfo_id" in qp:
+        # Constrain our search window to a given table (e.g. All columns relating to a specific table)
+        # NB: For the Census this implicitly limits us to a geometry soruce as well
+        # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced,indigenous&schema=aus_census_2011&tableinfo_id=253
+        # Find all columns mentioning "diploma", "advaned", and "indigenous" in table "Non-School Qualification: Level of Education by Indigenous Status by Age by Sex" (i15d_aust_sa4)
+            tableinfo_id = qp["tableinfo_id"]
+            query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
+                        .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                        .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
+                        .filter(columninfo.tableinfo_id == tableinfo_id)
+
+        else:
+            raise ValidationError(detail="No geo_source_id or tableinfo_id provided.")
+
+        # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
+        for term in search_terms:
+            query = query.filter(columninfo.metadata_json.ilike("%{}%".format(term)))
+
+        # Split the response into an array of columns and an object of tables.
+        # Often columns will refer to the same table, so this reduces payload size.
+        response = {
+            "columns": [],
+            "tables": {},
+        }
+        for (column, geomlinkage, tableinfo) in query.all():
+            col = self.serializer_class(column).data
+            col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
+            response["columns"].append(col)
+
+            table = TableInfoSerializer(tableinfo).data
+            if table["id"] not in response["tables"]:
+                response["tables"][table["id"]] = table
+
+        if len(response["columns"]) == 0:
+            raise NotFound()
+        return Response(response)
+
+    def get_schema_from_request(self, request):
+        eal = apps.get_app_config('ealauth').eal
+
+        schema_name = request.query_params.get('schema', None)
+        if schema_name is None or not schema_name:
+            raise ValidationError(detail="No schema name provided.")
+        elif schema_name not in eal.get_schemas():
+            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
+        return schema_name
 
 
 class ColoursViewset(viewsets.ViewSet):

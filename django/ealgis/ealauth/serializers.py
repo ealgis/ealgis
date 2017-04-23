@@ -87,14 +87,35 @@ class JSONMetadataField(serializers.Field):
         return json.dumps(metadata_json)
 
 
-class TableInfoSerializer(serializers.Serializer):
+class TableInfoWithColumnsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     metadata_json = JSONMetadataField()
     columns = serializers.JSONField()
 
 
+class TableInfoSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    metadata_json = JSONMetadataField()
+
+
 class DataInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     metadata_json = JSONMetadataField()
+
+
+class ColumnInfoSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    tableinfo_id = serializers.IntegerField()
+    metadata_json = JSONMetadataField()
+
+
+class GeometryLinkageSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    geo_source_id = serializers.IntegerField()
+    geo_column = serializers.CharField()
+    attr_table_info_id = serializers.IntegerField()
+    attr_column = serializers.CharField()

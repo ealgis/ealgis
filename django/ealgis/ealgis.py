@@ -223,6 +223,19 @@ class EAlGIS(object):
 
         return dict
 
+    def get_column_info(self, column_id, schema_name):
+        columninfo = self.get_table_class("column_info", schema_name)
+        return self.session.query(columninfo).filter(columninfo.id == column_id).first()
+
+    def get_column_info_by_name(self, column_name, schema_name, geo_source_id=None):
+        columninfo, geometrylinkage = self.get_table_classes(["column_info", "geometry_linkage"], schema_name)
+        query = self.session.query(columninfo, geometrylinkage).outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)
+
+        if geo_source_id is not None:
+            query = query.filter(geometrylinkage.geo_source_id == geo_source_id)
+        query = query.filter(columninfo.name == column_name).all()
+        return query
+
     def resolve_attribute(self, geometry_source, attribute):
         attribute = attribute.lower()  # upper case tables or columns seem unlikely, but a possible FIXME
         # supports table_name.column_name OR just column_name
