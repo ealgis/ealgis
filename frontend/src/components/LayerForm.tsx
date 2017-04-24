@@ -58,7 +58,7 @@ const styles = {
 
 export interface LayerFormProps {
     mapId: number,
-    layerId: number,
+    layerId: string,
     tabId: string,
     initialValues: object,
     onSubmit: Function,
@@ -118,11 +118,13 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
             return coloursLevels[0]
         }
 
+        const layerIdOrNew = (parseInt(layerId) > 0) ? layerId : "new"
+
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <RaisedButton 
-                        label={layerId === undefined ? "Create Layer" : "Save Layer"}
+                        label={(layerIdOrNew === "new") ? "Create Layer" : "Save Layer"}
                         disabled={submitting}
                         primary={true}
                         onClick={handleSubmit(onSubmit)}
@@ -142,7 +144,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ContentCreate />}
                         label="DESCRIBE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -189,7 +191,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<EditorInsertChart />}
                         label="DATA"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/1`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}/1`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -225,7 +227,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ImagePalette />}
                         label="VISUALISE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/2`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}/2`}/>}
                     >
                         <div style={styles.tabBody}>
                             <div style={styles.flexboxContainer}>

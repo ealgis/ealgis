@@ -315,7 +315,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
     return (dispatch: any) => {
         // Upsert
         let mapCopy: object = JSON.parse(JSON.stringify(map))
-        const isNewLayer = layerId === undefined ? true : false
+        const isNewLayer = layerId === "new" ? true : false
 
         if(isNewLayer) {
             mapCopy["json"]["layers"].push(layer)
@@ -330,7 +330,7 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
                     const verb = isNewLayer ? "created" : "saved"
                     dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
                     
-                    if(layerId === undefined) {
+                    if(isNewLayer) {
                         browserHistory.push("/map/" + json.id)
                     }
                     

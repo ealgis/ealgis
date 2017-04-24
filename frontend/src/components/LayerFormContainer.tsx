@@ -15,7 +15,7 @@ export interface LayerDefinitionProps {
 
 export interface LayerFormContainerProps {
     mapDefinition: object,
-    layerId: number,
+    layerId: string,
     tabId: string,
     layerDefinition: LayerDefinitionProps,
     datainfo: object,
@@ -107,7 +107,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         // Initiable values either comes from defaultProps (creating a new layer)
         // or from our layerDef (editing an existing layer)
         let initialValues = JSON.parse(JSON.stringify(layerDefinition))
-        if(layerId !== undefined) {
+        if(parseInt(layerId) > 0) {
             initialValues = this.deriveLayerFormValuesFromLayer(layerDefinition, datainfo)
         }
 
