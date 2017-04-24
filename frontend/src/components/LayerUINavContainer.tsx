@@ -15,11 +15,16 @@ export interface LayerUINavContainerProps {
     layerId: number,
     onCloneLayer: Function,
     onDeleteLayer: Function,
+    datainfo: object,
 }
 
 export class LayerUINavContainer extends React.Component<LayerUINavContainerProps, undefined> {
+    private getGeometryDescription(defn: object, datainfo) {
+        return datainfo[defn["schema"] + "." + defn["geometry"]].description
+    }
+
     render() {
-        const { layerDefinition, mapId, layerId, onCloneLayer, onDeleteLayer } = this.props
+        const { layerDefinition, mapId, layerId, onCloneLayer, onDeleteLayer, datainfo } = this.props
         const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
         
         return <LayerUINav 
@@ -28,16 +33,21 @@ export class LayerUINavContainer extends React.Component<LayerUINavContainerProp
                     mapId={mapId} 
                     onCloneLayer={() => onCloneLayer(mapId, layerId)} 
                     onDeleteLayer={() => onDeleteLayer(deleteConfirmModalId)} 
-                    deleteConfirmModalId={deleteConfirmModalId} 
+                    deleteConfirmModalId={deleteConfirmModalId}
+                    getGeometryDescription={
+                        (defn: object) =>
+                            this.getGeometryDescription(defn, datainfo)
+                    }
                 />;
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps } = state
+    const { maps, datainfo } = state
     return {
         layerDefinition: ownProps.layerDefinition,
         mapId: ownProps.mapId,
+        datainfo: datainfo,
     }
 }
 

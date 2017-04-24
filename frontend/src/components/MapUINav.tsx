@@ -73,7 +73,11 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             <h2 style={{textAlign: "center"}}>{defn.name}</h2>
 
             <List>
-                <ListItem primaryText="Layers" leftIcon={<MapsLayers />} disabled={true} />
+                <ListItem
+                    primaryText="Layers"
+                    leftIcon={<MapsLayers />}
+                    disabled={true}
+                />
                 {defn.json.layers.map((l: any, key: number) => 
                     <LayerUINav 
                         key={key}

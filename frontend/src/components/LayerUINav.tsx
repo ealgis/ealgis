@@ -37,14 +37,16 @@ export interface LayerUINavProps {
     onCloneLayer: any,
     onDeleteLayer: any,
     deleteConfirmModalId: string,
+    getGeometryDescription: Function,
 }
 
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
-        const { defn, layerId, mapId, onCloneLayer, onDeleteLayer, deleteConfirmModalId } = this.props
+        const { defn, layerId, mapId, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
 
         return <div>
-            <ListItem 
+            <ListItem
+                secondaryText={getGeometryDescription(defn)}
                 rightIconButton={
                     <IconMenu iconButtonElement={iconButtonElement}>
                         <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
