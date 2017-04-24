@@ -46,7 +46,13 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
 
         return <div>
             <ListItem
-                secondaryText={getGeometryDescription(defn)}
+                secondaryText={
+                    <p>
+                        {getGeometryDescription(defn)}<br />
+                        {defn.description}
+                    </p>
+                }
+                secondaryTextLines={2}
                 rightIconButton={
                     <IconMenu iconButtonElement={iconButtonElement}>
                         <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
