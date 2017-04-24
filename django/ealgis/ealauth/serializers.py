@@ -121,3 +121,4 @@ class GeometryLinkageSerializer(serializers.Serializer):
     geo_column = serializers.CharField()
     attr_table_info_id = serializers.IntegerField()
     attr_column = serializers.CharField()
+    
