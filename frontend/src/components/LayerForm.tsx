@@ -7,6 +7,7 @@ import ContentCreate from 'material-ui/svg-icons/content/create';
 import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import ImagePalette from 'material-ui/svg-icons/image/palette';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import DatasetSearch from "./DatasetSearchContainer";
 
 import { Field, reduxForm } from 'redux-form';
 import {
@@ -21,7 +22,7 @@ import MenuItem from 'material-ui/MenuItem';
 
 import IconButton from 'material-ui/IconButton';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import { red500, grey400 } from 'material-ui/styles/colors';
+import { grey400 } from 'material-ui/styles/colors';
 
 const required = value => value || value === 0 ? undefined : 'Required'
 
@@ -61,6 +62,7 @@ export interface LayerFormProps {
     tabId: string,
     initialValues: object,
     onSubmit: Function,
+    onGeometryChange: Function,
     datainfo: object,
     colourinfo: object,
 }
@@ -85,7 +87,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, tabId, onSubmit, colourinfo } = this.props
+        const { mapId, layerId, tabId, onSubmit, onGeometryChange, colourinfo } = this.props
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
 
@@ -175,6 +177,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 floatingLabelFixed={true}
                                 validate={[ required ]} 
                                 fullWidth={true}
+                                onChange={(event: any, newValue: object, previousValue: object) => { onGeometryChange(event, newValue, previousValue) }}
                             >
                                 {this.geometryTables}
                             </Field>
@@ -212,6 +215,8 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 fullWidth={true}
                                 autoComplete="off"
                             />
+
+                            <DatasetSearch />
                         </div>
                     </Tab>
                     {/* END DATA TAB */}

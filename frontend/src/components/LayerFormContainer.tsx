@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import LayerForm from "./LayerForm";
-import { layerUpsert } from '../actions'
+import { setLayerFormGeometry, layerUpsert } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,
@@ -21,6 +21,7 @@ export interface LayerFormContainerProps {
     datainfo: object,
     colourinfo: object,
     onSubmit: Function,
+    onGeometryChange: Function,
 }
 
 export class LayerFormContainer extends React.Component<LayerFormContainerProps, undefined> {
@@ -84,8 +85,24 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         }
     }
 
+    componentDidMount() {
+        const { layerDefinition, datainfo, onGeometryChange } = this.props
+
+        const nextGeometry = datainfo[layerDefinition["schema"] + "." + layerDefinition["geometry"]]
+        onGeometryChange(nextGeometry)
+    }
+
+    componentWillReceiveProps(nextProps: any) {
+        const { layerDefinition, datainfo, layerFormGeometry, onGeometryChange } = this.props
+
+        const nextGeometry = datainfo[layerDefinition["schema"] + "." + layerDefinition["geometry"]]
+        if(nextGeometry != layerFormGeometry) {
+            onGeometryChange(nextGeometry)
+        }
+    }
+
     render() {
-        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, datainfo, colourinfo } = this.props
+        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, onGeometryChange, datainfo, colourinfo } = this.props
         
         // Initiable values either comes from defaultProps (creating a new layer)
         // or from our layerDef (editing an existing layer)
@@ -102,15 +119,19 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             onSubmit={
                 (formValues: Array<undefined>) => 
                     onSubmit(mapDefinition, layerId, this.deriveLayerFromLayerFormValues(formValues))
-            } 
+            }
+            onGeometryChange={
+                (event: any, newValue: object, previousValue: object) =>
+                    onGeometryChange(newValue)
+            }
             datainfo={datainfo} 
-            colourinfo={colourinfo} 
+            colourinfo={colourinfo}
         />;
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps, datainfo, colourinfo } = state
+    const { app, maps, datainfo, colourinfo } = state
 
     return {
         mapDefinition: maps[ownProps.params.mapId],
@@ -124,6 +145,9 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    onGeometryChange: (newValue: object) => {
+        dispatch(setLayerFormGeometry(newValue))
+    },
     onSubmit: (mapDefinition: object, layerId: number, layer: object) => {
         dispatch(layerUpsert(mapDefinition, layerId, layer));
     },

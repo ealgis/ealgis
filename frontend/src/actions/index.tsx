@@ -39,6 +39,11 @@ export const RECEIVE_RESET_DATA_INSPECTOR = 'RECEIVE_RESET_DATA_INSPECTOR'
 export const RECEIVE_TOGGLE_DEBUG_MODE = 'RECEIVE_TOGGLE_DEBUG_MODE'
 export const RECEIVE_REQUEST_BEGIN_FETCH = 'RECEIVE_REQUEST_BEGIN_FETCH'
 export const RECEIVE_REQUEST_FINISH_FETCH = 'RECEIVE_REQUEST_FINISH_FETCH'
+export const RECEIVE_UPDATE_DATA_DISCOVERY = 'RECEIVE_UPDATE_DATA_DISCOVERY'
+export const RECEIVE_RESET_DATA_DISCOVERY = 'RECEIVE_RESET_DATA_DISCOVERY'
+export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
+export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
+export const RECEIVE_UPDATE_LAYER_FORM_GEOMETRY = 'RECEIVE_UPDATE_LAYER_FORM_GEOMETRY'
 
 const ealapi = new EALGISApiClient()
 
@@ -689,5 +694,125 @@ export function sendToDataInspector(features: Array<undefined>) {
 export function toggleDebugMode() {
     return {
         type: RECEIVE_TOGGLE_DEBUG_MODE
+    }
+}
+
+export function receiveTableInfo(json: any) {
+    return {
+        type: RECEIVE_TABLE_INFO,
+        json
+    }
+}
+
+export function setLayerFormGeometry(geometry: object) {
+    return {
+        type: RECEIVE_UPDATE_LAYER_FORM_GEOMETRY,
+        geometry,
+    }
+}
+
+export function updateDataDiscovery(dataColumns: object) {
+    return {
+        type: RECEIVE_UPDATE_DATA_DISCOVERY,
+        dataColumns,
+    }
+}
+
+export function setLayerFormChipValues(chipValues: Array<string>) {
+    return {
+        type: RECEIVE_CHIP_VALUES,
+        chipValues,
+    }
+}
+
+
+export function resetDataDiscovery() {
+    return {
+        type: RECEIVE_RESET_DATA_DISCOVERY
+    }
+}
+
+export function processResponseForDataDiscovery(response: object, json: object, dispatch: Function) {
+    if(response.status === 404) {
+        dispatch(sendSnackbarNotification("No columns found matching your search criteria."))
+        return
+    }
+
+    dispatch(receiveTableInfo(json["tables"]))
+
+    let columnsByTable = {}
+    for(let key in json["columns"]) {
+        const col = json["columns"][key]
+        if(columnsByTable[json["tables"][col["tableinfo_id"]].metadata_json["type"]] === undefined) {
+            columnsByTable[json["tables"][col["tableinfo_id"]].metadata_json["type"]] = {
+                "table": json["tables"][col["tableinfo_id"]],
+                "columns": []
+            }
+        }
+        columnsByTable[json["tables"][col["tableinfo_id"]].metadata_json["type"]].columns.push(col)
+    }
+    dispatch(updateDataDiscovery(columnsByTable))
+}
+
+export function getColumnsForGeometry(chips: Array<string>, geometry: object) {
+    return (dispatch: any) => {
+        const params = {
+            "search": chips.join(","),
+            "schema": geometry["schema_name"],
+            "geo_source_id": geometry["_id"],
+        }
+        return ealapi.get('/api/0.1/columninfo/search/', dispatch, params)
+    }
+}
+
+export function fetchColumnsForGeometry(chips: Array<string>, geometry: object) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(resetDataDiscovery())
+
+        return dispatch(getColumnsForGeometry(chips, geometry)).then(({ response, json }) => {
+            processResponseForDataDiscovery(response, json, dispatch)
+        })
+    }
+}
+
+export function getColumnsForTable(chips: Array<string>, geometry: object, table_names: Array<string>) {
+    return (dispatch: any) => {
+        const params = {
+            "search": chips.join(","),
+            "schema": geometry["schema_name"],
+            "tableinfo_name": table_names.join(","),
+        }
+        return ealapi.get('/api/0.1/columninfo/search/', dispatch, params)
+    }
+}
+
+export function fetchColumnsForTable(chips: Array<string>, geometry: object, table_names: Array<string>) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(resetDataDiscovery())
+
+        return dispatch(getColumnsForTable(chips, geometry, table_names)).then(({ response, json }) => {
+            processResponseForDataDiscovery(response, json, dispatch)
+        })
+    }
+}
+
+export function getColumnsByName(chips: Array<string>, geometry: object) {
+    return (dispatch: any) => {
+        const params = {
+            "name": chips.join(","),
+            "schema": geometry["schema_name"],
+            "geo_source_id": geometry["_id"]
+        }
+        return ealapi.get('/api/0.1/columninfo/by_name/', dispatch, params)
+    }
+}
+
+export function fetchColumnsByName(chips: Array<string>, geometry: object) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(resetDataDiscovery())
+
+        return dispatch(getColumnsByName(chips, geometry)).then(({ response, json }) => {
+            processResponseForDataDiscovery(response, json, dispatch)
+        })
     }
 }

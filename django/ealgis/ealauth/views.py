@@ -413,26 +413,37 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         schema_name = self.get_schema_from_request(request)
         qp = request.query_params
 
+        if "name" not in qp:
+            raise ValidationError(detail="Name parameter not supplied.")
+
         if "geo_source_id" in qp:
             # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011
             # All "Indigenous: Males" (i13) columns in the whole 2011 Census schema
-            query = eal.get_column_info_by_name(qp["name"], schema_name, qp["geo_source_id"])
+            query = eal.get_column_info_by_names(qp["name"].split(","), schema_name, qp["geo_source_id"])
         else:
             # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011&geo_source_id=4
             # Find the "Indigenous: Males" (i13) column for the SA3 geometry source in the 2011 Census schema
-            query = eal.get_column_info_by_name(qp["name"], schema_name)
+            query = eal.get_column_info_by_names(qp["name"].split(","), schema_name)
 
-        columns = []
-        for (column, geomlinkage) in query:
+        # Split the response into an array of columns and an object of tables.
+        # Often columns will refer to the same table, so this reduces payload size.
+        response = {
+            "columns": [],
+            "tables": {},
+        }
+        for (column, geomlinkage, tableinfo) in query:
             col = self.serializer_class(column).data
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
-            columns.append(col)
+            response["columns"].append(col)
 
-        if len(columns) == 0:
+            table = TableInfoSerializer(tableinfo).data
+            table["schema_name"] = schema_name
+            if table["id"] not in response["tables"]:
+                response["tables"][table["id"]] = table
+
+        if len(response["columns"]) == 0:
             raise NotFound()
-        return Response({
-            "columns": columns,
-        })
+        return Response(response)
 
     @list_route(methods=['get'])
     def search(self, request, format=None):
@@ -441,7 +452,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         qp = request.query_params
 
         columninfo, geometrylinkage, tableinfo = eal.get_table_classes(["column_info", "geometry_linkage", "table_info"], schema_name)
-        search_terms = qp["search"].split(",")
+        search_terms = qp["search"].split(",") if qp["search"] != "" else []
 
         # Constrain our search window to a given geometry source (e.g. All columns relating to SA3s)
         # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced&schema=aus_census_2011&geo_source_id=4
@@ -452,17 +463,30 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                         .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
                         .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
                         .filter(geometrylinkage.geo_source_id == datainfo_id)
+            
+            if len(search_terms) == 0:
+                raise ValidationError(detail="At least one search term is required when searching by geometry.")
 
-        elif "tableinfo_id" in qp:
+        elif "tableinfo_id" in qp or "tableinfo_name" in qp:
         # Constrain our search window to a given table (e.g. All columns relating to a specific table)
         # NB: For the Census this implicitly limits us to a geometry soruce as well
         # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced,indigenous&schema=aus_census_2011&tableinfo_id=253
         # Find all columns mentioning "diploma", "advaned", and "indigenous" in table "Non-School Qualification: Level of Education by Indigenous Status by Age by Sex" (i15d_aust_sa4)
-            tableinfo_id = qp["tableinfo_id"]
+            if "tableinfo_name" in qp:
+                tableNames = qp["tableinfo_name"].split(",")
+                query = eal.session.query(tableinfo)\
+                            .filter(tableinfo.name.in_(tableNames))
+
+                tableinfo_id = []
+                for table in query.all():
+                    tableinfo_id.append(table.id)
+            else:
+                tableinfo_id = [qp["tableinfo_id"]]
+            
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
                         .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
                         .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
-                        .filter(columninfo.tableinfo_id == tableinfo_id)
+                        .filter(columninfo.tableinfo_id.in_(tableinfo_id))
 
         else:
             raise ValidationError(detail="No geo_source_id or tableinfo_id provided.")
@@ -483,6 +507,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             response["columns"].append(col)
 
             table = TableInfoSerializer(tableinfo).data
+            table["schema_name"] = schema_name
             if table["id"] not in response["tables"]:
                 response["tables"][table["id"]] = table
 

@@ -227,14 +227,20 @@ class EAlGIS(object):
         columninfo = self.get_table_class("column_info", schema_name)
         return self.session.query(columninfo).filter(columninfo.id == column_id).first()
 
-    def get_column_info_by_name(self, column_name, schema_name, geo_source_id=None):
-        columninfo, geometrylinkage = self.get_table_classes(["column_info", "geometry_linkage"], schema_name)
-        query = self.session.query(columninfo, geometrylinkage).outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)
+    def get_column_info_by_names(self, column_names, schema_name, geo_source_id=None):
+        columninfo, geometrylinkage, tableinfo = self.get_table_classes(["column_info", "geometry_linkage", "table_info"], schema_name)
+        query = self.session.query(columninfo, geometrylinkage, tableinfo)\
+                    .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                    .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
 
         if geo_source_id is not None:
             query = query.filter(geometrylinkage.geo_source_id == geo_source_id)
-        query = query.filter(columninfo.name == column_name).all()
-        return query
+
+        column_names = [item.lower() for item in column_names]
+        return query.filter(sqlalchemy.func.lower(columninfo.name).in_(column_names)).all()
+
+    def get_column_info_by_name(self, column_name, schema_name, geo_source_id=None):
+        return self.get_column_info_by_name([column_name], schema_name, geo_source_id=None)
 
     def resolve_attribute(self, geometry_source, attribute):
         attribute = attribute.lower()  # upper case tables or columns seem unlikely, but a possible FIXME
