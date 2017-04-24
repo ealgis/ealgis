@@ -2,7 +2,7 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode } from '../actions';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import './FixedLayout.css';
@@ -17,6 +17,8 @@ export interface EalContainerProps {
     handleRequestClose: Function,
     fetchStuff: Function,
     onDebugToggle: Function,
+    location: object,
+    onReceiveAppPreviousPath: Function,
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
@@ -31,6 +33,14 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
             script.src = "//localhost:35729/livereload.js";
             script.async = true;
             document.body.appendChild(script);
+        }
+    }
+
+    componentWillReceiveProps(nextProps: object) {
+        // Store the last page in history for navigation/ui that depeneds on knowing that sort of thing
+        const { onReceiveAppPreviousPath, location } = this.props
+        if(nextProps.location.pathname !== location.pathname) {
+            onReceiveAppPreviousPath(location.pathname)
         }
     }
 
@@ -81,6 +91,9 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     onDebugToggle: () => {
         dispatch(toggleDebugMode())
+    },
+    onReceiveAppPreviousPath: (previousPath: string) => {
+        dispatch(receiveAppPreviousPath(previousPath))
     },
   };
 }

@@ -19,13 +19,19 @@ export interface MapUINavContainerProps {
     deleteModalOpen: boolean,
     dataInspector: Array<any>,
     resetDataInspector: Function,
+    previousPath: string,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     componentDidMount() {
-        const { resetDataInspector, onResetOrigin, mapDefinition } = this.props
+        const { resetDataInspector, onResetOrigin, mapDefinition, location, previousPath } = this.props
         resetDataInspector()
-        onResetOrigin(mapDefinition.json.map_defaults)
+
+        // If we came from anywhere except for a sub-route of /map/{mapId} then ensure
+        // we reset the map extents to the default for this map.
+        if(!previousPath.startsWith(location.pathname)) {
+            onResetOrigin(mapDefinition.json.map_defaults)
+        }
     }
 
     render() {
@@ -53,6 +59,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
         mapPosition: app.mapPosition,
         deleteModalOpen: app.dialogs["deleteMap"] || false,
         dataInspector: app.dataInspector,
+        previousPath: app.previousPath,
     }
 }
 

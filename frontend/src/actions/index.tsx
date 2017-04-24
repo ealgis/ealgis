@@ -44,6 +44,7 @@ export const RECEIVE_RESET_DATA_DISCOVERY = 'RECEIVE_RESET_DATA_DISCOVERY'
 export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
 export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
 export const RECEIVE_UPDATE_LAYER_FORM_GEOMETRY = 'RECEIVE_UPDATE_LAYER_FORM_GEOMETRY'
+export const RECEIVE_APP_PREVIOUS_PATH = 'RECEIVE_APP_PREVIOUS_PATH'
 
 const ealapi = new EALGISApiClient()
 
@@ -814,5 +815,12 @@ export function fetchColumnsByName(chips: Array<string>, geometry: object) {
         return dispatch(getColumnsByName(chips, geometry)).then(({ response, json }) => {
             processResponseForDataDiscovery(response, json, dispatch)
         })
+    }
+}
+
+export function receiveAppPreviousPath(previousPath: string) {
+    return {
+        type: RECEIVE_APP_PREVIOUS_PATH,
+        previousPath,
     }
 }
