@@ -114,6 +114,26 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @detail_route(methods=['get'])
+    def query_summary(self, request, pk=None, format=None):
+        queryset = self.get_queryset()
+        map = queryset.filter(id=pk).first()
+        qp = request.query_params
+        eal = apps.get_app_config('ealauth').eal
+
+        layer = None
+        if "layer" in qp:
+            for l in map.json["layers"]:
+                if l["hash"] == qp["layer"]:
+                    layer = l
+                    break
+
+        if layer is None:
+            raise ValidationError(detail="Layer not found.")
+
+        summary = eal.def_get_summary_stats_for_layer(layer)
+        return Response(summary)
+
+    @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):
         # Used to inject features for debugging vector tile performance
         def debug_features(features, x, y, z):

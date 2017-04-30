@@ -265,6 +265,22 @@ class EAlGIS(object):
             ci, linkage_id = matches[0]
             return self.session.query(GeometryLinkage).get(linkage_id), ci
 
+    def def_get_summary_stats_for_layer(self, layer):
+        SQL_TEMPLATE = """
+            SELECT
+                MIN(sq.q),
+                MAX(sq.q),
+                STDDEV(sq.q)
+            FROM ({query}) AS sq"""
+
+        (min, max, stddev) = self.session.execute(SQL_TEMPLATE.format(query=layer["_postgis_query"])).first()
+
+        return {
+            "min": min,
+            "max": max,
+            "stddev": stddev,
+        }
+
     def get_tile(self, query, x, y, z):
         def create_vectortile_sql(query, bounds):
             # Sets the number of decimal places per GeoJSON coordinate to reduce response size

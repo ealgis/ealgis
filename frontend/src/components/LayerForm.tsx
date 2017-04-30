@@ -8,6 +8,7 @@ import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import ImagePalette from 'material-ui/svg-icons/image/palette';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import DatasetSearch from "./DatasetSearchContainer";
+import LayerQuerySummary from "./LayerQuerySummaryContainer";
 
 import { Field, reduxForm } from 'redux-form';
 import {
@@ -329,6 +330,8 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 type="number"
                                 min="0"
                             />
+
+                            {/*<LayerQuerySummary />*/}
                         </div>
                     </Tab>
                     {/* END VISUALISE TAB */}
