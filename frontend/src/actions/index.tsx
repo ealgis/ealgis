@@ -2,9 +2,11 @@ import Promise from 'promise-polyfill'
 import 'whatwg-fetch'
 import { browserHistory } from 'react-router';
 import cookie from 'react-cookie'
+import { getFormValues } from 'redux-form';
 import { compileLayerStyle } from '../utils/OLStyle'
 import { SubmissionError } from 'redux-form'
 import { EALGISApiClient } from '../helpers/EALGISApiClient';
+import LayerFormContainer from "../components/LayerFormContainer"
 
 export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
 export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
@@ -45,6 +47,8 @@ export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
 export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
 export const RECEIVE_UPDATE_LAYER_FORM_GEOMETRY = 'RECEIVE_UPDATE_LAYER_FORM_GEOMETRY'
 export const RECEIVE_APP_PREVIOUS_PATH = 'RECEIVE_APP_PREVIOUS_PATH'
+export const CHANGE_LAYER_PROPERTY = 'CHANGE_LAYER_PROPERTY'
+export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
 
 const ealapi = new EALGISApiClient()
 
@@ -113,10 +117,12 @@ export function receiveCreatedMap(map: object) {
     }
 }
 
-export function receiveCompiledLayerStyle(json: any) {
+export function receiveCompiledLayerStyle(mapId: number, layerId: number, olStyle: any) {
     return {
         type: COMPILED_LAYER_STYLE,
-        json
+        mapId,
+        layerId,
+        olStyle,
     }
 }
 
@@ -334,6 +340,8 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
                     if(isNewLayer) {
                         browserHistory.push("/map/" + json.id)
                     }
+
+                    return json
                     
                 } else if(response.status === 400) {
                     // We expect that the server will return the shape:
@@ -393,26 +401,27 @@ export function deleteMapLayer(map: object, layerId: number) {
     }
 }
 
-export function fetchCompiledLayerStyle(l: Object) {
+export function fetchCompiledLayerStyle(mapId: number, layerId: number, layer: Object) {
     return (dispatch: any) => {
-        let do_fill = (l['fill']['expression'] != '')
+        let do_fill = (layer['fill']['expression'] != '')
         if(do_fill) {
             const params = {
-                "opacity": fill.opacity,
-                "scale_max": fill.scale_max,
-                "scale_min": fill.scale_min,
-                "expression": fill.expression,
-                "scale_flip": fill.scale_flip,
-                "scale_name": fill.scale_name,
-                "scale_nlevels": fill.scale_nlevels,
+                "opacity": layer['fill'].opacity,
+                "scale_max": layer['fill'].scale_max,
+                "scale_min": layer['fill'].scale_min,
+                "expression": layer['fill'].expression,
+                "scale_flip": layer['fill'].scale_flip,
+                "scale_name": layer['fill'].scale_name,
+                "scale_nlevels": layer['fill'].scale_nlevels,
             }
 
             return ealapi.get("/api/0.1/maps/compileStyle/", dispatch, params)
                 .then(({ response, json }: any) => {
-                    l.olStyleDef = json
-                    return compileLayerStyle(l)
+                    layer.olStyleDef = json
+                    layer.olStyle = compileLayerStyle(layer, false)
                 })
-                .then((json: any) => dispatch(receiveCompiledLayerStyle(json)))
+                // Wrap layer.olStyle in a function because dotProp automatically executes functions
+                .then((json: any) => dispatch(receiveCompiledLayerStyle(mapId, layerId, () => layer.olStyle)))
         }
     }
 }
@@ -822,5 +831,114 @@ export function receiveAppPreviousPath(previousPath: string) {
     return {
         type: RECEIVE_APP_PREVIOUS_PATH,
         previousPath,
+    }
+}
+
+export function receiveChangeLayerProperty(mapId: number, layerId: number, layerPropertyPath: string, layerPropertyValue: any) {
+    return {
+        type: CHANGE_LAYER_PROPERTY,
+        mapId,
+        layerId,
+        layerPropertyPath,
+        layerPropertyValue,
+    }
+}
+
+export function handleLayerFormChange(fieldName: string, newValue: any, mapId: number, layerId: number) {
+    return (dispatch: any, getState: Function) => {
+        // console.log("handleLayerFormChange()", event.target.name, `${newValue} vs ${previousValue}`)
+        console.log("newValue", newValue)
+
+        // @TODO Can we avoid using getFormValues() here by having it on LayerFormContainer's props?
+        // @TODO Can we avoid calling LayerFormContainer?
+        // @TODO Can we avoid specifying form field names?
+
+        const layerFormValues = getFormValues('layerForm')(getState())
+        console.log("layerFormValues", layerFormValues)
+        const newLayer = LayerFormContainer.deriveLayerFromLayerFormValues(layerFormValues)
+        console.log("newLayer", newLayer)
+
+        // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer))
+
+        // @TODO It saves onBlur even if nothing has changed
+        // @TODO Don't upsert unless we have to
+        // @TODO Quiet (Loader, Snackbar) upserting, stats fetching?
+
+        return dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer)).then((newMap: object) => {
+            switch(fieldName) {
+                case "geometry":
+                case "scaleMin":
+                case "scaleMin":
+                case "valueExpression":
+                case "filterExpression":
+                    dispatch(fetchLayerQuerySummary(mapId, newMap.json.layers[layerId].hash))
+                    break
+            }
+        })
+        
+        // @TODO Internal field names shouldn't be used here...
+        switch(fieldName) {
+            // case "borderSize":
+            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "line.width", newValue)); break;
+
+            // case "borderColour":
+            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "line.colour", newValue)); break;
+
+            // case "fillOpacity":
+            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "fill.opacity", newValue)); break;
+            
+            case "fillColourScheme":
+            case "fillColourSchemeLevels":
+            case "fillColourScaleFlip":
+                // Save the layer immediately in order to recompile the layer styles
+                // dispatch(fetchCompiledLayerStyle(mapId, layerId, newLayer)); break;
+                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer)); break;
+            
+            case "scaleMin":
+            case "scaleMin":
+            case "valueExpression":
+            case "filterExpression":
+                // Save the layer immediately in order to recompile the layer styles
+                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer));
+
+                // Fetch new layer query stats
+                // @TODO
+                // dispatch(fetchLayerQuerySummary(mapId, newLayer.hash))
+                break;
+            
+            case "name":
+            case "description":
+                // Do nothing. Wait until the user forces a layer save
+                break
+
+            case "geometry":
+                // Save the layer immediately in order to recompile the layer styles
+                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer));
+
+                // Set geometry for the chip input?
+                // @TOOD
+                break
+            
+            default:
+                console.log(`Missing case for ${fieldName}: ${newValue}`)
+        }
+    }
+}
+
+export function fetchLayerQuerySummary(mapId: number, layerHash: string) {
+    return (dispatch: any) => {
+        const params = {"layer": layerHash}
+        return ealapi.get(`/api/0.1/maps/${mapId}/query_summary/`, dispatch, params)
+            .then(({ response, json }: any) => {
+                dispatch(receiveLayerQuerySummary(json, layerHash))
+            });
+    }
+}
+
+export function receiveLayerQuerySummary(stats: object, layerHash: string) {
+    return {
+        type: RECEIVE_LAYER_QUERY_SUMMARY,
+        stats,
+        layerHash,
     }
 }

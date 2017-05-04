@@ -39,18 +39,18 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
     const styles = reactCSS({
       'default': {
         color: {
-          width: '36px',
-          height: '14px',
+          width: '100%',
+          height: '20px',
           borderRadius: '2px',
           background: `rgba(${ this.state.color.r }, ${ this.state.color.g }, ${ this.state.color.b }, ${ this.state.color.a })`,
         },
         swatch: {
-          padding: '5px',
           background: '#fff',
           borderRadius: '1px',
           boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
           display: 'inline-block',
           cursor: 'pointer',
+          width: '95%',
         },
         popover: {
           position: 'absolute',

@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import * as dotProp from 'dot-prop-immutable';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, RECEIVE_RESET_MAP_POSITION, RECEIVE_TOGGLE_MAP_VIEW_SETTING, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER, RECEIVE_TOGGLE_MODAL_STATE, RECEIVE_UPDATE_DATA_INSPECTOR, RECEIVE_RESET_DATA_INSPECTOR, RECEIVE_TOGGLE_DEBUG_MODE, RECEIVE_REQUEST_BEGIN_FETCH, RECEIVE_REQUEST_FINISH_FETCH, RECEIVE_UPDATE_DATA_DISCOVERY, RECEIVE_RESET_DATA_DISCOVERY, RECEIVE_TABLE_INFO, RECEIVE_CHIP_VALUES, RECEIVE_UPDATE_LAYER_FORM_GEOMETRY, RECEIVE_APP_PREVIOUS_PATH } from '../actions';
+import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_MAP_POSITION, RECEIVE_SET_MAP_ORIGIN, RECEIVE_RESET_MAP_POSITION, RECEIVE_TOGGLE_MAP_VIEW_SETTING, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER, RECEIVE_TOGGLE_MODAL_STATE, RECEIVE_UPDATE_DATA_INSPECTOR, RECEIVE_RESET_DATA_INSPECTOR, RECEIVE_TOGGLE_DEBUG_MODE, RECEIVE_REQUEST_BEGIN_FETCH, RECEIVE_REQUEST_FINISH_FETCH, RECEIVE_UPDATE_DATA_DISCOVERY, RECEIVE_RESET_DATA_DISCOVERY, RECEIVE_TABLE_INFO, RECEIVE_CHIP_VALUES, RECEIVE_UPDATE_LAYER_FORM_GEOMETRY, RECEIVE_APP_PREVIOUS_PATH, CHANGE_LAYER_PROPERTY, RECEIVE_LAYER_QUERY_SUMMARY } from '../actions';
 
 function app(state = {
     loading: true,
@@ -23,6 +23,7 @@ function app(state = {
     layerForm: {
         chipValues: [],
         geometry: null,
+        layerQuerySummary: {},
     },
 }, action: any) {
     switch (action.type) {
@@ -89,14 +90,16 @@ function app(state = {
             return dotProp.set(state, 'dataInspector', [...state.dataInspector, ...action.dataRows])
         case RECEIVE_RESET_DATA_INSPECTOR:
             return dotProp.set(state, 'dataInspector', [])
-        case RECEIVE_UPDATE_LAYER_FORM_GEOMETRY:
-            return dotProp.set(state, "layerForm.geometry", action.geometry)
         case RECEIVE_UPDATE_DATA_DISCOVERY:
             return dotProp.set(state, 'dataDiscovery', action.dataColumns)
         case RECEIVE_RESET_DATA_DISCOVERY:
             return dotProp.set(state, 'dataDiscovery', [])
         case RECEIVE_CHIP_VALUES:
             return dotProp.set(state, "layerForm.chipValues", action.chipValues)
+        case RECEIVE_UPDATE_LAYER_FORM_GEOMETRY:
+            return dotProp.set(state, "layerForm.geometry", action.geometry)
+        case RECEIVE_LAYER_QUERY_SUMMARY:
+            return dotProp.set(state, `layerForm.layerQuerySummary.${action.layerHash}`, action.stats)
         default:
             return state;
     }
@@ -141,6 +144,8 @@ function maps(state: any = {}, action: any) {
             return dotProp.set(state, `${action.mapId}.json.layers`, [...state[action.mapId].json.layers, layerCopy])
         case CHANGE_LAYER_VISIBILITY:
             return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
+        case CHANGE_LAYER_PROPERTY:
+            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.${action.layerPropertyPath}`, action.layerPropertyValue)
         case RECEIVE_SET_MAP_ORIGIN:
             return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
                 lat: action.position.center.lat,
@@ -169,25 +174,7 @@ function maps(state: any = {}, action: any) {
         //         return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
         //     }
         case COMPILED_LAYER_STYLE:
-            // FIXME Make this work
-            return dotProp.set(state, `${action.mapId}.json.layers.${layerKey}.olStyle`, action.json)
-
-            return {
-                ...state,
-                [action.mapId]: {
-                    ...state[action.mapId],
-                    json: {
-                        ...state[action.mapId].json,
-                        layers: {
-                            ...state[action.mapId].json.layers,
-                            [layerId]: {
-                                ...state[action.mapId].json.layers[layerId],
-                                olStyle: action.json,
-                            }
-                        }
-                    }
-                }
-            }
+            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.olStyle`, action.olStyle)
         default:
             return state
     }

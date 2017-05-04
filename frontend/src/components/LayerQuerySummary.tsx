@@ -1,5 +1,7 @@
 import * as React from "react";
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import IconButton from 'material-ui/IconButton';
+import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 
 import { indigo900, grey100 } from 'material-ui/styles/colors';
 
@@ -11,32 +13,62 @@ const styles = {
   querySummaryTable: {
       marginTop: "10px",
   },
+  // FIXME What is the proper way to do CSS styling in JSX? -> ReactCSS
+  flexboxContainer: {
+    "display": "-ms-flex",
+    "display": "-webkit-flex",
+    "display": "flex",
+    "justifyContent": "center",
+    "alignItems": "center",
+  },
+  flexboxFirstColumn: {
+    "flexGrow": "1",
+    // "marginRight": "20px",
+  },
+  flexboxSecondColumn: {
+    "padding": "8px",
+  },
 }
 
 export interface LayerQuerySummaryProps {
-    
+    stats: object,
+    onClickApplyScale: Function,
 }
 
 export class LayerQuerySummary extends React.Component<LayerQuerySummaryProps, undefined> {
     render() {
-        // const {  } = this.props
+        const { stats, onClickApplyScale } = this.props
 
-        return <Table style={styles.querySummaryTable}>
-            <TableHeader adjustForCheckbox={false} displaySelectAll={false} enableSelectAll={false}>
-                <TableRow>
-                    <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MIN</TableHeaderColumn>
-                    <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MAX</TableHeaderColumn>
-                    <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>STDEV</TableHeaderColumn>
-                </TableRow>
-            </TableHeader>
-            <TableBody displayRowCheckbox={false}>
-                <TableRow>
-                    <TableRowColumn>0</TableRowColumn>
-                    <TableRowColumn>38,356</TableRowColumn>
-                    <TableRowColumn>8,202</TableRowColumn>
-                </TableRow>
-            </TableBody>
-        </Table>
+        stats.min = parseFloat(stats.min.toFixed(3))
+        stats.max = parseFloat(stats.max.toFixed(3))
+        stats.stddev = parseFloat(stats.stddev.toFixed(3))
+
+        return <div style={styles.flexboxContainer}>
+            <div style={styles.flexboxFirstColumn}>
+                <Table style={styles.querySummaryTable}>
+                    <TableHeader adjustForCheckbox={false} displaySelectAll={false} enableSelectAll={false}>
+                        <TableRow>
+                            <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MIN</TableHeaderColumn>
+                            <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MAX</TableHeaderColumn>
+                            <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>STDEV</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody displayRowCheckbox={false}>
+                        <TableRow>
+                            <TableRowColumn>{stats.min}</TableRowColumn>
+                            <TableRowColumn>{stats.max}</TableRowColumn>
+                            <TableRowColumn>{stats.stddev}</TableRowColumn>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+
+            <div style={styles.flexboxSecondColumn}>
+                <IconButton tooltip="Apply scale settings to layer" tooltipPosition={"bottom-left"} onClick={onClickApplyScale}>
+                    <ContentCopy />
+                </IconButton>
+            </div>
+        </div>
     }
 }
 

@@ -1,30 +1,57 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import LayerQuerySummary from "./LayerQuerySummary";
-// import {  } from '../actions'
+import { fetchLayerQuerySummary } from '../actions'
 
 export interface LayerQuerySummaryContainerProps {
-    
+    mapId: number,
+    layerHash: string,
+    stats: object,
+    onClickApplyScale: Function,
+    fetchQuerySummary: Function,
 }
 
 export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummaryContainerProps, undefined> {
-    render() {
-        // const {  } = this.props
+    componentDidMount() {
+        const { fetchQuerySummary, mapId, layerHash } = this.props
+        fetchQuerySummary(mapId, layerHash)
+    }
 
-        return <LayerQuerySummary />;
+    render() {
+        const { stats, onClickApplyScale } = this.props
+
+        if(stats === undefined) {
+            return <div></div>
+        }
+
+        return <LayerQuerySummary
+            stats={stats}
+            onClickApplyScale={
+                () => onClickApplyScale(stats)
+            }
+        />;
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    // const {  } = state
+    const { app } = state
 
     return {
-        
+        stats: app.layerForm.layerQuerySummary[ownProps.layerHash]
     }
+}
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    fetchQuerySummary: (mapId: number, layerHash: string) => {
+        dispatch(fetchLayerQuerySummary(mapId, layerHash))
+    },
+  };
 }
 
 const LayerQuerySummaryContainerWrapped = connect(
     mapStateToProps,
+    mapDispatchToProps,
 )(LayerQuerySummaryContainer as any)
 
 export default LayerQuerySummaryContainerWrapped
