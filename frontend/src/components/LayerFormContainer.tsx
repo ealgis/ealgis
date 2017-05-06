@@ -4,7 +4,7 @@ import { formValueSelector, isDirty, submit, change } from 'redux-form';
 import { withRouter } from 'react-router';
 import * as debounce from "lodash/debounce";
 import LayerForm from "./LayerForm";
-import { setLayerFormGeometry, layerUpsert, handleLayerFormChange, toggleModalState } from '../actions'
+import { layerUpsert, handleLayerFormChange, toggleModalState } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,
@@ -26,8 +26,8 @@ export interface LayerFormContainerProps {
     colourinfo: object,
     onSubmit: Function,
     onFieldUpdate: Function,
-    onGeometryChange: Function,
     fillColourScheme: string,
+    layerGeometry: object,
     onDiscardForm: Function,
     onSaveForm: Function,
     onToggleDirtyFormModalState: Function,
@@ -134,22 +134,6 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             // Alternatively, implement layerUpsertJustOneOrMoreFields()
     }
 
-    componentDidMount() {
-        const { layerDefinition, datainfo, onGeometryChange } = this.props
-
-        const nextGeometry = datainfo[layerDefinition["schema"] + "." + layerDefinition["geometry"]]
-        onGeometryChange(nextGeometry)
-    }
-
-    componentWillReceiveProps(nextProps: any) {
-        const { layerDefinition, datainfo, layerFormGeometry, onGeometryChange } = this.props
-
-        const nextGeometry = datainfo[layerDefinition["schema"] + "." + layerDefinition["geometry"]]
-        if(nextGeometry != layerFormGeometry) {
-            onGeometryChange(nextGeometry)
-        }
-    }
-
     shouldComponentUpdate(nextProps: any, nextState: any) {
         const { mapDefinition, layerId, layerDefinition, fillColourScheme, dirtyFormModalOpen } = this.props
 
@@ -162,7 +146,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, onGeometryChange, datainfo, colourinfo, fillColourScheme, onDiscardForm, onSaveForm, dirtyFormModalOpen, isDirty, onClickApplyScale } = this.props
+        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, fillColourScheme, onDiscardForm, onSaveForm, dirtyFormModalOpen, isDirty, onClickApplyScale, layerGeometry } = this.props
 
         // Initiable values either comes from defaultProps (creating a new layer)
         // or from our layerDef (editing an existing layer)
@@ -178,14 +162,10 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             tabId={tabId}
             initialValues={initialValues}
             fillColourScheme={fillColourScheme}
+            layerGeometry={layerGeometry}
             onSubmit={
                 (formValues: Array<undefined>) => 
                     onSubmit(mapDefinition, layerId, LayerFormContainer.deriveLayerFromLayerFormValues(formValues))
-            }
-            onGeometryChange={
-                (event: any, newValue: object, previousValue: object) => {
-                    onGeometryChange(newValue)
-                }
             }
             onFieldBlur={
                 (fieldName: string, newValue: any) => 
@@ -211,6 +191,8 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 const mapStateToProps = (state: any, ownProps: any) => {
     const { app, maps, datainfo, colourinfo } = state
 
+    const layerFormValues = formValueSelector("layerForm")
+
     return {
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
@@ -218,7 +200,8 @@ const mapStateToProps = (state: any, ownProps: any) => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         datainfo: datainfo,
         colourinfo: colourinfo,
-        fillColourScheme: formValueSelector("layerForm")(state, "fillColourScheme"),
+        fillColourScheme: layerFormValues(state, "fillColourScheme"),
+        layerGeometry: layerFormValues(state, "geometry"),
         dirtyFormModalOpen: app.dialogs["dirtyLayerForm"] || false,
         isDirty: isDirty("layerForm")(state),
     }
@@ -226,9 +209,6 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onGeometryChange: (newValue: object) => {
-        dispatch(setLayerFormGeometry(newValue))
-    },
     onSubmit: (mapDefinition: object, layerId: number, layer: object) => {
         console.log("onSubmit", layer)
         dispatch(layerUpsert(mapDefinition, layerId, layer))

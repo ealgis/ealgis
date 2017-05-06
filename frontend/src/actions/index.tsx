@@ -45,7 +45,6 @@ export const RECEIVE_UPDATE_DATA_DISCOVERY = 'RECEIVE_UPDATE_DATA_DISCOVERY'
 export const RECEIVE_RESET_DATA_DISCOVERY = 'RECEIVE_RESET_DATA_DISCOVERY'
 export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
 export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
-export const RECEIVE_UPDATE_LAYER_FORM_GEOMETRY = 'RECEIVE_UPDATE_LAYER_FORM_GEOMETRY'
 export const RECEIVE_APP_PREVIOUS_PATH = 'RECEIVE_APP_PREVIOUS_PATH'
 export const CHANGE_LAYER_PROPERTY = 'CHANGE_LAYER_PROPERTY'
 export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
@@ -711,13 +710,6 @@ export function receiveTableInfo(json: any) {
     return {
         type: RECEIVE_TABLE_INFO,
         json
-    }
-}
-
-export function setLayerFormGeometry(geometry: object) {
-    return {
-        type: RECEIVE_UPDATE_LAYER_FORM_GEOMETRY,
-        geometry,
     }
 }
 

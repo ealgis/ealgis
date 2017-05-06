@@ -1,11 +1,11 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import DatasetSearch from "./DatasetSearch";
-import { sendSnackbarNotification, setLayerFormGeometry, resetDataDiscovery, fetchColumnsForTable, fetchColumnsByName, fetchColumnsForGeometry, setLayerFormChipValues } from '../actions'
+import { sendSnackbarNotification, resetDataDiscovery, fetchColumnsForTable, fetchColumnsByName, fetchColumnsForGeometry, setLayerFormChipValues } from '../actions'
 
 export interface DatasetSearchContainerProps {
     datainfo: object,
-    layerFormGeometry: object,
+    geometry: object,
     onChipAdd: Function,
     onChipDelete: Function,
     onTableLookup: Function,
@@ -16,20 +16,20 @@ export interface DatasetSearchContainerProps {
 
 export class DatasetSearchContainer extends React.Component<DatasetSearchContainerProps, undefined> {
     render() {
-        const { layerFormGeometry, onChipAdd, onChipDelete, onTableLookup, chipValues, dataDiscovery, onCopyToClipboard } = this.props
+        const { geometry, onChipAdd, onChipDelete, onTableLookup, chipValues, dataDiscovery, onCopyToClipboard } = this.props
 
         return <DatasetSearch
             onChipAdd={
                 (chip: string) => 
-                    onChipAdd(chip, chipValues, layerFormGeometry)
+                    onChipAdd(chip, chipValues, geometry)
             }
             onChipDelete={
                 (chip: string) => 
-                    onChipDelete(chip, chipValues, layerFormGeometry)
+                    onChipDelete(chip, chipValues, geometry)
             }
             onTableLookup={
                 (table: object) => 
-                    onTableLookup(table, layerFormGeometry)
+                    onTableLookup(table, geometry)
             }
             chipValues={chipValues}
             dataDiscovery={dataDiscovery}
@@ -39,13 +39,12 @@ export class DatasetSearchContainer extends React.Component<DatasetSearchContain
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app, maps, datainfo, colourinfo, tableinfo } = state
+    const { app, maps, datainfo, colourinfo, tableinfo, form } = state
 
     return {
         datainfo: datainfo,
         dataDiscovery: app.dataDiscovery,
         chipValues: app.layerForm.chipValues,
-        layerFormGeometry: app.layerForm.geometry,
     }
 }
 

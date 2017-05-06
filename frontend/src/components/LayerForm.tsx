@@ -74,10 +74,10 @@ export interface LayerFormProps {
     onSubmit: Function,
     onFieldBlur: Function,
     onFieldChange: Function,
-    onGeometryChange: Function,
     datainfo: object,
     colourinfo: object,
     fillColourScheme: string,
+    layerGeometry: object,
     onDiscardForm: Function,
     onSaveForm: Function,
     dirtyFormModalOpen: boolean,
@@ -105,7 +105,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, onGeometryChange, colourinfo, fillColourScheme, onDiscardForm, onSaveForm, dirtyFormModalOpen, onClickApplyScale } = this.props
+        const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, colourinfo, fillColourScheme, onDiscardForm, onSaveForm, dirtyFormModalOpen, onClickApplyScale, layerGeometry } = this.props
 
         const layerIdOrNew = (parseInt(layerId) > 0) ? layerId : "new"
         
@@ -220,7 +220,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue)}
                             />
 
-                            <DatasetSearch />
+                            <DatasetSearch geometry={layerGeometry} />
                         </div>
                     </Tab>
                     {/* END DATA TAB */}
