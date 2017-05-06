@@ -120,18 +120,6 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             // return 'Your layer is not saved! Are you sure you want to leave?'
             return false
         }
-        
-        // @TODO Handle actions from the "layer not saved" modal
-        // @TOOD Navgiate user back to the route
-        // @TOOD ~
-        // @TODO Implement Undo
-        // @TODO Nuke custom layer geom code
-        // @TODO Applying scale settings doesn't get upserted
-        // @TODO OL doesn't reapply styles when we change Layer.VectorTile opacity
-        // @TODO Update layer title for top-level components
-        // @TODO Document LayerFormContainer->shouldComponentUpdate()
-        // @TODO Should we just have layerFormValues on LayerFormContainer? There's a bunch of places that need to shove the whole set of form values at layerUpsert()
-            // Alternatively, implement layerUpsertJustOneOrMoreFields()
     }
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
@@ -233,7 +221,10 @@ const mapDispatchToProps = (dispatch: any) => {
     onClickApplyScale: (mapId: number, layerId: number, stats: object) => {
         dispatch(change("layerForm", "scaleMin", stats.min))
         dispatch(change("layerForm", "scaleMax", stats.max))
-        dispatch(submit("layerForm"))
+        
+        // Race condition?
+        // https://github.com/erikras/redux-form/issues/1366
+        setTimeout(() => dispatch(submit("layerForm")))
     }
   };
 }
