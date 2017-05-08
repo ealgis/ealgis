@@ -17,3 +17,17 @@ def make_logger(name):
     handler.setFormatter(fmt)
     logger.addHandler(handler)
     return logger
+
+
+def deepupdate(original, update):
+    """
+    Recursively update a dict.
+    Subdict's won't be overwritten but also updated.
+    http://stackoverflow.com/a/8310229/7368493
+    """
+    for key, value in original.items():
+        if key not in update:
+            update[key] = value
+        elif isinstance(value, dict):
+            deepupdate(value, update[key])
+    return update

@@ -61,17 +61,28 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         if "layers" not in map["json"]:
             map["json"]["layers"] = []
 
-        for l in map["json"]["layers"]:
-            fill = l['fill']
-            do_fill = (fill['expression'] != '')
+        for layerId, layer in enumerate(map["json"]["layers"]):
+            # Internal fields for handling draft vs published layers.
+            # Only expose the published 'master' layer until the draft layer is actually promoted to published.
+            if "master" in layer:
+                layer = map["json"]["layers"][layerId] = layer["master"]
 
-            # Line styles are simple and can already be read from the existing JSON object
-            if do_fill:
-                scale_min = float(fill['scale_min'])
-                scale_max = float(fill['scale_max'])
-                opacity = float(fill['opacity'])
-                l["olStyleDef"] = make_colour_scale(l, 'q', float(scale_min), float(scale_max), opacity)
+            olStyleDef = self.createOLStyleDef(layer)
+            if olStyleDef is not False:
+                layer["olStyleDef"] = olStyleDef
         return map
+    
+    def createOLStyleDef(self, layer):
+        fill = layer['fill']
+        do_fill = (fill['expression'] != '')
+
+        # Line styles are simple and can already be read from the existing JSON object
+        if do_fill:
+            scale_min = float(fill['scale_min'])
+            scale_max = float(fill['scale_max'])
+            opacity = float(fill['opacity'])
+            return make_colour_scale(layer, 'q', float(scale_min), float(scale_max), opacity)
+        return False
 
 
 class JSONMetadataField(serializers.Field):
