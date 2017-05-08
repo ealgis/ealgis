@@ -96,7 +96,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
         this.geometryTables = []
         for(let geomtable_name in datainfo) {
-            this.geometryTables.push(<MenuItem key={geomtable_name} value={datainfo[geomtable_name]} primaryText={datainfo[geomtable_name].description} />)
+            this.geometryTables.push(<MenuItem key={geomtable_name} value={JSON.stringify(datainfo[geomtable_name])} primaryText={datainfo[geomtable_name].description} />)
         }
 
         this.colourSchemes = []

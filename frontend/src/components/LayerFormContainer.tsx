@@ -52,11 +52,12 @@ const getLayerFormValuesFromLayer = (layer: object, datainfo: object) => {
         "borderColour": layer["line"]["colour"],
         "name": layer["name"],
         "description": layer["description"],
-        "geometry": datainfo[layer["schema"] + "." + layer["geometry"]],
+        "geometry": JSON.stringify(datainfo[layer["schema"] + "." + layer["geometry"]]),
     }
 }
 
 const getLayerFromLayerFormValues = (formValues: object) => {
+    const geometry = JSON.parse(formValues["geometry"])
     return {
         "fill": {
             "opacity": formValues["fillOpacity"],
@@ -73,10 +74,10 @@ const getLayerFromLayerFormValues = (formValues: object) => {
             "colour": formValues["borderColour"],
         },
         "name": formValues["name"],
-        "type": formValues["geometry"]["geometry_type"],
-        "schema": formValues["geometry"]["schema_name"],
-        "visible": true, // New layers are always visible
-        "geometry": formValues["geometry"]["name"],
+        "type": geometry["geometry_type"],
+        "schema": geometry["schema_name"],
+        "visible": true,
+        "geometry": geometry["name"],
         "description": formValues["description"],
     }
 }
@@ -124,9 +125,10 @@ const mapLayerFormValuesToLayer = (layer: object, fieldName: any, fieldValue: an
             break;
         
         case "geometry":
-            layer["type"] = fieldValue["geometry_type"]
-            layer["schema"] = fieldValue["schema_name"]
-            layer["geometry"] = fieldValue["name"]
+            const geometry = JSON.parse(fieldValue)
+            layer["type"] = geometry["geometry_type"]
+            layer["schema"] = geometry["schema_name"]
+            layer["geometry"] = geometry["name"]
             break;
         
         default:
