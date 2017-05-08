@@ -115,6 +115,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if "master" in layer:
             layer = layer["master"]
 
+        # Make a new master object (first time editing this layer) so we have a copy to restore
+        # if we don't publish the edits to this layer.
         layer["master"] = copy.deepcopy(layer)
         layer["draft"] = True
         json["layers"][layerId] = layer
@@ -137,16 +139,12 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
+        
+        if "master" not in json["layers"][layerId]:
+            raise ValidationError(detail="Layer edit session not initialised.")
 
         json = map.json
         layer = json["layers"][layerId]
-
-        # Make a new master object (first time editing this layer) so we have a copy to restore
-        # if we don't publish the edits to this layer.
-        if "master" not in layer:
-            layer["master"] = copy.deepcopy(layer)
-            layer["draft"] = True
-
         json["layers"][layerId] = deepupdate(layer, request.data["layer"])
 
         serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
@@ -164,49 +162,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return Response(newLayer)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # @detail_route(methods=['put'])
-    # def editDraftLayer(self, request, pk=None, format=None):
-    #     queryset = self.get_queryset()
-    #     map = queryset.filter(id=pk).first()
-    #     layerId = int(request.data["layerId"])
-
-    #     if not (layerId >= 0 or type(request.data["layer"]) is dict):
-    #         raise ValidationError(detail="LayerId and/or Layer object not found.")
-
-    #     if (layerId + 1) > len(map.json["layers"]):
-    #         raise ValidationError(detail="Layer not found.")
-
-    #     json = map.json
-    #     layer = request.data["layer"]
-    #     layer["draft"] = True
-    #     layer["_postgis_query"] = json["layers"][layerId]["_postgis_query"] # Prevent the model from recompiling the query *just* because it's not there
-
-    #     # Either make a new master object (first time editing this layer)
-    #     # or copy the existing master object from a previous edit
-    #     if "master" not in json["layers"][layerId]:
-    #         print("Make new master")
-    #         layer["master"] = json["layers"][layerId]
-    #     else:
-    #         print("Copy existing master")
-    #         layer["master"] = json["layers"][layerId]["master"]
-    #     json["layers"][layerId] = layer
-
-    #     serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
-    #     if serializer.is_valid():
-    #         serializer.save()
-
-    #         newLayer = serializer.validated_data["json"]["layers"][layerId]
-    #         del newLayer["master"]
-    #         del newLayer["draft"]
-
-    #         olStyleDef = serializer.createOLStyleDef(newLayer)
-    #         if olStyleDef is not False:
-    #             newLayer["olStyleDef"] = olStyleDef
-
-    #         return Response(newLayer)
-    #     else:
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @detail_route(methods=['put'])
     def publishLayer(self, request, pk=None, format=None):
