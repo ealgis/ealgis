@@ -32,6 +32,7 @@ export const RECEIVE_DATA_INFO = 'RECEIVE_DATA_INFO'
 export const REQUEST_COLOUR_INFO = 'REQUEST_COLOUR_INFO'
 export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
 export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
+export const RECEIVE_UPDATED_LAYER = 'RECEIVE_UPDATED_LAYER'
 export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
@@ -164,6 +165,15 @@ export function receieveUpdatedMap(map: object) {
     return {
         type: RECEIVE_UPDATED_MAP,
         map
+    }
+}
+
+export function receieveUpdatedLayer(mapId: number, layerId: number, layer: object) {
+    return {
+        type: RECEIVE_UPDATED_LAYER,
+        mapId,
+        layerId,
+        layer,
     }
 }
 
@@ -317,6 +327,59 @@ export function updateMap(map: object) {
     }
 }
 
+export function addLayer(mapId: number) {
+    return (dispatch: any, getState: Function) => {
+        // Default to 2011 SA4s or whatever the first geometry is
+        // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
+        const datainfo = getState().datainfo
+        let defaultGeometry: object = undefined
+
+        if(datainfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
+            defaultGeometry = datainfo["aus_census_2011.sa4_2011_aust_pow"]
+        } else {
+            defaultGeometry = datainfo(Object.keys(datainfo)[0])
+        }
+
+        const payload = {
+            "layer": {
+                "fill": {
+                    "opacity": 0.5,
+                    "scale_max": 100,
+                    "scale_min": 0,
+                    "expression": "",
+                    "scale_flip": false,
+                    "scale_name": "Huey",
+                    "conditional": "",
+                    "scale_nlevels": 6,
+                },
+                "line": {
+                    "width": 1,
+                    "colour": {
+                        r: '51',
+                        g: '105',
+                        b: '30',
+                        a: '1',
+                    },
+                },
+                "name": "Unnamed Layer",
+                "type": defaultGeometry["geometry_type"],
+                "schema": defaultGeometry["schema_name"],
+                "visible": true,
+                "geometry": defaultGeometry["name"],
+                "description": "",
+            }
+        }
+
+        return ealapi.put(`/api/0.1/maps/${mapId}/addLayer/`, payload, dispatch)
+            .then(({ response, json }: any) => {
+                if(response.status === 201) {
+                    dispatch(receieveUpdatedLayer(mapId, json.layerId, json.layer))
+                    browserHistory.push(`/map/${mapId}/layer/${json.layerId}/`)
+                }
+            })
+    }
+}
+
 export function layerUpsert(map: object, layerId: number, layer: object) {
     return (dispatch: any) => {
         // Upsert
@@ -357,6 +420,86 @@ export function layerUpsert(map: object, layerId: number, layer: object) {
                     throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
                 }
             });
+    }
+}
+
+export function editDraftLayer(mapId: number, layerId: string, layerPartial: object) {
+    return (dispatch: any) => {
+        const payload = {
+            "layerId": layerId,
+            "layer": layerPartial,
+        }
+
+        return ealapi.put(`/api/0.1/maps/${mapId}/editDraftLayer/`, payload, dispatch)
+            .then(({ response, json }: any) => {
+                if(response.status === 200) {
+                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                    return json
+                    
+                } else if(response.status === 400) {
+                    // We expect that the server will return the shape:
+                    // {
+                    //   username: 'User does not exist',
+                    //   password: 'Wrong password',
+                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+                    // }
+                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
+
+                } else {
+                    // We're not sure what happened, but handle it:
+                    // our Error will get passed straight to `.catch()`
+                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+                }
+            });
+    }
+}
+
+export function publishLayer(mapId: number, layerId: number, layer: object) {
+    return (dispatch: any, getState: Function) => {
+        // FIXME
+        const isNewLayer = layerId === "new" ? true : false
+
+        const payload = {
+            "layerId": layerId,
+            "layer": JSON.parse(JSON.stringify(layer)),
+        }
+
+        return ealapi.put(`/api/0.1/maps/${mapId}/publishLayer/`, payload, dispatch)
+            .then(({ response, json }: any) => {
+                if(response.status === 200) {
+                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                    const verb = isNewLayer ? "created" : "saved"
+                    dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
+                    browserHistory.push(`/map/${mapId}`)
+                    return json
+                }
+            });
+    }
+}
+
+export function restoreMasterLayer(mapId: number, layerId: string) {
+    return (dispatch: any) => {
+        const payload = {
+            "layerId": layerId,
+        }
+
+        return ealapi.put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch)
+            .then(({ response, json }: any) => {
+                if(response.status === 200) {
+                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                    // dispatch(sendSnackbarNotification(`Layer restored successfully`))
+                    // browserHistory.push(`/map/${mapId}`)
+                    return json
+                }
+            });
+    }
+}
+
+export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: string) {
+    return (dispatch: any) => {
+        return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
+            browserHistory.push(`/map/${mapId}`)
+        })
     }
 }
 
@@ -836,91 +979,37 @@ export function receiveChangeLayerProperty(mapId: number, layerId: number, layer
     }
 }
 
-export function handleLayerFormChange(fieldName: string, newValue: any, mapId: number, layerId: number) {
+export function initDraftLayer(mapId: number, layerId: number) {
+    return (dispatch: any) => {
+        const payload = {"layerId": layerId}
+        return ealapi.put(`/api/0.1/maps/${mapId}/initDraftLayer/`, payload, dispatch)
+    }
+}
+
+export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
     return (dispatch: any, getState: Function) => {
-        // console.log("handleLayerFormChange()", event.target.name, `${newValue} vs ${previousValue}`)
-        console.log("newValue", newValue)
+        // console.log("layerPartial", layerPartial)
 
-        // @TODO Can we avoid using getFormValues() here by having it on LayerFormContainer's props?
-        // @TODO Can we avoid calling LayerFormContainer?
-        // @TODO Can we avoid specifying form field names?
-
-        const layerFormValues = getFormValues('layerForm')(getState())
-        console.log("layerFormValues", layerFormValues)
-        const newLayer = LayerFormContainer.deriveLayerFromLayerFormValues(layerFormValues)
-        console.log("newLayer", newLayer)
-
-        // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer))
-
-        // @TODO It saves onBlur even if nothing has changed
-        // @TODO Don't upsert unless we have to
         // @TODO Quiet (Loader, Snackbar) upserting, stats fetching?
 
-        return dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer)).then((newMap: object) => {
-            switch(fieldName) {
-                case "geometry":
-                case "scaleMin":
-                case "scaleMin":
-                case "valueExpression":
-                case "filterExpression":
-                    dispatch(fetchLayerQuerySummary(mapId, newMap.json.layers[layerId].hash))
-                    break
-            }
+        return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: object) => {
+            // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
+            // const changedFieldNames = Object.keys(changedFormValues)
+            // const haveCoreFieldsChanged: boolean = changedFieldNames.some((value: any, index: string, array: Array<any>) => {
+            //         return ["geometry", "scaleMin", "scaleMax", "valueExpression", "filterExpression"].indexOf(value) >= 0
+            // })
+
+            // if(haveCoreFieldsChanged) {
+            //     dispatch(fetchLayerQuerySummary(mapId, layer.hash))
+            // }
         })
-        
-        // @TODO Internal field names shouldn't be used here...
-        switch(fieldName) {
-            // case "borderSize":
-            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "line.width", newValue)); break;
-
-            // case "borderColour":
-            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "line.colour", newValue)); break;
-
-            // case "fillOpacity":
-            //     dispatch(receiveChangeLayerProperty(mapId, layerId, "fill.opacity", newValue)); break;
-            
-            case "fillColourScheme":
-            case "fillColourSchemeLevels":
-            case "fillColourScaleFlip":
-                // Save the layer immediately in order to recompile the layer styles
-                // dispatch(fetchCompiledLayerStyle(mapId, layerId, newLayer)); break;
-                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer)); break;
-            
-            case "scaleMin":
-            case "scaleMin":
-            case "valueExpression":
-            case "filterExpression":
-                // Save the layer immediately in order to recompile the layer styles
-                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer));
-
-                // Fetch new layer query stats
-                // @TODO
-                // dispatch(fetchLayerQuerySummary(mapId, newLayer.hash))
-                break;
-            
-            case "name":
-            case "description":
-                // Do nothing. Wait until the user forces a layer save
-                break
-
-            case "geometry":
-                // Save the layer immediately in order to recompile the layer styles
-                // dispatch(layerUpsert(getState().maps[mapId], layerId, newLayer));
-
-                // Set geometry for the chip input?
-                // @TOOD
-                break
-            
-            default:
-                console.log(`Missing case for ${fieldName}: ${newValue}`)
-        }
     }
 }
 
 export function fetchLayerQuerySummary(mapId: number, layerHash: string) {
     return (dispatch: any) => {
-        const params = {"layer": layerHash}
-        return ealapi.get(`/api/0.1/maps/${mapId}/query_summary/`, dispatch, params)
+        const payload = {"layer": layerHash}
+        return ealapi.get(`/api/0.1/maps/${mapId}/query_summary/`, dispatch, payload)
             .then(({ response, json }: any) => {
                 dispatch(receiveLayerQuerySummary(json, layerHash))
             });
