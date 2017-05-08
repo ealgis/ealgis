@@ -29,6 +29,7 @@ import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
 export interface MapUINavProps {
     defn: any
+    onAddLayer: Function,
     onDuplicateMap: Function,
     onSetOrigin: Function,
     onResetOrigin: Function,
@@ -40,7 +41,7 @@ export interface MapUINavProps {
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { defn, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -58,7 +59,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
         return <div>
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
-                    <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/layer`} />}><MapsAddLocation /></IconButton>
+                    <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
                     <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>

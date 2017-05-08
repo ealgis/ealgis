@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import MapUINav from "./MapUINav";
-import { duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector } from '../actions';
+import { addLayer, duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector } from '../actions';
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -13,6 +13,7 @@ export interface MapUINavContainerProps {
     mapPosition: object,
     onSetOrigin: Function,
     onResetOrigin: Function,
+    onAddLayer: Function,
     onDuplicateMap: Function,
     onDeleteMap: Function,
     onToggleDeleteModalState: Function,
@@ -35,11 +36,12 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { mapDefinition, mapPosition, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { mapDefinition, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
         if(mapDefinition !== undefined) {
             return <MapUINav
                         defn={mapDefinition}
                         onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
+                        onAddLayer={() => onAddLayer(mapDefinition.id)}
                         onSetOrigin={() => onSetOrigin(mapDefinition, mapPosition)}
                         onResetOrigin={() => onResetOrigin(mapDefinition.json.map_defaults)}
                         onDeleteMap={() => onDeleteMap(mapDefinition.id)}
@@ -65,6 +67,9 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
+    onAddLayer: (mapId: number) => {
+        dispatch(addLayer(mapId))
+    },
     onDuplicateMap: (mapId: number) => {
         dispatch(duplicateMap(mapId))
     },
