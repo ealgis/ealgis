@@ -34,8 +34,8 @@ const styles = {
   tabBody: {
       margin: "10px",
   },
-  hiddenSubmitButton: {
-      "display": "none",
+  hiddenSubmitButton: { 
+      "display": "none", 
   },
   // FIXME What is the proper way to do CSS styling in JSX? -> ReactCSS
   flexboxContainer: {
@@ -66,23 +66,25 @@ const styles = {
 }
 
 export interface LayerFormProps {
+    tabId: string,
     mapId: number,
     layerId: string,
     layerHash: string,
-    tabId: string,
     initialValues: object,
+    layerFillColourScheme: string,
+    layerGeometry: object,
     onSubmit: Function,
     onFieldBlur: Function,
     onFieldChange: Function,
-    datainfo: object,
-    colourinfo: object,
-    fillColourScheme: string,
-    layerGeometry: object,
-    onDiscardForm: Function,
+    onFitScaleToData: Function,
     onSaveForm: Function,
+    onResetForm: Function,
+    onModalSaveForm: Function,
+    onModalDiscardForm: Function,
     dirtyFormModalOpen: boolean,
     isDirty: boolean,
-    onClickApplyScale: Function,
+    datainfo: object,
+    colourinfo: object,
 }
 
 export class LayerForm extends React.Component<LayerFormProps, undefined> {
@@ -105,12 +107,17 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, colourinfo, fillColourScheme, onDiscardForm, onSaveForm, dirtyFormModalOpen, onClickApplyScale, layerGeometry } = this.props
+        const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry } = this.props
 
         const layerIdOrNew = (parseInt(layerId) > 0) ? layerId : "new"
         
         // Make sure that the Colour Scheme Level resets when we change our colour scheme
-        const colourSchemeLevels = (colourinfo[fillColourScheme]) ? colourinfo[fillColourScheme] : []
+        const colourSchemeLevels = (colourinfo[layerFillColourScheme]) ? colourinfo[layerFillColourScheme] : []
+        // console.log("layerFillColourScheme", layerFillColourScheme)
+        // console.log("colourSchemeLevels", colourSchemeLevels)
+
+        // console.log("initialValues", initialValues)
+        // console.log("initial geom", initialValues["geometry"])
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
 
@@ -118,14 +125,16 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <RaisedButton 
-                        label={(layerIdOrNew === "new") ? "Create Layer" : "Save Layer"}
+                        label={(layerIdOrNew === "new") ? "Create" : "Save"}
                         disabled={submitting}
                         primary={true}
-                        onClick={handleSubmit(onSubmit)}
+                        onClick={onSaveForm}
                     />
                     <RaisedButton 
                         label={"Undo"}
+                        disabled={submitting}
                         primary={true}
+                        onClick={onResetForm}
                     />
                 </ToolbarGroup>
 
@@ -154,7 +163,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 validate={[ required ]} 
                                 fullWidth={true}
                                 autoComplete="off"
-                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue)}
+                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                             />
 
                             <Field 
@@ -168,7 +177,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 validate={[ required ]}
                                 fullWidth={true}
                                 autoComplete="off"
-                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue)}
+                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                             />
                             
                             <Field
@@ -204,7 +213,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 floatingLabelFixed={true}
                                 fullWidth={true}
                                 autoComplete="off"
-                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue)}
+                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                             />
 
                             <Field 
@@ -217,7 +226,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 floatingLabelFixed={true}
                                 fullWidth={true}
                                 autoComplete="off"
-                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue)}
+                                onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                             />
 
                             <DatasetSearch geometry={layerGeometry} />
@@ -360,13 +369,13 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 </div>
                             </div>
 
-                            <LayerQuerySummary mapId={mapId} layerHash={layerHash} onClickApplyScale={onClickApplyScale} />
+                            <LayerQuerySummary mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
                         </div>
                     </Tab>
                     {/* END VISUALISE TAB */}
                 </Tabs>
 
-                <button type="submit" style={styles.hiddenSubmitButton} />
+                <button type="submit" style={styles.hiddenSubmitButton} /> 
             </form>
 
             <Dialog
@@ -375,12 +384,12 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <FlatButton
                         label="Discard Changes"
                         secondary={true}
-                        onTouchTap={onDiscardForm}
+                        onTouchTap={onModalDiscardForm}
                     />,
                     <FlatButton
                         label="Save Changes"
                         primary={true}
-                        onTouchTap={onSaveForm}
+                        onTouchTap={onModalSaveForm}
                     />,
                 ]}
                 modal={true}
