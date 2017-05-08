@@ -139,12 +139,13 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
-        
-        if "master" not in json["layers"][layerId]:
+
+        json = copy.deepcopy(map.json)
+        layer = json["layers"][layerId]
+
+        if "master" not in layer:
             raise ValidationError(detail="Layer edit session not initialised.")
 
-        json = map.json
-        layer = json["layers"][layerId]
         json["layers"][layerId] = deepupdate(layer, request.data["layer"])
 
         serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
