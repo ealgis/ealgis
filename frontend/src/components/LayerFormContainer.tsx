@@ -19,7 +19,7 @@ export interface LayerDefinitionProps {
 export interface LayerFormContainerProps {
     mapDefinition: object,
     layerId: number,
-    tabId: string,
+    tabName: string,
     layerDefinition: LayerDefinitionProps,
     datainfo: object,
     colourinfo: object,
@@ -187,8 +187,6 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
         const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, dirtyFormModalOpen } = this.props
-        console.log("shouldComponentUpdate?")
-
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
@@ -212,12 +210,12 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry } = this.props
+        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry } = this.props
 
         const initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
 
         return <LayerForm 
-            tabId={tabId}
+            tabName={tabName}
             mapId={mapDefinition.id} 
             layerId={layerId}
             layerHash={layerDefinition.hash}
@@ -266,7 +264,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     const layerFormValues = formValueSelector("layerForm")
 
     return {
-        tabId: ownProps.params.tabId,
+        tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],

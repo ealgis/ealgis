@@ -66,7 +66,7 @@ const styles = {
 }
 
 export interface LayerFormProps {
-    tabId: string,
+    tabName: string,
     mapId: number,
     layerId: number,
     layerHash: string,
@@ -107,7 +107,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry } = this.props
+        const { mapId, layerId, layerHash, tabName, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry } = this.props
         
         // Make sure that the Colour Scheme Level resets when we change our colour scheme
         const colourSchemeLevels = (colourinfo[layerFillColourScheme]) ? colourinfo[layerFillColourScheme] : []
@@ -118,6 +118,12 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
         // console.log("initial geom", initialValues["geometry"])
 
         // FIXME See OneTab for a bunch of saved links about how to express dependencies between fields in redux-form
+
+        let tabId = 0
+        switch(tabName) {
+            case "data": tabId = 1; break;
+            case "visualise": tabId = 2; break;
+        }
 
         return <div>
             <Toolbar>
@@ -143,7 +149,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Tabs
-                    initialSelectedIndex={(tabId === undefined) ? 0 : parseInt(tabId)}
+                    initialSelectedIndex={tabId}
                 >
                     {/* START DESCRIBE TAB */}
                     <Tab
