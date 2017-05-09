@@ -4,7 +4,7 @@ import { formValueSelector, getFormValues, isDirty, initialize, submit, change }
 import { withRouter } from 'react-router';
 import * as debounce from "lodash/debounce";
 import LayerForm from "./LayerForm";
-import { layerUpsert, initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState } from '../actions'
+import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,

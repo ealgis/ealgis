@@ -155,27 +155,6 @@ function maps(state: any = {}, action: any) {
                 lon: action.position.center.lon,
                 zoom: action.position.zoom,
             })
-        // case RECEIVE_LAYER_UPSERT:
-        //     console.log("RECEIVE_LAYER_UPSERT")
-        //     console.log(state)
-        //     console.log(action)
-
-            
-        //     if(action.layerId === undefined) {
-        //         console.log("Adding new layer")
-        //         let list = state[action.mapId]["json"]["layers"]
-        //         console.log(list)
-        //         if(list.length >= 1) {
-        //             console.log("Existing layers list")
-        //             return dotProp.set(state, '${action.mapId}.json.layers', list => [...list, action.layer])
-        //         } else {
-        //             console.log("New layers list")
-        //             return dotProp.set(state, `${action.mapId}.json.layers`, [action.layer])
-        //         }
-        //     } else {
-        //         console.log("Updating existing layer")
-        //         return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
-        //     }
         case COMPILED_LAYER_STYLE:
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.olStyle`, action.olStyle)
         default:

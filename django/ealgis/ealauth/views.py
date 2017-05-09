@@ -176,9 +176,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
 
-        if "master" not in map.json["layers"][layerId] or "draft" not in map.json["layers"][layerId]:
-            raise ValidationError(detail="Layer has not been edited - nothing to publish.")
-
         json = map.json
         json["layers"][layerId] = request.data["layer"]
 

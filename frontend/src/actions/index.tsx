@@ -33,7 +33,6 @@ export const REQUEST_COLOUR_INFO = 'REQUEST_COLOUR_INFO'
 export const RECEIVE_COLOUR_INFO = 'RECEIVE_COLOUR_INFO'
 export const RECEIVE_UPDATED_MAP = 'RECEIVE_UPDATED_MAP'
 export const RECEIVE_UPDATED_LAYER = 'RECEIVE_UPDATED_LAYER'
-export const RECEIVE_LAYER_UPSERT = 'RECEIVE_LAYER_UPSERT'
 export const RECEIVE_DELETE_MAP_LAYER = 'RECEIVE_DELETE_MAP_LAYER'
 export const RECEIVE_CLONE_MAP_LAYER = 'RECEIVE_CLONE_MAP_LAYER'
 export const RECEIVE_TOGGLE_MODAL_STATE = 'RECEIVE_TOGGLE_MODAL_STATE'
@@ -96,7 +95,10 @@ export function receiveChangeLayerVisibility(mapId: number, layerId: number) {
 export function changeLayerVisibility(map: object, layerId: number) {
     return (dispatch: any, getState: Function) => {
         dispatch(receiveChangeLayerVisibility(map["id"], layerId))
-        dispatch(updateMap(getState().maps[map["id"]]))
+
+        // FIXME Client-side or make the API accept a layer object to merge for /publishLayer
+        const layer = getState().maps[map["id"]].json.layers[layerId]
+        dispatch(updateLayer(map["id"], layerId, layer))
     }
 }
 
@@ -150,15 +152,6 @@ export function receiveColourInfo(json: any) {
 export function requestColourInfo() {
     return {
         type: REQUEST_COLOUR_INFO
-    }
-}
-
-export function receiveLayerUpsert(mapId: number, layerId: number, layer: object) {
-    return {
-        type: RECEIVE_LAYER_UPSERT,
-        mapId,
-        layerId,
-        layer
     }
 }
 
@@ -381,46 +374,14 @@ export function addLayer(mapId: number) {
     }
 }
 
-export function layerUpsert(map: object, layerId: number, layer: object) {
-    return (dispatch: any) => {
-        // Upsert
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
-        const isNewLayer = layerId === "new" ? true : false
-
-        if(isNewLayer) {
-            mapCopy["json"]["layers"].push(layer)
-        } else {
-            mapCopy["json"]["layers"][layerId] = layer
+export function updateLayer(mapId: number, layerId: number, layer: object) {
+    return (dispatch: any, getState: Function) => {
+        const payload = {
+            "layerId": layerId,
+            "layer": JSON.parse(JSON.stringify(layer)),
         }
 
-        return ealapi.put('/api/0.1/maps/' + mapCopy["id"] + "/", mapCopy, dispatch)
-            .then(({ response, json }: any) => {
-                if(response.status === 200) {
-                    dispatch(receieveUpdatedMap(json))
-                    const verb = isNewLayer ? "created" : "saved"
-                    dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
-                    
-                    if(isNewLayer) {
-                        browserHistory.push("/map/" + json.id)
-                    }
-
-                    return json
-                    
-                } else if(response.status === 400) {
-                    // We expect that the server will return the shape:
-                    // {
-                    //   username: 'User does not exist',
-                    //   password: 'Wrong password',
-                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                    // }
-                    throw new SubmissionError({...json, _error: json.non_field_errors || null})
-
-                } else {
-                    // We're not sure what happened, but handle it:
-                    // our Error will get passed straight to `.catch()`
-                    throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
-                }
-            });
+        return ealapi.put(`/api/0.1/maps/${mapId}/publishLayer/`, payload, dispatch)
     }
 }
 
@@ -460,21 +421,15 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
         // FIXME
         const isNewLayer = layerId === "new" ? true : false
 
-        const payload = {
-            "layerId": layerId,
-            "layer": JSON.parse(JSON.stringify(layer)),
-        }
-
-        return ealapi.put(`/api/0.1/maps/${mapId}/publishLayer/`, payload, dispatch)
-            .then(({ response, json }: any) => {
-                if(response.status === 200) {
-                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                    const verb = isNewLayer ? "created" : "saved"
-                    dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
-                    browserHistory.push(`/map/${mapId}`)
-                    return json
-                }
-            });
+        return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
+            if(response.status === 200) {
+                dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                const verb = isNewLayer ? "created" : "saved"
+                dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
+                browserHistory.push(`/map/${mapId}`)
+                return json
+            }
+        })
     }
 }
 
