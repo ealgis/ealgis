@@ -166,19 +166,22 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         const { mapDefinition, layerId, startLayerEditSession } = this.props
         
         // Start a new layer edit session whenever the form is initialised.
-        // This happens for each layer
+        // (This happens for each layer we load the form for.)
         startLayerEditSession(mapDefinition.id, layerId)
     }
 
     routerWillLeave(nextLocation: object) {
-        const { isDirty, onToggleDirtyFormModalState } = this.props
-
-        // return false to prevent a transition w/o prompting the user,
-        // or return a string to allow the user to decide:
-        if(isDirty) {
-            onToggleDirtyFormModalState()
-            // return 'Your layer is not saved! Are you sure you want to leave?'
-            return false
+        const { mapDefinition, layerId, isDirty, onToggleDirtyFormModalState } = this.props
+        
+        // Prompt the user to discard/save their changes if we're navigate away from the layer form
+        if(!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/layer/${layerId}`)) {
+            // return false to prevent a transition w/o prompting the user,
+            // or return a string to allow the user to decide:
+            if(isDirty) {
+                onToggleDirtyFormModalState()
+                // return 'Your layer is not saved! Are you sure you want to leave?'
+                return false
+            }
         }
     }
 
