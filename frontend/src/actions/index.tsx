@@ -48,6 +48,7 @@ export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
 export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
 export const RECEIVE_APP_PREVIOUS_PATH = 'RECEIVE_APP_PREVIOUS_PATH'
 export const CHANGE_LAYER_PROPERTY = 'CHANGE_LAYER_PROPERTY'
+export const MERGE_LAYER_PROPERTIES = 'MERGE_LAYER_PROPERTIES'
 export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
 
 const ealapi = new EALGISApiClient()
@@ -979,6 +980,15 @@ export function receiveChangeLayerProperty(mapId: number, layerId: number, layer
     }
 }
 
+export function receiveMergeLayerProperties(mapId: number, layerId: number, layer: object) {
+    return {
+        type: MERGE_LAYER_PROPERTIES,
+        mapId,
+        layerId,
+        layer,
+    }
+}
+
 export function initDraftLayer(mapId: number, layerId: number) {
     return (dispatch: any) => {
         const payload = {"layerId": layerId}
@@ -988,21 +998,37 @@ export function initDraftLayer(mapId: number, layerId: number) {
 
 export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
     return (dispatch: any, getState: Function) => {
-        // console.log("layerPartial", layerPartial)
+        // Determine if we need to recompile the layer server-side.
+        // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
+        let willCompileServerSide: boolean = false
+        if("geometry" in layerPartial) {
+            willCompileServerSide = true
+        }
+        if(!willCompileServerSide && "fill" in layerPartial) {
+            willCompileServerSide = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
+                return ["scale_min", "scale_max", "expression", "conditional", "scale_flip", "scale_name", "scale_nlevels"].indexOf(value) >= 0
+            })
+        }
 
-        // @TODO Quiet (Loader, Snackbar) upserting, stats fetching?
+        // Where possible, simply merge our partial layer object into the Redux store.
+        if(!willCompileServerSide) {
+            return dispatch(receiveMergeLayerProperties(mapId, layerId, layerPartial))
 
-        return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: object) => {
-            // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
-            // const changedFieldNames = Object.keys(changedFormValues)
-            // const haveCoreFieldsChanged: boolean = changedFieldNames.some((value: any, index: string, array: Array<any>) => {
-            //         return ["geometry", "scaleMin", "scaleMax", "valueExpression", "filterExpression"].indexOf(value) >= 0
-            // })
+        } else {
+            return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: object) => {
+                // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
+                let haveCoreFieldsChanged: boolean = false
+                if("fill" in layerPartial) {
+                    const haveCoreFieldsChanged: boolean = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
+                            return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
+                    })
+                }
 
-            // if(haveCoreFieldsChanged) {
-            //     dispatch(fetchLayerQuerySummary(mapId, layer.hash))
-            // }
-        })
+                if(haveCoreFieldsChanged || "geometry" in layerPartial) {
+                    dispatch(fetchLayerQuerySummary(mapId, layer.hash))
+                }
+            })
+        }
     }
 }
 
