@@ -385,7 +385,7 @@ export function updateLayer(mapId: number, layerId: number, layer: object) {
     }
 }
 
-export function editDraftLayer(mapId: number, layerId: string, layerPartial: object) {
+export function editDraftLayer(mapId: number, layerId: number, layerPartial: object) {
     return (dispatch: any) => {
         const payload = {
             "layerId": layerId,
@@ -433,7 +433,7 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
     }
 }
 
-export function restoreMasterLayer(mapId: number, layerId: string) {
+export function restoreMasterLayer(mapId: number, layerId: number) {
     return (dispatch: any) => {
         const payload = {
             "layerId": layerId,
@@ -451,7 +451,7 @@ export function restoreMasterLayer(mapId: number, layerId: string) {
     }
 }
 
-export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: string) {
+export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number) {
     return (dispatch: any) => {
         return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
             browserHistory.push(`/map/${mapId}`)

@@ -18,7 +18,7 @@ export interface LayerDefinitionProps {
 
 export interface LayerFormContainerProps {
     mapDefinition: object,
-    layerId: string,
+    layerId: number,
     tabId: string,
     layerDefinition: LayerDefinitionProps,
     datainfo: object,
@@ -147,35 +147,27 @@ const getLayerFromLayerFormValuesPartial = (formValues: object) => {
 }
 
 export class LayerFormContainer extends React.Component<LayerFormContainerProps, undefined> {
-    public static defaultProps: Partial<LayerFormContainerProps> = {
-        layerDefinition: {
-            "borderSize": 1,
-            "fillColourSchemeLevels": 6,
-            "fillOpacity": 0.5,
-            "scaleMin": 0,
-            "scaleMax": 100,
-            "fillColourScheme": "Huey",
-            "borderColour": {
-                r: '51',
-                g: '105',
-                b: '30',
-                a: '1',
-            }
-        }
-    }
-
-    componentWillMount() {
-        const { onFieldUpdate } = this.props
+    constructor(props: LayerFormContainerProps) {
+        super(props)
+        const { onFieldUpdate } = props
         
         // http://stackoverflow.com/a/24679479/7368493
         this.onFieldChangeDebounced = debounce(function(fieldName: string, newValue: any, mapId: number, layerId: number) {
             onFieldUpdate(fieldName, newValue, mapId, layerId)
         }, 500);
 
-        this.props.router.setRouteLeaveHook(
-            this.props.route,
+        props.router.setRouteLeaveHook(
+            props.route,
             this.routerWillLeave.bind(this)
         )
+    }
+
+    componentWillMount() {
+        const { mapDefinition, layerId, startLayerEditSession } = this.props
+        
+        // Start a new layer edit session whenever the form is initialised.
+        // This happens for each layer
+        startLayerEditSession(mapDefinition.id, layerId)
     }
 
     routerWillLeave(nextLocation: object) {
@@ -216,38 +208,10 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         return false
     }
 
-    componentWillReceiveProps(nextProps: object) {
-        const { layerDefinition, mapDefinition, layerId, startLayerEditSession } = this.props
-        console.log("## componentWillReceiveProps", layerDefinition)
-
-        // We're initialising the form for the first time
-        // This is also true if we're changing the layer we're editing
-        if(this.initialLayerDefinition === undefined) {
-            console.log("## Set new initialValues because initialising layerDefinition")
-            this.initialLayerDefinition = nextProps.layerDefinition
-            console.log("## startLayerEditSession")
-            startLayerEditSession(mapDefinition.id, layerId)
-            return
-        }
-
-        if(mapDefinition.id !== nextProps.mapDefinition.id || layerId !== nextProps.layerId) {
-            console.log("## Set new initialValues because mapId or layerId changed")
-            this.initialLayerDefinition = nextProps.layerDefinition
-            console.log("## startLayerEditSession")
-            startLayerEditSession(mapDefinition.id, layerId)
-        }
-    }
-
     render() {
         const { layerId, tabId, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry } = this.props
 
-        // Initiable values either comes from defaultProps (creating a new layer)
-        // or from our layerDef (editing an existing layer)
-        let initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
-        if(parseInt(layerId) > 0 && this.initialLayerDefinition !== undefined) {
-            initialValues = getLayerFormValuesFromLayer(this.initialLayerDefinition, datainfo)
-            console.log("Set LayerForm initialValues", initialValues)
-        }
+        const initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
 
         return <LayerForm 
             tabId={tabId}

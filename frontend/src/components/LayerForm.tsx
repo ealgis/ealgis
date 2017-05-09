@@ -68,7 +68,7 @@ const styles = {
 export interface LayerFormProps {
     tabId: string,
     mapId: number,
-    layerId: string,
+    layerId: number,
     layerHash: string,
     initialValues: object,
     layerFillColourScheme: string,
@@ -108,8 +108,6 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
         const { mapId, layerId, layerHash, tabId, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry } = this.props
-
-        const layerIdOrNew = (parseInt(layerId) > 0) ? layerId : "new"
         
         // Make sure that the Colour Scheme Level resets when we change our colour scheme
         const colourSchemeLevels = (colourinfo[layerFillColourScheme]) ? colourinfo[layerFillColourScheme] : []
@@ -125,7 +123,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <RaisedButton 
-                        label={(layerIdOrNew === "new") ? "Create" : "Save"}
+                        label={"Save"}
                         disabled={submitting}
                         primary={true}
                         onClick={onSaveForm}
@@ -151,7 +149,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ContentCreate />}
                         label="DESCRIBE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -200,7 +198,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<EditorInsertChart />}
                         label="DATA"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}/1`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/data`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -238,7 +236,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ImagePalette />}
                         label="VISUALISE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerIdOrNew}/2`}/>}
+                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/visualise`}/>}
                     >
                         <div style={styles.tabBody}>
                             <div style={styles.flexboxContainer}>
