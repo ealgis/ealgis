@@ -186,7 +186,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, dirtyFormModalOpen } = this.props
+        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen } = this.props
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
@@ -195,8 +195,19 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             return true
         }
 
+        // Some sub-components require the form to re-render.
+        // Fill Colour Scheme: Controls the values of Fill Colour Scheme Levels
+        // Geometry: Controls the values for the DatasetSearch component
         if(layerFillColourScheme !== nextProps.layerFillColourScheme || layerGeometry !== nextProps.layerGeometry) {
             console.log("Re-render because layerFillColourScheme/geometry changed")
+            return true
+        }
+
+        // Again, for sub-components. This ensures that when the layerDefinition changes that we also refresh them.
+        // e.g. If we restoreMasterLayer we get a new layerDefinition with new border colours that needs to
+        // flow through to ColourPicker.
+        if(JSON.stringify(layerDefinition) !== JSON.stringify(nextProps.layerDefinition)) {
+            console.log("Re-render because layerDefinition changed", nextProps.layerDefinition)
             return true
         }
 

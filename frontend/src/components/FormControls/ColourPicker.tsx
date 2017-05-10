@@ -3,15 +3,14 @@ import reactCSS from 'reactcss';
 import { SwatchesPicker } from 'react-color';
 
 export interface ColourPickerProps {
+    colour: object,
     input: any,
-    displayColorPicker: boolean,
-    color: object,
 }
 
 class ColourPicker extends React.Component<ColourPickerProps, undefined> {
   state = {
     displayColorPicker: false,
-  };
+  }
 
   handleClick = () => {
     this.setState({ displayColorPicker: !this.state.displayColorPicker })
@@ -21,28 +20,22 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
     this.setState({ displayColorPicker: false })
   };
 
-  handleChange = (color) => {
+  handleChange = (colour: object) => {
     const { input: { onChange } } = this.props
-    onChange(color.rgb)
-    this.setState({ color: color.rgb })
+    onChange(colour.rgb)
     this.handleClose()
-  };
-
-  constructor(props: any) {
-    super(props)
-    this.state = {
-      color: props.color
-    };
   }
 
   render() {
+    const { colour } = this.props
+
     const styles = reactCSS({
       'default': {
         color: {
           width: '100%',
           height: '20px',
           borderRadius: '2px',
-          background: `rgba(${ this.state.color.r }, ${ this.state.color.g }, ${ this.state.color.b }, ${ this.state.color.a })`,
+          background: `rgba(${ colour.r }, ${ colour.g }, ${ colour.b }, ${ colour.a })`,
         },
         swatch: {
           background: '#fff',
@@ -73,7 +66,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
         </div>
         { this.state.displayColorPicker ? <div style={ styles.popover }>
           <div style={ styles.cover } onClick={ this.handleClose }/>
-          <SwatchesPicker color={ this.state.color } onChange={ this.handleChange } />
+          <SwatchesPicker color={ colour } onChange={ this.handleChange } />
         </div> : null }
 
       </div>
