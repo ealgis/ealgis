@@ -3,21 +3,26 @@ import { connect } from 'react-redux';
 import AlphaPicker from "./AlphaPicker";
 
 export interface AlphaPickerContainerProps {
-    rgb: object,
+    input: object,
     width: string,
 }
 
 export class AlphaPickerContainer extends React.Component<AlphaPickerContainerProps, undefined> {
     public static defaultProps = {
-        displayPicker: false,
-        rgb: {"r": 0, "g": 0, "b": 0, "a": 0.5},
         width: "100%",
     }
 
+  shouldComponentUpdate(nextProps: any, nextState: any) {
+    if(this.props.input.value !== nextProps.input.value) {
+        return true
+    }
+    return false
+  }
+
     render() {
-        const { rgb, width, input } = this.props
+        const { width, input } = this.props
         
-        return <AlphaPicker {...this.props} />;
+        return <AlphaPicker alpha={input.value} width={width} input={input} />;
     }
 }
 

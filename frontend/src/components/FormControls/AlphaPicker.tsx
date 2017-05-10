@@ -3,29 +3,22 @@ import reactCSS from 'reactcss';
 import { AlphaPicker } from 'react-color';
 
 export interface ColourPickerProps {
-    input: any,
-    rgb: object,
+    alpha: number,
     width: string,
+    input: any,
 }
 
 class ColourPicker extends React.Component<ColourPickerProps, undefined> {
-  handleChange = (newValue) => {
+  handleChange = (color: object) => {
     const { input: { onChange } } = this.props
-    onChange(newValue.rgb.a)
-    this.setState({ rgb: newValue.rgb })
-  };
-
-  constructor(props: any) {
-    super(props)
-    this.state = {
-      rgb: props.rgb
-    };
+    onChange(color.rgb.a)
   }
 
   render() {
-    const { rgb, width } = this.props
+    const { alpha, width } = this.props
+    const rgb = {"r": 0, "g": 0, "b": 0, "a": alpha}
 
-    return <AlphaPicker color={this.state.rgb} width={width} onChange={this.handleChange} />
+    return <AlphaPicker color={rgb} width={width} onChange={this.handleChange} />
   }
 }
 
