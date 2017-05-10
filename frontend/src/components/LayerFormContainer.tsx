@@ -4,6 +4,7 @@ import { formValueSelector, getFormValues, isDirty, initialize, submit, change }
 import { withRouter } from 'react-router';
 import * as debounce from "lodash/debounce";
 import * as isEqual from "lodash/isEqual";
+import * as reduce from "lodash/reduce";
 import LayerForm from "./LayerForm";
 import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState } from '../actions'
 
@@ -215,8 +216,17 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         // e.g. If we restoreMasterLayer we get a new layerDefinition with new border colours that needs to
         // flow through to ColourPicker.
         if(!isEqual(layerDefinition, nextProps.layerDefinition)) {
-            console.log("Re-render because layerDefinition changed", nextProps.layerDefinition)
-            return true
+            // If the ONLY thing that changes is olStyle (the OpenLayers style function) then don't bother to re-render
+            // FIXME Having a function shoved on the layerDef and having that drip down to the layer editing form feels...icky.
+            const diff = reduce(layerDefinition, function(result, value, key) {
+                return isEqual(value, nextProps.layerDefinition[key]) ?
+                    result : result.concat(key);
+            }, []);
+
+            if(!isEqual(Object.values(diff), ["olStyle"])) {
+                console.log("Re-render because layerDefinition changed")
+                return true
+            }
         }
 
         // We need to open or close the dirty form modal
