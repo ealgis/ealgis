@@ -7,7 +7,7 @@ export interface LayerQuerySummaryContainerProps {
     mapId: number,
     layerHash: string,
     stats: object,
-    onClickApplyScale: Function,
+    onFitScaleToData: Function,
     fetchQuerySummary: Function,
 }
 
@@ -29,7 +29,7 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
     }
 
     render() {
-        const { stats, onClickApplyScale } = this.props
+        const { stats, onFitScaleToData } = this.props
 
         if(stats === undefined) {
             return <div></div>
@@ -37,8 +37,8 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
 
         return <LayerQuerySummary
             stats={stats}
-            onClickApplyScale={
-                () => onClickApplyScale(stats)
+            onFitScaleToData={
+                () => onFitScaleToData(stats)
             }
         />;
     }

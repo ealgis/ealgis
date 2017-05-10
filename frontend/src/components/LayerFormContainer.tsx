@@ -319,6 +319,9 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
     },
     onFitScaleToData: (mapId: number, layerId: number, stats: object) => {
+        dispatch(change("layerForm", "scaleMin", stats.min))
+        dispatch(change("layerForm", "scaleMax", stats.max))
+
         const layerPartial = getLayerFromLayerFormValuesPartial({
             "scaleMin": stats.min,
             "scaleMax": stats.max,

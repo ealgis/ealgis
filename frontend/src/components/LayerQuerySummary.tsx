@@ -32,12 +32,12 @@ const styles = {
 
 export interface LayerQuerySummaryProps {
     stats: object,
-    onClickApplyScale: Function,
+    onFitScaleToData: Function,
 }
 
 export class LayerQuerySummary extends React.Component<LayerQuerySummaryProps, undefined> {
     render() {
-        const { stats, onClickApplyScale } = this.props
+        const { stats, onFitScaleToData } = this.props
 
         stats.min = parseFloat(stats.min.toFixed(3))
         stats.max = parseFloat(stats.max.toFixed(3))
@@ -64,7 +64,7 @@ export class LayerQuerySummary extends React.Component<LayerQuerySummaryProps, u
             </div>
 
             <div style={styles.flexboxSecondColumn}>
-                <IconButton tooltip="Apply scale settings to layer" tooltipPosition={"bottom-left"} onClick={onClickApplyScale}>
+                <IconButton tooltip="Apply scale settings to layer" tooltipPosition={"bottom-left"} onClick={onFitScaleToData}>
                     <ContentCopy />
                 </IconButton>
             </div>
