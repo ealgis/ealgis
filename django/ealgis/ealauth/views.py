@@ -202,8 +202,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             raise ValidationError(detail="Layer has not been edited - nothing to restore.")
 
         json = map.json
-        del json["layers"][layerId]["master"]
-        del json["layers"][layerId]["draft"]
+        json["layers"][layerId] = copy.deepcopy(json["layers"][layerId]["master"])
 
         serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
         if serializer.is_valid():
