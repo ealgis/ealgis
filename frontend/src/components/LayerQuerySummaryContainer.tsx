@@ -17,6 +17,17 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
         fetchQuerySummary(mapId, layerHash)
     }
 
+    shouldComponentUpdate(nextProps: any, nextState: any) {
+        if(this.props.mapId !== nextProps.mapId || this.props.layerHash !== nextProps.layerHash) {
+            return true
+        }
+
+        if(this.props.stats !== nextProps.stats) {
+            return true
+        }
+        return false
+    }
+
     render() {
         const { stats, onClickApplyScale } = this.props
 

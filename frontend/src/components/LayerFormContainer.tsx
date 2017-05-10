@@ -238,7 +238,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             layerHash={layerDefinition.hash}
             initialValues={this.initialValues}
             layerFillColourScheme={layerFillColourScheme}
-            layerGeometry={layerGeometry}
+            layerGeometry={(layerGeometry) ? JSON.parse(layerGeometry) : undefined}
             onSubmit={
                 (formValues: Array<any>) => 
                     onSubmit(mapDefinition.id, layerId, formValues)
