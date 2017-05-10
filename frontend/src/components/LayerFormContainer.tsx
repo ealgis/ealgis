@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from 'redux-form';
 import { withRouter } from 'react-router';
 import * as debounce from "lodash/debounce";
+import * as isEqual from "lodash/isEqual";
 import LayerForm from "./LayerForm";
 import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState } from '../actions'
 
@@ -213,7 +214,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         // Again, for sub-components. This ensures that when the layerDefinition changes that we also refresh them.
         // e.g. If we restoreMasterLayer we get a new layerDefinition with new border colours that needs to
         // flow through to ColourPicker.
-        if(JSON.stringify(layerDefinition) !== JSON.stringify(nextProps.layerDefinition)) {
+        if(!isEqual(layerDefinition, nextProps.layerDefinition)) {
             console.log("Re-render because layerDefinition changed", nextProps.layerDefinition)
             return true
         }
