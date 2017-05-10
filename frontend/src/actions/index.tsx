@@ -974,7 +974,7 @@ export function handleLayerFormChange(layerPartial: object, mapId: number, layer
                 // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
                 let haveCoreFieldsChanged: boolean = false
                 if("fill" in layerPartial) {
-                    const haveCoreFieldsChanged: boolean = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
+                    haveCoreFieldsChanged = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
                             return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
                     })
                 }
