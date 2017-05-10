@@ -353,7 +353,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                         fullWidth={true}
                                         type="number"
                                         min="0"
-                                        onChange={(event: any, newValue: string, previousValue: string) => onFieldChange(event.target.name, newValue)}
+                                        onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                     />
                                 </div>
 
@@ -368,7 +368,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                         fullWidth={true}
                                         type="number"
                                         min="0"
-                                        onChange={(event: any, newValue: string, previousValue: string) => onFieldChange(event.target.name, newValue)}
+                                        onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                     />
                                 </div>
                             </div>

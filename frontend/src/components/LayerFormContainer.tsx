@@ -147,6 +147,9 @@ const getLayerFromLayerFormValuesPartial = (formValues: object) => {
 }
 
 export class LayerFormContainer extends React.Component<LayerFormContainerProps, undefined> {
+    onFieldChangeDebounced: Function;
+    initialValues: object;
+
     constructor(props: LayerFormContainerProps) {
         super(props)
         const { onFieldUpdate } = props
@@ -163,11 +166,15 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, startLayerEditSession } = this.props
+        const { mapDefinition, layerId, startLayerEditSession, layerDefinition, datainfo } = this.props
         
         // Start a new layer edit session whenever the form is initialised.
         // (This happens for each layer we load the form for.)
         startLayerEditSession(mapDefinition.id, layerId)
+
+        // Each layer mounts this component anew, so store their initial layer form values.
+        // e.g. For use in resetting the form state (Undo/Discard Changes)
+        this.initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
     }
 
     routerWillLeave(nextLocation: object) {
@@ -223,14 +230,12 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     render() {
         const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry } = this.props
 
-        const initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
-
         return <LayerForm 
             tabName={tabName}
             mapId={mapDefinition.id} 
             layerId={layerId}
             layerHash={layerDefinition.hash}
-            initialValues={initialValues}
+            initialValues={this.initialValues}
             layerFillColourScheme={layerFillColourScheme}
             layerGeometry={layerGeometry}
             onSubmit={
@@ -254,13 +259,13 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
                     onSaveForm(mapDefinition.id, layerId)}
             onResetForm={
                 () => 
-                    onResetForm(mapDefinition.id, layerId, initialValues)}
+                    onResetForm(mapDefinition.id, layerId, this.initialValues)}
             onModalSaveForm={
                 () => 
                     onModalSaveForm(mapDefinition.id, layerId)}
             onModalDiscardForm={
                 () => 
-                    onModalDiscardForm(mapDefinition.id, layerId)}
+                    onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)}
             dirtyFormModalOpen={dirtyFormModalOpen}
             isDirty={isDirty}
             datainfo={datainfo} 
@@ -315,12 +320,14 @@ const mapDispatchToProps = (dispatch: any) => {
     onResetForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
         dispatch(initialize("layerForm", initialLayerFormValues, false))
         dispatch(restoreMasterLayer(mapId, layerId))
+        dispatch(initDraftLayer(mapId, layerId))
     },
     onModalSaveForm: (mapId: number, layerId: number) => {
         dispatch(submit("layerForm"))
         dispatch(toggleModalState("dirtyLayerForm"))
     },
-    onModalDiscardForm: (mapId: number, layerId: number) => {
+    onModalDiscardForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
+        dispatch(initialize("layerForm", initialLayerFormValues, false))
         dispatch(restoreMasterLayerAndDiscardForm(mapId, layerId))
         dispatch(toggleModalState("dirtyLayerForm"))
     },
