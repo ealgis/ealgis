@@ -73,6 +73,7 @@ export interface LayerFormProps {
     initialValues: object,
     layerFillColourScheme: string,
     layerGeometry: object,
+    onFormChange: Function,
     onSubmit: Function,
     onFieldBlur: Function,
     onFieldChange: Function,
@@ -409,6 +410,9 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 let LayerForm = reduxForm({
   form: 'layerForm', // a unique name for this form
   enableReinitialize: true,
+  onChange: (values: object, dispatch: Function, props: object) => {
+      props.onFormChange(values, dispatch, props)
+  },
 })(LayerForm)
 
 export default LayerForm

@@ -28,6 +28,7 @@ export interface LayerFormContainerProps {
     startLayerEditSession: Function,
     onSubmit: Function,
     onFieldUpdate: Function,
+    onFormChange: Function,
     layerFillColourScheme: string,
     layerGeometry: object,
     onSaveForm: Function,
@@ -239,7 +240,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry } = this.props
+        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry, onFormChange } = this.props
 
         return <LayerForm 
             tabName={tabName}
@@ -249,6 +250,10 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             initialValues={this.initialValues}
             layerFillColourScheme={layerFillColourScheme}
             layerGeometry={(layerGeometry) ? JSON.parse(layerGeometry) : undefined}
+            onFormChange={
+                (values: object, dispatch: Function, props: object) => 
+                    onFormChange(values, dispatch, props)
+            }
             onSubmit={
                 (formValues: Array<any>) => 
                     onSubmit(mapDefinition.id, layerId, formValues)
@@ -317,6 +322,17 @@ const mapDispatchToProps = (dispatch: any) => {
     onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
         const layerPartial = getLayerFromLayerFormValuesPartial({[fieldName]: newValue})
         dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
+    },
+    onFormChange: (values: object, dispatch: Function, props: object) => {
+        const colourSchemeLevels = (props.colourinfo[values["fillColourScheme"]]) ? props.colourinfo[values["fillColourScheme"]] : []
+        const firstColourSchemeLevel = colourSchemeLevels[0]
+        const lastColourSchemeLevel = colourSchemeLevels.slice(-1)[0]
+
+        if(values["fillColourSchemeLevels"] > lastColourSchemeLevel) {
+            dispatch(change("layerForm", "fillColourSchemeLevels", lastColourSchemeLevel))
+        } else if(values["fillColourSchemeLevels"] < firstColourSchemeLevel) {
+            dispatch(change("layerForm", "fillColourSchemeLevels", firstColourSchemeLevel))
+        }
     },
     onFitScaleToData: (mapId: number, layerId: number, stats: object) => {
         dispatch(change("layerForm", "scaleMin", stats.min))
