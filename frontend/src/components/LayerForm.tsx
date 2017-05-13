@@ -86,6 +86,7 @@ export interface LayerFormProps {
     isDirty: boolean,
     datainfo: object,
     colourinfo: object,
+    layerFormSubmitting: boolean,
 }
 
 export class LayerForm extends React.Component<LayerFormProps, undefined> {
@@ -108,7 +109,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, layerHash, tabName, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry } = this.props
+        const { mapId, layerId, layerHash, tabName, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry, layerFormSubmitting } = this.props
         
         // Make sure that the Colour Scheme Level resets when we change our colour scheme
         const colourSchemeLevels = (colourinfo[layerFillColourScheme]) ? colourinfo[layerFillColourScheme] : []
@@ -131,13 +132,13 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                 <ToolbarGroup firstChild={true}>
                     <RaisedButton 
                         label={"Save"}
-                        disabled={submitting}
+                        disabled={layerFormSubmitting}
                         primary={true}
                         onClick={onSaveForm}
                     />
                     <RaisedButton 
                         label={"Undo"}
-                        disabled={submitting}
+                        disabled={layerFormSubmitting}
                         primary={true}
                         onClick={onResetForm}
                     />

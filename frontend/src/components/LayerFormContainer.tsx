@@ -25,6 +25,7 @@ export interface LayerFormContainerProps {
     layerDefinition: LayerDefinitionProps,
     datainfo: object,
     colourinfo: object,
+    layerFormSubmitting: boolean,
     startLayerEditSession: Function,
     onSubmit: Function,
     onFieldUpdate: Function,
@@ -196,12 +197,18 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen } = this.props
+        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen, layerFormSubmitting } = this.props
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
         if(mapDefinition.id != nextProps.mapDefinition.id || layerId != nextProps.layerId) {
             console.log("Re-render because this is a different map or layer")
+            return true
+        }
+
+        // We're saving/undoing changes
+        if(layerFormSubmitting != nextProps.layerFormSubmitting) {
+            console.log("Re-render because layerFormSubmitting")
             return true
         }
 
@@ -240,7 +247,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry, onFormChange } = this.props
+        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry, onFormChange, layerFormSubmitting } = this.props
 
         return <LayerForm 
             tabName={tabName}
@@ -286,6 +293,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             isDirty={isDirty}
             datainfo={datainfo} 
             colourinfo={colourinfo}
+            layerFormSubmitting={layerFormSubmitting}
         />;
     }
 }
@@ -306,6 +314,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
         isDirty: isDirty("layerForm")(state),
         datainfo: datainfo,
         colourinfo: colourinfo,
+        layerFormSubmitting: app.layerForm.submitting,
     }
 }
 

@@ -44,6 +44,7 @@ export const RECEIVE_REQUEST_FINISH_FETCH = 'RECEIVE_REQUEST_FINISH_FETCH'
 export const RECEIVE_UPDATE_DATA_DISCOVERY = 'RECEIVE_UPDATE_DATA_DISCOVERY'
 export const RECEIVE_RESET_DATA_DISCOVERY = 'RECEIVE_RESET_DATA_DISCOVERY'
 export const RECEIVE_TABLE_INFO = 'RECEIVE_TABLE_INFO'
+export const RECEIVE_TOGGLE_LAYERFORM_SUBMITTING = 'RECEIVE_TOGGLE_LAYERFORM_SUBMITTING'
 export const RECEIVE_CHIP_VALUES = 'RECEIVE_CHIP_VALUES'
 export const RECEIVE_APP_PREVIOUS_PATH = 'RECEIVE_APP_PREVIOUS_PATH'
 export const CHANGE_LAYER_PROPERTY = 'CHANGE_LAYER_PROPERTY'
@@ -420,9 +421,11 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
     return (dispatch: any, getState: Function) => {
         // FIXME
         const isNewLayer = layerId === "new" ? true : false
+        dispatch(toggleLayerFormSubmitting())
 
         return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
             if(response.status === 200) {
+                dispatch(toggleLayerFormSubmitting())
                 dispatch(receieveUpdatedLayer(mapId, layerId, json))
                 const verb = isNewLayer ? "created" : "saved"
                 dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
@@ -435,6 +438,8 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
 
 export function restoreMasterLayer(mapId: number, layerId: number) {
     return (dispatch: any) => {
+        dispatch(toggleLayerFormSubmitting())
+
         const payload = {
             "layerId": layerId,
         }
@@ -442,6 +447,7 @@ export function restoreMasterLayer(mapId: number, layerId: number) {
         return ealapi.put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch)
             .then(({ response, json }: any) => {
                 if(response.status === 200) {
+                    dispatch(toggleLayerFormSubmitting())
                     dispatch(receieveUpdatedLayer(mapId, layerId, json))
                     // dispatch(sendSnackbarNotification(`Layer restored successfully`))
                     // browserHistory.push(`/map/${mapId}`)
@@ -826,6 +832,11 @@ export function setLayerFormChipValues(chipValues: Array<string>) {
     }
 }
 
+export function toggleLayerFormSubmitting() {
+    return {
+        type: RECEIVE_TOGGLE_LAYERFORM_SUBMITTING,
+    }
+}
 
 export function resetDataDiscovery() {
     return {
