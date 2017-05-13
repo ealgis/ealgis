@@ -197,7 +197,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen, layerFormSubmitting } = this.props
+        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen, layerFormSubmitting, isDirty } = this.props
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
@@ -206,9 +206,9 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             return true
         }
 
-        // We're saving/undoing changes
-        if(layerFormSubmitting != nextProps.layerFormSubmitting) {
-            console.log("Re-render because layerFormSubmitting")
+        // We're saving/undoing changes or we've chnaged our dirty state
+        if(layerFormSubmitting != nextProps.layerFormSubmitting || isDirty != nextProps.isDirty) {
+            console.log("Re-render because layerFormSubmitting/isDirty")
             return true
         }
 
@@ -279,7 +279,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             }
             onSaveForm={
                 () => 
-                    onSaveForm(mapDefinition.id, layerId)}
+                    onSaveForm(mapDefinition.id, layerId, isDirty)}
             onResetForm={
                 () => 
                     onResetForm(mapDefinition.id, layerId, this.initialValues)}
@@ -353,7 +353,7 @@ const mapDispatchToProps = (dispatch: any) => {
         })
         dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
     },
-    onSaveForm: (mapId: number, layerId: number) => {
+    onSaveForm: (mapId: number, layerId: number, isDirty) => {
         dispatch(submit("layerForm"))
     },
     onResetForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
