@@ -59,7 +59,15 @@ export function compileLayerStyle(l: Object, debugMode: boolean) {
 
             } else {
                 // START REGULAR FEATURES
-                let styleId = `${l.hash}.${q.toFixed(2)}`
+                let ruleId = l["olStyleDef"].findIndex((rule: object, key: number) => {
+                    if(rule["expr"]["to"] === undefined) {
+                        return true
+                    } else if(q < rule["expr"]["to"]["v"]) {
+                        return true
+                    }
+                })
+
+                let styleId = `${l.hash}.${ruleId}`
 
                 if(styleCache[styleId] !== undefined) {
                     // console.log(`Cache Hit for ${styleId}!`)
@@ -67,18 +75,9 @@ export function compileLayerStyle(l: Object, debugMode: boolean) {
                 }
                 // console.log(`Cache Miss for ${styleId}!`)
 
-                let rgb = []
-                for(let rule of l["olStyleDef"]) {
-                    if(q >= rule["expr"]["from"]["v"]) {
-                        if(rule["expr"]["to"] === undefined) {
-                            rgb = rule["rgb"]
-                            break
-                        } else if(q < rule["expr"]["to"]["v"]) {
-                            rgb = rule["rgb"]
-                            break
-                        }
-                    }
-                }
+                let rule = l["olStyleDef"][ruleId]
+                let rgb = rule["rgb"]
+
                 // console.log("q=", q, "from=", rule["expr"]["from"]["v"], (rule["expr"]["to"] !== undefined) ? "to= " + rule["expr"]["to"]["v"] : "")
 
                 if(rgb.length > 0) {
