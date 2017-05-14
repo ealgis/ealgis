@@ -6,7 +6,7 @@ import * as debounce from "lodash/debounce";
 import * as isEqual from "lodash/isEqual";
 import * as reduce from "lodash/reduce";
 import LayerForm from "./LayerForm";
-import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState } from '../actions'
+import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState, sendSnackbarNotification } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,
@@ -28,6 +28,7 @@ export interface LayerFormContainerProps {
     layerFormSubmitting: boolean,
     startLayerEditSession: Function,
     onSubmit: Function,
+    onSubmitFail: Function,
     onFieldUpdate: Function,
     onFormChange: Function,
     layerFillColourScheme: string,
@@ -247,7 +248,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     render() {
-        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry, onFormChange, layerFormSubmitting } = this.props
+        const { layerId, tabName, mapDefinition, layerDefinition, onSubmit, onSubmitFail, onFieldUpdate, datainfo, colourinfo, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, isDirty, onFitScaleToData, layerFillColourScheme, layerGeometry, onFormChange, layerFormSubmitting } = this.props
 
         return <LayerForm 
             tabName={tabName}
@@ -264,6 +265,10 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             onSubmit={
                 (formValues: Array<any>) => 
                     onSubmit(mapDefinition.id, layerId, formValues)
+            }
+            onSubmitFail={
+                (errors: object, dispatch: Function, submitError: Error, props: object) => 
+                    onSubmitFail(errors, submitError, props)
             }
             onFieldBlur={
                 (fieldName: string, newValue: any, previousValue: any) => 
@@ -323,10 +328,16 @@ const mapDispatchToProps = (dispatch: any) => {
     startLayerEditSession: (mapId: number, layerId: number) => {
         dispatch(initDraftLayer(mapId, layerId))
     },
-    onSubmit: (mapId: number, layerId: number, layerFormValues: object) => { 
+    onSubmit: (mapId: number, layerId: number, layerFormValues: object) => {
         const layer = getLayerFromLayerFormValues(layerFormValues)
         dispatch(publishLayer(mapId, layerId, layer))
         dispatch(initialize("layerForm", layerFormValues, false))
+    },
+    onSubmitFail: (errors: object, submitError: Error, props: object) => {
+        const message = Object.keys(errors).map((key: any, index: any) => {
+            return `${key} is ${errors[key].toLowerCase()}`
+        })
+        dispatch(sendSnackbarNotification(message.join("\n")))
     },
     onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
         const layerPartial = getLayerFromLayerFormValuesPartial({[fieldName]: newValue})

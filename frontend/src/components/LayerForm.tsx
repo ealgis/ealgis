@@ -75,6 +75,7 @@ export interface LayerFormProps {
     layerGeometry: object,
     onFormChange: Function,
     onSubmit: Function,
+    onSubmitFail: Function,
     onFieldBlur: Function,
     onFieldChange: Function,
     onFitScaleToData: Function,
