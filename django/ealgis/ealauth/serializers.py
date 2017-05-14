@@ -37,7 +37,10 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance, data):
+        instance.name = data["name"]
+        instance.description = data["description"]
         self._set(instance, data["json"])
+        
         instance.save()
         return instance
 
