@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from 'react-router';
+import LegendPeekBar from "./LegendPeekBarContainer";
 import Subheader from 'material-ui/Subheader';
 import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -22,13 +23,25 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
+const styles = {
+    layerListItemWithLegend: {
+        "paddingBottom": "0px",
+    },
+    legendPeekBar: {
+        "paddingLeft": "0px",
+        "paddingTop": "0px",
+        "paddingBottom": "0px",
+        "marginLeft": "17px",
+    },
+}
+
 const iconButtonElement = (
   <IconButton
     touch={true}
   >
     <MoreVertIcon color={grey400} />
   </IconButton>
-);
+)
 
 export interface LayerUINavProps {
     defn: any
@@ -43,6 +56,22 @@ export interface LayerUINavProps {
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
         const { defn, layerId, mapId, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
+
+        let legendPeekProps: object = {}
+        if("olStyleDef" in defn) {
+            legendPeekProps.open = true
+            legendPeekProps.style = styles.layerListItemWithLegend
+            legendPeekProps.nestedItems = [
+                <ListItem 
+                    key={`legendpeek-${mapId}-${layerId}`}
+                    style={styles.legendPeekBar}
+                    primaryText={
+                        <LegendPeekBar mapId={mapId} layerId={layerId} olStyleDef={defn.olStyleDef} />
+                    }
+                    disabled={true}
+                />
+            ]
+        }
 
         return <div>
             <ListItem
@@ -67,6 +96,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
                         mapId={mapId}
                     />
                 }
+                {...legendPeekProps}
             />
 
             <LayerDeleteConfirmDialog modalId={deleteConfirmModalId} mapId={mapId} layerId={layerId} layerDefinition={defn}></LayerDeleteConfirmDialog>

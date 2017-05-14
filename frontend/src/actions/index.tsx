@@ -51,6 +51,7 @@ export const CHANGE_LAYER_PROPERTY = 'CHANGE_LAYER_PROPERTY'
 export const MERGE_LAYER_PROPERTIES = 'MERGE_LAYER_PROPERTIES'
 export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
 export const RECEIVE_LAYERFORM_ERRORS = 'RECEIVE_LAYERFORM_ERRORS'
+export const RECEIVE_LEGENDPEEK_LABEL = 'RECEIVE_LEGENDPEEK_LABEL'
 
 const ealapi = new EALGISApiClient()
 
@@ -1023,5 +1024,14 @@ export function receiveLayerQuerySummary(stats: object, layerHash: string) {
         type: RECEIVE_LAYER_QUERY_SUMMARY,
         stats,
         layerHash,
+    }
+}
+
+export function receiveLegendPeekLabel(mapId: number, layerId: number, labelText: string) {
+    return {
+        type: RECEIVE_LEGENDPEEK_LABEL,
+        mapId,
+        layerId,
+        labelText,
     }
 }
