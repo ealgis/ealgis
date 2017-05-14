@@ -203,13 +203,11 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 
         // We've changed the map or layer we're looking at
         if(mapDefinition.id != nextProps.mapDefinition.id || layerId != nextProps.layerId) {
-            console.log("Re-render because this is a different map or layer")
             return true
         }
 
         // We're saving/undoing changes or we've chnaged our dirty state
         if(layerFormSubmitting != nextProps.layerFormSubmitting || isDirty != nextProps.isDirty) {
-            console.log("Re-render because layerFormSubmitting/isDirty")
             return true
         }
 
@@ -217,7 +215,6 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         // Fill Colour Scheme: Controls the values of Fill Colour Scheme Levels
         // Geometry: Controls the values for the DatasetSearch component
         if(layerFillColourScheme !== nextProps.layerFillColourScheme || layerGeometry !== nextProps.layerGeometry) {
-            console.log("Re-render because layerFillColourScheme/geometry changed")
             return true
         }
 
@@ -233,17 +230,14 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             }, []);
 
             if(!isEqual(Object.values(diff), ["olStyle"])) {
-                console.log("Re-render because layerDefinition changed")
                 return true
             }
         }
 
         // We need to open or close the dirty form modal
         if(dirtyFormModalOpen != nextProps.dirtyFormModalOpen) {
-            console.log("Re-render because we need to open the modal")
             return true
         }
-        console.log("Skip updating")
         return false
     }
 
