@@ -340,7 +340,16 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(sendSnackbarNotification(message.join("\n")))
     },
     onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
-        const layerPartial = getLayerFromLayerFormValuesPartial({[fieldName]: newValue})
+        let formValues: object = {}
+        // The Fill Colour Scheme fields are controlled by a single <Fields> component
+        // and submit their value as an object containing both fields.
+        if(fieldName === "fillColourScheme" || fieldName === "fillColourSchemeLevels") {
+            formValues = newValue
+        } else {
+            formValues = {[fieldName]: newValue}
+        }
+        
+        const layerPartial = getLayerFromLayerFormValuesPartial(formValues)
         dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
     },
     onFormChange: (values: object, dispatch: Function, props: object) => {

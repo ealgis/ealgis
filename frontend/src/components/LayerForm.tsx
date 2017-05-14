@@ -12,7 +12,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import DatasetSearch from "./DatasetSearchContainer";
 import LayerQuerySummary from "./LayerQuerySummaryContainer";
 
-import { Field, reduxForm } from 'redux-form';
+import { Field, Fields, reduxForm } from 'redux-form';
 import {
   SelectField,
   TextField,
@@ -63,6 +63,76 @@ const styles = {
       "marginTop": "14px",
       "marginBottom": "10px",
   },
+}
+
+const FillColourSchemeFields = (fields: any) => {
+    const colourSchemeLevels = (fields.colourinfo[fields["fillColourScheme"].input.value]) ? fields.colourinfo[fields["fillColourScheme"].input.value] : []
+
+    return <div style={styles.flexboxContainer}>
+                <div style={styles.flexboxFirstColumn}>
+                    <Field
+                        name="fillColourScheme"
+                        component={SelectField}
+                        hintText="Choose your colour scheme..."
+                        floatingLabelText="Fill colour scheme"
+                        floatingLabelFixed={true}
+                        validate={[ required ]}
+                        fullWidth={true}
+                        onChange={
+                            (junk: object, newValue: string, previousValue: string) => {
+                                // There's two gotchas here:
+                                // 1. redux-form-material-ui doesn't pass (event, newValue, previousValue) for SelectFields like it does for other field types. Hence the `junk` argument and repeating the field name.
+                                // 2. We were (seemingly) seeing onChange firing before the application state had been updated with the new value for this SelectField. We'll work around this by using the debounced version.
+
+                                const colourSchemeLevels = (fields.colourinfo[newValue]) ? fields.colourinfo[newValue] : []
+                                const firstColourSchemeLevel = colourSchemeLevels[0]
+                                const lastColourSchemeLevel = colourSchemeLevels.slice(-1)[0]
+
+                                let fillColourSchemeLevel = fields["fillColourSchemeLevels"].input.value
+                                if(fields["fillColourSchemeLevels"].input.value > lastColourSchemeLevel) {
+                                    fillColourSchemeLevel = lastColourSchemeLevel
+                                } else if(fields["fillColourSchemeLevels"].input.value < firstColourSchemeLevel) {
+                                    fillColourSchemeLevel = firstColourSchemeLevel
+                                }
+
+                                fields.onFieldChange("fillColourScheme", {
+                                    "fillColourScheme": newValue,
+                                    "fillColourSchemeLevels": fillColourSchemeLevel
+                                })
+                            }
+                        }
+                    >
+                    {
+                        Object.keys(fields.colourinfo).map((colourLevel: any, key: any) =>
+                            <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
+                        )
+                    }
+                    </Field>
+                </div>
+
+                <div style={styles.flexboxSecondColumn}>
+                    <Field 
+                        name="fillColourSchemeLevels" 
+                        component={SelectField} 
+                        hintText="Choose the number of colour levels..."
+                        floatingLabelText="Fill colour levels"
+                        floatingLabelFixed={true}
+                        fullWidth={true}
+                        onChange={(junk: object, newValue: string, previousValue: string) => {
+                            fields.onFieldChange("fillColourSchemeLevels", {
+                                "fillColourScheme": fields["fillColourScheme"].input.value,
+                                "fillColourSchemeLevels": newValue
+                            })
+                        }}
+                    >
+                    {
+                        colourSchemeLevels.map((colourLevel: any, key: any) => 
+                            <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
+                        )
+                    }
+                    </Field>
+                </div>
+            </div>
 }
 
 export interface LayerFormProps {
@@ -276,30 +346,15 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 </div>
                             </div>
 
+                            <Fields 
+                                names={["fillColourScheme", "fillColourSchemeLevels"]}
+                                component={FillColourSchemeFields}
+                                onFieldChange={onFieldChange}
+                                colourinfo={colourinfo}
+                            />
+
                             <div style={styles.flexboxContainer}>
                                 <div style={styles.flexboxFirstColumn}>
-                                    <Field
-                                        name="fillColourScheme"
-                                        component={SelectField}
-                                        hintText="Choose your colour scheme..."
-                                        floatingLabelText="Fill colour scheme"
-                                        floatingLabelFixed={true}
-                                        validate={[ required ]}
-                                        fullWidth={true}
-                                        onChange={
-                                            (junk: object, newValue: string, previousValue: string) => {
-                                                // There's two gotchas here:
-                                                // 1. redux-form-material-ui doesn't pass (event, newValue, previousValue) for SelectFields like it does for other field types. Hence the `junk` argument and repeating the field name.
-                                                // 2. We were (seemingly) seeing onChange firing before the application state had been updated with the new value for this SelectField. We'll work around this by using the debounced version.
-                                                onFieldChange("fillColourScheme", newValue)
-                                            }
-                                        }
-                                    >
-                                        {this.colourSchemes}
-                                    </Field>
-                                </div>
-
-                                <div style={styles.flexboxSecondColumn}>
                                     <Field
                                         name="fillColourScaleFlip"
                                         component={Checkbox}
@@ -308,27 +363,6 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                         labelStyle={styles.fauxFiedlLabel}
                                         onChange={(event: any, newValue: string, previousValue: string) => onFieldChange("fillColourScaleFlip", newValue)}
                                     />
-                                </div>
-                            </div>
-
-                            <div style={styles.flexboxContainer}>
-                                <div style={styles.flexboxFirstColumn}>
-                                    <Field 
-                                        name="fillColourSchemeLevels" 
-                                        component={SelectField} 
-                                        hintText="Choose the number of colour levels..."
-                                        floatingLabelText="Fill colour levels"
-                                        floatingLabelFixed={true}
-                                        fullWidth={true}
-                                        onChange={(junk: object, newValue: string, previousValue: string) => onFieldChange("fillColourSchemeLevels", newValue)}
-                                        value={initialValues["fillColourSchemeLevels"]}
-                                    >
-                                    {
-                                        colourSchemeLevels.map((colourLevel: any, key: any) => 
-                                            <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
-                                        )
-                                    }
-                                    </Field>
                                 </div>
 
                                 <div style={styles.flexboxSecondColumn}>
