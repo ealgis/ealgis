@@ -50,7 +50,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
         }
         const formatObj = new ol.format.GeoJSON()
         const tileGrid = ol.tilegrid.createXYZ({maxZoom: 22})
-        const overlaps = false
+        const overlaps = true
         const cacheSize = 256
         const visible = layer.visible
 
