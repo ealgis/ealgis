@@ -372,6 +372,7 @@ export function addLayer(mapId: number) {
             .then(({ response, json }: any) => {
                 if(response.status === 201) {
                     dispatch(receieveUpdatedLayer(mapId, json.layerId, json.layer))
+                    dispatch(sendSnackbarNotification(`Layer created successfully`))
                     browserHistory.push(getMapURL(getState().maps[mapId]) + `/layer/${json.layerId}/`)
                 }
             })
@@ -423,16 +424,13 @@ export function editDraftLayer(mapId: number, layerId: number, layerPartial: obj
 
 export function publishLayer(mapId: number, layerId: number, layer: object) {
     return (dispatch: any, getState: Function) => {
-        // FIXME
-        const isNewLayer = layerId === "new" ? true : false
         dispatch(toggleLayerFormSubmitting())
 
         return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
             if(response.status === 200) {
                 dispatch(toggleLayerFormSubmitting())
                 dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                const verb = isNewLayer ? "created" : "saved"
-                dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
+                dispatch(sendSnackbarNotification(`Layer saved successfully`))
                 browserHistory.push(getMapURL(getState().maps[mapId]))
                 return json
 
