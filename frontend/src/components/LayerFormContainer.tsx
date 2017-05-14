@@ -337,7 +337,7 @@ const mapDispatchToProps = (dispatch: any) => {
         const message = Object.keys(errors).map((key: any, index: any) => {
             return `${key} is ${errors[key].toLowerCase()}`
         })
-        dispatch(sendSnackbarNotification(message.join("\n")))
+        dispatch(sendSnackbarNotification(message.join(", ")))
     },
     onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
         let formValues: object = {}
