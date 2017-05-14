@@ -433,6 +433,12 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
                 dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
                 browserHistory.push(`/map/${mapId}`)
                 return json
+
+            } else {
+                const message = Object.keys(json).map((key: any, index: any) => {
+                    return `${key}: ${json[key].toLowerCase()}`
+                })
+                dispatch(sendSnackbarNotification(`Errors publishing layer: ${message.join(", ")}`))
             }
         })
     }

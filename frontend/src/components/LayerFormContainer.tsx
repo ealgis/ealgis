@@ -334,10 +334,8 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(initialize("layerForm", layerFormValues, false))
     },
     onSubmitFail: (errors: object, submitError: Error, props: object) => {
-        const message = Object.keys(errors).map((key: any, index: any) => {
-            return `${key} is ${errors[key].toLowerCase()}`
-        })
-        dispatch(sendSnackbarNotification(message.join(", ")))
+        const fieldNames = Object.keys(errors)
+        dispatch(sendSnackbarNotification(`Some fields have errors (${fieldNames.join(", ")})`))
     },
     onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
         let formValues: object = {}

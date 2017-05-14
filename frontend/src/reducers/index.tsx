@@ -197,6 +197,7 @@ export const reduxFormReducer = formReducer.plugin({
     layerForm: (state: {}, action: any) => {
         switch(action.type) {
             case RECEIVE_LAYERFORM_ERRORS:
+                state = dotProp.set(state, "submitSucceeded", false)
                 return dotProp.merge(state, "syncErrors", action.errors)
             default:
                 return state
