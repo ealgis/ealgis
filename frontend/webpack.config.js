@@ -6,7 +6,7 @@ module.exports = {
     entry: "./src/index.tsx",
     entry: {
         app: "./src/index.tsx",
-        vendor: ["react",  "redux", "react-redux", "react-dom", "react-router", "react-router-redux", "redux-thunk", "material-ui", "openlayers", "redux-form", "redux-form-material-ui", "react-color", "react-cookie", "dot-prop-immutable"],
+        vendor: ["react",  "redux", "react-redux", "react-dom", "react-router", "react-router-redux", "redux-thunk", "material-ui", "openlayers", "redux-form", "redux-form-material-ui", "react-color", "react-cookie", "dot-prop-immutable", "react-list", "react-copy-to-clipboard", "material-ui-chip-input", "lodash", "qs"],
     },
     plugins: [
         new LiveReloadPlugin({'appendScriptTag': false, 'cert': fs.readFileSync('/nginx/foobar.crt'), 'key': fs.readFileSync('/nginx/foobar.key')}),
