@@ -51,6 +51,7 @@ export interface LayerUINavProps {
     defn: any
     layerId: number,
     mapId: number,
+    mapNameURLSafe: string,
     onCloneLayer: any,
     onDeleteLayer: any,
     deleteConfirmModalId: string,
@@ -59,7 +60,7 @@ export interface LayerUINavProps {
 
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
-        const { defn, layerId, mapId, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
+        const { defn, layerId, mapId, mapNameURLSafe, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
 
         let legendPeekProps: object = {}
         if("olStyleDef" in defn) {
@@ -91,7 +92,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
                 secondaryTextLines={2}
                 rightIconButton={
                     <IconMenu iconButtonElement={iconButtonElement}>
-                        <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/layer/${layerId}`} />} />
+                        <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />} />
                         <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} onClick={onCloneLayer} />
                         <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
                     </IconMenu>

@@ -37,7 +37,7 @@ export class MapForm extends React.Component<MapFormProps, undefined> {
         const { error, handleSubmit, pristine, reset, submitting, onSubmit, initialValues } = this.props // from react-form
         const { mapDefinition } = this.props
 
-        let closeLink = (mapDefinition === undefined) ? <Link to={`/`} /> : <Link to={`/map/${mapDefinition.id}`} />
+        let closeLink = (mapDefinition === undefined) ? <Link to={`/`} /> : <Link to={`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}`} />
 
         return <div>
             <Toolbar>

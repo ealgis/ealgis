@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from ealgis.colour_scale import make_colour_scale
 from ealgis.ealgis import ValueError, NoMatches, TooManyMatches, CompilationError
-
+from urllib.parse import quote_plus
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -61,6 +61,9 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         map = super(serializers.ModelSerializer, self).to_representation(obj)
+
+        # Add a URL-safe map name for client-side to use to make semi-human-readable URLs
+        map["name-url-safe"] = quote_plus(map["name"].replace(" ", "-"))
 
         # FIXME Compile all this client-side
         # Compile layer fill styles and attach an olStyleDef for consumption by the UI

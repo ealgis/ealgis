@@ -11,6 +11,7 @@ interface LayerUINavContainerRouteParams {
 export interface LayerUINavContainerProps {
     layerDefinition: LayerUINavContainerRouteParams,
     mapId: number,
+    mapNameURLSafe: string,
     mapDefinition: object,
     layerId: number,
     onCloneLayer: Function,
@@ -24,13 +25,14 @@ export class LayerUINavContainer extends React.Component<LayerUINavContainerProp
     }
 
     render() {
-        const { layerDefinition, mapId, layerId, onCloneLayer, onDeleteLayer, datainfo } = this.props
+        const { layerDefinition, mapId, mapNameURLSafe, layerId, onCloneLayer, onDeleteLayer, datainfo } = this.props
         const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
         
         return <LayerUINav 
                     defn={layerDefinition} 
                     layerId={layerId} 
                     mapId={mapId} 
+                    mapNameURLSafe={mapNameURLSafe}
                     onCloneLayer={() => onCloneLayer(mapId, layerId)} 
                     onDeleteLayer={() => onDeleteLayer(deleteConfirmModalId)} 
                     deleteConfirmModalId={deleteConfirmModalId}

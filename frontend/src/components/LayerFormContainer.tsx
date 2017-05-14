@@ -247,6 +247,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         return <LayerForm 
             tabName={tabName}
             mapId={mapDefinition.id} 
+            mapNameURLSafe={mapDefinition["name-url-safe"]}
             layerId={layerId}
             layerHash={layerDefinition.hash}
             initialValues={this.initialValues}

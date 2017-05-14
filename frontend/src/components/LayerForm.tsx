@@ -138,6 +138,7 @@ const FillColourSchemeFields = (fields: any) => {
 export interface LayerFormProps {
     tabName: string,
     mapId: number,
+    mapNameURLSafe: string,
     layerId: number,
     layerHash: string,
     initialValues: object,
@@ -180,7 +181,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
-        const { mapId, layerId, layerHash, tabName, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry, layerFormSubmitting, isDirty } = this.props
+        const { mapId, mapNameURLSafe, layerId, layerHash, tabName, onSubmit, onFieldBlur, onFieldChange, colourinfo, layerFillColourScheme, onSaveForm, onResetForm, onModalSaveForm, onModalDiscardForm, dirtyFormModalOpen, onFitScaleToData, layerGeometry, layerFormSubmitting, isDirty } = this.props
 
         let tabId = 0
         switch(tabName) {
@@ -206,7 +207,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                 </ToolbarGroup>
 
                 <ToolbarGroup lastChild={true}>
-                    <IconButton tooltip="Close this layer and return to your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${mapId}`} />}><NavigationClose /></IconButton>
+                    <IconButton tooltip="Close this layer and return to your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}><NavigationClose /></IconButton>
                 </ToolbarGroup>
             </Toolbar>
 
@@ -218,7 +219,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ContentCreate />}
                         label="DESCRIBE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}`}/>}
+                        containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -267,7 +268,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<EditorInsertChart />}
                         label="DATA"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/data`}/>}
+                        containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`}/>}
                     >
                         <div style={styles.tabBody}>
                             <Field 
@@ -305,7 +306,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                     <Tab
                         icon={<ImagePalette />}
                         label="VISUALISE"
-                        containerElement={<Link to={`/map/${mapId}/layer/${layerId}/visualise`}/>}
+                        containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`}/>}
                     >
                         <div style={styles.tabBody}>
                             <div style={styles.flexboxContainer}>

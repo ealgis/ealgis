@@ -6,6 +6,7 @@ import { getFormValues } from 'redux-form';
 import { compileLayerStyle } from '../utils/OLStyle'
 import { SubmissionError } from 'redux-form'
 import { EALGISApiClient } from '../helpers/EALGISApiClient';
+import { getMapURL } from '../utils/utils';
 import LayerFormContainer from "../components/LayerFormContainer"
 
 export const RECEIVE_APP_LOADED = 'RECEIVE_APP_LOADED'
@@ -371,7 +372,7 @@ export function addLayer(mapId: number) {
             .then(({ response, json }: any) => {
                 if(response.status === 201) {
                     dispatch(receieveUpdatedLayer(mapId, json.layerId, json.layer))
-                    browserHistory.push(`/map/${mapId}/layer/${json.layerId}/`)
+                    browserHistory.push(getMapURL(getState().maps[mapId]) + `/layer/${json.layerId}/`)
                 }
             })
     }
@@ -432,7 +433,7 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
                 dispatch(receieveUpdatedLayer(mapId, layerId, json))
                 const verb = isNewLayer ? "created" : "saved"
                 dispatch(sendSnackbarNotification(`Layer ${verb} successfully`))
-                browserHistory.push(`/map/${mapId}`)
+                browserHistory.push(getMapURL(getState().maps[mapId]))
                 return json
 
             } else {
@@ -467,9 +468,9 @@ export function restoreMasterLayer(mapId: number, layerId: number) {
 }
 
 export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number) {
-    return (dispatch: any) => {
+    return (dispatch: any, getState: Function) => {
         return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
-            browserHistory.push(`/map/${mapId}`)
+            browserHistory.push(getMapURL(getState().maps[mapId]))
         })
     }
 }
@@ -607,7 +608,7 @@ export function fetchMaps() {
 }
 
 export function mapUpsert(map: object) {
-    return (dispatch: any) => {
+    return (dispatch: any, getState: Function) => {
         // Upsert
         if(map.id === undefined) {
             return dispatch(createMap(map))
@@ -621,7 +622,7 @@ export function mapUpsert(map: object) {
                 
                 if(response.status === 200) {
                     dispatch(receieveUpdatedMap(json))
-                    browserHistory.push("/map/" + json.id)
+                    browserHistory.push(getMapURL(json))
                     dispatch(sendSnackbarNotification("Map saved successfully"))
                     
                 } else if(response.status === 400) {
@@ -661,7 +662,7 @@ export function createMap(map: object) {
                 
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
-                    browserHistory.push("/map/" + json.id)
+                    browserHistory.push(getMapURL(json))
                     
                 } else if(response.status === 400) {
                     // We expect that the server will return the shape:
@@ -695,7 +696,7 @@ export function duplicateMap(mapId: number) {
                 if(response.status === 201) {
                     dispatch(receiveCreatedMap(json))
                     dispatch(sendSnackbarNotification("Map duplicated successfully"))
-                    browserHistory.push("/map/" + json.id)
+                    browserHistory.push(getMapURL(json))
                     
                 } else {
                     // We're not sure what happened, but handle it:

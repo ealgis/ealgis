@@ -60,7 +60,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
-                    <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/edit`} />}><ModeEdit /></IconButton>
+                    <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}><ModeEdit /></IconButton>
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
                     <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
                     <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
@@ -85,6 +85,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                         layerId={key}
                         layerDefinition={l}
                         mapId={defn.id}
+                        mapNameURLSafe={defn["name-url-safe"]}
                     />
                 )}
             </List>

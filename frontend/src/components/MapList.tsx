@@ -51,7 +51,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                     {Object.entries(maps).map(([key, m]) => 
                         <GridTile
                             key={key}
-                            containerElement={<Link to={`/map/${m.id}`} />}
+                            containerElement={<Link to={`/map/${m.id}/${m["name-url-safe"]}`} />}
                             title={m.name}
                             subtitle={m.description}
                             cols={1}
