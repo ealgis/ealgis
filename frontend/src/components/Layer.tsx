@@ -128,7 +128,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
             }
         }*/
 
-        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} opacity={layer.fill.opacity} properties={layerPropreties}>
+        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} properties={layerPropreties}>
             <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize}>
             </olr.source.VectorTile>
         </olr.layer.VectorTile>
