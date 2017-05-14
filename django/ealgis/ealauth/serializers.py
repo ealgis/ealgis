@@ -45,13 +45,15 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         try:
             map.set(json)
         except ValueError as e:
-            raise ValidationError(detail="Unknown value error ({})".format(e.message))
+            raise ValidationError(detail={"valueExpression": "Unknown value error ({})".format(e.message)})
         except CompilationError as e:
-            raise ValidationError(detail="Expression compilation failed ({})".format(e.message))
+            raise ValidationError(detail={"valueExpression": "Expression compilation failed ({})".format(e.message)})
         except NoMatches as e:
-            raise ValidationError(detail="Attribute could not be resolved ({})".format(e))
+            raise ValidationError(detail={"valueExpression": "Attribute could not be resolved ({})".format(e)})
         except TooManyMatches as e:
-            raise ValidationError(detail="Attribube reference is ambiguous ({})".format(e.message))
+            raise ValidationError(detail={"valueExpression": "Attribube reference is ambiguous ({})".format(e.message)})
+        except Exception as e:
+            raise ValidationError(detail={"filterExpression": "Compilation error ({})".format(e)})
 
     def to_representation(self, obj):
         map = super(serializers.ModelSerializer, self).to_representation(obj)
