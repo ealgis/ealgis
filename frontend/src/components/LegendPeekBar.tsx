@@ -16,8 +16,6 @@ const styles = {
         "paddingTop": "4px",
         "fontSize": "12px",
         "color": "rgba(0, 0, 0, 0.3)",
-        "position": "absolute",
-        "top": "15px",
     },
 }
 

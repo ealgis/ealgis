@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from 'react-router';
 import LegendPeekBar from "./LegendPeekBarContainer";
+import Paper from 'material-ui/Paper';
 import Subheader from 'material-ui/Subheader';
 import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -24,6 +25,9 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
 const styles = {
+    paperListItem: {
+        "margin": "7px",
+    },
     layerListItemWithLegend: {
         "paddingBottom": "0px",
     },
@@ -73,7 +77,10 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
             ]
         }
 
-        return <div>
+        return <Paper
+                style={styles.paperListItem}
+                zDepth={1}
+            >
             <ListItem
                 secondaryText={
                     <p>
@@ -100,7 +107,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
             />
 
             <LayerDeleteConfirmDialog modalId={deleteConfirmModalId} mapId={mapId} layerId={layerId} layerDefinition={defn}></LayerDeleteConfirmDialog>
-        </div>
+        </Paper>
     }
 }
 
