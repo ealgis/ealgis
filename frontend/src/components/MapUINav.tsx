@@ -95,11 +95,6 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                 >
                     <div style={styles.tabBody}>
                         <List>
-                            <ListItem
-                                primaryText="Layers"
-                                leftIcon={<MapsLayers />}
-                                disabled={true}
-                            />
                             {defn.json.layers.map((l: any, key: number) => 
                                 <LayerUINav 
                                     key={key}
