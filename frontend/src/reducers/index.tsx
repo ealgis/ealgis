@@ -92,7 +92,7 @@ function app(state = {
         case RECEIVE_TOGGLE_MODAL_STATE:
             return dotProp.toggle(state, `dialogs.${action.modalId}`)
         case RECEIVE_UPDATE_DATA_INSPECTOR:
-            return dotProp.set(state, 'dataInspector', [...state.dataInspector, ...action.dataRows])
+            return dotProp.set(state, 'dataInspector', [...action.dataRows, ...state.dataInspector])
         case RECEIVE_RESET_DATA_INSPECTOR:
             return dotProp.set(state, 'dataInspector', [])
         case RECEIVE_UPDATE_DATA_DISCOVERY:

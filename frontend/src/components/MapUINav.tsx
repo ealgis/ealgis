@@ -2,6 +2,7 @@ import * as React from "react";
 import { Link } from 'react-router';
 import LayerUINav from "./LayerUINavContainer";
 import Subheader from 'material-ui/Subheader';
+import {Tabs, Tab} from 'material-ui/Tabs';
 import { List, ListItem } from 'material-ui/List';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -27,8 +28,18 @@ import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
+const styles = {
+    mapName: {
+        textAlign: "center",
+    },
+    tabBody: {
+        margin: "10px",
+    },
+}
+
 export interface MapUINavProps {
-    defn: any
+    tabName: string,
+    defn: any,
     onAddLayer: Function,
     onDuplicateMap: Function,
     onSetOrigin: Function,
@@ -41,7 +52,7 @@ export interface MapUINavProps {
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { defn, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, defn, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -54,9 +65,11 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                 primary={true}
                 onTouchTap={onDeleteMap}
             />,
-        ];
+        ]
 
         return <div>
+            <h2 style={styles.mapName}>{defn.name}</h2>
+
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
                     <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
@@ -70,45 +83,79 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
                 </ToolbarGroup>
             </Toolbar>
-            
-            <h2 style={{textAlign: "center"}}>{defn.name}</h2>
 
-            <List>
-                <ListItem
-                    primaryText="Layers"
-                    leftIcon={<MapsLayers />}
-                    disabled={true}
-                />
-                {defn.json.layers.map((l: any, key: number) => 
-                    <LayerUINav 
-                        key={key}
-                        layerId={key}
-                        layerDefinition={l}
-                        mapId={defn.id}
-                        mapNameURLSafe={defn["name-url-safe"]}
-                    />
-                )}
-            </List>
-
-            <List>
-                <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} disabled={true} />
-                {dataInspector.map((row: any, key: number) =>
-                    <ListItem
-                        key={key}
-                        primaryText={row.name}
-                        leftIcon={<MapsLayers />}
-                        initiallyOpen={true}
-                        primaryTogglesNestedList={true}
-                        nestedItems={row.properties.map((propRow: any, key: any) =>
+            <Tabs
+                value={tabName}
+            >
+                {/* START LAYERS TAB */}
+                <Tab
+                    label="LAYERS"
+                    containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}`}/>}
+                    value={""}
+                >
+                    <div style={styles.tabBody}>
+                        <List>
                             <ListItem
-                                key={key}
-                                primaryText={propRow.value.toString()}
-                                secondaryText={propRow.name}
+                                primaryText="Layers"
+                                leftIcon={<MapsLayers />}
+                                disabled={true}
                             />
-                        )}
-                    />
-                )}
-            </List>
+                            {defn.json.layers.map((l: any, key: number) => 
+                                <LayerUINav 
+                                    key={key}
+                                    layerId={key}
+                                    layerDefinition={l}
+                                    mapId={defn.id}
+                                    mapNameURLSafe={defn["name-url-safe"]}
+                                />
+                            )}
+                        </List>
+                    </div>
+                </Tab>
+                {/* END LAYERS TAB */}
+
+                {/* START DATA INSPECTOR TAB */}
+                <Tab
+                    label="DATA INSPECTOR"
+                    containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`}/>}
+                    value={"data"}
+                >
+                    <div style={styles.tabBody}>
+                        <List>
+                            <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} disabled={true} />
+                            {dataInspector.map((row: any, key: number) =>
+                                <ListItem
+                                    key={key}
+                                    primaryText={row.name}
+                                    leftIcon={<MapsLayers />}
+                                    initiallyOpen={true}
+                                    primaryTogglesNestedList={true}
+                                    nestedItems={row.properties.map((propRow: any, key: any) =>
+                                        <ListItem
+                                            key={key}
+                                            primaryText={propRow.value.toString()}
+                                            secondaryText={propRow.name}
+                                        />
+                                    )}
+                                />
+                            )}
+                        </List>
+                    </div>
+                </Tab>
+                {/* END DATA INSPECTOR TAB */}
+
+                {/* START SETTINGS TAB */}
+                <Tab
+                    label="SETTINGS"
+                    containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/settings`}/>}
+                    value={"settings"}
+                >
+                    <div style={styles.tabBody}>
+
+                    </div>
+                </Tab>
+                {/* END SETTINGS TAB */}
+            </Tabs>
 
             <Dialog
                 title="Delete Map"

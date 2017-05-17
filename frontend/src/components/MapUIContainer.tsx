@@ -27,7 +27,7 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
 
         return <MapUI
                     defn={mapDefinition}
-                    onSingleClick={(evt: any) => onSingleClick(evt)}
+                    onSingleClick={(evt: any) => onSingleClick(mapDefinition.id, evt)}
                     onNavigation={(evt: any) => onNavigation(evt, allowMapViewSetting)}
                     allowMapViewSetting={allowMapViewSetting}
                 />
@@ -45,7 +45,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
 
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    onSingleClick: (evt: any) => {
+    onSingleClick: (mapId: number, evt: any) => {
         let features: Array<any> = []
         evt.map.forEachFeatureAtPixel(evt.pixel, function(feature: any, layer: any) {
             const layerProps = layer.getProperties().properties
@@ -59,7 +59,7 @@ const mapDispatchToProps = (dispatch: any) => {
             });
         })
         
-        dispatch(sendToDataInspector(features))
+        dispatch(sendToDataInspector(mapId, features))
     },
     onNavigation: (mapCentreOrResolution: any, allowMapViewSetting: boolean) => {
         // Prevent infinite loops - if we've received a prompt to update the app's

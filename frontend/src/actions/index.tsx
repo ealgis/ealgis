@@ -781,7 +781,7 @@ export function resetDataInspector() {
     }
 }
 
-export function sendToDataInspector(features: Array<undefined>) {
+export function sendToDataInspector(mapId: number, features: Array<undefined>) {
     return (dispatch: any, getState: Function) => {
         features.forEach((feature: any) => {
             const featureProps = feature.featureProps
@@ -808,6 +808,8 @@ export function sendToDataInspector(features: Array<undefined>) {
                         "name": `Layer ${layer.name}`,
                         "properties": dataRowProps,
                     }]))
+
+                    browserHistory.push(getMapURL(getState().maps[mapId]) + '/data')
                 })
         })
     }

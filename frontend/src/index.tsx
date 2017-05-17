@@ -37,7 +37,7 @@ ReactDOM.render(
     <Provider store={store}>
         <Router history={history}>
             <Route path="/" component={EalUIContainerWrapped}>
-                <Route path="map/:mapId/:mapName" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>
+                <Route path="map/:mapId/:mapName(/:tabName)" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>
                 <Route path="map/:mapId/:mapName/edit" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
                 <Route path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)" components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}/>
                 <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>

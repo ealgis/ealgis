@@ -9,6 +9,7 @@ interface MapUINavContainerRouteParams {
 }
 
 export interface MapUINavContainerProps {
+    tabName: string,
     mapDefinition: MapUINavContainerRouteParams,
     mapPosition: object,
     onSetOrigin: Function,
@@ -36,9 +37,11 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { mapDefinition, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, mapDefinition, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        
         if(mapDefinition !== undefined) {
             return <MapUINav
+                        tabName={tabName}
                         defn={mapDefinition}
                         onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
                         onAddLayer={() => onAddLayer(mapDefinition.id)}
@@ -57,6 +60,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
 const mapStateToProps = (state: any, ownProps: any) => {
     const { maps, app } = state
     return {
+        tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         mapPosition: app.mapPosition,
         deleteModalOpen: app.dialogs["deleteMap"] || false,
