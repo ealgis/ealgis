@@ -25,6 +25,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
             
             return <olr.Map view={view} onSingleClick={onSingleClick}>
                 <olr.interaction.Select />
+                <olr.control.FullScreen source={"ealgis"} />
                 <olr.layer.Tile>
                     <olr.source.XYZ url={mapbox_url} />
                 </olr.layer.Tile>
