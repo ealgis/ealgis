@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 from .models import MapDefinition
 
 from rest_framework import viewsets, mixins, status
@@ -7,6 +8,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from .permissions import IsMapOwnerOrReadOnly
 
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
@@ -18,6 +20,7 @@ import copy
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 
+
 def api_not_found(request):
     return HttpResponseNotFound()
 
@@ -26,6 +29,12 @@ class CurrentUserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user, context={'request': request})
         return Response(serializer.data)
+
+
+class LogoutUserView(APIView):
+    def get(self, request):
+        logout(request)
+        return Response({})
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -42,12 +51,24 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     API endpoint to allow map definitions to be viewed or edited by the user that owns them.
     """
     serializer_class = MapDefinitionSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsMapOwnerOrReadOnly,)
 
     def get_queryset(self):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(owner_user_id=self.request.user)
+
+    @list_route(methods=['get'])
+    def shared(self, request, format=None):
+        maps = MapDefinition.objects.all().filter(shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
+        serializer = MapDefinitionSerializer(maps, many=True)
+        return Response(serializer.data)
+
+    @list_route(methods=['get'])
+    def public(self, request, format=None):
+        maps = MapDefinition.objects.all().filter(shared=MapDefinition.PUBLIC_SHARED).exclude(owner_user_id=request.user)
+        serializer = MapDefinitionSerializer(maps, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         # request.data is from the POST object. We want to take these

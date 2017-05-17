@@ -9,6 +9,7 @@ from ealgis.colour_scale import make_colour_scale
 from ealgis.ealgis import ValueError, NoMatches, TooManyMatches, CompilationError
 from urllib.parse import quote_plus
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -27,7 +28,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class MapDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = MapDefinition
-        fields = ('id', 'name', 'description', 'json', 'owner_user_id')
+        fields = ('id', 'name', 'description', 'json', 'shared', 'owner_user_id')
         validators = [
             UniqueTogetherValidator(
                 queryset=MapDefinition.objects.all(),

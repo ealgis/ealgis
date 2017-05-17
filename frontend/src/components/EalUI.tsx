@@ -40,6 +40,7 @@ export interface EalUIProps {
     content: any,
     onTapAppBarLeft: any,
     handleRequestClose: any,
+    doLogout: Function,
     onDebugToggle: any,
 }
 
@@ -50,7 +51,7 @@ const appBarButtonStyle = {
 
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
-        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, onDebugToggle } = this.props
+        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle } = this.props
 
         const linearProgressStyle = {
             "position": "fixed",
@@ -68,6 +69,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                     iconElementRight={<ToolbarGroup>
                         <FlatButton label="Home" containerElement={<Link to={"/"} />} style={appBarButtonStyle} />
                         <FlatButton label="About" containerElement={<Link to={"/about"} />} style={appBarButtonStyle} />
+                        <FlatButton label="Logout" onClick={doLogout} style={appBarButtonStyle} />
                         {user.is_staff ? 
                             <IconMenu
                                 iconButtonElement={<IconButton><MoreVertIcon color={"white"} /></IconButton>}

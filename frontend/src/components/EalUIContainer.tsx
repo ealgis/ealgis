@@ -2,7 +2,7 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath } from '../actions';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath, logoutUser } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import './FixedLayout.css';
@@ -15,6 +15,7 @@ export interface EalContainerProps {
     sidebar: any,
     onTapAppBarLeft: Function,
     handleRequestClose: Function,
+    doLogout: Function,
     fetchStuff: Function,
     onDebugToggle: Function,
     location: object,
@@ -45,7 +46,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, onDebugToggle } = this.props
+        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle } = this.props
 
         if(app.loading === true) {
             return <MuiThemeProvider>
@@ -62,6 +63,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 sidebar={sidebar}
                 onTapAppBarLeft={onTapAppBarLeft}
                 handleRequestClose={handleRequestClose}
+                doLogout={doLogout}
                 onDebugToggle={onDebugToggle}
             />
         </MuiThemeProvider>;
@@ -94,6 +96,9 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     onReceiveAppPreviousPath: (previousPath: string) => {
         dispatch(receiveAppPreviousPath(previousPath))
+    },
+    doLogout: () => {
+        dispatch(logoutUser())
     },
   };
 }

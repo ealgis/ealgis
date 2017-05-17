@@ -7,6 +7,7 @@ from .views import (
     ColumnInfoViewSet,
     ColoursViewset,
     CurrentUserView,
+    LogoutUserView,
     SchemasViewSet,
     api_not_found)
 from rest_framework import routers
@@ -27,6 +28,7 @@ router.register(r'columninfo', ColumnInfoViewSet, base_name='columninfo')
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
     url(r'^api/0.1/self$', CurrentUserView.as_view(), name='api-self'),
+    url(r'^api/0.1/logout$', LogoutUserView.as_view(), name='api-self'),
     # make sure that the API never serves up the react app
     url(r'^api/0.1/.*', api_not_found),
 ]

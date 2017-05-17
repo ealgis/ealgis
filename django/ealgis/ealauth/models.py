@@ -18,11 +18,21 @@ class CompilationError(Exception):
 
 
 class MapDefinition(models.Model):
+    PRIVATE_SHARED = 1
+    AUTHENTICATED_USERS_SHARED = 2
+    PUBLIC_SHARED = 3
+    SHARED_CHOICES = (
+        (PRIVATE_SHARED, 'Private'),
+        (AUTHENTICATED_USERS_SHARED, 'Authenticated Users Only'),
+        (PUBLIC_SHARED, 'Public On The Web'),
+    )
+
     "map definition - all state for a EAlGIS map"
     name = models.CharField(max_length=32)
     owner_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     json = JSONField(null=True)
+    shared = models.IntegerField(choices=SHARED_CHOICES, default=PRIVATE_SHARED)
 
     class Meta:
         unique_together = ('name', 'owner_user_id')

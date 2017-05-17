@@ -585,6 +585,15 @@ export function fetchUser() {
     }
 }
 
+export function logoutUser() {
+    return (dispatch: any) => {
+        return ealapi.get('/api/0.1/logout', dispatch)
+            .then(({ response, json}: any) => {
+                window.location.reload()
+            })
+    }
+}
+
 export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
