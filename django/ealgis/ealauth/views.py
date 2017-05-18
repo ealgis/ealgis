@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
+from django.db.models import Q
 from .models import MapDefinition
 
 from rest_framework import viewsets, mixins, status
@@ -56,7 +57,18 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
-        return MapDefinition.objects.filter(owner_user_id=self.request.user)
+        return MapDefinition.objects.filter(
+            Q(owner_user_id=self.request.user) | 
+            Q(~Q(owner_user_id=self.request.user) & 
+                Q(shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+            )
+            # owner_user_id=self.request.user
+        )
+
+    def list(self, request, format=None):
+        maps = MapDefinition.objects.all().filter(owner_user_id=self.request.user)
+        serializer = MapDefinitionSerializer(maps, many=True)
+        return Response(serializer.data)
 
     @list_route(methods=['get'])
     def shared(self, request, format=None):
