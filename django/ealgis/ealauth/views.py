@@ -9,7 +9,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .permissions import IsMapOwnerOrReadOnly
+from .permissions import IsMapOwnerOrReadOnly, IsMapOwner
 
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
@@ -103,8 +103,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def addLayer(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
 
         if "layer" not in request.data:
             raise ValidationError(detail="Layer object not found.")
@@ -134,8 +133,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def initDraftLayer(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         layerId = int(request.data["layerId"])
 
         if layerId < 0:
@@ -165,8 +163,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def editDraftLayer(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
@@ -201,8 +198,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def publishLayer(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
@@ -223,8 +219,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def restoreMasterLayer(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
@@ -271,8 +266,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['put'])
     def clone(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
 
         map.name = "{} Copied {}".format(map.name, int(round(time.time() * 1000)))[:32]
         map.json["rev"] = 0
@@ -283,10 +277,9 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(map)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @detail_route(methods=['get'])
+    @detail_route(methods=['get'], permission_classes=(IsMapOwner,))
     def query_summary(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         qp = request.query_params
         eal = apps.get_app_config('ealauth').eal
 
@@ -347,8 +340,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             }]
 
         #  tileRequestStartTime = int(round(time.time() * 1000))
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
+        map = self.get_object()
         qp = request.query_params
 
         # Validate required params for serving a vector tile
