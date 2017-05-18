@@ -98,6 +98,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             raise ValidationError(detail="Layer object not found.")
 
         json = map.json
+        if "layers" not in json:
+            json["layers"] = []  # Just in case
         json["layers"].append(request.data["layer"])
 
         serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
