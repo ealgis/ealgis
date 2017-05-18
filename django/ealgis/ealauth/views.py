@@ -255,15 +255,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
 
-    @detail_route(methods=['get'])
-    def exists(self, request, pk=None, format=None):
-        queryset = self.get_queryset()
-        map = queryset.filter(id=pk).first()
-
-        return Response({
-            "exists": map is not None
-        })
-
     @detail_route(methods=['put'])
     def clone(self, request, pk=None, format=None):
         queryset = self.get_queryset()
