@@ -20,8 +20,8 @@ import MapsLayers from 'material-ui/svg-icons/maps/layers';
 import MapsAddLocation from 'material-ui/svg-icons/maps/add-location';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionBookmark from 'material-ui/svg-icons/action/bookmark';
+import ActionHome from 'material-ui/svg-icons/action/home';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
-import ContentUndo from 'material-ui/svg-icons/content/undo';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
@@ -81,7 +81,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     {isOwner &&
                         <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
                     }
-                    <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
+                    <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ActionHome /></IconButton>
                     {isOwner &&
                         <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
                     }
