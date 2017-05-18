@@ -40,6 +40,7 @@ const styles = {
 export interface MapUINavProps {
     tabName: string,
     defn: any,
+    isOwner: boolean,
     onAddLayer: Function,
     onDuplicateMap: Function,
     onSetOrigin: Function,
@@ -52,7 +53,7 @@ export interface MapUINavProps {
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { tabName, defn, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -72,12 +73,18 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
 
             <Toolbar>
                 <ToolbarGroup firstChild={true}>
-                    <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
-                    <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}><ModeEdit /></IconButton>
+                    {isOwner &&
+                        <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
+                        <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}><ModeEdit /></IconButton>
+                    }
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
-                    <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
+                    {isOwner &&
+                        <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
+                    }
                     <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ContentUndo /></IconButton>
-                    <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
+                    {isOwner &&
+                        <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
+                    }
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
                     <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
@@ -101,6 +108,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                                     layerId={key}
                                     layerDefinition={l}
                                     mapId={defn.id}
+                                    isMapOwner={isOwner}
                                     mapNameURLSafe={defn["name-url-safe"]}
                                 />
                             )}
@@ -140,7 +148,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                 {/* END DATA INSPECTOR TAB */}
 
                 {/* START SETTINGS TAB */}
-                <Tab
+                {isOwner && <Tab
                     label="SETTINGS"
                     containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/settings`}/>}
                     value={"settings"}
@@ -148,7 +156,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     <div style={styles.tabBody}>
 
                     </div>
-                </Tab>
+                </Tab>}
                 {/* END SETTINGS TAB */}
             </Tabs>
 

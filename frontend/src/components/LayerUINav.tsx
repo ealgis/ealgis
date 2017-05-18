@@ -51,6 +51,7 @@ export interface LayerUINavProps {
     defn: any
     layerId: number,
     mapId: number,
+    isMapOwner: boolean,
     mapNameURLSafe: string,
     onCloneLayer: any,
     onDeleteLayer: any,
@@ -60,7 +61,7 @@ export interface LayerUINavProps {
 
 export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
     render() {
-        const { defn, layerId, mapId, mapNameURLSafe, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
+        const { defn, layerId, mapId, isMapOwner, mapNameURLSafe, onCloneLayer, onDeleteLayer, deleteConfirmModalId, getGeometryDescription } = this.props
 
         let legendPeekProps: object = {}
         if("olStyleDef" in defn) {
@@ -78,6 +79,15 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
             ]
         }
 
+        let mapOwnerProps: object = {}
+        if(isMapOwner) {
+            mapOwnerProps.rightIconButton = <IconMenu iconButtonElement={iconButtonElement}>
+                                <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />} />
+                                <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} onClick={onCloneLayer} />
+                                <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
+                            </IconMenu>
+        }
+
         return <Paper
                 style={styles.paperListItem}
                 zDepth={1}
@@ -90,13 +100,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
                     </p>
                 }
                 secondaryTextLines={2}
-                rightIconButton={
-                    <IconMenu iconButtonElement={iconButtonElement}>
-                        <MenuItem primaryText="Edit" leftIcon={<MapsEditLocation />} containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />} />
-                        <MenuItem primaryText="Clone" leftIcon={<ContentCopy />} onClick={onCloneLayer} />
-                        <MenuItem primaryText="Delete" leftIcon={<ActionDelete />} onClick={onDeleteLayer} />
-                    </IconMenu>
-                }
+                {...mapOwnerProps}
                 rightToggle={
                     <LayerToggle
                         layerDefinition={defn}

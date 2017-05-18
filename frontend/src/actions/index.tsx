@@ -100,9 +100,11 @@ export function changeLayerVisibility(map: object, layerId: number) {
     return (dispatch: any, getState: Function) => {
         dispatch(receiveChangeLayerVisibility(map["id"], layerId))
 
-        // FIXME Client-side or make the API accept a layer object to merge for /publishLayer
-        const layer = getState().maps[map["id"]].json.layers[layerId]
-        dispatch(updateLayer(map["id"], layerId, layer))
+        if(getState()["user"].id === map.owner_user_id) {
+            // FIXME Client-side or make the API accept a layer object to merge for /publishLayer
+            const layer = getState().maps[map["id"]].json.layers[layerId]
+            dispatch(updateLayer(map["id"], layerId, layer))
+        }
     }
 }
 

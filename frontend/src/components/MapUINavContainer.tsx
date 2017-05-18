@@ -9,6 +9,7 @@ interface MapUINavContainerRouteParams {
 }
 
 export interface MapUINavContainerProps {
+    userId: number,
     tabName: string,
     mapDefinition: MapUINavContainerRouteParams,
     mapPosition: object,
@@ -37,12 +38,13 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { tabName, mapDefinition, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
         
         if(mapDefinition !== undefined) {
             return <MapUINav
                         tabName={tabName}
                         defn={mapDefinition}
+                        isOwner={mapDefinition.owner_user_id === userId}
                         onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
                         onAddLayer={() => onAddLayer(mapDefinition.id)}
                         onSetOrigin={() => onSetOrigin(mapDefinition, mapPosition)}
@@ -58,8 +60,9 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps, app } = state
+    const { maps, app, user } = state
     return {
+        userId: user.id,
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         mapPosition: app.mapPosition,
