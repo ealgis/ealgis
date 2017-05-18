@@ -77,7 +77,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         data = {
             'name': request.data['name'],
             'description': request.data['description'],
-            'json': request.data['json'] if "json" in request.data else {},
+            'json': request.data['json'] if "json" in request.data else {"layers": []},
             'owner_user_id': self.request.user.id
         }
 

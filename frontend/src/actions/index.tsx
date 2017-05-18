@@ -659,7 +659,8 @@ export function createMap(map: object) {
                 "lat": "-27.121915157767",
                 "lon": "133.21253738715",
                 "zoom": "4"
-            }
+            },
+            "layers": [],
         }
 
         return ealapi.post('/api/0.1/maps/', mapCopy, dispatch)
