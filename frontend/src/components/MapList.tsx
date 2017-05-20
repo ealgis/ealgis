@@ -33,6 +33,7 @@ const styles = {
 
 export interface MapListProps {
     tabName: string,
+    userId: number,
     maps: any,
     getMyMaps: Function,
     getSharedMaps: Function,
@@ -41,7 +42,7 @@ export interface MapListProps {
 
 export class MapList extends React.Component<MapListProps, undefined> {
     render() {
-        const { tabName, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
+        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
 
         const mapGridTiles = (maps: Array<object>) => 
             maps.map(([key, m]) => 
@@ -49,7 +50,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                     key={key}
                     containerElement={<Link to={`/map/${m.id}/${m["name-url-safe"]}`} />}
                     title={m.name}
-                    subtitle={m.description}
+                    subtitle={(m.owner_user_id == userId) ? m.description : `By ${m.owner.username}`}
                     cols={1}
                     titleBackground={'rgba(0, 188, 212, 0.7)'}
                 >

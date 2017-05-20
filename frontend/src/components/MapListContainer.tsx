@@ -17,6 +17,7 @@ export class MapListContainer extends React.Component<MapListContainerProps, und
         
         return <MapList
                     tabName={tabName}
+                    userId={userId}
                     maps={maps}
                     getMyMaps={() => 
                         getMyMaps(Object.entries(maps), userId)

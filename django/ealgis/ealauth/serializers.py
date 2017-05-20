@@ -26,10 +26,22 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'groups')
 
 
+class UserPublicDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name')
+
+
 class MapDefinitionSerializer(serializers.ModelSerializer):
+    owner = UserPublicDetailsSerializer(source='owner_user_id', read_only=True)
+
     class Meta:
         model = MapDefinition
-        fields = ('id', 'name', 'description', 'json', 'shared', 'owner_user_id')
+        fields = ('id', 'name', 'description', 'json', 'shared', 'owner_user_id', 'owner')
         validators = [
             UniqueTogetherValidator(
                 queryset=MapDefinition.objects.all(),
