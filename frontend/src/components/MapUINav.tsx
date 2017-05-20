@@ -67,6 +67,7 @@ export interface MapUINavProps {
     onResetOrigin: Function,
     onChangeSharing: Function,
     onDeleteMap: Function,
+    onCloseMap: Function,
     onToggleDeleteModalState: Function,
     deleteModalOpen: boolean,
     dataInspector: Array<any>,
@@ -74,7 +75,7 @@ export interface MapUINavProps {
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -105,7 +106,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     }
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
-                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
+                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" onClick={onCloseMap}><NavigationClose /></IconButton>
                 </ToolbarGroup>
             </Toolbar>
 
