@@ -9,7 +9,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .permissions import IsMapOwnerOrReadOnly, IsMapOwner
+from .permissions import IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
@@ -270,7 +270,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
 
-    @detail_route(methods=['put'])
+    @detail_route(methods=['put'], permission_classes=(IsAuthenticated, CanCloneMap, ))
     def clone(self, request, pk=None, format=None):
         map = self.get_object()
 
@@ -278,6 +278,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         map.json["rev"] = 0
         map.id = None
         map.pk = None
+        map.owner_user_id = request.user
+        map.shared = MapDefinition.PRIVATE_SHARED
         map.save()
 
         serializer = self.serializer_class(map)
