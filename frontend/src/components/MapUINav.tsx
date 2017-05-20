@@ -20,7 +20,7 @@ import MapsEditLocation from 'material-ui/svg-icons/maps/edit-location';
 import MapsLayers from 'material-ui/svg-icons/maps/layers';
 import MapsAddLocation from 'material-ui/svg-icons/maps/add-location';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
-import ActionBookmark from 'material-ui/svg-icons/action/bookmark';
+import ActionBookmarkBorder from 'material-ui/svg-icons/action/bookmark-border';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionLock from 'material-ui/svg-icons/action/lock';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
@@ -30,7 +30,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
-import {grey200, darkBlack, lightBlack} from 'material-ui/styles/colors';
+import {grey300, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
 const styles = {
     mapName: {
@@ -44,7 +44,7 @@ const styles = {
     },
     radioButtonSelected: {
         marginBottom: "0px",
-        backgroundColor: grey200,
+        backgroundColor: grey300,
     },
     radioButtonIconStyle: {
         paddingLeft: "8px",
@@ -99,9 +99,6 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                         <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}><ModeEdit /></IconButton>
                     }
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
-                    {isOwner &&
-                        <IconButton tooltip="Set the default position for this map to the current view" tooltipPosition="bottom-right" onClick={onSetOrigin}><ActionBookmark /></IconButton>
-                    }
                     <IconButton tooltip="Reset the position of this map to its default view" tooltipPosition="bottom-right" onClick={onResetOrigin}><ActionHome /></IconButton>
                     {isOwner &&
                         <IconButton tooltip="Delete this map" tooltipPosition="bottom-right" onClick={onToggleDeleteModalState}><ActionDelete /></IconButton>
@@ -175,7 +172,15 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     value={"settings"}
                 >
                     <div style={styles.tabBody}>
-                        <Subheader>Initial View</Subheader>
+                        <Subheader>Map</Subheader>
+
+                        <ListItem
+                            primaryText="Map starting position"
+                            secondaryText="Set the default position for this map to the current view."
+                            secondaryTextLines={2}
+                            leftIcon={<ActionBookmarkBorder style={styles.radioButtonIconStyle} />}
+                            onClick={onSetOrigin}
+                        />
 
 
                         <Subheader>Sharing</Subheader>

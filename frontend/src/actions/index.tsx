@@ -553,7 +553,7 @@ export function updateMapOrigin(map: object, position: any) {
     return (dispatch: any, getState: Function) => {
         dispatch(setMapOrigin(map.id, position))
         dispatch(updateMap(getState().maps[map.id])) // FIXME This *can't* be best practice
-        dispatch(sendSnackbarNotification("Map origin updated successfully"))
+        dispatch(sendSnackbarNotification("Map starting position updated successfully"))
     }
 }
 
