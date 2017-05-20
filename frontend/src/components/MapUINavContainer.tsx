@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
 import MapUINav from "./MapUINav";
-import { addLayer, duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector } from '../actions';
+import { addLayer, duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector, changeMapSharing } from '../actions';
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -15,6 +15,7 @@ export interface MapUINavContainerProps {
     mapPosition: object,
     onSetOrigin: Function,
     onResetOrigin: Function,
+    onChangeSharing: Function,
     onAddLayer: Function,
     onDuplicateMap: Function,
     onDeleteMap: Function,
@@ -38,7 +39,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
         
         if(mapDefinition !== undefined) {
             return <MapUINav
@@ -48,6 +49,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                         onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
                         onAddLayer={() => onAddLayer(mapDefinition.id)}
                         onSetOrigin={() => onSetOrigin(mapDefinition, mapPosition)}
+                        onChangeSharing={(event: object, value: any) => onChangeSharing(mapDefinition.id, value)}
                         onResetOrigin={() => onResetOrigin(mapDefinition.json.map_defaults)}
                         onDeleteMap={() => onDeleteMap(mapDefinition.id)}
                         onToggleDeleteModalState={() => onToggleDeleteModalState()}
@@ -85,6 +87,9 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     onResetOrigin: (mapDefaults: any) => {
         dispatch(resetMapPosition(mapDefaults))
+    },
+    onChangeSharing: (mapId: number, shared: number) => {
+        dispatch(changeMapSharing(mapId, shared))
     },
     onToggleDeleteModalState: () => {
         dispatch(toggleModalState("deleteMap"))

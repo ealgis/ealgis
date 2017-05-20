@@ -27,6 +27,7 @@ export const RECEIVE_MAP_DEFINITION = 'RECEIVE_MAP_DEFINITION'
 export const DELETE_MAP = 'DELETE_MAP'
 export const CREATE_MAP = 'CREATE_MAP'
 export const COMPILED_LAYER_STYLE = 'COMPILED_LAYER_STYLE'
+export const CHANGE_MAP_SHARING = 'CHANGE_MAP_SHARING'
 export const CHANGE_LAYER_VISIBILITY = 'CHANGE_LAYER_VISIBILITY'
 export const REQUEST_DATA_INFO = 'REQUEST_DATA_INFO'
 export const RECEIVE_DATA_INFO = 'RECEIVE_DATA_INFO'
@@ -132,6 +133,14 @@ export function receiveCompiledLayerStyle(mapId: number, layerId: number, olStyl
         mapId,
         layerId,
         olStyle,
+    }
+}
+
+export function receiveChangeMapSharing(mapId: number, shared: number) {
+    return {
+        type: CHANGE_MAP_SHARING,
+        mapId,
+        shared,
     }
 }
 
@@ -1046,5 +1055,14 @@ export function receiveLegendPeekLabel(mapId: number, layerId: number, labelText
         mapId,
         layerId,
         labelText,
+    }
+}
+
+export function changeMapSharing(mapId: number, shared: number) {
+    return (dispatch: any, getState: Function) => {
+        dispatch(receiveChangeMapSharing(mapId, shared))
+        dispatch(updateMap(getState().maps[mapId])).then(() => {
+            dispatch(sendSnackbarNotification("Layer sharing settings updated"))
+        })
     }
 }

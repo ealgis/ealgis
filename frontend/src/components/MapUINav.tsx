@@ -14,6 +14,7 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 import MapsEditLocation from 'material-ui/svg-icons/maps/edit-location';
 import MapsLayers from 'material-ui/svg-icons/maps/layers';
@@ -21,12 +22,15 @@ import MapsAddLocation from 'material-ui/svg-icons/maps/add-location';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ActionBookmark from 'material-ui/svg-icons/action/bookmark';
 import ActionHome from 'material-ui/svg-icons/action/home';
+import ActionLock from 'material-ui/svg-icons/action/lock';
+import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
+import SocialPublic from 'material-ui/svg-icons/social/public';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
 
-import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
+import {grey200, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
 const styles = {
     mapName: {
@@ -34,6 +38,22 @@ const styles = {
     },
     tabBody: {
         margin: "10px",
+    },
+    radioButton: {
+        marginBottom: "0px",
+    },
+    radioButtonSelected: {
+        marginBottom: "0px",
+        backgroundColor: grey200,
+    },
+    radioButtonIconStyle: {
+        paddingLeft: "8px",
+        paddingRight: "12px",
+        paddingTop: "16px",
+    },
+    radioButtonSecondaryText: {
+        overflow: "visible",
+        marginBottom: "10px",
     },
 }
 
@@ -45,6 +65,7 @@ export interface MapUINavProps {
     onDuplicateMap: Function,
     onSetOrigin: Function,
     onResetOrigin: Function,
+    onChangeSharing: Function,
     onDeleteMap: Function,
     onToggleDeleteModalState: Function,
     deleteModalOpen: boolean,
@@ -53,7 +74,7 @@ export interface MapUINavProps {
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -154,7 +175,61 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     value={"settings"}
                 >
                     <div style={styles.tabBody}>
+                        <Subheader>Initial View</Subheader>
 
+
+                        <Subheader>Sharing</Subheader>
+
+                        <RadioButtonGroup 
+                            name="shared"
+                            defaultSelected={defn.shared}
+                            onChange={onChangeSharing}
+                        >
+                            <RadioButton
+                                value={1}
+                                iconStyle={styles.radioButtonIconStyle}
+                                label={<ListItem
+                                    primaryText="Private"
+                                    secondaryText={<div style={styles.radioButtonSecondaryText}>
+                                        Your map is not shared with anyone - only you can see it.
+                                    </div>}
+                                    secondaryTextLines={2}
+                                />}
+                                checkedIcon={<ActionLock />}
+                                uncheckedIcon={<ActionLock />}
+                                style={(defn.shared === 1) ? styles.radioButtonSelected : styles.radioButton}
+                            />
+
+                            <RadioButton
+                                value={2}
+                                iconStyle={styles.radioButtonIconStyle}
+                                label={<ListItem
+                                    primaryText="Shared"
+                                    secondaryText={<div style={styles.radioButtonSecondaryText}>
+                                        Your map is shared with everyone in the EALGIS community. They can view the map or make a copy for themselves.
+                                    </div>}
+                                    secondaryTextLines={2}
+                                />}
+                                checkedIcon={<ActionLockOpen />}
+                                uncheckedIcon={<ActionLockOpen />}
+                                style={(defn.shared === 2) ? styles.radioButtonSelected : styles.radioButton}
+                            />
+
+                            <RadioButton
+                                value={3}
+                                iconStyle={styles.radioButtonIconStyle}
+                                label={<ListItem
+                                    primaryText="Public"
+                                    secondaryText={<div style={styles.radioButtonSecondaryText}>
+                                        Your map is shared with the public - anyone can view the map without being logged in.
+                                    </div>}
+                                    secondaryTextLines={2}
+                                />}
+                                checkedIcon={<SocialPublic />}
+                                uncheckedIcon={<SocialPublic />}
+                                style={(defn.shared === 3) ? styles.radioButtonSelected : styles.radioButton}
+                            />
+                        </RadioButtonGroup>
                     </div>
                 </Tab>}
                 {/* END SETTINGS TAB */}
