@@ -71,6 +71,12 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @list_route(methods=['get'])
+    def all(self, request, format=None):
+        maps = self.get_queryset()
+        serializer = MapDefinitionSerializer(maps, many=True)
+        return Response(serializer.data)
+
+    @list_route(methods=['get'])
     def shared(self, request, format=None):
         maps = MapDefinition.objects.all().filter(shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
         serializer = MapDefinitionSerializer(maps, many=True)

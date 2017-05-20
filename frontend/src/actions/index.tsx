@@ -600,7 +600,7 @@ export function fetchMaps() {
     return (dispatch: any) => {
         dispatch(requestMaps())
 
-        return ealapi.get('/api/0.1/maps/', dispatch)
+        return ealapi.get('/api/0.1/maps/all/', dispatch)
             .then(({ response, json }: any) => {
                 // FIXME Cleanup and decide how to handle error at a component and application-level
                 if(response.status === 200) {

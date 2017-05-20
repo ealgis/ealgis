@@ -16,7 +16,7 @@ import MapUIContainerWrapped from "./components/MapUIContainer";
 import MapUINavContainerWrapped from "./components/MapUINavContainer";
 import LayerFormContainerWrapped from "./components/LayerFormContainer";
 import MapFormContainerWrapped from "./components/MapFormContainer";
-import MapList from "./components/MapList";
+import MapListContainerWrapped from "./components/MapListContainer";
 import About from "./components/About";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -42,7 +42,8 @@ ReactDOM.render(
                 <Route path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)" components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}/>
                 <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
                 <Route path="about" components={{ content: About }} />
-                <IndexRoute components={{ content: MapUIContainerWrapped, sidebar: MapList }}/>
+                <Route path="(:tabName)" components={{ content: MapListContainerWrapped }}/>
+                <IndexRoute components={{ content: MapListContainerWrapped }}/>
             </Route>
         </Router>
     </Provider>,
