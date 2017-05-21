@@ -9,13 +9,14 @@ def export_iter(defn_obj, bounds=None):
     layers = defn.get('layers')
     expressions = {}
     for layer in layers:
-        expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True)
-        if expr.is_trivial():
-            continue
-        geom_source = expr.get_geometry_source()
-        if geom_source not in expressions:
-            expressions[geom_source] = []
-        expressions[geom_source].append(expr)
+        if layer["visible"]:
+            expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True)
+            if expr.is_trivial():
+                continue
+            geom_source = expr.get_geometry_source()
+            if geom_source not in expressions:
+                expressions[geom_source] = []
+            expressions[geom_source].append(expr)
 
     def next_or_none(it):
         try:
@@ -31,21 +32,27 @@ def export_iter(defn_obj, bounds=None):
     # for each geometry, yield a header and then the data for each geom in the geometry
     for geom_source in expressions:
         queries = expressions[geom_source]
-        yield [geom_source.table_info.name] + [q.get_name() for q in queries]
+        yield [q.get_name() for q in queries] + [[str(a) for a in q.query_attrs[2:]] for q in queries][0]
         iters = [iter(mkq(q).yield_per(1)) for q in queries]
         vals = [next_or_none(i) for i in iters]
         while True:
             # figure the minimum gid in these results
             min_gid = min([t[0] for t in vals])
-            row = [min_gid]
+            row = []
             new_vals = []
             # grab the vals for that GID out; and jump forward
             # on corresponding iterators
-            for (gid, val), iterator in zip(vals, iters):
+            for obj, iterator in zip(vals, iters):
+                if obj[0] is None:
+                    continue
+                gid, *vals = list(obj)
+
                 if gid == min_gid:
-                    if isinstance(val, Decimal):
-                        val = float(val)
-                    row.append(val)
+                    for val in vals:
+                        if isinstance(val, Decimal):
+                            val = float(val)
+                        row.append(val)
+
                     new_vals.append(next_or_none(iterator))
                 else:
                     row.append(None)
