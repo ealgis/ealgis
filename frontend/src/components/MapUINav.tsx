@@ -35,8 +35,6 @@ import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
 import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 
-import {grey300, darkBlack, lightBlack} from 'material-ui/styles/colors';
-
 const styles = {
     mapName: {
         textAlign: "center",
@@ -55,7 +53,6 @@ const styles = {
     },
     radioButtonSelected: {
         marginBottom: "0px",
-        backgroundColor: grey300,
     },
     radioButtonIconStyle: {
         paddingLeft: "8px",
