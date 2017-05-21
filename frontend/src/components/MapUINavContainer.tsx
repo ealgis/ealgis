@@ -24,7 +24,6 @@ export interface MapUINavContainerProps {
     deleteModalOpen: boolean,
     dataInspector: Array<any>,
     resetDataInspector: Function,
-    onCloseMap: Function,
     previousPath: string,
     onExportWholeMap: Function,
     onExportMapViewport: Function,
@@ -43,7 +42,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector, onExportWholeMap, onExportMapViewport, onCheckIncludeGeomAttrs } = this.props
+        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onToggleDeleteModalState, deleteModalOpen, dataInspector, onExportWholeMap, onExportMapViewport, onCheckIncludeGeomAttrs } = this.props
         
         if(mapDefinition !== undefined) {
             return <MapUINav
@@ -56,7 +55,6 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                         onChangeSharing={(event: object, value: any) => onChangeSharing(mapDefinition.id, value)}
                         onResetOrigin={() => onResetOrigin(mapDefinition.json.map_defaults)}
                         onDeleteMap={() => onDeleteMap(mapDefinition.id)}
-                        onCloseMap={onCloseMap}
                         onToggleDeleteModalState={() => onToggleDeleteModalState()}
                         deleteModalOpen={deleteModalOpen}
                         dataInspector={dataInspector}
@@ -108,9 +106,6 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     resetDataInspector: () => {
         dispatch(resetDataInspector())
-    },
-    onCloseMap: () => {
-        browserHistory.goBack()
     },
     onExportWholeMap: (mapId: number) => {
         const include_geom_attrs: boolean = (this.isIncludeGeomAttrsChecked) ? true : false
