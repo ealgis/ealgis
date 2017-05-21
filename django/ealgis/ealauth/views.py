@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.db.models import Q
+from django.http.response import HttpResponse
 from .models import MapDefinition
 
 from rest_framework import viewsets, mixins, status
@@ -18,6 +19,7 @@ from django.apps import apps
 import json
 import time
 import copy
+import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 
@@ -305,6 +307,35 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response(summary)
 
     @detail_route(methods=['get'])
+    def export_csv(self, request, pk=None, format=None):
+        mapDefn = self.get_object()
+        include_geom_attrs = request.query_params.get("include_geom_attrs", False)
+        include_geom_attrs = True if (include_geom_attrs == "true") else False
+
+        from ..dataexport import export_csv_iter
+        response = HttpResponse(export_csv_iter(mapDefn, include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % urllib.parse.quote(mapDefn.name)
+        response['Cache-Control'] = 'max-age=86400, public'
+        return response
+
+    @detail_route(methods=['get'])
+    def export_csv_viewport(self, request, pk=None, format=None):
+        mapDefn = self.get_object()
+        include_geom_attrs = request.query_params.get("include_geom_attrs", False)
+        include_geom_attrs = True if (include_geom_attrs == "true") else False
+
+        ne = list(map(float, request.query_params.get("ne", None).split(',')))
+        sw = list(map(float, request.query_params.get("sw", None).split(',')))
+        if len(ne) != 2 or len(sw) != 2:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        from ..dataexport import export_csv_iter
+        response = HttpResponse(export_csv_iter(mapDefn, bounds=(ne, sw), include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="%s_%f_%f_%f_%f.csv"' % (urllib.parse.quote(mapDefn.name), ne[0], ne[1], sw[0], sw[1])
+        response['Cache-Control'] = 'max-age=86400, public'
+        return response
+
+    @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):
         # Used to inject features for debugging vector tile performance
         def debug_features(features, x, y, z):
@@ -457,7 +488,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             }, headers=headers)
 
         elif qp["format"] == "pbf":
-            from django.http.response import HttpResponse
             response = HttpResponse(features, content_type="application/x-protobuf")
             for key, val in headers.items():
                 response[key] = val
@@ -556,7 +586,6 @@ class DataInfoViewSet(viewsets.ViewSet):
             for view in viewNames:
                 sqlAllViews.append(view["sql"])
 
-            from django.http.response import HttpResponse
             return HttpResponse("\n\n\n".join(sqlAllViews), content_type="text/plain")
 
 

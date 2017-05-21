@@ -3,14 +3,14 @@ from decimal import Decimal
 from io import StringIO
 
 
-def export_iter(defn_obj, bounds=None):
+def export_iter(defn_obj, bounds=None, include_geom_attrs=False):
     # figure out our queries to run, grouped by source geometry
     defn = defn_obj.get()
     layers = defn.get('layers')
     expressions = {}
     for layer in layers:
         if layer["visible"]:
-            expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True)
+            expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True, include_geom_attrs=include_geom_attrs)
             if expr.is_trivial():
                 continue
             geom_source = expr.get_geometry_source()
@@ -32,13 +32,14 @@ def export_iter(defn_obj, bounds=None):
     # for each geometry, yield a header and then the data for each geom in the geometry
     for geom_source in expressions:
         queries = expressions[geom_source]
-        yield [q.get_name() for q in queries] + [[str(a) for a in q.query_attrs[2:]] for q in queries][0]
+        # q.query_attrs[2:] because the first three columns in query_attrs are gid, q
+        yield [geom_source.table_info.name + ".gid"] + [q.get_name() for q in queries] + [[str(a) for a in q.query_attrs[2:]] for q in queries][0]
         iters = [iter(mkq(q).yield_per(1)) for q in queries]
         vals = [next_or_none(i) for i in iters]
         while True:
             # figure the minimum gid in these results
             min_gid = min([t[0] for t in vals])
-            row = []
+            row = [min_gid]
             new_vals = []
             # grab the vals for that GID out; and jump forward
             # on corresponding iterators

@@ -6,9 +6,11 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import { List, ListItem } from 'material-ui/List';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import LayerToggle from './LayerToggleContainer';
+import Divider from 'material-ui/Divider';
 
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
@@ -24,11 +26,14 @@ import ActionBookmarkBorder from 'material-ui/svg-icons/action/bookmark-border';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import ActionLock from 'material-ui/svg-icons/action/lock';
 import ActionLockOpen from 'material-ui/svg-icons/action/lock-open';
+import ImageGridOn from 'material-ui/svg-icons/image/grid-on';
+import ImageGridOff from 'material-ui/svg-icons/image/grid-off';
 import SocialPublic from 'material-ui/svg-icons/social/public';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import InsertChart from 'material-ui/svg-icons/editor/insert-chart';
+import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 
 import {grey300, darkBlack, lightBlack} from 'material-ui/styles/colors';
 
@@ -38,6 +43,12 @@ const styles = {
     },
     tabBody: {
         margin: "10px",
+    },
+    downloadButton: {
+        margin: "12px",
+    },
+    includeGeomAttrsCheckbox: {
+        margin: "12px",
     },
     radioButton: {
         marginBottom: "0px",
@@ -71,11 +82,14 @@ export interface MapUINavProps {
     onToggleDeleteModalState: Function,
     deleteModalOpen: boolean,
     dataInspector: Array<any>,
+    onExportWholeMap: Function,
+    onExportMapViewport: Function,
+    onCheckIncludeGeomAttrs: Function,
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
     render() {
-        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, defn, isOwner, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector, onExportWholeMap, onExportMapViewport, onCheckIncludeGeomAttrs } = this.props
 
         const deleteMapActions = [
             <FlatButton
@@ -138,11 +152,38 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
 
                 {/* START DATA INSPECTOR TAB */}
                 <Tab
-                    label="DATA INSPECTOR"
+                    label="DATA"
                     containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`}/>}
                     value={"data"}
                 >
                     <div style={styles.tabBody}>
+                        <Subheader>Download Data</Subheader>
+
+                        <RaisedButton
+                            label="Whole Map"
+                            secondary={true}
+                            style={styles.downloadButton}
+                            icon={<FileFileDownload />}
+                            onClick={onExportWholeMap}
+                        />
+                        <RaisedButton
+                            label="Map Viewport"
+                            secondary={true}
+                            style={styles.downloadButton}
+                            icon={<FileFileDownload />}
+                            onClick={onExportMapViewport}
+                        />
+
+                        <Checkbox
+                            checkedIcon={<ImageGridOn />}
+                            uncheckedIcon={<ImageGridOff />}
+                            label="Include extra attributes from the geometry source"
+                            style={styles.includeGeomAttrsCheckbox}
+                            onCheck={onCheckIncludeGeomAttrs}
+                        />
+
+                        <Divider />
+
                         <List>
                             <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} disabled={true} />
                             {dataInspector.map((row: any, key: number) =>

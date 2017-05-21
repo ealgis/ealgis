@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
+import { proj } from 'openlayers';
 import MapUINav from "./MapUINav";
 import { addLayer, duplicateMap, updateMapOrigin, resetMapPosition, deleteMap, toggleModalState, updateDataInspector, resetDataInspector, changeMapSharing } from '../actions';
 
@@ -25,6 +26,8 @@ export interface MapUINavContainerProps {
     resetDataInspector: Function,
     onCloseMap: Function,
     previousPath: string,
+    onExportWholeMap: Function,
+    onExportMapViewport: Function,
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
@@ -40,7 +43,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 
     render() {
-        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector } = this.props
+        const { tabName, mapDefinition, userId, mapPosition, onAddLayer, onDuplicateMap, onSetOrigin, onResetOrigin, onChangeSharing, onDeleteMap, onCloseMap, onToggleDeleteModalState, deleteModalOpen, dataInspector, onExportWholeMap, onExportMapViewport, onCheckIncludeGeomAttrs } = this.props
         
         if(mapDefinition !== undefined) {
             return <MapUINav
@@ -57,6 +60,9 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                         onToggleDeleteModalState={() => onToggleDeleteModalState()}
                         deleteModalOpen={deleteModalOpen}
                         dataInspector={dataInspector}
+                        onExportWholeMap={() => onExportWholeMap(mapDefinition.id)}
+                        onExportMapViewport={() => onExportMapViewport(mapDefinition.id, mapPosition.extent)}
+                        onCheckIncludeGeomAttrs={(event: object, isInputChecked: boolean) => onCheckIncludeGeomAttrs(isInputChecked)}
                     />;
         }
         return <div></div>
@@ -105,6 +111,19 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     onCloseMap: () => {
         browserHistory.goBack()
+    },
+    onExportWholeMap: (mapId: number) => {
+        const include_geom_attrs: boolean = (this.isIncludeGeomAttrsChecked) ? true : false
+        window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
+    },
+    onExportMapViewport: (mapId: number, extent: Array<number>) => {
+        const include_geom_attrs: boolean = (this.isIncludeGeomAttrsChecked) ? true : false
+        const extentLonLat = proj.transformExtent(extent, 'EPSG:900913', 'EPSG:4326')
+        window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
+    },
+    onCheckIncludeGeomAttrs: (isInputChecked: boolean) => {
+        // FIXME Should be in state or props. What's best practice for attributes like this?
+        this.isIncludeGeomAttrsChecked = isInputChecked
     },
   };
 }

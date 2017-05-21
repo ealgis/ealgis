@@ -174,7 +174,7 @@ class DataExpression(object):
          (logicalop, 2, opAssoc.LEFT, EvalLogicalOp),
          ])
 
-    def __init__(self, name, geometry_source, expr, cond, srid=None, include_geometry=True, order_by_gid=False):
+    def __init__(self, name, geometry_source, expr, cond, srid=None, include_geometry=True, order_by_gid=False, include_geom_attrs=False):
         self.name = name
         self.geometry_source = geometry_source
         self.geometry_column = None
@@ -211,11 +211,13 @@ class DataExpression(object):
             expr = parsed.eval(self) + 0
         query_attrs.append(sqlalchemy.sql.expression.label('q', expr))
 
-        # Attach all columns from the geometry source
-        attrs = self.tbl.metadata.tables[geometry_source.__table__.schema + "." + geometry_source.table_info.name].columns.keys()
-        # Prune out columns that look like geometry. Bodge bodge FIXME.
-        for attr in [c for c in attrs if c.startswith("geom") is False]:
-            query_attrs.append(getattr(self.tbl, attr))
+        if include_geom_attrs:
+            # Attach all columns from the geometry source
+            attrs = self.tbl.metadata.tables[geometry_source.__table__.schema + "." + geometry_source.table_info.name].columns.keys()
+            # Prune out columns that look like geometry. Bodge bodge FIXME.
+            for attr in [c for c in attrs if c.startswith("geom") is False]:
+                if attr != "gid":
+                    query_attrs.append(getattr(self.tbl, attr))
 
         self.query_attrs = query_attrs
 
@@ -285,13 +287,3 @@ class DataExpression(object):
 
     def get_postgis_query(self):
         return ("%s" % (self.get_printed_query())).replace("\n", "")
-
-
-if __name__ == '__main__':
-    src = eal.get_table_info('sa1_2011_aust').geometry_source
-    expr = DataExpression('CommandLine', src, sys.argv[1], sys.argv[2])
-    logger.debug("Raw query::\n")
-    logger.debug(''.join(["   " + t + '\n' for t in expr.get_printed_query().splitlines()]))
-    logger.debug("\PostGIS query\n")
-    logger.debug('    ' + expr.get_postgis_query())
-    logger.debug("Test:", len(expr.get_query()[:10]))
