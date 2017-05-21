@@ -73,12 +73,7 @@ function app(state = {
                 return dotProp.set(state, `snackbar.open`, false)
             }
         case RECEIVE_MAP_POSITION:
-            if("center" in action.position) {
-                return dotProp.set(state, `mapPosition.center`, action.position.center)
-            } else if("zoom" in action.position) {
-                return dotProp.set(state, `mapPosition.zoom`, action.position.zoom)
-            }
-            return state
+            return dotProp.set(state, `mapPosition`, action.position)
         case RECEIVE_RESET_MAP_POSITION:
             return dotProp.set(state, `mapPosition`, {
                 "center": {

@@ -561,8 +561,11 @@ export function resetMapPosition(mapDefaults: any) {
     return (dispatch: any) => {
         dispatch(toggleAllowMapViewSetting())
         dispatch(setMapPositionToDefault(mapDefaults))
-        // The permission to modify the map is toggled back off in MapUIContainer ->
-        // onNavigation()
+
+        // FIXME Bit of a hack to temporarily allow the view to update its props
+        setTimeout(() => {
+            dispatch(toggleAllowMapViewSetting())
+        }, 250)
     }
 }
 

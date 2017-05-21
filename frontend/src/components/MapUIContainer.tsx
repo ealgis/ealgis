@@ -16,19 +16,19 @@ export interface MapContainerProps {
     params: any,
     mapDefinition: MapContainerRouteParams,
     onSingleClick: Function,
-    onNavigation: Function,
+    onMoveEnd: Function,
     app: object,
     allowMapViewSetting: boolean,
 }
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     render() {
-        const { mapDefinition, onSingleClick, onNavigation, allowMapViewSetting } = this.props
-
+        const { mapDefinition, onSingleClick, onMoveEnd, allowMapViewSetting } = this.props
+        
         return <MapUI
                     defn={mapDefinition}
                     onSingleClick={(evt: any) => onSingleClick(mapDefinition.id, evt)}
-                    onNavigation={(evt: any) => onNavigation(evt, allowMapViewSetting)}
+                    onMoveEnd={(evt: any) => onMoveEnd(mapDefinition.id, evt, allowMapViewSetting)}
                     allowMapViewSetting={allowMapViewSetting}
                 />
     }
@@ -56,29 +56,25 @@ const mapDispatchToProps = (dispatch: any) => {
                 "mapId": layerProps["mapId"],
                 "layerId": layerProps["layerId"],
                 "featureProps": featureProps
-            });
+            }); 
         })
         
         dispatch(sendToDataInspector(mapId, features))
     },
-    onNavigation: (mapCentreOrResolution: any, allowMapViewSetting: boolean) => {
-        // Prevent infinite loops - if we've received a prompt to update the app's
-        // mapPosition from the map then always reset the toggleAllowMapViewSetting
-        // off. We toggle this to on in calls to actions -> resetMapPosition()
-        if(allowMapViewSetting) {
-            dispatch(toggleAllowMapViewSetting())
-        }
+    onMoveEnd: (mapId: number, event: object, allowMapViewSetting: boolean) => {
+        const view = event.map.getView()
+        const centreLonLat = proj.transform(view.getCenter(), 'EPSG:900913', 'EPSG:4326')
 
-        // Centre is provided in Web Mercator, but we need WGS84.
-        if("center" in mapCentreOrResolution) {
-            const latlons = proj.transform(mapCentreOrResolution.center, 'EPSG:900913', 'EPSG:4326')
-            mapCentreOrResolution.center = {
-                lon: latlons[0],
-                lat: latlons[1],
-            }
+        const position = {
+            center: {
+                lon: centreLonLat[0],
+                lat: centreLonLat[1],
+            },
+            zoom: view.getZoom(),
+            resolution: view.getResolution(),
+            extent: view.calculateExtent(event.map.getSize()),
         }
-
-        dispatch(receiveMapPosition(mapCentreOrResolution))
+        dispatch(receiveMapPosition(position))
     },
   };
 }
