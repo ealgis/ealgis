@@ -54,6 +54,7 @@ export const MERGE_LAYER_PROPERTIES = 'MERGE_LAYER_PROPERTIES'
 export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
 export const RECEIVE_LAYERFORM_ERRORS = 'RECEIVE_LAYERFORM_ERRORS'
 export const RECEIVE_LEGENDPEEK_LABEL = 'RECEIVE_LEGENDPEEK_LABEL'
+export const RECEIVE_SET_USER_MENU_STATE = 'RECEIVE_SET_USER_MENU_STATE'
 
 const ealapi = new EALGISApiClient()
 
@@ -575,15 +576,19 @@ export function fetchUserMapsDataAndColourInfo() {
     // It also injects a second argument called getState() that lets us read the current state.
     return (dispatch: any, getState: Function) => {
         // Remember I told you dispatch() can now handle thunks?
-        return dispatch(fetchUser()).then(() => {
-            // And we can dispatch() another thunk now!
-            return dispatch(fetchMaps()).then(() => {
-                return dispatch(fetchDataInfo()).then(() => {
-                    return dispatch(fetchColourInfo()).then(() => {
-                        dispatch(receiveAppLoaded())
+        return dispatch(fetchUser()).then((user: object) => {
+            if(user.id !== null) {
+                // And we can dispatch() another thunk now!
+                return dispatch(fetchMaps()).then(() => {
+                    return dispatch(fetchDataInfo()).then(() => {
+                        return dispatch(fetchColourInfo()).then(() => {
+                            dispatch(receiveAppLoaded())
+                        })
                     })
                 })
-            })
+            } else {
+                dispatch(receiveAppLoaded())
+            }
         })
     }
 }
@@ -595,6 +600,7 @@ export function fetchUser() {
         return ealapi.get('/api/0.1/self', dispatch)
             .then(({ response, json }: any) => {
                 dispatch(receiveUser(json))
+                return json
             });
     }
 }
@@ -1067,5 +1073,12 @@ export function changeMapSharing(mapId: number, shared: number) {
         dispatch(updateMap(getState().maps[mapId])).then(() => {
             dispatch(sendSnackbarNotification("Layer sharing settings updated"))
         })
+    }
+}
+
+export function setUserMenuState(open: boolean) {
+    return {
+        type: RECEIVE_SET_USER_MENU_STATE,
+        open,
     }
 }

@@ -11,6 +11,9 @@ import LinearProgress from 'material-ui/LinearProgress';
 import {cyanA400} from 'material-ui/styles/colors';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Toggle from 'material-ui/Toggle';
+import ActionBugReport from 'material-ui/svg-icons/action/bug-report';
+import ActionFace from 'material-ui/svg-icons/action/face';
+import SocialSentinmentVeryDissatisfied from 'material-ui/svg-icons/social/sentiment-very-dissatisfied';
 import { LoginDialog } from './LoginDialog';
 
 export interface EalUISnackbarNotificationProps {
@@ -42,16 +45,25 @@ export interface EalUIProps {
     handleRequestClose: any,
     doLogout: Function,
     onDebugToggle: any,
+    handleOpenUserMenu: Function,
+    handleUserMenuOnRequestChange: Function,
 }
 
-const appBarButtonStyle = {
-    "color": "#ffffff",
-    "margin": "4px 0px",
+const styles = {
+    hiddenIconButton: {
+        width: "0px",
+        height: "0px",
+        padding: "0px",
+    },
+    appBarButtonStyle: {
+        color: "#ffffff",
+        margin: "4px 0px",
+    },
 }
 
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
-        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle } = this.props
+        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange } = this.props
 
         const linearProgressStyle = {
             "position": "fixed",
@@ -64,33 +76,38 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
             <div className="page-header">
                 <LinearProgress mode="indeterminate" color={cyanA400} style={linearProgressStyle} />
                 <AppBar 
-                    title={user.username}
+                    title="EALGIS"
                     onLeftIconButtonTouchTap={onTapAppBarLeft}
                     iconElementRight={<ToolbarGroup>
-                        <FlatButton label="Home" containerElement={<Link to={"/"} />} style={appBarButtonStyle} />
-                        <FlatButton label="About" containerElement={<Link to={"/about"} />} style={appBarButtonStyle} />
-                        <FlatButton label="Logout" onClick={doLogout} style={appBarButtonStyle} />
-                        {user.is_staff ? 
-                            <IconMenu
-                                iconButtonElement={<IconButton><MoreVertIcon color={"white"} /></IconButton>}
-                                anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-                                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                            >
-                                <MenuItem>
-                                    <Toggle
-                                        label="Debug"
-                                        toggled={app.debug}
-                                        onToggle={onDebugToggle}
-                                    />
-                                </MenuItem>
-                            </IconMenu>
-                            :
-                            <div></div>}
+                        <FlatButton label="Home" containerElement={<Link to={"/"} />} style={styles.appBarButtonStyle} />
+                        <FlatButton label="About" containerElement={<Link to={"/about"} />} style={styles.appBarButtonStyle} />
+                        {user.id !== null && <FlatButton
+                            label={user.username}
+                            icon={<ActionFace />}
+                            onTouchTap={handleOpenUserMenu}
+                            style={styles.appBarButtonStyle}
+                        />}
+                        {user.id !== null && <IconMenu
+                            iconButtonElement={<IconButton style={styles.hiddenIconButton} />}
+                            open={app.userMenuState}
+                            onRequestChange={handleUserMenuOnRequestChange}
+                        >
+                            {user.is_staff && <MenuItem
+                                primaryText={(app.debug) ? "Debug Mode: ON" : "Debug Mode: OFF"}
+                                leftIcon={<ActionBugReport />}
+                                onClick={onDebugToggle}
+                            />}
+                            <MenuItem
+                                primaryText="Logout"
+                                leftIcon={<SocialSentinmentVeryDissatisfied />}
+                                onClick={doLogout}
+                            />
+                        </IconMenu>}
                     </ToolbarGroup>}
                 />
             </div>
             <div className="page-content" style={{"display": app.sidebarOpen ? "flex" : "block"}}>
-                <LoginDialog open={user.url === null} />
+                <LoginDialog open={user.id === null} />
                 <main className="page-main-content">
                     {content || this.props.children}
                 </main>

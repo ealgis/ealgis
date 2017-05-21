@@ -2,7 +2,7 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath, logoutUser } from '../actions';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath, logoutUser, setUserMenuState } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import './FixedLayout.css';
@@ -20,6 +20,8 @@ export interface EalContainerProps {
     onDebugToggle: Function,
     location: object,
     onReceiveAppPreviousPath: Function,
+    handleOpenUserMenu: Function,
+    handleUserMenuOnRequestChange: Function,
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
@@ -46,7 +48,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle } = this.props
+        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange } = this.props
 
         if(app.loading === true) {
             return <MuiThemeProvider>
@@ -65,6 +67,8 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 handleRequestClose={handleRequestClose}
                 doLogout={doLogout}
                 onDebugToggle={onDebugToggle}
+                handleOpenUserMenu={handleOpenUserMenu}
+                handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
             />
         </MuiThemeProvider>;
     }
@@ -99,6 +103,12 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     doLogout: () => {
         dispatch(logoutUser())
+    },
+    handleOpenUserMenu: () => {
+        dispatch(setUserMenuState(true))
+    },
+    handleUserMenuOnRequestChange: (value: boolean) => {
+        dispatch(setUserMenuState(value))
     },
   };
 }
