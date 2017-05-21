@@ -181,7 +181,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                         <Divider />
 
                         <List>
-                            <ListItem primaryText="Data Inspector" leftIcon={<InsertChart />} disabled={true} />
+                            <ListItem primaryText="Data Inspector" secondaryText="Click on the map to drilldown into the data" leftIcon={<InsertChart />} disabled={true} />
                             {dataInspector.map((row: any, key: number) =>
                                 <ListItem
                                     key={key}
