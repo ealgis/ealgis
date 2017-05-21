@@ -54,7 +54,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                     cols={1}
                     titleBackground={'rgba(0, 188, 212, 0.7)'}
                 >
-                    <MapCoverImage mapDefinition={m} width={250} height={185} />
+                    <MapCoverImage mapDefinition={m} width={370} height={180} />
                 </GridTile>
             )
 

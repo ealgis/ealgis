@@ -19,7 +19,7 @@ export class MapCoverImage extends React.Component<MapCoverImageProps, undefined
         const pitch = 0
         const mapbox_static_img = `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/static/${lon},${lat},${zoom},${bearing},${pitch}/${width}x${height}@2x?access_token=${mapbox_key}`
 
-        return <img src={mapbox_static_img} />
+        return <img src={mapbox_static_img} width="100%" />
     }
 }
 
