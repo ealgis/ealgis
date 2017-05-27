@@ -2,10 +2,15 @@ import * as React from "react";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import EalUI from "./EalUI";
 import { connect } from 'react-redux';
-import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath, logoutUser, setUserMenuState } from '../actions';
+import { proj } from 'openlayers';
+import { fetchUserMapsDataAndColourInfo, receiveSidebarState, addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, toggleDebugMode, receiveAppPreviousPath, logoutUser, setUserMenuState, setMapExtent } from '../actions';
 import CircularProgress from 'material-ui/CircularProgress';
+import GoogleMapLoader from 'react-google-maps-loader';
 
 import './FixedLayout.css';
+
+// FIXME - Where should API keys be stored?
+const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU"; // Google Maps JavaScript API
 
 export interface EalContainerProps {
     app: object,
@@ -22,6 +27,7 @@ export interface EalContainerProps {
     onReceiveAppPreviousPath: Function,
     handleOpenUserMenu: Function,
     handleUserMenuOnRequestChange: Function,
+    handleGooglePlacesAutocomplete: Function,
 }
 
 export class EalContainer extends React.Component<EalContainerProps, undefined> {
@@ -48,7 +54,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange } = this.props
+        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
 
         if(app.loading === true) {
             return <MuiThemeProvider>
@@ -69,6 +75,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 onDebugToggle={onDebugToggle}
                 handleOpenUserMenu={handleOpenUserMenu}
                 handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
+                handleGooglePlacesAutocomplete={handleGooglePlacesAutocomplete}
             />
         </MuiThemeProvider>;
     }
@@ -110,6 +117,12 @@ const mapDispatchToProps = (dispatch: any) => {
     handleUserMenuOnRequestChange: (value: boolean) => {
         dispatch(setUserMenuState(value))
     },
+    handleGooglePlacesAutocomplete: (lat: number, lon: number, result: object) => {
+        const viewport = result.geometry.viewport.toJSON()
+        dispatch(setMapExtent(
+            proj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], 'EPSG:4326', 'EPSG:900913')
+        ))
+    },
   };
 }
 
@@ -118,4 +131,8 @@ const EalContainerWrapped = connect(
     mapDispatchToProps,
 )(EalContainer as any)
 
-export default EalContainerWrapped
+// export default EalContainerWrapped
+export default GoogleMapLoader(EalContainerWrapped, {
+  libraries: ["places"],
+  key: GOOGLE_MAPS_API_KEY,
+})

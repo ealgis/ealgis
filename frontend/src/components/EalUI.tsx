@@ -8,13 +8,15 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import LinearProgress from 'material-ui/LinearProgress';
-import {cyanA400} from 'material-ui/styles/colors';
+import { cyanA400 } from 'material-ui/styles/colors';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Toggle from 'material-ui/Toggle';
 import ActionBugReport from 'material-ui/svg-icons/action/bug-report';
 import ActionFace from 'material-ui/svg-icons/action/face';
+import ActionSearch from 'material-ui/svg-icons/action/search';
 import SocialSentinmentVeryDissatisfied from 'material-ui/svg-icons/social/sentiment-very-dissatisfied';
 import { LoginDialog } from './LoginDialog';
+import GooglePlacesAutocomplete from './FormControls/GooglePlacesAutocomplete';
 
 export interface EalUISnackbarNotificationProps {
     message: string,
@@ -47,6 +49,7 @@ export interface EalUIProps {
     onDebugToggle: any,
     handleOpenUserMenu: Function,
     handleUserMenuOnRequestChange: Function,
+    handleGooglePlacesAutocomplete: Function,
 }
 
 const styles = {
@@ -59,11 +62,14 @@ const styles = {
         color: "#ffffff",
         margin: "4px 0px",
     },
+    searchIconButton: {
+        padding: "0px",
+    },
 }
 
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
-        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange } = this.props
+        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
 
         const linearProgressStyle = {
             "position": "fixed",
@@ -79,6 +85,17 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                     title="EALGIS"
                     onLeftIconButtonTouchTap={onTapAppBarLeft}
                     iconElementRight={<ToolbarGroup>
+                        <IconButton style={styles.searchIconButton} tooltip={"Search for a place or address"}>
+                            <ActionSearch color={"white"} />
+                        </IconButton>
+                        <GooglePlacesAutocomplete
+                            results={handleGooglePlacesAutocomplete}
+                            componentRestrictions={{country: "AU"}}
+                            inputStyle={{color: "#ffffff"}}
+                            listStyle={{width: "100%"}}
+                            textFieldStyle={{width: "100%"}}
+                            name={"google-places-autocomplete"}
+                        />
                         <FlatButton label="Home" containerElement={<Link to={"/"} />} style={styles.appBarButtonStyle} />
                         <FlatButton label="About" containerElement={<Link to={"/about"} />} style={styles.appBarButtonStyle} />
                         {user.id !== null && <FlatButton
