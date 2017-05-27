@@ -16,8 +16,6 @@ export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDE
 export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
 export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
 export const RECEIVE_SET_MAP_ORIGIN = 'RECEIVE_SET_MAP_ORIGIN'
-export const RECEIVE_RESET_MAP_POSITION = 'RECEIVE_RESET_MAP_POSITION'
-export const RECEIVE_TOGGLE_MAP_VIEW_SETTING = 'RECEIVE_TOGGLE_MAP_VIEW_SETTING'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 export const REQUEST_MAPS = 'REQUEST MAPS'
@@ -268,19 +266,6 @@ export function setMapOrigin(mapId: number, position: any) {
         type: RECEIVE_SET_MAP_ORIGIN,
         mapId,
         position,
-    }
-}
-
-export function setMapPositionToDefault(mapDefaults: any) {
-    return {
-        type: RECEIVE_RESET_MAP_POSITION,
-        mapDefaults,
-    }
-}
-
-export function toggleAllowMapViewSetting() {
-    return {
-        type: RECEIVE_TOGGLE_MAP_VIEW_SETTING
     }
 }
 
@@ -560,13 +545,21 @@ export function updateMapOrigin(map: object, position: any) {
 
 export function resetMapPosition(mapDefaults: any) {
     return (dispatch: any) => {
-        dispatch(toggleAllowMapViewSetting())
-        dispatch(setMapPositionToDefault(mapDefaults))
+        dispatch(receiveMapPosition({
+            center: mapDefaults.center,
+            zoom: mapDefaults.zoom,
+            allowUpdate: true,
+        }))
+    }
+}
 
-        // FIXME Bit of a hack to temporarily allow the view to update its props
-        setTimeout(() => {
-            dispatch(toggleAllowMapViewSetting())
-        }, 250)
+export function setMapExtent(extent: Array<number>) {
+    return (dispatch: any) => {
+        dispatch(receiveMapPosition({
+            extent: extent,
+            zoom: 18,
+            allowUpdate: true,
+        }))
     }
 }
 

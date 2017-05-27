@@ -92,7 +92,10 @@ const mapDispatchToProps = (dispatch: any) => {
         dispatch(updateMapOrigin(mapDefinition, position))
     },
     onResetOrigin: (mapDefaults: any) => {
-        dispatch(resetMapPosition(mapDefaults))
+        dispatch(resetMapPosition({
+            center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+            zoom: mapDefaults.zoom,
+        }))
     },
     onChangeSharing: (mapId: number, shared: number) => {
         dispatch(changeMapSharing(mapId, shared))
@@ -100,9 +103,9 @@ const mapDispatchToProps = (dispatch: any) => {
     onToggleDeleteModalState: () => {
         dispatch(toggleModalState("deleteMap"))
     },
-    onDeleteMap: (mapId: number/*, cb: Function*/) => {
+    onDeleteMap: (mapId: number) => {
         dispatch(toggleModalState("deleteMap"))
-        dispatch(deleteMap(mapId/*, cb*/));
+        dispatch(deleteMap(mapId));
     },
     resetDataInspector: () => {
         dispatch(resetDataInspector())

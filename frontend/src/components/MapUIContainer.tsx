@@ -2,7 +2,7 @@ import * as React from "react";
 import MapUI from "./MapUI";
 import { connect } from 'react-redux';
 import { proj } from 'openlayers';
-import { receiveMapPosition, toggleAllowMapViewSetting, sendToDataInspector } from '../actions';
+import { receiveMapPosition, sendToDataInspector } from '../actions';
 
 
 import 'openlayers/css/ol.css';
@@ -15,31 +15,30 @@ export interface MapContainerProps {
     dispatch: Function,
     params: any,
     mapDefinition: MapContainerRouteParams,
+    position: object,
     onSingleClick: Function,
     onMoveEnd: Function,
-    app: object,
-    allowMapViewSetting: boolean,
 }
 
 export class MapContainer extends React.Component<MapContainerProps, undefined> {
     render() {
-        const { mapDefinition, onSingleClick, onMoveEnd, allowMapViewSetting } = this.props
+        const { mapDefinition, position, onSingleClick, onMoveEnd } = this.props
         
         return <MapUI
                     defn={mapDefinition}
+                    position={position}
                     onSingleClick={(evt: any) => onSingleClick(mapDefinition.id, evt)}
-                    onMoveEnd={(evt: any) => onMoveEnd(mapDefinition.id, evt, allowMapViewSetting)}
-                    allowMapViewSetting={allowMapViewSetting}
+                    onMoveEnd={(evt: any) => onMoveEnd(mapDefinition.id, evt)}
                 />
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
     const { app, maps } = state
+    
     return {
-        app: app,
         mapDefinition: maps[ownProps.params.mapId],
-        allowMapViewSetting: app.allowMapViewSetting,
+        position: app.mapPosition,
     }
 }
 
@@ -61,7 +60,7 @@ const mapDispatchToProps = (dispatch: any) => {
         
         dispatch(sendToDataInspector(mapId, features))
     },
-    onMoveEnd: (mapId: number, event: object, allowMapViewSetting: boolean) => {
+    onMoveEnd: (mapId: number, event: object) => {
         const view = event.map.getView()
         const centreLonLat = proj.transform(view.getCenter(), 'EPSG:900913', 'EPSG:4326')
 
