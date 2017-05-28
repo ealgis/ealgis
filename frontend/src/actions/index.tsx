@@ -737,9 +737,9 @@ export function createMap(map: object) {
         mapCopy["json"] = {
             // FIXME
             "map_defaults": {
-                "lat": "-27.121915157767",
-                "lon": "133.21253738715",
-                "zoom": "4"
+                "lat": -27.121915157767,
+                "lon": 133.21253738715,
+                "zoom": 4,
             },
             "layers": [],
         }
@@ -808,20 +808,14 @@ Some further reading on the subject:
 - https://github.com/reactjs/redux/issues/291
 - http://stackoverflow.com/questions/36886506/redux-change-url-when-an-async-action-is-dispatched
 */
-export function deleteMapSuccess(mapId: number) {
-  return (dispatch: any) => {
-    dispatch(receiveDeleteMap(mapId))
-    dispatch(sendSnackbarNotification("Map deleted successfully"))
-    browserHistory.push("/");
-  };
-}
-
 export function deleteMap(mapId: number) {
     return (dispatch: any) => {
         return ealapi.delete('/api/0.1/maps/' + encodeURIComponent(mapId.toString()) + '/', dispatch)
             .then((response: any) => {
                 if(response.status == 204) {
-                    dispatch(deleteMapSuccess(mapId))
+                    dispatch(receiveDeleteMap(mapId))
+                    dispatch(sendSnackbarNotification("Map deleted successfully"))
+                    browserHistory.push("/");
                 } else {
                     var error = new Error(response.statusText)
                     error.response = response

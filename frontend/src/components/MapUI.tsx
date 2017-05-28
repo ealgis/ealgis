@@ -41,11 +41,12 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
         } else {
             let zoom = 4
             let center = ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913')
-            const view = <olr.View zoom={zoom} center={center} />
+            const view = <olr.View zoom={zoom} center={center} position={position} />
 
-            return <olr.Map view={view}>
+            return <olr.Map view={view} onMoveEnd={onMoveEnd}>
+                <olr.control.Attribution />
                 <olr.layer.Tile>
-                    <olr.source.XYZ url={mapbox_url} />
+                    <olr.source.XYZ url={mapbox_url} attributions={mapbox_attribution} />
                 </olr.layer.Tile>
             </olr.Map>
         }

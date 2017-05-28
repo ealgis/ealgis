@@ -76,9 +76,10 @@ export class MapList extends React.Component<MapListProps, undefined> {
                             padding={10}
                         >
                             <GridTile
-                                key={"abc"}
+                                key={"create-new-map"}
                                 containerElement={<Link to={"/new/map/"} />}
                                 title={"Create New Map"}
+                                titleStyle={{color: "#ffffff"}}
                                 cols={1}
                             >
                                 <FlatButton

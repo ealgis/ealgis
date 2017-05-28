@@ -27,7 +27,7 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
                     defn={mapDefinition}
                     position={position}
                     onSingleClick={(evt: any) => onSingleClick(mapDefinition.id, evt)}
-                    onMoveEnd={(evt: any) => onMoveEnd(mapDefinition.id, evt)}
+                    onMoveEnd={onMoveEnd}
                 />
     }
 }
@@ -59,7 +59,7 @@ const mapDispatchToProps = (dispatch: any) => {
         
         dispatch(sendToDataInspector(mapId, features))
     },
-    onMoveEnd: (mapId: number, event: object) => {
+    onMoveEnd: (event: object) => {
         const view = event.map.getView()
         const centreLonLat = proj.transform(view.getCenter(), 'EPSG:900913', 'EPSG:4326')
 

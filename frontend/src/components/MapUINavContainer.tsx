@@ -36,7 +36,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
 
         // If we came from anywhere except for a sub-route of /map/{mapId} then ensure
         // we reset the map extents to the default for this map.
-        if(!previousPath.startsWith(location.pathname)) {
+        if(mapDefinition !== undefined && !previousPath.startsWith(location.pathname)) {
             onResetOrigin(mapDefinition.json.map_defaults)
         }
     }
