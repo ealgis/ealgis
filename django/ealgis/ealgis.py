@@ -504,6 +504,48 @@ class EAlGIS(object):
                     ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
                     FROM _geom, _conf"""
 
+            SQL_TEMPLATE_MATVIEW_WITH_CLIPPING = """
+                WITH _conf AS (
+                    SELECT
+                        20 AS magic,
+                        {res} AS res,
+                        {decimalPlaces} AS decimal_places,
+                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
+                        ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 10) AS extent_buffered
+                    ),
+                    -- end conf
+                    _geom AS (
+                        SELECT
+                            ST_SnapToGrid(
+                                CASE WHEN
+                                    ST_CoveredBy({geom_column_name}, extent) = TRUE
+                                THEN
+                                    {geom_column_name}
+                                ELSE
+                                    ST_Intersection(
+                                        CASE WHEN
+                                            ST_IsValid({geom_column_name}) = TRUE
+                                        THEN
+                                            {geom_column_name}
+                                        ELSE
+                                            ST_MakeValid({geom_column_name})
+                                        END
+                                        , extent_buffered)
+                                END,
+                                res/magic, res/magic
+                            ) AS {geom_column_name},
+                            gid, q
+                        FROM (
+                        -- main query
+                        {query}
+                        ) _wrap, _conf
+                        WHERE {geom_column_name} && extent
+                    )
+                    -- end geom
+                SELECT gid, q,
+                    ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
+                    FROM _geom, _conf"""
+
             # For server-side GeoJSON creation
             # Access with:
             # return Response(results.fetchone()["jsonb_build_object"], headers=headers)
@@ -572,6 +614,8 @@ class EAlGIS(object):
 
                 # print("Use matview column {} for zoom {}".format(geomColumnName, z))
                 sql = SQL_TEMPLATE_MATVIEW.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid)
+                # sql = SQL_TEMPLATE_MATVIEW_WITH_CLIPPING.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid, res=resolution)
+
                 # print(sql)
                 return sql
 
