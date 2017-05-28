@@ -35,7 +35,7 @@ class GATracker {
     }
 }
 
-const gaTrack = new GATracker(true, true)
+const gaTrack = new GATracker()
 
 const AnalyticsMiddleware = store => next => action => {
     switch(action.type) {
