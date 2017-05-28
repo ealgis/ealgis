@@ -107,6 +107,8 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                 <ToolbarGroup firstChild={true}>
                     {isOwner &&
                         <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}><MapsAddLocation /></IconButton>
+                    }
+                    {isOwner &&
                         <IconButton tooltip="Edit the name and description of your map" tooltipPosition="bottom-right" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}><ModeEdit /></IconButton>
                     }
                     <IconButton tooltip="Duplicate this map and use it to create a new map" tooltipPosition="bottom-right" onClick={onDuplicateMap}><ContentCopy /></IconButton>
