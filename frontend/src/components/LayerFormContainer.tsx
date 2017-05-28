@@ -186,7 +186,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
         const { mapDefinition, layerId, isDirty, onToggleDirtyFormModalState } = this.props
         
         // Prompt the user to discard/save their changes if we're navigate away from the layer form
-        if(!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/layer/${layerId}`)) {
+        if(!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}/layer/${layerId}`)) {
             // return false to prevent a transition w/o prompting the user,
             // or return a string to allow the user to decide:
             if(isDirty) {
