@@ -92,7 +92,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                             results={handleGooglePlacesAutocomplete}
                             componentRestrictions={{country: "AU"}}
                             inputStyle={{color: "#ffffff"}}
-                            listStyle={{width: "100%"}}
+                            listStyle={{width: "100%", maxWidth: "400px", overflow: "hidden"}}
                             textFieldStyle={{width: "100%"}}
                             name={"google-places-autocomplete"}
                         />

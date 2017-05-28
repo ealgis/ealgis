@@ -54,7 +54,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     }
 
     render() {
-        const { app, user, children, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
+        const { app, user, children, content, sidebar, location, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
 
         if(app.loading === true) {
             return <MuiThemeProvider>
@@ -75,7 +75,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 onDebugToggle={onDebugToggle}
                 handleOpenUserMenu={handleOpenUserMenu}
                 handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
-                handleGooglePlacesAutocomplete={handleGooglePlacesAutocomplete}
+                handleGooglePlacesAutocomplete={(lat, lon, result) => handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)}
             />
         </MuiThemeProvider>;
     }
@@ -117,11 +117,14 @@ const mapDispatchToProps = (dispatch: any) => {
     handleUserMenuOnRequestChange: (value: boolean) => {
         dispatch(setUserMenuState(value))
     },
-    handleGooglePlacesAutocomplete: (lat: number, lon: number, result: object) => {
-        const viewport = result.geometry.viewport.toJSON()
-        dispatch(moveToGooglePlacesResult(
-            proj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], 'EPSG:4326', 'EPSG:900913')
-        ))
+    handleGooglePlacesAutocomplete: (lat: number, lon: number, result: object, pathname: string) => {
+        // Only navigate if the map is visible
+        if(pathname.startsWith("/map")) {
+            const viewport = result.geometry.viewport.toJSON()
+            dispatch(moveToGooglePlacesResult(
+                proj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], 'EPSG:4326', 'EPSG:900913')
+            ))
+        }
     },
   };
 }
