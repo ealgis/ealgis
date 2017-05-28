@@ -29,6 +29,8 @@
     "openlayers": "3.19.0",
     "promise-polyfill": "~6.0.2",
     "qs": "~6.4.0",
+    "raven-for-redux": "~1.0.0",
+    "raven-js": "~3.15.0",
     "react": "~15.4.2",
     "react-color": "~2.11.7",
     "react-cookie": "~1.0.4",

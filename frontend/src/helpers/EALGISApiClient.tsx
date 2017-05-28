@@ -1,12 +1,16 @@
 import 'whatwg-fetch'
 import * as qs from 'qs'
 import cookie from 'react-cookie'
+import * as Raven from "raven-js"
 import { addNewSnackbarMessageAndStartIfNeeded, handleIterateSnackbar, receiveBeginFetch, receiveFinishFetch } from '../actions'
 
 export class EALGISApiClient {
     // Only handles fatal errors from the API
     // FIXME Refactor to be able to handle errors that the calling action can't handle
     public handleError(error: any, url: string, dispatch: any) {
+        Raven.captureException(error)
+        Raven.showReportDialog()
+
         dispatch(addNewSnackbarMessageAndStartIfNeeded({
             message: `Error from ${url}`,
             // key: "SomeUID",

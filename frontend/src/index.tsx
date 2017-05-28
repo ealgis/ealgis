@@ -6,9 +6,14 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk'
 import { AnalyticsMiddleware, fireAnalyticsTracking } from "./utils/GoogleAnalytics"
+import * as Raven from "raven-js"
+import * as createRavenMiddleware from "raven-for-redux"
 
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
+
+// FIXME
+Raven.config('https://43c72d220a2140e4b36fb75c5042f6e0@sentry.io/173078').install()
 
 import reducers from './reducers/index';
 import { reduxFormReducer } from './reducers/index';
@@ -30,6 +35,7 @@ const store = createStore(
     composeEnhancers(applyMiddleware(
         thunkMiddleware,
         AnalyticsMiddleware,
+        createRavenMiddleware(Raven),
     ))
 );
 
