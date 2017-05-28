@@ -13,7 +13,9 @@ const styles = {
         "flexDirection": "row",
     },
     labelText: {
+        "height": "16px",
         "paddingTop": "4px",
+        "paddingBottom": "4px",
         "fontSize": "12px",
         "color": "rgba(0, 0, 0, 0.3)",
     },
@@ -32,6 +34,7 @@ export class LegendPeekBarNav extends React.Component<LegendPeekBarNavProps, und
         const { layerId, olStyleDef, handleMouseEnter, handleMouseLeave, labelText } = this.props
 
         return <div style={styles.peekBarContainer}>
+            <div style={styles.labelText}>{labelText || "Legend"}</div>
             <div style={styles.flexContainer}>
                 {olStyleDef.map((styleDef: object, key: number) => {
                     return <LegendPeekBarSwatch 
@@ -42,7 +45,6 @@ export class LegendPeekBarNav extends React.Component<LegendPeekBarNavProps, und
                             />
                 })}
             </div>
-            <div style={styles.labelText}>{labelText}</div>
         </div>
     }
 }
