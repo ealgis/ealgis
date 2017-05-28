@@ -59,6 +59,10 @@ const styles = {
       "transform": "scale(1) translate(0px, -4px)",
       "transformOrigin": "left top 0px",
   },
+  borderSizeSlider: {
+    "marginBottom": "0px",
+    "marginTop": "0px",
+  },
   fillOpacityPicker: {
       "marginTop": "14px",
       "marginBottom": "10px",
@@ -321,18 +325,16 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                                 </div>
 
                                 <div style={styles.flexboxSecondColumn}>
+                                    <h5 style={styles.fauxFiedlLabel}>Border size</h5>
                                     <Field 
-                                        name="borderSize" 
-                                        component={TextField} 
-                                        hintText="Border size (pixels)"
-                                        floatingLabelText="Border size"
-                                        floatingLabelFixed={true}
+                                        name="borderSize"
+                                        component={Slider}
                                         validate={[ required ]}
-                                        fullWidth={true}
-                                        type="number"
-                                        min="0"
-                                        max="20"
-                                        onChange={(event: any, newValue: string, previousValue: string) => onFieldChange(event.target.name, newValue)}
+                                        min={0}
+                                        max={20}
+                                        sliderStyle={styles.borderSizeSlider}
+                                        step={1}
+                                        onChange={(event: any, newValue: string, previousValue: string) => onFieldChange("borderSize", newValue)}
                                     />
                                 </div>
                             </div>

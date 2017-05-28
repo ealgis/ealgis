@@ -53,7 +53,7 @@ const getLayerFormValuesFromLayer = (layer: object, datainfo: object) => {
         "fillColourScheme": layer["fill"]["scale_name"],
         "filterExpression": layer["fill"]["conditional"],
         "fillColourSchemeLevels": layer["fill"]["scale_nlevels"],
-        "borderSize": layer["line"]["width"],
+        "borderSize": parseInt(layer["line"]["width"]),
         "borderColour": layer["line"]["colour"],
         "name": layer["name"],
         "description": layer["description"],
