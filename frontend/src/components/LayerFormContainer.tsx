@@ -6,7 +6,7 @@ import * as debounce from "lodash/debounce";
 import * as isEqual from "lodash/isEqual";
 import * as reduce from "lodash/reduce";
 import LayerForm from "./LayerForm";
-import { initDraftLayer, editDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState, sendSnackbarNotification } from '../actions'
+import { initDraftLayer, publishLayer, restoreMasterLayer, restoreMasterLayerAndDiscardForm, handleLayerFormChange, toggleModalState, sendSnackbarNotification, receiveStartLayerEditSession, receiveFitScaleToData } from '../actions'
 
 export interface LayerDefinitionProps {
     borderSize: number,
@@ -321,6 +321,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
 const mapDispatchToProps = (dispatch: any) => {
   return {
     startLayerEditSession: (mapId: number, layerId: number) => {
+        dispatch(receiveStartLayerEditSession())
         dispatch(initDraftLayer(mapId, layerId))
     },
     onSubmit: (mapId: number, layerId: number, layerFormValues: object) => {
@@ -357,6 +358,7 @@ const mapDispatchToProps = (dispatch: any) => {
         }
     },
     onFitScaleToData: (mapId: number, layerId: number, stats: object) => {
+        dispatch(receiveFitScaleToData())
         dispatch(change("layerForm", "scaleMin", stats.min))
         dispatch(change("layerForm", "scaleMax", stats.max))
 

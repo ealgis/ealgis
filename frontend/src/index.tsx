@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import thunkMiddleware from 'redux-thunk'
+import { AnalyticsMiddleware, fireAnalyticsTracking } from "./utils/GoogleAnalytics"
 
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -27,7 +28,8 @@ const store = createStore(
         form: reduxFormReducer,
     }),
     composeEnhancers(applyMiddleware(
-        thunkMiddleware
+        thunkMiddleware,
+        AnalyticsMiddleware,
     ))
 );
 
@@ -35,7 +37,7 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={history}>
+        <Router history={history} onUpdate={fireAnalyticsTracking}>
             <Route path="/" component={EalUIContainerWrapped}>
                 <Route path="map/:mapId/:mapName/edit" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
                 <Route path="map/:mapId/:mapName(/:tabName)" components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}/>

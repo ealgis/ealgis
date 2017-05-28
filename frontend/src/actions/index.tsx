@@ -14,7 +14,6 @@ export const RECEIVE_TOGGLE_SIDEBAR_STATE = 'RECEIVE_TOGGLE_SIDEBAR_STATE'
 export const RECEIVE_NEW_SNACKBAR_MESSAGE = 'RECEIVE_NEW_SNACKBAR_MESSAGE'
 export const RECEIVE_START_SNACKBAR_IF_NEEDED = 'RECEIVE_START_SNACKBAR_IF_NEEDED'
 export const RECEIVE_ITERATE_SNACKBAR = 'RECEIVE_ITERATE_SNACKBAR'
-export const RECEIVE_MAP_POSITION = 'RECEIVE_MAP_POSITION'
 export const RECEIVE_SET_MAP_ORIGIN = 'RECEIVE_SET_MAP_ORIGIN'
 export const REQUEST_USER = 'REQUEST USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
@@ -53,6 +52,16 @@ export const RECEIVE_LAYER_QUERY_SUMMARY = 'RECEIVE_LAYER_QUERY_SUMMARY'
 export const RECEIVE_LAYERFORM_ERRORS = 'RECEIVE_LAYERFORM_ERRORS'
 export const RECEIVE_LEGENDPEEK_LABEL = 'RECEIVE_LEGENDPEEK_LABEL'
 export const RECEIVE_SET_USER_MENU_STATE = 'RECEIVE_SET_USER_MENU_STATE'
+export const RECEIVE_RESET_MAP_POSITION = 'RECEIVE_RESET_MAP_POSITION'
+export const RECEIVE_SET_MAP_POSITION = 'RECEIVE_SET_MAP_POSITION'
+export const RECEIVE_MAP_MOVE_END = 'RECEIVE_MAP_MOVE_END'
+export const RECEIVE_BEGIN_PUBLISH_LAYER = 'RECEIVE_BEGIN_PUBLISH_LAYER'
+export const RECEIVE_BEGIN_RESTORE_MASTER_LAYER = 'RECEIVE_BEGIN_RESTORE_MASTER_LAYER'
+export const RECEIVE_ADD_NEW_LAYER = 'RECEIVE_ADD_NEW_LAYER'
+export const RECEIVE_LAYER_FORM_CHANGED = 'RECEIVE_LAYER_FORM_CHANGED'
+export const RECEIVE_GOOGLE_PLACES_RESULT = 'RECEIVE_GOOGLE_PLACES_RESULT'
+export const RECEIVE_START_LAYER_EDIT_SESSION = 'RECEIVE_START_LAYER_EDIT_SESSION'
+export const RECEIVE_FIT_SCALE_TO_DATA = 'RECEIVE_FIT_SCALE_TO_DATA'
 
 const ealapi = new EALGISApiClient()
 
@@ -254,9 +263,23 @@ export function sendSnackbarNotification(message: string) {
     }
 }
 
-export function receiveMapPosition(position: any) {
+export function receiveResetMapPosition(position: any) {
     return {
-        type: RECEIVE_MAP_POSITION,
+        type: RECEIVE_RESET_MAP_POSITION,
+        position
+    }
+}
+
+export function receiveSetMapPosition(position: any) {
+    return {
+        type: RECEIVE_SET_MAP_POSITION,
+        position
+    }
+}
+
+export function receiveMapMoveEnd(position: any) {
+    return {
+        type: RECEIVE_MAP_MOVE_END,
         position
     }
 }
@@ -322,8 +345,16 @@ export function updateMap(map: object) {
     }
 }
 
+export function receiveAddNewLayer() {
+    return {
+        type: RECEIVE_ADD_NEW_LAYER,
+    }
+}
+
 export function addLayer(mapId: number) {
     return (dispatch: any, getState: Function) => {
+        dispatch(receiveAddNewLayer())
+
         // Default to 2011 SA4s or whatever the first geometry is
         // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
         const datainfo = getState().datainfo
@@ -419,9 +450,21 @@ export function editDraftLayer(mapId: number, layerId: number, layerPartial: obj
     }
 }
 
+export function receiveBeginPublishLayer() {
+    return {
+        type: RECEIVE_BEGIN_PUBLISH_LAYER,
+    }
+}
+
+export function receiveBeginRestoreMasterLayer() {
+    return {
+        type: RECEIVE_BEGIN_RESTORE_MASTER_LAYER,
+    }
+}
+
 export function publishLayer(mapId: number, layerId: number, layer: object) {
     return (dispatch: any, getState: Function) => {
-        dispatch(toggleLayerFormSubmitting())
+        dispatch(receiveBeginPublishLayer())
 
         return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
             if(response.status === 200) {
@@ -443,7 +486,7 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
 
 export function restoreMasterLayer(mapId: number, layerId: number) {
     return (dispatch: any) => {
-        dispatch(toggleLayerFormSubmitting())
+        dispatch(receiveBeginRestoreMasterLayer())
 
         const payload = {
             "layerId": layerId,
@@ -545,7 +588,7 @@ export function updateMapOrigin(map: object, position: any) {
 
 export function resetMapPosition(mapDefaults: any) {
     return (dispatch: any) => {
-        dispatch(receiveMapPosition({
+        dispatch(receiveResetMapPosition({
             center: mapDefaults.center,
             zoom: mapDefaults.zoom,
             allowUpdate: true,
@@ -553,13 +596,38 @@ export function resetMapPosition(mapDefaults: any) {
     }
 }
 
-export function setMapExtent(extent: Array<number>) {
+export function receiveStartLayerEditSession() {
+    return {
+        type: RECEIVE_START_LAYER_EDIT_SESSION,
+    }
+}
+
+export function receiveFitScaleToData() {
+    return {
+        type: RECEIVE_FIT_SCALE_TO_DATA,
+    }
+}
+
+export function receiveGooglePlacesResult() {
+    return {
+        type: RECEIVE_GOOGLE_PLACES_RESULT,
+    }
+}
+
+export function moveToGooglePlacesResult(extent: Array<number>) {
     return (dispatch: any) => {
-        dispatch(receiveMapPosition({
+        dispatch(receiveGooglePlacesResult())
+        dispatch(receiveSetMapPosition({
             extent: extent,
             zoom: 18,
             allowUpdate: true,
         }))
+    }
+}
+
+export function onMapMoveEnd(position: object) {
+    return (dispatch: any) => {
+        dispatch(receiveMapMoveEnd(position))
     }
 }
 
@@ -995,8 +1063,16 @@ export function initDraftLayer(mapId: number, layerId: number) {
     }
 }
 
+export function receiveLayerFormChanged() {
+    return {
+        type: RECEIVE_LAYER_FORM_CHANGED,
+    }
+}
+
 export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
     return (dispatch: any, getState: Function) => {
+        dispatch(receiveLayerFormChanged())
+
         // Determine if we need to recompile the layer server-side.
         // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
         let willCompileServerSide: boolean = false

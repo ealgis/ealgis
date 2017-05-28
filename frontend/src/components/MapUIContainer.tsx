@@ -2,8 +2,7 @@ import * as React from "react";
 import MapUI from "./MapUI";
 import { connect } from 'react-redux';
 import { proj } from 'openlayers';
-import { receiveMapPosition, sendToDataInspector } from '../actions';
-
+import { onMapMoveEnd, sendToDataInspector } from '../actions';
 
 import 'openlayers/css/ol.css';
 
@@ -73,7 +72,7 @@ const mapDispatchToProps = (dispatch: any) => {
             resolution: view.getResolution(),
             extent: view.calculateExtent(event.map.getSize()),
         }
-        dispatch(receiveMapPosition(position))
+        dispatch(onMapMoveEnd(position))
     },
   };
 }
