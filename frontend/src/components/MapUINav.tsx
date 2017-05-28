@@ -260,7 +260,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                                 style={(defn.shared === 2) ? styles.radioButtonSelected : styles.radioButton}
                             />
 
-                            <RadioButton
+                            {/*<RadioButton
                                 value={3}
                                 iconStyle={styles.radioButtonIconStyle}
                                 label={<ListItem
@@ -273,7 +273,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                                 checkedIcon={<SocialPublic />}
                                 uncheckedIcon={<SocialPublic />}
                                 style={(defn.shared === 3) ? styles.radioButtonSelected : styles.radioButton}
-                            />
+                            />*/}
                         </RadioButtonGroup>
                     </div>
                 </Tab>}

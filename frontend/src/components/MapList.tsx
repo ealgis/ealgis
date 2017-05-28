@@ -115,7 +115,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                 {/* START SHARED TAB */}
 
                 {/* START PUBLIC TAB */}
-                <Tab
+                {/*<Tab
                     label="Public"
                     containerElement={<Link to={"/public"}/>}
                     value="public"
@@ -130,7 +130,7 @@ export class MapList extends React.Component<MapListProps, undefined> {
                             {mapGridTiles(getPublicMaps())}
                         </GridList>
                     </div>
-                </Tab>
+                </Tab>*/}
                 {/* START PUBLIC TAB */}
             </Tabs>
         </div>
