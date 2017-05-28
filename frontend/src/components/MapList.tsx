@@ -5,7 +5,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import {GridList, GridTile} from 'material-ui/GridList';
 import FlatButton from 'material-ui/FlatButton';
 import MapsLayers from 'material-ui/svg-icons/maps/layers';
-import {fullWhite} from 'material-ui/styles/colors';
+import {grey500, grey200} from 'material-ui/styles/colors';
 import MapCoverImage from './MapCoverImageContainer';
 
 const styles = {
@@ -78,14 +78,13 @@ export class MapList extends React.Component<MapListProps, undefined> {
                             <GridTile
                                 key={"create-new-map"}
                                 containerElement={<Link to={"/new/map/"} />}
-                                title={"Create New Map"}
+                                title={"Create Map"}
                                 titleStyle={{color: "#ffffff"}}
+                                titleBackground={'rgba(0, 188, 212, 0.7)'}
                                 cols={1}
                             >
                                 <FlatButton
-                                    backgroundColor={'rgba(205, 205, 205, 0.7)'}
-                                    hoverColor={'rgba(154, 154, 154, 0.7)'}
-                                    icon={<MapsLayers color={fullWhite} style={styles.createMapIconBig} />}
+                                    icon={<MapsLayers color={grey500} style={styles.createMapIconBig} />}
                                     style={styles.createMapIconButtonBig}
                                 />
                             </GridTile>
