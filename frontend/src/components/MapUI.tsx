@@ -16,6 +16,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
 
         const mapbox_key = "pk.eyJ1Ijoia2VpdGhtb3NzIiwiYSI6IjkxMTViNjcxN2U5ZDBjMTYzYzY2MzQwNTJkZjM1NGFkIn0.HS40UI-OD5lQWBxUCZOwZg" // Where should this live?
         const mapbox_url = `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${mapbox_key}`
+        const mapbox_attribution = '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright"> OpenStreetMap contributors</a>'
 
         // FIXME Fix the map definitions
         if(defn !== undefined) {
@@ -26,8 +27,9 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
             return <olr.Map view={view} onSingleClick={onSingleClick} onMoveEnd={onMoveEnd}>
                 <olr.interaction.Select />
                 <olr.control.FullScreen source={"ealgis"} />
+                <olr.control.Attribution />
                 <olr.layer.Tile>
-                    <olr.source.XYZ url={mapbox_url} />
+                    <olr.source.XYZ url={mapbox_url} attributions={mapbox_attribution} />
                 </olr.layer.Tile>
                 <div>
                     {defn.json.layers.map((l: any, key: number) => {
