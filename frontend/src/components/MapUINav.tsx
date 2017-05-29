@@ -118,7 +118,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     }
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
-                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/"} />}><NavigationClose /></IconButton>
+                    <IconButton tooltip="Close this map and return to your list of maps" tooltipPosition="bottom-right" containerElement={<Link to={"/maps"} />}><NavigationClose /></IconButton>
                 </ToolbarGroup>
             </Toolbar>
 

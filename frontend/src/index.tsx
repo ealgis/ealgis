@@ -24,6 +24,7 @@ import LayerFormContainerWrapped from "./components/LayerFormContainer";
 import MapFormContainerWrapped from "./components/MapFormContainer";
 import MapListContainerWrapped from "./components/MapListContainer";
 import About from "./components/About";
+import Welcome from "./components/Welcome";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
@@ -51,7 +52,7 @@ ReactDOM.render(
                 <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }}/>
                 <Route path="about" components={{ content: About }} />
                 <Route path="(:tabName)" components={{ content: MapListContainerWrapped }}/>
-                <IndexRoute components={{ content: MapListContainerWrapped }}/>
+                <IndexRoute components={{ content: Welcome }}/>
             </Route>
         </Router>
     </Provider>,

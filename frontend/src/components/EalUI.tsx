@@ -97,6 +97,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                             name={"google-places-autocomplete"}
                         />
                         <FlatButton label="Home" containerElement={<Link to={"/"} />} style={styles.appBarButtonStyle} />
+                        <FlatButton label="Maps" containerElement={<Link to={"/maps"} />} style={styles.appBarButtonStyle} />
                         <FlatButton label="About" containerElement={<Link to={"/about"} />} style={styles.appBarButtonStyle} />
                         {user.id !== null && <FlatButton
                             label={user.username}

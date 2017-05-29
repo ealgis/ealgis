@@ -65,8 +65,8 @@ export class MapList extends React.Component<MapListProps, undefined> {
                 {/* START MY MAPS TAB */}
                 <Tab
                     label="My Maps"
-                    containerElement={<Link to={"/"}/>}
-                    value=""
+                    containerElement={<Link to={"/maps"}/>}
+                    value="maps"
                 >
                     <div style={styles.root}>
                         <GridList
