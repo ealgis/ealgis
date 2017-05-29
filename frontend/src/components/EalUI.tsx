@@ -49,6 +49,7 @@ export interface EalUIProps {
     onDebugToggle: any,
     handleOpenUserMenu: Function,
     handleUserMenuOnRequestChange: Function,
+    showGooglePlacesBar: boolean,
     handleGooglePlacesAutocomplete: Function,
 }
 
@@ -69,7 +70,7 @@ const styles = {
 
 export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
-        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
+        const { app, user, content, sidebar, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, showGooglePlacesBar, handleGooglePlacesAutocomplete } = this.props
 
         const linearProgressStyle = {
             "position": "fixed",
@@ -85,17 +86,17 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                     title="EALGIS"
                     onLeftIconButtonTouchTap={onTapAppBarLeft}
                     iconElementRight={<ToolbarGroup>
-                        <IconButton style={styles.searchIconButton} tooltip={"Search for a place or address"}>
+                        {showGooglePlacesBar && <IconButton style={styles.searchIconButton} tooltip={"Search for a place or address"}>
                             <ActionSearch color={"white"} />
-                        </IconButton>
-                        <GooglePlacesAutocomplete
+                        </IconButton>}
+                        {showGooglePlacesBar && <GooglePlacesAutocomplete
                             results={handleGooglePlacesAutocomplete}
                             componentRestrictions={{country: "AU"}}
                             inputStyle={{color: "#ffffff"}}
                             listStyle={{width: "100%", maxWidth: "400px", overflow: "hidden"}}
                             textFieldStyle={{width: "100%"}}
                             name={"google-places-autocomplete"}
-                        />
+                        />}
                         <FlatButton label="Home" containerElement={<Link to={"/"} />} style={styles.appBarButtonStyle} />
                         <FlatButton label="Maps" containerElement={<Link to={"/maps"} />} style={styles.appBarButtonStyle} />
                         <FlatButton label="About" containerElement={<Link to={"/about"} />} style={styles.appBarButtonStyle} />

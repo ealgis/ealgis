@@ -56,6 +56,9 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     render() {
         const { app, user, children, content, sidebar, location, onTapAppBarLeft, handleRequestClose, doLogout, onDebugToggle, handleOpenUserMenu, handleUserMenuOnRequestChange, handleGooglePlacesAutocomplete } = this.props
 
+        // Google Places Autocomplete should only appear when there is a map in the UI
+        const showGooglePlacesBar = location.pathname.startsWith("/map/")
+
         if(app.loading === true) {
             return <MuiThemeProvider>
                 <CircularProgress style={{marginLeft: "48%", marginTop: "24%"}} />
@@ -75,6 +78,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
                 onDebugToggle={onDebugToggle}
                 handleOpenUserMenu={handleOpenUserMenu}
                 handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
+                showGooglePlacesBar={showGooglePlacesBar}
                 handleGooglePlacesAutocomplete={(lat, lon, result) => handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)}
             />
         </MuiThemeProvider>;
