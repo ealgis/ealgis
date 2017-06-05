@@ -654,22 +654,22 @@ class EAlGIS(object):
 
             GEOM_COLUMN_DEF = """
                 CASE WHEN ST_Area(geomtable.geom_3857) >= {min_area} THEN
-                    ST_Simplify(
+                    ST_Transform(ST_MakeValid(ST_Simplify(
                         ST_SnapToGrid(geomtable.geom_3857, {res}/20, {res}/20),
                         {tolerance}
-                    )
-                ELSE NULL END AS geom_3857_z{zoom_level},"""
+                    )), 4326)
+                ELSE NULL END AS geom_4326_z{zoom_level},"""
 
             return GEOM_COLUMN_DEF.format(min_area=min_area, res=resolution, tolerance=tolerance, zoom_level=zoom_level)
 
         def getGeomColumnIndexDefinition(view_name, schema_name, zoom_level):
-            GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_3857_z{zoom_level}_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_3857_z{zoom_level}")'
+            GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_4326_z{zoom_level}_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_4326_z{zoom_level}")'
             return GEOM_COLUMN_IDX.format(view_name=view_name, schema_name=schema_name, zoom_level=zoom_level)
 
         view_name = getViewName(table_name)
 
         # Nuke the view if it exists already
-        NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name}".format(schema_name=schema_name, view_name=view_name)
+        NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name} CASCADE".format(schema_name=schema_name, view_name=view_name)
 
         if execute:
             self.session.execute(NUKE_EXISTING_MATVIEW)
@@ -686,6 +686,7 @@ class EAlGIS(object):
             CREATE MATERIALIZED VIEW {schema_name}.{view_name} AS
                 SELECT
                     {geom_column_defs}
+                    ST_Transform(geom_3857, 4326) AS geom_4326,
                     geomtable.*
                 FROM {schema_name}.{table_name} AS geomtable"""
         MATVIEW_SQL_DEF = MATVIEW_SQL_DEF.format(schema_name=schema_name, view_name=view_name, geom_column_defs="".join(geomColumnDefsSQL), table_name=table_name)
@@ -704,6 +705,13 @@ class EAlGIS(object):
                 self.session.execute(GEOM_COLUMN_IDX)
             else:
                 sqlLog.append(GEOM_COLUMN_IDX)
+        
+        # Create index on geom_4326
+        GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_4326_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_4326")'.format(view_name=view_name, schema_name=schema_name)
+        if execute:
+            self.session.execute(GEOM_COLUMN_IDX)
+        else:
+            sqlLog.append(GEOM_COLUMN_IDX)
 
         # Copy non-geometry indexes from the original table
         from sqlalchemy.engine import reflection
