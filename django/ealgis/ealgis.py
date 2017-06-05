@@ -410,6 +410,8 @@ class EAlGIS(object):
             resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, z)
             tolerance = resolution / 20
 
+            extent_buffer = resolution * 2.5
+
             # A bit of a hack - assign the minimum area a feature must have to be visible at each zoom level.
             # if(z <= 4):
             #     min_area = 2500000
@@ -486,7 +488,8 @@ class EAlGIS(object):
                 WITH _conf AS (
                     SELECT
                         {decimalPlaces} AS decimal_places,
-                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent
+                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
+                        ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 20) AS extent_buffered
                     ),
                     -- end conf
                     _geom AS (
@@ -503,6 +506,30 @@ class EAlGIS(object):
                 SELECT gid, q,
                     ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
                     FROM _geom, _conf"""
+
+            SQL_TEMPLATE_MATVIEW_CLIPBYBOX = """
+                WITH _conf AS (
+                    SELECT
+                        {decimalPlaces} AS decimal_places,
+                        ST_Transform(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 4326) AS extent,
+                        ST_Transform(ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), {extent_buffer}), 4326) AS extent_buffered
+                    ),
+                    -- end conf
+                    _geom AS (
+                        SELECT
+                            ST_ClipByBox2D({geom_column_name}, extent_buffered) AS {geom_column_name},
+                            gid, q
+                        FROM (
+                        -- main query
+                        {query}
+                        ) _wrap, _conf
+                        WHERE {geom_column_name} && extent
+                    )
+                    -- end geom
+                SELECT gid, q,
+                    ST_AsGeoJSON({geom_column_name}, _conf.decimal_places) AS geom
+                    FROM _geom, _conf
+                    WHERE ST_IsEmpty({geom_column_name}) = FALSE"""
 
             SQL_TEMPLATE_MATVIEW_WITH_CLIPPING = """
                 WITH _conf AS (
@@ -590,15 +617,15 @@ class EAlGIS(object):
 
             def get_geom_column_name(layer_hash, zoom_level):
                 if zoom_level <= 5:
-                    return "geom_3857_z5"
+                    return "geom_4326_z5"
                 elif zoom_level <= 7:
-                    return "geom_3857_z7"
+                    return "geom_4326_z7"
                 elif zoom_level <= 9:
-                    return "geom_3857_z9"
+                    return "geom_4326_z9"
                 elif zoom_level <= 11:
-                    return "geom_3857_z11"
+                    return "geom_4326_z11"
                 else:
-                    return "geom_3857"
+                    return "geom_4326"
 
             # Use materialised view
             if True:
@@ -607,14 +634,13 @@ class EAlGIS(object):
                 # Substitute our materialised view table in the stored query
                 geomTableName = "{schema_name}.{geometry_name}".format(geometry_name=layer["geometry"], schema_name=layer["schema"])
                 matViewName = "{schema_name}.{geometry_name}_view".format(schema_name=layer["schema"], geometry_name=layer["geometry"])
-                query = layer["_postgis_query"].replace(geomTableName, matViewName)
+                query = layer["_postgis_query"].replace("geom_3857", "geom_4326").replace(geomTableName, matViewName)
 
                 # Substitute in our zoom-level specific geom column name
-                query = query.replace(".geom_3857", ".{geom_column_name}".format(geom_column_name=geomColumnName))
+                query = query.replace(".geom_4326", ".{geom_column_name}".format(geom_column_name=geomColumnName))
 
                 # print("Use matview column {} for zoom {}".format(geomColumnName, z))
-                sql = SQL_TEMPLATE_MATVIEW.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid)
-                # sql = SQL_TEMPLATE_MATVIEW_WITH_CLIPPING.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid, res=resolution)
+                sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid, extent_buffer=extent_buffer)
 
                 # print(sql)
                 return sql
