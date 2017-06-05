@@ -13,6 +13,7 @@ import {
     updateDataInspector,
     resetDataInspector,
     changeMapSharing,
+    sendSnackbarNotification,
 } from "../actions"
 
 interface MapUINavContainerRouteParams {
@@ -37,6 +38,7 @@ export interface MapUINavContainerProps {
     previousPath: string
     onExportWholeMap: Function
     onExportMapViewport: Function
+    onGetShareableLink: Function
 }
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
@@ -69,6 +71,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
             onExportWholeMap,
             onExportMapViewport,
             onCheckIncludeGeomAttrs,
+            onGetShareableLink,
         } = this.props
 
         if (mapDefinition !== undefined) {
@@ -90,6 +93,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                     onExportMapViewport={() => onExportMapViewport(mapDefinition.id, mapPosition.extent)}
                     onCheckIncludeGeomAttrs={(event: object, isInputChecked: boolean) =>
                         onCheckIncludeGeomAttrs(isInputChecked)}
+                    onGetShareableLink={onGetShareableLink}
                 />
             )
         }
@@ -154,6 +158,9 @@ const mapDispatchToProps = (dispatch: any) => {
         onCheckIncludeGeomAttrs: (isInputChecked: boolean) => {
             // FIXME Should be in state or props. What's best practice for attributes like this?
             this.isIncludeGeomAttrsChecked = isInputChecked
+        },
+        onGetShareableLink: () => {
+            dispatch(sendSnackbarNotification(`Map link copied to clipboard.`))
         },
     }
 }

@@ -11,6 +11,7 @@ import FlatButton from "material-ui/FlatButton"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import LayerToggle from "./LayerToggleContainer"
 import Divider from "material-ui/Divider"
+import * as CopyToClipboard from "react-copy-to-clipboard"
 
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -30,6 +31,7 @@ import ImageGridOn from "material-ui/svg-icons/image/grid-on"
 import ImageGridOff from "material-ui/svg-icons/image/grid-off"
 import SocialPublic from "material-ui/svg-icons/social/public"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
+import ContentLink from "material-ui/svg-icons/content/link"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import InsertChart from "material-ui/svg-icons/editor/insert-chart"
@@ -81,6 +83,7 @@ export interface MapUINavProps {
     onExportWholeMap: Function
     onExportMapViewport: Function
     onCheckIncludeGeomAttrs: Function
+    onGetShareableLink: Function
 }
 
 export class MapUINav extends React.Component<MapUINavProps, undefined> {
@@ -101,6 +104,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             onExportWholeMap,
             onExportMapViewport,
             onCheckIncludeGeomAttrs,
+            onGetShareableLink,
         } = this.props
 
         const deleteMapActions = [
@@ -265,6 +269,13 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                                 />
 
                                 <Subheader>Sharing</Subheader>
+
+                                <CopyToClipboard
+                                    text={`${window.location.origin}/map/${defn.id}/${defn["name-url-safe"]}?shared=1`}
+                                    onCopy={onGetShareableLink}
+                                >
+                                    <FlatButton label="Get Shareable Link" icon={<ContentLink />} />
+                                </CopyToClipboard>
 
                                 <RadioButtonGroup
                                     name="shared"
