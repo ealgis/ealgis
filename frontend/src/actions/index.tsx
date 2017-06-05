@@ -581,8 +581,11 @@ export function fetchCompiledLayerStyle(mapId: number, layerId: number, layer: O
 export function updateMapOrigin(map: object, position: any) {
     return (dispatch: any, getState: Function) => {
         dispatch(setMapOrigin(map.id, position))
-        dispatch(updateMap(getState().maps[map.id])) // FIXME This *can't* be best practice
-        dispatch(sendSnackbarNotification("Map starting position updated successfully"))
+
+        // FIXME This getState() stuff *can't* be best practice
+        return dispatch(updateMap(getState().maps[map.id])).then(() => {
+            return dispatch(sendSnackbarNotification("Map starting position updated successfully"))
+        })
     }
 }
 
