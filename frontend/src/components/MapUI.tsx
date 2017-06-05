@@ -22,7 +22,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
         if(defn !== undefined) {
             let zoom = parseInt(defn.json.map_defaults.zoom) || 4
             let center = ol.proj.transform([parseFloat(defn.json.map_defaults.lon), parseFloat(defn.json.map_defaults.lat)], 'EPSG:4326', 'EPSG:900913') || ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913')
-            const view = <olr.View zoom={zoom} center={center} position={position} />
+            const view = <olr.View minZoom={3} maxZoom={20} zoom={zoom} center={center} position={position} />
             
             return <olr.Map view={view} onSingleClick={onSingleClick} onMoveEnd={onMoveEnd}>
                 <olr.interaction.Select />
@@ -41,7 +41,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
         } else {
             let zoom = 4
             let center = ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913')
-            const view = <olr.View zoom={zoom} center={center} position={position} />
+            const view = <olr.View minZoom={3} maxZoom={20} zoom={zoom} center={center} position={position} />
 
             return <olr.Map view={view} onMoveEnd={onMoveEnd}>
                 <olr.control.Attribution />

@@ -49,7 +49,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
             url = url + "&debug=1"
         }
         const formatObj = new ol.format.GeoJSON()
-        const tileGrid = ol.tilegrid.createXYZ({maxZoom: 22})
+        const tileGrid = ol.tilegrid.createXYZ({maxZoom: 20})
         const overlaps = true
         const cacheSize = 256
         const visible = layer.visible
@@ -129,8 +129,7 @@ export class Layer extends React.Component<LayerProps, undefined> {
         }*/
 
         return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} properties={layerPropreties}>
-            <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize}>
-            </olr.source.VectorTile>
+            <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize} />
         </olr.layer.VectorTile>
     }
 }
