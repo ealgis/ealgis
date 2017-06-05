@@ -5,7 +5,6 @@
 #
 
 import sqlalchemy
-import sys
 from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from django.apps import apps
@@ -147,7 +146,7 @@ class EvalLogicalOp():
 class DataExpression(object):
     integer = Word(nums)
     real = (Combine(Word(nums) + Optional("." + Word(nums)) +
-            oneOf("E e") + Optional(oneOf('+ -')) + Word(nums)) |
+                    oneOf("E e") + Optional(oneOf('+ -')) + Word(nums)) |
             Combine(Word(nums) + "." + Word(nums)))
 
     variable = Word(alphanums + '._')
@@ -183,15 +182,19 @@ class DataExpression(object):
         # attempt to get a column in the desired SRID, this speeds things up
         if self.srid is not None:
             from ealgis.models import GeometrySource
-            self.geometry_column = GeometrySource.srid_column(self.geometry_source, self.srid)
+            self.geometry_column = GeometrySource.srid_column(
+                self.geometry_source, self.srid)
+                self.geometry_source, self.srid)
         if self.geometry_column is None:
             self.geometry_column = self.geometry_source.column
             self.srid = self.geometry_source.srid
         self.table_instances = {}
         self.filters = []
 
-        self.joins = set()
-        self.tbl = self.get_table_class(geometry_source.table_info.name, geometry_source.__table__.schema)
+        self.tbl = self.get_table_class(
+            geometry_source.table_info.name, geometry_source.__table__.schema)
+        self.tbl = self.get_table_class(
+            geometry_source.table_info.name, geometry_source.__table__.schema)
 
         query_attrs = []
         if include_geometry:
@@ -203,27 +206,33 @@ class DataExpression(object):
         if expr == '':
             # bodge bodge bodge, keep 'q' working
             expr = sqlalchemy.func.abs(0)
-            self.trivial = True
+            parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[
+                0]
         else:
-            parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[0]
+            parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[
+                0]
             self.trivial = False
             # + 0 is to stop non-binary expressions breaking with sqlalchemy's label() -- bodge, fixme
             expr = parsed.eval(self) + 0
         query_attrs.append(sqlalchemy.sql.expression.label('q', expr))
-
+            attrs = self.tbl.metadata.tables[geometry_source.__table__.schema +
+                                             "." + geometry_source.table_info.name].columns.keys()
         if include_geom_attrs:
             # Attach all columns from the geometry source
-            attrs = self.tbl.metadata.tables[geometry_source.__table__.schema + "." + geometry_source.table_info.name].columns.keys()
+            attrs = self.tbl.metadata.tables[geometry_source.__table__.schema +
+                                             "." + geometry_source.table_info.name].columns.keys()
             # Prune out columns that look like geometry. Bodge bodge FIXME.
             for attr in [c for c in attrs if c.startswith("geom") is False]:
                 if attr != "gid":
                     query_attrs.append(getattr(self.tbl, attr))
 
-        self.query_attrs = query_attrs
+            parsed = DataExpression.cond_expr.parseString(
+                cond, parseAll=True)[0]
 
         filter_expr = None
         if cond != '':
-            parsed = DataExpression.cond_expr.parseString(cond, parseAll=True)[0]
+            parsed = DataExpression.cond_expr.parseString(
+                cond, parseAll=True)[0]
             filter_expr = parsed.eval(self)
         self.query = eal.session.query(*query_attrs)
         if filter_expr is not None:
@@ -242,17 +251,23 @@ class DataExpression(object):
         return self.trivial
 
     def get_name(self):
-        return self.name
+            self.table_instances[key] = eal.get_table_class(
+                table_name, schema_name)
 
     def get_table_class(self, table_name, schema_name):
         key = "{}.{}".format(table_name, schema_name)
-        if key not in self.table_instances:
-            self.table_instances[key] = eal.get_table_class(table_name, schema_name)
+        attr_column_linkage, attr_column_info = eal.resolve_attribute(
+            self.geometry_source, attr_name)
+        attr_tbl = self.get_table_class(
+            attr_column_info.table_info.name, attr_column_info.__table__.schema)
+                table_name, schema_name)
         return self.table_instances[key]
 
     def lookup(self, attr_name):
-        attr_column_linkage, attr_column_info = eal.resolve_attribute(self.geometry_source, attr_name)
-        attr_tbl = self.get_table_class(attr_column_info.table_info.name, attr_column_info.__table__.schema)
+        attr_column_linkage, attr_column_info = eal.resolve_attribute(
+            self.geometry_source, attr_name)
+        attr_tbl = self.get_table_class(
+            attr_column_info.table_info.name, attr_column_info.__table__.schema)
         attr_attr = getattr(attr_tbl, attr_column_info.name)
         # and our join columns
         attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)
@@ -263,7 +278,8 @@ class DataExpression(object):
     def add_filter(self, f):
         self.filters.append(f)
 
-    def get_query(self):
+        proj_column = GeometrySource.srid_column(
+            self.geometry_source, proj_srid)
         return self.query
 
     def get_query_bounds(self, ne, sw, srid):
@@ -271,7 +287,8 @@ class DataExpression(object):
         ymax, xmax = ne
         proj_srid = int(apps.get_app_config('ealauth').projected_srid)
         from ealgis.models import GeometrySource
-        proj_column = GeometrySource.srid_column(self.geometry_source, proj_srid)
+        proj_column = GeometrySource.srid_column(
+            self.geometry_source, proj_srid)
         q = self.query.filter(sqlalchemy.func.st_intersects(
             sqlalchemy.func.st_transform(
                 sqlalchemy.func.st_makeenvelope(xmin, ymin, xmax, ymax, srid),

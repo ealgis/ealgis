@@ -60,9 +60,9 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
         return MapDefinition.objects.filter(
-            Q(owner_user_id=self.request.user) | 
-            Q(~Q(owner_user_id=self.request.user) & 
-                Q(shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+            Q(owner_user_id=self.request.user) |
+            Q(
+                ~Q(owner_user_id=self.request.user) & Q(shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
             )
             # owner_user_id=self.request.user
         )
@@ -682,15 +682,15 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                         .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
                         .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
                         .filter(geometrylinkage.geo_source_id == datainfo_id)
-            
+
             if len(search_terms) == 0:
                 raise ValidationError(detail="At least one search term is required when searching by geometry.")
 
         elif "tableinfo_id" in qp or "tableinfo_name" in qp:
-        # Constrain our search window to a given table (e.g. All columns relating to a specific table)
-        # NB: For the Census this implicitly limits us to a geometry soruce as well
-        # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced,indigenous&schema=aus_census_2011&tableinfo_id=253
-        # Find all columns mentioning "diploma", "advaned", and "indigenous" in table "Non-School Qualification: Level of Education by Indigenous Status by Age by Sex" (i15d_aust_sa4)
+            # Constrain our search window to a given table (e.g. All columns relating to a specific table)
+            # NB: For the Census this implicitly limits us to a geometry soruce as well
+            # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced,indigenous&schema=aus_census_2011&tableinfo_id=253
+            # Find all columns mentioning "diploma", "advaned", and "indigenous" in table "Non-School Qualification: Level of Education by Indigenous Status by Age by Sex" (i15d_aust_sa4)
             if "tableinfo_name" in qp:
                 tableNames = qp["tableinfo_name"].split(",")
                 query = eal.session.query(tableinfo)\
@@ -701,7 +701,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     tableinfo_id.append(table.id)
             else:
                 tableinfo_id = [qp["tableinfo_id"]]
-            
+
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
                         .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
                         .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\

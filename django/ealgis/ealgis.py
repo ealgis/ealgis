@@ -67,12 +67,14 @@ class EAlGIS(object):
         from sqlalchemy.ext.automap import automap_base
         metadata = sqlalchemy.MetaData()
 
-        onlylist = ["table_info", "column_info", "geometry_source_projected", "geometry_source", "geometry_linkage"]
+        onlylist = ["table_info", "column_info",
+                    "geometry_source_projected", "geometry_source", "geometry_linkage"]
         for table_name in table_names:
             if table_name not in onlylist:
                 onlylist.append(table_name)
 
-        metadata.reflect(bind=self.db.engine, only=onlylist, schema=schema_name)
+        metadata.reflect(bind=self.db.engine,
+                         only=onlylist, schema=schema_name)
         b = automap_base(metadata=metadata)
         b.prepare()
 
@@ -108,7 +110,8 @@ class EAlGIS(object):
 
         def make_schemas():
             # PostgreSQL and PostGIS system schemas
-            system_schemas = ["information_schema", "tiger", "tiger_data", "topology", "public"]
+            system_schemas = ["information_schema",
+                              "tiger", "tiger_data", "topology", "public"]
 
             inspector = inspect(self.db)
 
@@ -154,7 +157,8 @@ class EAlGIS(object):
             info = {}
 
             for schema_name in self.get_schemas():
-                geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
+                geometrysource, tableinfo = self.get_table_classes(
+                    ["geometry_source", "table_info"], schema_name)
 
                 for source in self.session.query(geometrysource).all():
                     name = "{}.{}".format(schema_name, source.table_info.name)
@@ -186,7 +190,8 @@ class EAlGIS(object):
 
             for schema_name in self.get_schemas():
                 tableinfo = self.get_table_class("table_info", schema_name)
-                geodata_tables = [v["name"] for (k, v) in self.get_datainfo().items()]
+                geodata_tables = [v["name"]
+                                  for (k, v) in self.get_datainfo().items()]
 
                 for table_info in self.session.query(tableinfo).all():
                     if table_info.name not in geodata_tables:
@@ -199,15 +204,18 @@ class EAlGIS(object):
         return self.tableinfo
 
     def get_data_info(self, table_name, schema_name):
-        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        geometrysource, tableinfo = self.get_table_classes(
+            ["geometry_source", "table_info"], schema_name)
         return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).first().table_info
 
     def get_table_info(self, table_name, schema_name):
-        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        geometrysource, tableinfo = self.get_table_classes(
+            ["geometry_source", "table_info"], schema_name)
         return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.tableinfo_id).filter(tableinfo.name == table_name).filter(geometrysource.tableinfo_id is None).first()
 
     def get_geometry_source(self, table_name, schema_name):
-        geometrysource, tableinfo = self.get_table_classes(["geometry_source", "table_info"], schema_name)
+        geometrysource, tableinfo = self.get_table_classes(
+            ["geometry_source", "table_info"], schema_name)
         return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).one()
 
     def get_geometry_source_info_by_gid(self, table_name, gid, schema_name):
@@ -228,13 +236,15 @@ class EAlGIS(object):
         return self.session.query(columninfo).filter(columninfo.id == column_id).first()
 
     def get_column_info_by_names(self, column_names, schema_name, geo_source_id=None):
-        columninfo, geometrylinkage, tableinfo = self.get_table_classes(["column_info", "geometry_linkage", "table_info"], schema_name)
+        columninfo, geometrylinkage, tableinfo = self.get_table_classes(
+            ["column_info", "geometry_linkage", "table_info"], schema_name)
         query = self.session.query(columninfo, geometrylinkage, tableinfo)\
                     .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
                     .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
 
         if geo_source_id is not None:
-            query = query.filter(geometrylinkage.geo_source_id == geo_source_id)
+            query = query.filter(
+                geometrylinkage.geo_source_id == geo_source_id)
 
         column_names = [item.lower() for item in column_names]
         return query.filter(sqlalchemy.func.lower(columninfo.name).in_(column_names)).all()
@@ -243,19 +253,23 @@ class EAlGIS(object):
         return self.get_column_info_by_name([column_name], schema_name, geo_source_id=None)
 
     def resolve_attribute(self, geometry_source, attribute):
-        attribute = attribute.lower()  # upper case tables or columns seem unlikely, but a possible FIXME
+        # upper case tables or columns seem unlikely, but a possible FIXME
+        attribute = attribute.lower()
         # supports table_name.column_name OR just column_name
         s = attribute.split('.', 1)
 
-        ColumnInfo, GeometryLinkage, TableInfo = self.get_table_classes(["column_info", "geometry_linkage", "table_info"], geometry_source.__table__.schema)
+        ColumnInfo, GeometryLinkage, TableInfo = self.get_table_classes(
+            ["column_info", "geometry_linkage", "table_info"], geometry_source.__table__.schema)
 
-        q = self.session.query(ColumnInfo, GeometryLinkage.id).join(TableInfo).join(GeometryLinkage)
+        q = self.session.query(ColumnInfo, GeometryLinkage.id).join(
+            TableInfo).join(GeometryLinkage)
         if len(s) == 2:
             q = q.filter(TableInfo.name == s[0])
             attr_name = s[1]
         else:
             attr_name = s[0]
-        q = q.filter(GeometryLinkage.geometry_source == geometry_source).filter(ColumnInfo.name == attr_name)
+        q = q.filter(GeometryLinkage.geometry_source ==
+                     geometry_source).filter(ColumnInfo.name == attr_name)
         matches = q.all()
         if len(matches) > 1:
             raise TooManyMatches(attribute)
@@ -273,7 +287,8 @@ class EAlGIS(object):
                 STDDEV(sq.q)
             FROM ({query}) AS sq"""
 
-        (min, max, stddev) = self.session.execute(SQL_TEMPLATE.format(query=layer["_postgis_query"])).first()
+        (min, max, stddev) = self.session.execute(
+            SQL_TEMPLATE.format(query=layer["_postgis_query"])).first()
 
         return {
             "min": min,
@@ -371,7 +386,8 @@ class EAlGIS(object):
 
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         import mercantile
-        vt_query = create_vectortile_sql(query, bounds=mercantile.bounds(x, y, z))
+        vt_query = create_vectortile_sql(
+            query, bounds=mercantile.bounds(x, y, z))
         return self.session.execute(vt_query)
 
     def get_tile_mv(self, layer, x, y, z):
@@ -531,47 +547,47 @@ class EAlGIS(object):
                     FROM _geom, _conf
                     WHERE ST_IsEmpty({geom_column_name}) = FALSE"""
 
-            SQL_TEMPLATE_MATVIEW_WITH_CLIPPING = """
-                WITH _conf AS (
-                    SELECT
-                        20 AS magic,
-                        {res} AS res,
-                        {decimalPlaces} AS decimal_places,
-                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
-                        ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 10) AS extent_buffered
-                    ),
-                    -- end conf
-                    _geom AS (
-                        SELECT
-                            ST_SnapToGrid(
-                                CASE WHEN
-                                    ST_CoveredBy({geom_column_name}, extent) = TRUE
-                                THEN
-                                    {geom_column_name}
-                                ELSE
-                                    ST_Intersection(
-                                        CASE WHEN
-                                            ST_IsValid({geom_column_name}) = TRUE
-                                        THEN
-                                            {geom_column_name}
-                                        ELSE
-                                            ST_MakeValid({geom_column_name})
-                                        END
-                                        , extent_buffered)
-                                END,
-                                res/magic, res/magic
-                            ) AS {geom_column_name},
-                            gid, q
-                        FROM (
-                        -- main query
-                        {query}
-                        ) _wrap, _conf
-                        WHERE {geom_column_name} && extent
-                    )
-                    -- end geom
-                SELECT gid, q,
-                    ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
-                    FROM _geom, _conf"""
+            # SQL_TEMPLATE_MATVIEW_WITH_CLIPPING = """
+            #     WITH _conf AS (
+            #         SELECT
+            #             20 AS magic,
+            #             {res} AS res,
+            #             {decimalPlaces} AS decimal_places,
+            #             ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
+            #             ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 10) AS extent_buffered
+            #         ),
+            #         -- end conf
+            #         _geom AS (
+            #             SELECT
+            #                 ST_SnapToGrid(
+            #                     CASE WHEN
+            #                         ST_CoveredBy({geom_column_name}, extent) = TRUE
+            #                     THEN
+            #                         {geom_column_name}
+            #                     ELSE
+            #                         ST_Intersection(
+            #                             CASE WHEN
+            #                                 ST_IsValid({geom_column_name}) = TRUE
+            #                             THEN
+            #                                 {geom_column_name}
+            #                             ELSE
+            #                                 ST_MakeValid({geom_column_name})
+            #                             END
+            #                             , extent_buffered)
+            #                     END,
+            #                     res/magic, res/magic
+            #                 ) AS {geom_column_name},
+            #                 gid, q
+            #             FROM (
+            #             -- main query
+            #             {query}
+            #             ) _wrap, _conf
+            #             WHERE {geom_column_name} && extent
+            #         )
+            #         -- end geom
+            #     SELECT gid, q,
+            #         ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
+            #         FROM _geom, _conf"""
 
             # For server-side GeoJSON creation
             # Access with:
@@ -632,15 +648,20 @@ class EAlGIS(object):
                 geomColumnName = get_geom_column_name(layer["hash"], z)
 
                 # Substitute our materialised view table in the stored query
-                geomTableName = "{schema_name}.{geometry_name}".format(geometry_name=layer["geometry"], schema_name=layer["schema"])
-                matViewName = "{schema_name}.{geometry_name}_view".format(schema_name=layer["schema"], geometry_name=layer["geometry"])
-                query = layer["_postgis_query"].replace("geom_3857", "geom_4326").replace(geomTableName, matViewName)
+                geomTableName = "{schema_name}.{geometry_name}".format(
+                    geometry_name=layer["geometry"], schema_name=layer["schema"])
+                matViewName = "{schema_name}.{geometry_name}_view".format(
+                    schema_name=layer["schema"], geometry_name=layer["geometry"])
+                query = layer["_postgis_query"].replace(
+                    "geom_3857", "geom_4326").replace(geomTableName, matViewName)
 
                 # Substitute in our zoom-level specific geom column name
-                query = query.replace(".geom_4326", ".{geom_column_name}".format(geom_column_name=geomColumnName))
+                query = query.replace(".geom_4326", ".{geom_column_name}".format(
+                    geom_column_name=geomColumnName))
 
                 # print("Use matview column {} for zoom {}".format(geomColumnName, z))
-                sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, query=query, west=west, south=south, east=east, north=north, srid=srid, extent_buffer=extent_buffer)
+                sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName,
+                                                            query=query, west=west, south=south, east=east, north=north, srid=srid, extent_buffer=extent_buffer)
 
                 # print(sql)
                 return sql
@@ -652,7 +673,8 @@ class EAlGIS(object):
 
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         import mercantile
-        vt_query = create_vectortile_sql(layer, bounds=mercantile.bounds(x, y, z))
+        vt_query = create_vectortile_sql(
+            layer, bounds=mercantile.bounds(x, y, z))
         return self.session.execute(vt_query)
 
     def create_materialised_view_for_table(self, table_name, schema_name, execute):
@@ -669,7 +691,8 @@ class EAlGIS(object):
             # simplifying features.
 
             import math
-            resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, zoom_level)
+            resolution = 6378137.0 * 2.0 * math.pi / \
+                256.0 / math.pow(2.0, zoom_level)
             tolerance = resolution / 20
             if zoom_level <= 7:
                 min_area = resolution * 200
@@ -695,7 +718,8 @@ class EAlGIS(object):
         view_name = getViewName(table_name)
 
         # Nuke the view if it exists already
-        NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name} CASCADE".format(schema_name=schema_name, view_name=view_name)
+        NUKE_EXISTING_MATVIEW = "DROP MATERIALIZED VIEW IF EXISTS {schema_name}.{view_name} CASCADE".format(
+            schema_name=schema_name, view_name=view_name)
 
         if execute:
             self.session.execute(NUKE_EXISTING_MATVIEW)
@@ -706,7 +730,8 @@ class EAlGIS(object):
         # Create the materialised view
         geomColumnDefsSQL = []
         for zoom_level in ZOOM_LEVELS:
-            geomColumnDefsSQL.append(getGeomColumnDefinition(table_name, schema_name, zoom_level))
+            geomColumnDefsSQL.append(getGeomColumnDefinition(
+                table_name, schema_name, zoom_level))
 
         MATVIEW_SQL_DEF = """
             CREATE MATERIALIZED VIEW {schema_name}.{view_name} AS
@@ -715,7 +740,8 @@ class EAlGIS(object):
                     ST_Transform(geom_3857, 4326) AS geom_4326,
                     geomtable.*
                 FROM {schema_name}.{table_name} AS geomtable"""
-        MATVIEW_SQL_DEF = MATVIEW_SQL_DEF.format(schema_name=schema_name, view_name=view_name, geom_column_defs="".join(geomColumnDefsSQL), table_name=table_name)
+        MATVIEW_SQL_DEF = MATVIEW_SQL_DEF.format(
+            schema_name=schema_name, view_name=view_name, geom_column_defs="".join(geomColumnDefsSQL), table_name=table_name)
 
         if execute:
             self.session.execute(MATVIEW_SQL_DEF)
@@ -725,15 +751,17 @@ class EAlGIS(object):
         # Create indexes on our zoom-level specific geometry columns
         # @TODO Wot does the "default to the original geom" query use?
         for zoom_level in ZOOM_LEVELS:
-            GEOM_COLUMN_IDX = getGeomColumnIndexDefinition(view_name, schema_name, zoom_level)
+            GEOM_COLUMN_IDX = getGeomColumnIndexDefinition(
+                view_name, schema_name, zoom_level)
 
             if execute:
                 self.session.execute(GEOM_COLUMN_IDX)
             else:
                 sqlLog.append(GEOM_COLUMN_IDX)
-        
+
         # Create index on geom_4326
-        GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_4326_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_4326")'.format(view_name=view_name, schema_name=schema_name)
+        GEOM_COLUMN_IDX = 'CREATE INDEX "{view_name}_geom_4326_gist" ON "{schema_name}"."{view_name}" USING GIST ("geom_4326")'.format(
+            view_name=view_name, schema_name=schema_name)
         if execute:
             self.session.execute(GEOM_COLUMN_IDX)
         else:
@@ -744,13 +772,16 @@ class EAlGIS(object):
         insp = reflection.Inspector.from_engine(self.db)
 
         for index in insp.get_indexes(table_name, schema=schema_name):
-            index_name = index["name"].replace(table_name, table_name + "_view")
+            index_name = index["name"].replace(
+                table_name, table_name + "_view")
 
             if "dialect_options" in index and "postgresql_using" in index["dialect_options"]:
                 index_type = index["dialect_options"]["postgresql_using"]
-                IDX_DEF = 'CREATE INDEX "{index_name}" ON "{schema_name}"."{view_name}" USING {index_type} ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, index_type=index_type, column_name=index["column_names"][0])
+                IDX_DEF = 'CREATE INDEX "{index_name}" ON "{schema_name}"."{view_name}" USING {index_type} ("{column_name}")'.format(
+                    index_name=index_name, schema_name=schema_name, view_name=view_name, index_type=index_type, column_name=index["column_names"][0])
             elif "unique" in index and index["unique"] is True:
-                IDX_DEF = 'CREATE UNIQUE INDEX "{index_name}" ON "{schema_name}"."{view_name}" ("{column_name}")'.format(index_name=index_name, schema_name=schema_name, view_name=view_name, column_name=index["column_names"][0])
+                IDX_DEF = 'CREATE UNIQUE INDEX "{index_name}" ON "{schema_name}"."{view_name}" ("{column_name}")'.format(
+                    index_name=index_name, schema_name=schema_name, view_name=view_name, column_name=index["column_names"][0])
             else:
                 # print("Skipping {}".format(index_name))
                 # print(index)
@@ -762,7 +793,8 @@ class EAlGIS(object):
                 sqlLog.append(IDX_DEF)
 
         # And, lastly, an index for the primary key on the master table
-        GID_IDX_DEF = 'CREATE UNIQUE INDEX "{view_name}_gid_idx" ON "{schema_name}"."{view_name}" ("gid");'.format(schema_name=schema_name, view_name=view_name)
+        GID_IDX_DEF = 'CREATE UNIQUE INDEX "{view_name}_gid_idx" ON "{schema_name}"."{view_name}" ("gid");'.format(
+            schema_name=schema_name, view_name=view_name)
         if execute:
             self.session.execute(GID_IDX_DEF)
         else:

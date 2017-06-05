@@ -41,7 +41,8 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MapDefinition
-        fields = ('id', 'name', 'description', 'json', 'shared', 'owner_user_id', 'owner')
+        fields = ('id', 'name', 'description', 'json',
+                  'shared', 'owner_user_id', 'owner')
         validators = [
             UniqueTogetherValidator(
                 queryset=MapDefinition.objects.all(),
@@ -67,15 +68,20 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         try:
             map.set(json)
         except ValueError as e:
-            raise ValidationError(detail={"valueExpression": "Unknown value error ({})".format(e.message)})
+            raise ValidationError(
+                detail={"valueExpression": "Unknown value error ({})".format(e.message)})
         except CompilationError as e:
-            raise ValidationError(detail={"valueExpression": "Expression compilation failed ({})".format(e.message)})
+            raise ValidationError(
+                detail={"valueExpression": "Expression compilation failed ({})".format(e.message)})
         except NoMatches as e:
-            raise ValidationError(detail={"valueExpression": "Attribute could not be resolved ({})".format(e)})
+            raise ValidationError(
+                detail={"valueExpression": "Attribute could not be resolved ({})".format(e)})
         except TooManyMatches as e:
-            raise ValidationError(detail={"valueExpression": "Attribube reference is ambiguous ({})".format(e.message)})
+            raise ValidationError(detail={
+                                  "valueExpression": "Attribube reference is ambiguous ({})".format(e.message)})
         except Exception as e:
-            raise ValidationError(detail={"filterExpression": "Compilation error ({})".format(e)})
+            raise ValidationError(
+                detail={"filterExpression": "Compilation error ({})".format(e)})
 
     def to_representation(self, obj):
         map = super(serializers.ModelSerializer, self).to_representation(obj)
@@ -98,7 +104,7 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             if olStyleDef is not False:
                 layer["olStyleDef"] = olStyleDef
         return map
-    
+
     def createOLStyleDef(self, layer):
         fill = layer['fill']
         do_fill = (fill['expression'] != '')
@@ -159,4 +165,3 @@ class GeometryLinkageSerializer(serializers.Serializer):
     geo_column = serializers.CharField()
     attr_table_info_id = serializers.IntegerField()
     attr_column = serializers.CharField()
-    
