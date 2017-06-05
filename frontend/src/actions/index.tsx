@@ -62,6 +62,7 @@ export const RECEIVE_LAYER_FORM_CHANGED = 'RECEIVE_LAYER_FORM_CHANGED'
 export const RECEIVE_GOOGLE_PLACES_RESULT = 'RECEIVE_GOOGLE_PLACES_RESULT'
 export const RECEIVE_START_LAYER_EDIT_SESSION = 'RECEIVE_START_LAYER_EDIT_SESSION'
 export const RECEIVE_FIT_SCALE_TO_DATA = 'RECEIVE_FIT_SCALE_TO_DATA'
+export const RECEIVE_HIGHLIGHTED_FEATURES = 'RECEIVE_HIGHLIGHTED_FEATURES'
 
 const ealapi = new EALGISApiClient()
 
@@ -570,7 +571,7 @@ export function fetchCompiledLayerStyle(mapId: number, layerId: number, layer: O
             return ealapi.get("/api/0.1/maps/compileStyle/", dispatch, params)
                 .then(({ response, json }: any) => {
                     layer.olStyleDef = json
-                    layer.olStyle = compileLayerStyle(layer, false)
+                    layer.olStyle = compileLayerStyle(layer, false, [])
                 })
                 // Wrap layer.olStyle in a function because dotProp automatically executes functions
                 .then((json: any) => dispatch(receiveCompiledLayerStyle(mapId, layerId, () => layer.olStyle)))
@@ -1146,5 +1147,12 @@ export function setUserMenuState(open: boolean) {
     return {
         type: RECEIVE_SET_USER_MENU_STATE,
         open,
+    }
+}
+
+export function setHighlightedFeatures(featurGids: Array<number>) {
+    return {
+        type: RECEIVE_HIGHLIGHTED_FEATURES,
+        featurGids,
     }
 }

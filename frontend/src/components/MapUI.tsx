@@ -25,7 +25,6 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
             const view = <olr.View minZoom={3} maxZoom={20} zoom={zoom} center={center} position={position} />
             
             return <olr.Map view={view} onSingleClick={onSingleClick} onMoveEnd={onMoveEnd}>
-                <olr.interaction.Select />
                 <olr.control.FullScreen source={"ealgis"} />
                 <olr.control.Attribution />
                 <olr.layer.Tile>

@@ -2,7 +2,7 @@ import * as React from "react";
 import MapUI from "./MapUI";
 import { connect } from 'react-redux';
 import { proj } from 'openlayers';
-import { onMapMoveEnd, sendToDataInspector } from '../actions';
+import { onMapMoveEnd, sendToDataInspector, setHighlightedFeatures } from '../actions';
 
 import 'openlayers/css/ol.css';
 
@@ -45,6 +45,8 @@ const mapDispatchToProps = (dispatch: any) => {
   return {
     onSingleClick: (mapId: number, evt: any) => {
         let features: Array<any> = []
+        let featurGids: Array<number> = []
+
         evt.map.forEachFeatureAtPixel(evt.pixel, function(feature: any, layer: any) {
             const layerProps = layer.getProperties().properties
             const featureProps = feature.getProperties()
@@ -55,8 +57,11 @@ const mapDispatchToProps = (dispatch: any) => {
                 "layerId": layerProps["layerId"],
                 "featureProps": featureProps
             }); 
+
+            featurGids.push(featureProps.gid)
         })
         
+        dispatch(setHighlightedFeatures(featurGids))
         dispatch(sendToDataInspector(mapId, features))
     },
     onMoveEnd: (event: object) => {
