@@ -5,31 +5,31 @@ import * as actions from "../actions"
 ReactGA.initialize("UA-100057077-1")
 
 class GATracker {
-    verbose: boolean;
-    always_send: boolean;
+    verbose: boolean
+    always_send: boolean
 
-    constructor(verbose: boolean=false, always_send: boolean=false) {
+    constructor(verbose: boolean = false, always_send: boolean = false) {
         this.verbose = verbose
         this.always_send = always_send
     }
 
     pageview(path: string) {
-        if(DEVELOPMENT === false || this.always_send === true) {
+        if (DEVELOPMENT === false || this.always_send === true) {
             ReactGA.set({ page: path })
             ReactGA.pageview(path)
         }
-        
-        if(this.verbose === true) {
+
+        if (this.verbose === true) {
             console.log("GATracker:pageview", path)
         }
     }
 
     event(cfg: object) {
-        if(DEVELOPMENT === false || this.always_send === true) {
+        if (DEVELOPMENT === false || this.always_send === true) {
             ReactGA.event(cfg)
         }
-        
-        if(this.verbose === true) {
+
+        if (this.verbose === true) {
             console.log("GATracker:event", cfg)
         }
     }
@@ -38,7 +38,7 @@ class GATracker {
 const gaTrack = new GATracker()
 
 const AnalyticsMiddleware = store => next => action => {
-    switch(action.type) {
+    switch (action.type) {
         case actions.RECEIVE_TOGGLE_SIDEBAR_STATE:
         case actions.RECEIVE_UPDATE_DATA_DISCOVERY:
         case actions.RECEIVE_LEGENDPEEK_LABEL:
@@ -48,7 +48,7 @@ const AnalyticsMiddleware = store => next => action => {
                 action: action.type,
             })
             break
-        
+
         case actions.RECEIVE_MAP_MOVE_END:
         case actions.RECEIVE_UPDATE_DATA_INSPECTOR:
             gaTrack.event({
@@ -56,7 +56,7 @@ const AnalyticsMiddleware = store => next => action => {
                 action: action.type,
             })
             break
-        
+
         case actions.CREATE_MAP:
         case actions.DELETE_MAP:
         case actions.RECEIVE_DELETE_MAP_LAYER:
@@ -78,9 +78,9 @@ const AnalyticsMiddleware = store => next => action => {
                 action: action.type,
             })
             break
-        
+
         default:
-            // console.log(action.type)
+        // console.log(action.type)
     }
 
     let result = next(action)
@@ -91,7 +91,4 @@ const fireAnalyticsTracking = () => {
     gaTrack.pageview(window.location.pathname + window.location.search)
 }
 
-export {
-    AnalyticsMiddleware,
-    fireAnalyticsTracking,
-}
+export { AnalyticsMiddleware, fireAnalyticsTracking }

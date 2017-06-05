@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from "react"
 
 export interface MapCoverImageProps {
-    defn: any,
-    width: number,
+    defn: any
+    width: number
     height: number
 }
 
@@ -10,7 +10,8 @@ export class MapCoverImage extends React.Component<MapCoverImageProps, undefined
     render() {
         const { defn, width, height } = this.props
 
-        const mapbox_key = "pk.eyJ1Ijoia2VpdGhtb3NzIiwiYSI6IjkxMTViNjcxN2U5ZDBjMTYzYzY2MzQwNTJkZjM1NGFkIn0.HS40UI-OD5lQWBxUCZOwZg" // Where should this live?
+        const mapbox_key =
+            "pk.eyJ1Ijoia2VpdGhtb3NzIiwiYSI6IjkxMTViNjcxN2U5ZDBjMTYzYzY2MzQwNTJkZjM1NGFkIn0.HS40UI-OD5lQWBxUCZOwZg" // Where should this live?
 
         const lon = defn.json.map_defaults.lon
         const lat = defn.json.map_defaults.lat

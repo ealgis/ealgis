@@ -1,12 +1,12 @@
-import * as React from "react";
-import { connect } from 'react-redux';
-import LegendPeekBarSwatch from "./LegendPeekBarSwatch";
-import * as isEqual from "lodash/isEqual";
+import * as React from "react"
+import { connect } from "react-redux"
+import LegendPeekBarSwatch from "./LegendPeekBarSwatch"
+import * as isEqual from "lodash/isEqual"
 
 export interface LegendPeekBarSwatchContainerProps {
-    styleDef: object,
-    onMouseEnter: Function,
-    onMouseLeave: Function,
+    styleDef: object
+    onMouseEnter: Function
+    onMouseLeave: Function
 }
 
 export class LegendPeekBarSwatchContainer extends React.Component<LegendPeekBarSwatchContainerProps, undefined> {
@@ -17,16 +17,14 @@ export class LegendPeekBarSwatchContainer extends React.Component<LegendPeekBarS
 
     render() {
         const { styleDef, onMouseEnter, onMouseLeave } = this.props
-        
-        return <LegendPeekBarSwatch
-                    styleDef={styleDef}
-                    onMouseEnter={() => 
-                        onMouseEnter(styleDef)
-                    }
-                    onMouseLeave={() => 
-                        onMouseLeave(styleDef)
-                    }
-                />;
+
+        return (
+            <LegendPeekBarSwatch
+                styleDef={styleDef}
+                onMouseEnter={() => onMouseEnter(styleDef)}
+                onMouseLeave={() => onMouseLeave(styleDef)}
+            />
+        )
     }
 }
 

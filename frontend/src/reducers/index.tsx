@@ -1,37 +1,90 @@
-import { combineReducers, Reducer } from 'redux';
-import * as dotProp from 'dot-prop-immutable';
-import * as merge from "lodash/merge";
-import { reducer as formReducer } from 'redux-form';
-import { RECEIVE_APP_LOADED, RECEIVE_TOGGLE_SIDEBAR_STATE, RECEIVE_NEW_SNACKBAR_MESSAGE,RECEIVE_START_SNACKBAR_IF_NEEDED, RECEIVE_ITERATE_SNACKBAR, RECEIVE_SET_MAP_ORIGIN, REQUEST_USER, RECEIVE_USER, REQUEST_MAPS, RECEIVE_MAPS, REQUEST_MAP_DEFINITION, RECEIVE_MAP_DEFINITION, CREATE_MAP, DELETE_MAP, COMPILED_LAYER_STYLE, CHANGE_MAP_SHARING, CHANGE_LAYER_VISIBILITY, REQUEST_DATA_INFO, RECEIVE_DATA_INFO, REQUEST_COLOUR_INFO, RECEIVE_COLOUR_INFO, RECEIVE_UPDATED_MAP, RECEIVE_UPDATED_LAYER, RECEIVE_DELETE_MAP_LAYER, RECEIVE_CLONE_MAP_LAYER, RECEIVE_TOGGLE_MODAL_STATE, RECEIVE_UPDATE_DATA_INSPECTOR, RECEIVE_RESET_DATA_INSPECTOR, RECEIVE_TOGGLE_DEBUG_MODE, RECEIVE_REQUEST_BEGIN_FETCH, RECEIVE_REQUEST_FINISH_FETCH, RECEIVE_UPDATE_DATA_DISCOVERY, RECEIVE_RESET_DATA_DISCOVERY, RECEIVE_TABLE_INFO, RECEIVE_TOGGLE_LAYERFORM_SUBMITTING, RECEIVE_CHIP_VALUES, RECEIVE_APP_PREVIOUS_PATH, CHANGE_LAYER_PROPERTY, MERGE_LAYER_PROPERTIES, RECEIVE_LAYER_QUERY_SUMMARY, RECEIVE_LAYERFORM_ERRORS, RECEIVE_LEGENDPEEK_LABEL, RECEIVE_SET_USER_MENU_STATE, RECEIVE_RESET_MAP_POSITION, RECEIVE_SET_MAP_POSITION, RECEIVE_MAP_MOVE_END, RECEIVE_BEGIN_PUBLISH_LAYER, RECEIVE_BEGIN_RESTORE_MASTER_LAYER, RECEIVE_HIGHLIGHTED_FEATURES } from '../actions';
+import { combineReducers, Reducer } from "redux"
+import * as dotProp from "dot-prop-immutable"
+import * as merge from "lodash/merge"
+import { reducer as formReducer } from "redux-form"
+import {
+    RECEIVE_APP_LOADED,
+    RECEIVE_TOGGLE_SIDEBAR_STATE,
+    RECEIVE_NEW_SNACKBAR_MESSAGE,
+    RECEIVE_START_SNACKBAR_IF_NEEDED,
+    RECEIVE_ITERATE_SNACKBAR,
+    RECEIVE_SET_MAP_ORIGIN,
+    REQUEST_USER,
+    RECEIVE_USER,
+    REQUEST_MAPS,
+    RECEIVE_MAPS,
+    REQUEST_MAP_DEFINITION,
+    RECEIVE_MAP_DEFINITION,
+    CREATE_MAP,
+    DELETE_MAP,
+    COMPILED_LAYER_STYLE,
+    CHANGE_MAP_SHARING,
+    CHANGE_LAYER_VISIBILITY,
+    REQUEST_DATA_INFO,
+    RECEIVE_DATA_INFO,
+    REQUEST_COLOUR_INFO,
+    RECEIVE_COLOUR_INFO,
+    RECEIVE_UPDATED_MAP,
+    RECEIVE_UPDATED_LAYER,
+    RECEIVE_DELETE_MAP_LAYER,
+    RECEIVE_CLONE_MAP_LAYER,
+    RECEIVE_TOGGLE_MODAL_STATE,
+    RECEIVE_UPDATE_DATA_INSPECTOR,
+    RECEIVE_RESET_DATA_INSPECTOR,
+    RECEIVE_TOGGLE_DEBUG_MODE,
+    RECEIVE_REQUEST_BEGIN_FETCH,
+    RECEIVE_REQUEST_FINISH_FETCH,
+    RECEIVE_UPDATE_DATA_DISCOVERY,
+    RECEIVE_RESET_DATA_DISCOVERY,
+    RECEIVE_TABLE_INFO,
+    RECEIVE_TOGGLE_LAYERFORM_SUBMITTING,
+    RECEIVE_CHIP_VALUES,
+    RECEIVE_APP_PREVIOUS_PATH,
+    CHANGE_LAYER_PROPERTY,
+    MERGE_LAYER_PROPERTIES,
+    RECEIVE_LAYER_QUERY_SUMMARY,
+    RECEIVE_LAYERFORM_ERRORS,
+    RECEIVE_LEGENDPEEK_LABEL,
+    RECEIVE_SET_USER_MENU_STATE,
+    RECEIVE_RESET_MAP_POSITION,
+    RECEIVE_SET_MAP_POSITION,
+    RECEIVE_MAP_MOVE_END,
+    RECEIVE_BEGIN_PUBLISH_LAYER,
+    RECEIVE_BEGIN_RESTORE_MASTER_LAYER,
+    RECEIVE_HIGHLIGHTED_FEATURES,
+} from "../actions"
 
-function app(state = {
-    loading: true,
-    requestsInProgress: 0,
-    sidebarOpen: true,
-    debug: false,
-    previousPath: "",
-    snackbar: {
-        open: false,
-        active: {
-            message: ""
+function app(
+    state = {
+        loading: true,
+        requestsInProgress: 0,
+        sidebarOpen: true,
+        debug: false,
+        previousPath: "",
+        snackbar: {
+            open: false,
+            active: {
+                message: "",
+            },
+            messages: [],
         },
-        messages: [],
+        dialogs: {},
+        mapPosition: {},
+        dataInspector: [],
+        dataDiscovery: [],
+        layerForm: {
+            chipValues: [],
+            layerQuerySummary: {},
+            submitting: false,
+        },
+        layerUINav: {
+            legendpeek: {},
+        },
+        userMenuState: false,
+        highlightedFeatures: [],
     },
-    dialogs: {},
-    mapPosition: {},
-    dataInspector: [],
-    dataDiscovery: [],
-    layerForm: {
-        chipValues: [],
-        layerQuerySummary: {},
-        submitting: false,
-    },
-    layerUINav: {
-        legendpeek: {},
-    },
-    userMenuState: false,
-    highlightedFeatures: [],
-}, action: any) {
+    action: any
+) {
     switch (action.type) {
         case RECEIVE_REQUEST_BEGIN_FETCH:
             return dotProp.set(state, "requestsInProgress", ++state.requestsInProgress)
@@ -54,7 +107,7 @@ function app(state = {
             state.snackbar.messages.push(action.message)
             return dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
         case RECEIVE_START_SNACKBAR_IF_NEEDED:
-            if(state.snackbar.open === false && state.snackbar.messages.length > 0) {
+            if (state.snackbar.open === false && state.snackbar.messages.length > 0) {
                 // Pop the first message off the front of the queue
                 const message = state.snackbar.messages.shift()
                 state = dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
@@ -63,14 +116,14 @@ function app(state = {
             }
             return state
         case RECEIVE_ITERATE_SNACKBAR:
-            if(state.snackbar.messages.length > 0) {
+            if (state.snackbar.messages.length > 0) {
                 // Pop the first message off the front of the queue
                 const message = state.snackbar.messages.shift()
                 state = dotProp.set(state, `snackbar.messages`, state.snackbar.messages)
                 state = dotProp.set(state, `snackbar.active`, message)
                 return dotProp.set(state, `snackbar.open`, true)
             } else {
-                state = dotProp.set(state, `snackbar.active`, {message: ""})
+                state = dotProp.set(state, `snackbar.active`, { message: "" })
                 return dotProp.set(state, `snackbar.open`, false)
             }
         case RECEIVE_RESET_MAP_POSITION:
@@ -80,13 +133,13 @@ function app(state = {
         case RECEIVE_TOGGLE_MODAL_STATE:
             return dotProp.toggle(state, `dialogs.${action.modalId}`)
         case RECEIVE_UPDATE_DATA_INSPECTOR:
-            return dotProp.set(state, 'dataInspector', action.dataRows)
+            return dotProp.set(state, "dataInspector", action.dataRows)
         case RECEIVE_RESET_DATA_INSPECTOR:
-            return dotProp.set(state, 'dataInspector', [])
+            return dotProp.set(state, "dataInspector", [])
         case RECEIVE_UPDATE_DATA_DISCOVERY:
-            return dotProp.set(state, 'dataDiscovery', action.dataColumns)
+            return dotProp.set(state, "dataDiscovery", action.dataColumns)
         case RECEIVE_RESET_DATA_DISCOVERY:
-            return dotProp.set(state, 'dataDiscovery', [])
+            return dotProp.set(state, "dataDiscovery", [])
         case RECEIVE_BEGIN_PUBLISH_LAYER:
         case RECEIVE_BEGIN_RESTORE_MASTER_LAYER:
             return dotProp.set(state, "layerForm.submitting", true)
@@ -99,22 +152,25 @@ function app(state = {
         case RECEIVE_LEGENDPEEK_LABEL:
             return dotProp.set(state, `layerUINav.legendpeek.${action.mapId + "-" + action.layerId}`, action.labelText)
         case RECEIVE_SET_USER_MENU_STATE:
-            return dotProp.set(state, 'userMenuState', action.open)
+            return dotProp.set(state, "userMenuState", action.open)
         case RECEIVE_HIGHLIGHTED_FEATURES:
             return dotProp.set(state, "highlightedFeatures", action.featurGids)
         default:
-            return state;
+            return state
     }
 }
 
-function user(state = {
-    user: {
-        url: null
-    }
-}, action: any) {
+function user(
+    state = {
+        user: {
+            url: null,
+        },
+    },
+    action: any
+) {
     switch (action.type) {
         case REQUEST_USER:
-            return state;
+            return state
         case RECEIVE_USER:
             return action.json
         default:
@@ -133,7 +189,7 @@ function maps(state: any = {}, action: any) {
         case CREATE_MAP:
             return {
                 ...state,
-                [action.map.id]: action.map
+                [action.map.id]: action.map,
             }
         case DELETE_MAP:
             let { [action.mapId]: deletedItem, ...rest } = state
@@ -149,7 +205,11 @@ function maps(state: any = {}, action: any) {
         case CHANGE_LAYER_VISIBILITY:
             return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
         case CHANGE_LAYER_PROPERTY:
-            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.${action.layerPropertyPath}`, action.layerPropertyValue)
+            return dotProp.set(
+                state,
+                `${action.mapId}.json.layers.${action.layerId}.${action.layerPropertyPath}`,
+                action.layerPropertyValue
+            )
         case MERGE_LAYER_PROPERTIES:
             const newLayer = merge(dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`), action.layer)
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
@@ -197,14 +257,14 @@ function tableinfo(state = {}, action: any) {
 
 export const reduxFormReducer = formReducer.plugin({
     layerForm: (state: {}, action: any) => {
-        switch(action.type) {
+        switch (action.type) {
             case RECEIVE_LAYERFORM_ERRORS:
                 state = dotProp.set(state, "submitSucceeded", false)
                 return dotProp.merge(state, "syncErrors", action.errors)
             default:
                 return state
         }
-    }
+    },
 })
 
 export default {
@@ -214,4 +274,4 @@ export default {
     datainfo,
     colourinfo,
     tableinfo,
-};
+}

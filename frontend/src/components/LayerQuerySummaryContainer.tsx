@@ -1,14 +1,14 @@
-import * as React from "react";
-import { connect } from 'react-redux';
-import LayerQuerySummary from "./LayerQuerySummary";
-import { fetchLayerQuerySummary } from '../actions'
+import * as React from "react"
+import { connect } from "react-redux"
+import LayerQuerySummary from "./LayerQuerySummary"
+import { fetchLayerQuerySummary } from "../actions"
 
 export interface LayerQuerySummaryContainerProps {
-    mapId: number,
-    layerHash: string,
-    stats: object,
-    onFitScaleToData: Function,
-    fetchQuerySummary: Function,
+    mapId: number
+    layerHash: string
+    stats: object
+    onFitScaleToData: Function
+    fetchQuerySummary: Function
 }
 
 export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummaryContainerProps, undefined> {
@@ -18,11 +18,11 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
     }
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        if(this.props.mapId !== nextProps.mapId || this.props.layerHash !== nextProps.layerHash) {
+        if (this.props.mapId !== nextProps.mapId || this.props.layerHash !== nextProps.layerHash) {
             return true
         }
 
-        if(this.props.stats !== nextProps.stats) {
+        if (this.props.stats !== nextProps.stats) {
             return true
         }
         return false
@@ -31,16 +31,11 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
     render() {
         const { stats, onFitScaleToData } = this.props
 
-        if(stats === undefined) {
-            return <div></div>
+        if (stats === undefined) {
+            return <div />
         }
 
-        return <LayerQuerySummary
-            stats={stats}
-            onFitScaleToData={
-                () => onFitScaleToData(stats)
-            }
-        />;
+        return <LayerQuerySummary stats={stats} onFitScaleToData={() => onFitScaleToData(stats)} />
     }
 }
 
@@ -48,21 +43,20 @@ const mapStateToProps = (state: any, ownProps: any) => {
     const { app } = state
 
     return {
-        stats: app.layerForm.layerQuerySummary[ownProps.layerHash]
+        stats: app.layerForm.layerQuerySummary[ownProps.layerHash],
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
-  return {
-    fetchQuerySummary: (mapId: number, layerHash: string) => {
-        dispatch(fetchLayerQuerySummary(mapId, layerHash))
-    },
-  };
+    return {
+        fetchQuerySummary: (mapId: number, layerHash: string) => {
+            dispatch(fetchLayerQuerySummary(mapId, layerHash))
+        },
+    }
 }
 
-const LayerQuerySummaryContainerWrapped = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(LayerQuerySummaryContainer as any)
+const LayerQuerySummaryContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(
+    LayerQuerySummaryContainer as any
+)
 
 export default LayerQuerySummaryContainerWrapped

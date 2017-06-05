@@ -1,18 +1,18 @@
-import * as React from "react";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
-import AppBar from 'material-ui/AppBar';
-import {Tabs, Tab} from 'material-ui/Tabs';
-import { Router, Route, Link, browserHistory } from 'react-router';
-import { connect } from 'react-redux';
-import * as olr from 'ol-react';
-import * as ol from 'openlayers';
+import * as React from "react"
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
+import RaisedButton from "material-ui/RaisedButton"
+import AppBar from "material-ui/AppBar"
+import { Tabs, Tab } from "material-ui/Tabs"
+import { Router, Route, Link, browserHistory } from "react-router"
+import { connect } from "react-redux"
+import * as olr from "ol-react"
+import * as ol from "openlayers"
 
 export interface LayerProps {
-    map: any,
-    layer: any,
-    layerId: number,
-    debugMode: boolean,
+    map: any
+    layer: any
+    layerId: number
+    debugMode: boolean
 }
 
 export class Layer extends React.Component<LayerProps, undefined> {
@@ -35,21 +35,21 @@ export class Layer extends React.Component<LayerProps, undefined> {
         // For VectorTiles
         // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
         const bbox = layer.latlon_bbox
-        const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], 'EPSG:4326', 'EPSG:900913')
+        const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], "EPSG:4326", "EPSG:900913")
         const renderMode = "hybrid"
         const layerPropreties = {
-            "mapId": map.id,
-            "layerId": layerId,
+            mapId: map.id,
+            layerId: layerId,
         }
 
-        const projection_epsg_no = '900913';
-        const format = "geojson";
+        const projection_epsg_no = "900913"
+        const format = "geojson"
         let url = "/api/0.1/maps/" + map.id + "/tiles.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}&format=" + format
-        if(debugMode === true) {
+        if (debugMode === true) {
             url = url + "&debug=1"
         }
         const formatObj = new ol.format.GeoJSON()
-        const tileGrid = ol.tilegrid.createXYZ({maxZoom: 20})
+        const tileGrid = ol.tilegrid.createXYZ({ maxZoom: 20 })
         const overlaps = true
         const cacheSize = 256
         const visible = layer.visible
@@ -128,9 +128,23 @@ export class Layer extends React.Component<LayerProps, undefined> {
             }
         }*/
 
-        return <olr.layer.VectorTile visible={visible} extent={extent} style={layer.olStyle} renderMode={renderMode} properties={layerPropreties}>
-            <olr.source.VectorTile url={url} format={formatObj} tileGrid={tileGrid} overlaps={overlaps} cacheSize={cacheSize} />
-        </olr.layer.VectorTile>
+        return (
+            <olr.layer.VectorTile
+                visible={visible}
+                extent={extent}
+                style={layer.olStyle}
+                renderMode={renderMode}
+                properties={layerPropreties}
+            >
+                <olr.source.VectorTile
+                    url={url}
+                    format={formatObj}
+                    tileGrid={tileGrid}
+                    overlaps={overlaps}
+                    cacheSize={cacheSize}
+                />
+            </olr.layer.VectorTile>
+        )
     }
 }
 

@@ -1,28 +1,24 @@
-import * as React from "react";
+import * as React from "react"
 
 const styles = {
     flexboxColumn: {
-        "height": "15px",
-        "flexGrow": 1,
-    }
+        height: "15px",
+        flexGrow: 1,
+    },
 }
 
 export interface LegendPeekBarSwatchNavProps {
-    styleDef: object,
-    onMouseEnter: Function,
-    onMouseLeave: Function,
+    styleDef: object
+    onMouseEnter: Function
+    onMouseLeave: Function
 }
 
 export class LegendPeekBarSwatchNav extends React.Component<LegendPeekBarSwatchNavProps, undefined> {
     render() {
         const { styleDef, onMouseEnter, onMouseLeave } = this.props
-        const columnStyle = Object.assign(styles.flexboxColumn, {"backgroundColor": `rgb(${styleDef.rgb.join(",")})`})
+        const columnStyle = Object.assign(styles.flexboxColumn, { backgroundColor: `rgb(${styleDef.rgb.join(",")})` })
 
-        return <div
-            style={columnStyle}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-        ></div>
+        return <div style={columnStyle} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} />
     }
 }
 

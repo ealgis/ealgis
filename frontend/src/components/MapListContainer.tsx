@@ -1,34 +1,30 @@
-import * as React from "react";
-import { connect } from 'react-redux';
-import MapList from "./MapList";
+import * as React from "react"
+import { connect } from "react-redux"
+import MapList from "./MapList"
 
 export interface MapListContainerProps {
-    tabName: string,
-    userId: number,
-    maps: any,
-    getMyMaps: Function,
-    getSharedMaps: Function,
-    getPublicMaps: Function,
+    tabName: string
+    userId: number
+    maps: any
+    getMyMaps: Function
+    getSharedMaps: Function
+    getPublicMaps: Function
 }
 
 export class MapListContainer extends React.Component<MapListContainerProps, undefined> {
     render() {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
-        
-        return <MapList
-                    tabName={tabName}
-                    userId={userId}
-                    maps={maps}
-                    getMyMaps={() => 
-                        getMyMaps(Object.entries(maps), userId)
-                    }
-                    getSharedMaps={() => 
-                        getSharedMaps(Object.entries(maps), userId)
-                    }
-                    getPublicMaps={() => 
-                        getPublicMaps(Object.entries(maps), userId)
-                    }
-                />;
+
+        return (
+            <MapList
+                tabName={tabName}
+                userId={userId}
+                maps={maps}
+                getMyMaps={() => getMyMaps(Object.entries(maps), userId)}
+                getSharedMaps={() => getSharedMaps(Object.entries(maps), userId)}
+                getPublicMaps={() => getPublicMaps(Object.entries(maps), userId)}
+            />
+        )
     }
 }
 
@@ -61,9 +57,6 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 }
 
-const MapListContainerWrapped = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(MapListContainer as any)
+const MapListContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(MapListContainer as any)
 
 export default MapListContainerWrapped
