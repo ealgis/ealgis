@@ -2,12 +2,12 @@
 <html>
 <head>
   <title>Vector tiles</title>
-  <link rel="stylesheet" href="https://openlayers.org/en/v3.19.0/css/ol.css" type="text/css">
+  <link rel="stylesheet" href="https://openlayers.org/en/v4.1.1/css/ol.css" type="text/css">
   <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
   <!--<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>-->
   <!--<script src="https://openlayers.org/en/v3.20.1/build/ol.js"></script>-->
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol-debug.js"></script>-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.19.0/ol.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.1.1/ol-debug.js"></script>
   <!--<link rel="stylesheet" href="ol.css">-->
   <style>
     html, body {
@@ -79,6 +79,20 @@
   }
 
   function simpleStyle(feature, resolution) {
+    // console.log(feature);
+
+    return new ol.style.Style({
+        // fill: new ol.style.Fill({
+        //     color: `#E6A219`,
+        // }),
+        stroke: new ol.style.Stroke({
+            color: `#FF0000`,
+            width: 5,
+        }),
+    });
+
+    return styles["blue"];
+
     q = feature.get("q");
     
     if(q < 0) {
@@ -116,8 +130,15 @@
   var map = new ol.Map({
     target: 'map',
     view: new ol.View({
-        center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
+        // center: ol.proj.transform([115.9, -32], 'EPSG:4326', 'EPSG:900913'),
+
+        // Perth
+        center: ol.proj.transform([115.8903595001871, -31.959422712019233], 'EPSG:4326', 'EPSG:900913'),
         zoom: 13
+
+        // Tassie
+        // center: ol.proj.transform([147.6048762881278, -42.13371054774628], 'EPSG:4326', 'EPSG:900913'),
+        // zoom: 7
 
         // center: ol.proj.transform([135, -27], 'EPSG:4326', 'EPSG:900913'),
         // zoom: 4
@@ -125,6 +146,50 @@
     layers: [
         // osm,
         mapbox,
+
+        new ol.layer.VectorTile({
+            style: simpleStyle,
+            
+            renderMode: 'hybrid',
+            // preload: Infinity,
+            opacity: 0.6,
+
+            // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
+            // extent: ol.proj.transformExtent([96.81694140800035, -43.740509602057664, 159.10921900799997, -9.142175976703564], 'EPSG:4326', 'EPSG:900913'),
+
+            source: new ol.source.VectorTile({
+                // tilePixelRatio: 1, // oversampling when > 1
+                tilePixelRatio: 16,
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 22}),
+                format: new ol.format.MVT({featureClass: ol.Feature}),
+                // overlaps: false,
+                // cacheSize: 256,
+                // url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer2 + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
+                // url: "http://localhost:8123/mvt/v1/sa4_2011_aust_pow_view/{z}/{x}/{y}?geom_column=geom_3857_z11&columns=gid,sa4_name"
+                url: "http://localhost:8000/api/0.1/maps/201/tiles.json?layer=3c7592b8&z={z}&x={x}&y={y}&format=pbf"
+            })
+        })
+
+        /*new ol.layer.VectorTile({
+            style: simpleStyle,
+            
+            renderMode: 'hybrid',
+            // preload: Infinity,
+            opacity: 0.6,
+
+            // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
+            // extent: ol.proj.transformExtent([96.81694140800035, -43.740509602057664, 159.10921900799997, -9.142175976703564], 'EPSG:4326', 'EPSG:900913'),
+
+            source: new ol.source.VectorTile({
+                // tilePixelRatio: 1, // oversampling when > 1
+                tileGrid: ol.tilegrid.createXYZ({maxZoom: 22}),
+                format: new ol.format.GeoJSON({defaultDataProjection: "EPSG:4326"}),
+                // overlaps: false,
+                // cacheSize: 256,
+                // url: 'https://gs{1-4}.localhost:8443/geoserver/gwc/service/tms/1.0.0/' + layer2 + '@EPSG%3A'+projection_epsg_no+'@' + format + '/{z}/{x}/{-y}.' + format
+                url: "http://localhost:8123/mvt/v1/sa2_2011_aust_pow/{z}/{x}/{y}?geom_column=geom_3857&columns=gid,sa2_name"
+            })
+        })*/
 
         /*new ol.layer.VectorTile({
             style: simpleStyle,
@@ -238,15 +303,34 @@
           })
         })*/
 
-        new ol.layer.Image({
-          source: new ol.source.ImageWMS({
-            url: 'https://localhost:8443/geoserver/EALGIS/wms',
-            params: {'LAYERS': layer1},
-            serverType: 'geoserver'
-          })
-        })
+        // new ol.layer.Image({
+        //   source: new ol.source.ImageWMS({
+        //     url: 'https://localhost:8443/geoserver/EALGIS/wms',
+        //     params: {'LAYERS': layer1},
+        //     serverType: 'geoserver'
+        //   })
+        // })
     ]
   });
+
+  /*var select = new ol.interaction.Select();
+  map.addInteraction(select);
+  select.on('select', function(e) {
+    console.log(e);
+    // console.log(e.target.getFeatures().getLength() +
+    //             ' selected features (last operation selected ' + e.selected.length +
+    //             ' and deselected ' + e.deselected.length + ' features)');
+    console.log(e.target.getFeatures());
+  })*/
+
+  map.on("click", function(evt) {
+    map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+      // const layerProps = layer.getProperties().properties
+      // const featureProps = feature.getProperties()
+
+      console.log(feature.getProperties(), feature.getProperties().geometry.getExtent());
+    });
+  });    
   </script>
 </body>
 </html>
