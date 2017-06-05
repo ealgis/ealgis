@@ -679,9 +679,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if "geo_source_id" in qp:
             datainfo_id = qp["geo_source_id"]
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                        .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
-                        .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
-                        .filter(geometrylinkage.geo_source_id == datainfo_id)
+                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
+                .filter(geometrylinkage.geo_source_id == datainfo_id)
 
             if len(search_terms) == 0:
                 raise ValidationError(detail="At least one search term is required when searching by geometry.")
@@ -694,7 +694,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if "tableinfo_name" in qp:
                 tableNames = qp["tableinfo_name"].split(",")
                 query = eal.session.query(tableinfo)\
-                            .filter(tableinfo.name.in_(tableNames))
+                    .filter(tableinfo.name.in_(tableNames))
 
                 tableinfo_id = []
                 for table in query.all():
@@ -703,9 +703,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 tableinfo_id = [qp["tableinfo_id"]]
 
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                        .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
-                        .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
-                        .filter(columninfo.tableinfo_id.in_(tableinfo_id))
+                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
+                .filter(columninfo.tableinfo_id.in_(tableinfo_id))
 
         else:
             raise ValidationError(detail="No geo_source_id or tableinfo_id provided.")

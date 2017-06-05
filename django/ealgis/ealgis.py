@@ -500,28 +500,28 @@ class EAlGIS(object):
                     FROM _geom, _conf
                     WHERE NOT ST_IsEmpty(_clip_geom)"""
 
-            SQL_TEMPLATE_MATVIEW = """
-                WITH _conf AS (
-                    SELECT
-                        {decimalPlaces} AS decimal_places,
-                        ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
-                        ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 20) AS extent_buffered
-                    ),
-                    -- end conf
-                    _geom AS (
-                        SELECT
-                            {geom_column_name},
-                            gid, q
-                        FROM (
-                        -- main query
-                        {query}
-                        ) _wrap, _conf
-                        WHERE {geom_column_name} && extent
-                    )
-                    -- end geom
-                SELECT gid, q,
-                    ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
-                    FROM _geom, _conf"""
+            # SQL_TEMPLATE_MATVIEW = """
+            #     WITH _conf AS (
+            #         SELECT
+            #             {decimalPlaces} AS decimal_places,
+            #             ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}) AS extent,
+            #             ST_Buffer(ST_SetSRID(ST_MakeBox2D(ST_MakePoint({west}, {south}), ST_MakePoint({east}, {north})), {srid}), 20) AS extent_buffered
+            #         ),
+            #         -- end conf
+            #         _geom AS (
+            #             SELECT
+            #                 {geom_column_name},
+            #                 gid, q
+            #             FROM (
+            #             -- main query
+            #             {query}
+            #             ) _wrap, _conf
+            #             WHERE {geom_column_name} && extent
+            #         )
+            #         -- end geom
+            #     SELECT gid, q,
+            #         ST_AsGeoJSON(ST_Transform({geom_column_name}, 4326), _conf.decimal_places) AS geom
+            #         FROM _geom, _conf"""
 
             SQL_TEMPLATE_MATVIEW_CLIPBYBOX = """
                 WITH _conf AS (
