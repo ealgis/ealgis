@@ -3,37 +3,27 @@ import "whatwg-fetch"
 import { browserHistory } from "react-router"
 import cookie from "react-cookie"
 import { getFormValues } from "redux-form"
-import { compileLayerStyle } from "../utils/OLStyle"
+import { compileLayerStyle } from "../shared/openlayers/OLStyle"
 import { SubmissionError } from "redux-form"
-import { EALGISApiClient } from "../helpers/EALGISApiClient"
-import { getMapURL } from "../utils/utils"
-import LayerFormContainer from "../components/LayerFormContainer"
+import { EALGISApiClient } from "../shared/api/EALGISApiClient"
+import { getMapURL } from "../shared/utils"
+import { fetchMaps } from "../redux/modules/maps"
 
 export const RECEIVE_APP_LOADED = "RECEIVE_APP_LOADED"
 export const RECEIVE_TOGGLE_SIDEBAR_STATE = "RECEIVE_TOGGLE_SIDEBAR_STATE"
 export const RECEIVE_NEW_SNACKBAR_MESSAGE = "RECEIVE_NEW_SNACKBAR_MESSAGE"
 export const RECEIVE_START_SNACKBAR_IF_NEEDED = "RECEIVE_START_SNACKBAR_IF_NEEDED"
 export const RECEIVE_ITERATE_SNACKBAR = "RECEIVE_ITERATE_SNACKBAR"
-export const RECEIVE_SET_MAP_ORIGIN = "RECEIVE_SET_MAP_ORIGIN"
-export const REQUEST_USER = "REQUEST USER"
+export const REQUEST_MAPS = "REQUEST_MAPS"
+export const REQUEST_USER = "REQUEST_USER"
 export const RECEIVE_USER = "RECEIVE_USER"
-export const REQUEST_MAPS = "REQUEST MAPS"
-export const RECEIVE_MAPS = "RECEIVE_MAPS"
 export const REQUEST_MAP_DEFINITION = "REQUEST_MAP_DEFINITION"
 export const RECEIVE_MAP_DEFINITION = "RECEIVE_MAP_DEFINITION"
-export const DELETE_MAP = "DELETE_MAP"
-export const CREATE_MAP = "CREATE_MAP"
 export const COMPILED_LAYER_STYLE = "COMPILED_LAYER_STYLE"
-export const CHANGE_MAP_SHARING = "CHANGE_MAP_SHARING"
-export const CHANGE_LAYER_VISIBILITY = "CHANGE_LAYER_VISIBILITY"
 export const REQUEST_DATA_INFO = "REQUEST_DATA_INFO"
 export const RECEIVE_DATA_INFO = "RECEIVE_DATA_INFO"
 export const REQUEST_COLOUR_INFO = "REQUEST_COLOUR_INFO"
 export const RECEIVE_COLOUR_INFO = "RECEIVE_COLOUR_INFO"
-export const RECEIVE_UPDATED_MAP = "RECEIVE_UPDATED_MAP"
-export const RECEIVE_UPDATED_LAYER = "RECEIVE_UPDATED_LAYER"
-export const RECEIVE_DELETE_MAP_LAYER = "RECEIVE_DELETE_MAP_LAYER"
-export const RECEIVE_CLONE_MAP_LAYER = "RECEIVE_CLONE_MAP_LAYER"
 export const RECEIVE_TOGGLE_MODAL_STATE = "RECEIVE_TOGGLE_MODAL_STATE"
 export const RECEIVE_UPDATE_DATA_INSPECTOR = "RECEIVE_UPDATE_DATA_INSPECTOR"
 export const RECEIVE_RESET_DATA_INSPECTOR = "RECEIVE_RESET_DATA_INSPECTOR"
@@ -46,8 +36,6 @@ export const RECEIVE_TABLE_INFO = "RECEIVE_TABLE_INFO"
 export const RECEIVE_TOGGLE_LAYERFORM_SUBMITTING = "RECEIVE_TOGGLE_LAYERFORM_SUBMITTING"
 export const RECEIVE_CHIP_VALUES = "RECEIVE_CHIP_VALUES"
 export const RECEIVE_APP_PREVIOUS_PATH = "RECEIVE_APP_PREVIOUS_PATH"
-export const CHANGE_LAYER_PROPERTY = "CHANGE_LAYER_PROPERTY"
-export const MERGE_LAYER_PROPERTIES = "MERGE_LAYER_PROPERTIES"
 export const RECEIVE_LAYER_QUERY_SUMMARY = "RECEIVE_LAYER_QUERY_SUMMARY"
 export const RECEIVE_LAYERFORM_ERRORS = "RECEIVE_LAYERFORM_ERRORS"
 export const RECEIVE_LEGENDPEEK_LABEL = "RECEIVE_LEGENDPEEK_LABEL"
@@ -57,8 +45,6 @@ export const RECEIVE_SET_MAP_POSITION = "RECEIVE_SET_MAP_POSITION"
 export const RECEIVE_MAP_MOVE_END = "RECEIVE_MAP_MOVE_END"
 export const RECEIVE_BEGIN_PUBLISH_LAYER = "RECEIVE_BEGIN_PUBLISH_LAYER"
 export const RECEIVE_BEGIN_RESTORE_MASTER_LAYER = "RECEIVE_BEGIN_RESTORE_MASTER_LAYER"
-export const RECEIVE_ADD_NEW_LAYER = "RECEIVE_ADD_NEW_LAYER"
-export const RECEIVE_LAYER_FORM_CHANGED = "RECEIVE_LAYER_FORM_CHANGED"
 export const RECEIVE_GOOGLE_PLACES_RESULT = "RECEIVE_GOOGLE_PLACES_RESULT"
 export const RECEIVE_START_LAYER_EDIT_SESSION = "RECEIVE_START_LAYER_EDIT_SESSION"
 export const RECEIVE_FIT_SCALE_TO_DATA = "RECEIVE_FIT_SCALE_TO_DATA"
@@ -85,54 +71,9 @@ export function requestMaps() {
     }
 }
 
-export function receiveMaps(maps: object) {
-    return {
-        type: RECEIVE_MAPS,
-        maps,
-    }
-}
-
 export function requestMapDefinition() {
     return {
         type: REQUEST_MAP_DEFINITION,
-    }
-}
-
-export function receiveChangeLayerVisibility(mapId: number, layerId: number) {
-    return {
-        type: CHANGE_LAYER_VISIBILITY,
-        mapId,
-        layerId,
-    }
-}
-
-export function changeLayerVisibility(map: object, layerId: number) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveChangeLayerVisibility(map["id"], layerId))
-
-        if (getState()["user"].id === map.owner_user_id) {
-            // FIXME Client-side or make the API accept a layer object to merge for /publishLayer
-            const layer = getState().maps[map["id"]].json.layers[layerId]
-            dispatch(updateLayer(map["id"], layerId, layer))
-        }
-    }
-}
-
-export function receiveDeleteMap(mapId: number) {
-    return (dispatch: any) => {
-        dispatch({
-            type: DELETE_MAP,
-            mapId,
-        })
-    }
-}
-
-export function receiveCreatedMap(map: object) {
-    return (dispatch: any) => {
-        dispatch({
-            type: CREATE_MAP,
-            map,
-        })
     }
 }
 
@@ -142,14 +83,6 @@ export function receiveCompiledLayerStyle(mapId: number, layerId: number, olStyl
         mapId,
         layerId,
         olStyle,
-    }
-}
-
-export function receiveChangeMapSharing(mapId: number, shared: number) {
-    return {
-        type: CHANGE_MAP_SHARING,
-        mapId,
-        shared,
     }
 }
 
@@ -176,38 +109,6 @@ export function receiveColourInfo(json: any) {
 export function requestColourInfo() {
     return {
         type: REQUEST_COLOUR_INFO,
-    }
-}
-
-export function receieveUpdatedMap(map: object) {
-    return {
-        type: RECEIVE_UPDATED_MAP,
-        map,
-    }
-}
-
-export function receieveUpdatedLayer(mapId: number, layerId: number, layer: object) {
-    return {
-        type: RECEIVE_UPDATED_LAYER,
-        mapId,
-        layerId,
-        layer,
-    }
-}
-
-export function receiveDeleteMapLayer(mapId: number, layerId: number) {
-    return {
-        type: RECEIVE_DELETE_MAP_LAYER,
-        mapId,
-        layerId,
-    }
-}
-
-export function receiveCloneMapLayer(mapId: number, layerId: number) {
-    return {
-        type: RECEIVE_CLONE_MAP_LAYER,
-        mapId,
-        layerId,
     }
 }
 
@@ -287,14 +188,6 @@ export function receiveMapMoveEnd(position: any) {
     }
 }
 
-export function setMapOrigin(mapId: number, position: any) {
-    return {
-        type: RECEIVE_SET_MAP_ORIGIN,
-        mapId,
-        position,
-    }
-}
-
 export function receiveToggleModalState(modalId: string) {
     return {
         type: RECEIVE_TOGGLE_MODAL_STATE,
@@ -317,239 +210,6 @@ export function receiveBeginFetch() {
 export function receiveFinishFetch() {
     return {
         type: RECEIVE_REQUEST_FINISH_FETCH,
-    }
-}
-
-export function updateMap(map: object) {
-    return (dispatch: any) => {
-        return ealapi.put("/api/0.1/maps/" + map["id"] + "/", map, dispatch).then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-
-            if (response.status === 200) {
-                // dispatch(receieveUpdatedMap(json))
-            } else if (response.status === 400) {
-                // We expect that the server will return the shape:
-                // {
-                //   username: 'User does not exist',
-                //   password: 'Wrong password',
-                //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                // }
-                throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
-            }
-        })
-    }
-}
-
-export function receiveAddNewLayer() {
-    return {
-        type: RECEIVE_ADD_NEW_LAYER,
-    }
-}
-
-export function addLayer(mapId: number) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveAddNewLayer())
-
-        // Default to 2011 SA4s or whatever the first geometry is
-        // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
-        const datainfo = getState().datainfo
-        let defaultGeometry: object = undefined
-
-        if (datainfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
-            defaultGeometry = datainfo["aus_census_2011.sa4_2011_aust_pow"]
-        } else {
-            defaultGeometry = datainfo(Object.keys(datainfo)[0])
-        }
-
-        const payload = {
-            layer: {
-                fill: {
-                    opacity: 0.5,
-                    scale_max: 100,
-                    scale_min: 0,
-                    expression: "",
-                    scale_flip: false,
-                    scale_name: "Huey",
-                    conditional: "",
-                    scale_nlevels: 6,
-                },
-                line: {
-                    width: 1,
-                    colour: {
-                        r: "51",
-                        g: "105",
-                        b: "30",
-                        a: "1",
-                    },
-                },
-                name: "Unnamed Layer",
-                type: defaultGeometry["geometry_type"],
-                schema: defaultGeometry["schema_name"],
-                visible: true,
-                geometry: defaultGeometry["name"],
-                description: "",
-            },
-        }
-
-        return ealapi.put(`/api/0.1/maps/${mapId}/addLayer/`, payload, dispatch).then(({ response, json }: any) => {
-            if (response.status === 201) {
-                dispatch(receieveUpdatedLayer(mapId, json.layerId, json.layer))
-                dispatch(sendSnackbarNotification(`Layer created successfully`))
-                browserHistory.push(getMapURL(getState().maps[mapId]) + `/layer/${json.layerId}/`)
-            }
-        })
-    }
-}
-
-export function updateLayer(mapId: number, layerId: number, layer: object) {
-    return (dispatch: any, getState: Function) => {
-        const payload = {
-            layerId: layerId,
-            layer: JSON.parse(JSON.stringify(layer)),
-        }
-
-        return ealapi.put(`/api/0.1/maps/${mapId}/publishLayer/`, payload, dispatch)
-    }
-}
-
-export function receiveLayerFormErrors(errors: object) {
-    return {
-        type: RECEIVE_LAYERFORM_ERRORS,
-        errors,
-    }
-}
-
-export function editDraftLayer(mapId: number, layerId: number, layerPartial: object) {
-    return (dispatch: any) => {
-        const payload = {
-            layerId: layerId,
-            layer: layerPartial,
-        }
-
-        return ealapi
-            .put(`/api/0.1/maps/${mapId}/editDraftLayer/`, payload, dispatch)
-            .then(({ response, json }: any) => {
-                if (response.status === 200) {
-                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                    return json
-                } else if (response.status === 400) {
-                    dispatch(receiveLayerFormErrors(json))
-                } else {
-                    // We're not sure what happened, but handle it:
-                    // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
-                }
-            })
-    }
-}
-
-export function receiveBeginPublishLayer() {
-    return {
-        type: RECEIVE_BEGIN_PUBLISH_LAYER,
-    }
-}
-
-export function receiveBeginRestoreMasterLayer() {
-    return {
-        type: RECEIVE_BEGIN_RESTORE_MASTER_LAYER,
-    }
-}
-
-export function publishLayer(mapId: number, layerId: number, layer: object) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveBeginPublishLayer())
-
-        return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
-            if (response.status === 200) {
-                dispatch(toggleLayerFormSubmitting())
-                dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                dispatch(sendSnackbarNotification(`Layer saved successfully`))
-                browserHistory.push(getMapURL(getState().maps[mapId]))
-                return json
-            } else {
-                const message = Object.keys(json).map((key: any, index: any) => {
-                    return `${key}: ${json[key].toLowerCase()}`
-                })
-                dispatch(sendSnackbarNotification(`Errors publishing layer: ${message.join(", ")}`))
-            }
-        })
-    }
-}
-
-export function restoreMasterLayer(mapId: number, layerId: number) {
-    return (dispatch: any) => {
-        dispatch(receiveBeginRestoreMasterLayer())
-
-        const payload = {
-            layerId: layerId,
-        }
-
-        return ealapi
-            .put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch)
-            .then(({ response, json }: any) => {
-                if (response.status === 200) {
-                    dispatch(toggleLayerFormSubmitting())
-                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                    // dispatch(sendSnackbarNotification(`Layer restored successfully`))
-                    // browserHistory.push(`/map/${mapId}`)
-                    return json
-                }
-            })
-    }
-}
-
-export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number) {
-    return (dispatch: any, getState: Function) => {
-        return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
-            browserHistory.push(getMapURL(getState().maps[mapId]))
-        })
-    }
-}
-
-export function cloneMapLayer(mapId: number, layerId: number) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveCloneMapLayer(mapId, layerId))
-        dispatch(updateMap(getState().maps[mapId]))
-        dispatch(sendSnackbarNotification("Layer cloned successfully"))
-    }
-}
-
-export function deleteMapLayer(map: object, layerId: number) {
-    return (dispatch: any) => {
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
-        if (mapCopy["json"]["layers"][layerId] !== undefined) {
-            mapCopy["json"]["layers"].splice(layerId, 1)
-        }
-
-        return ealapi.put("/api/0.1/maps/" + mapCopy["id"] + "/", mapCopy, dispatch).then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-            if (response.status === 200) {
-                dispatch(receiveDeleteMapLayer(map.id, layerId))
-                // browserHistory.push("/map/" + json.id)
-            } else if (response.status === 400) {
-                // We expect that the server will return the shape:
-                // {
-                //   username: 'User does not exist',
-                //   password: 'Wrong password',
-                //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                // }
-                throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
-            }
-        })
     }
 }
 
@@ -578,17 +238,6 @@ export function fetchCompiledLayerStyle(mapId: number, layerId: number, layer: O
                     .then((json: any) => dispatch(receiveCompiledLayerStyle(mapId, layerId, () => layer.olStyle)))
             )
         }
-    }
-}
-
-export function updateMapOrigin(map: object, position: any) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(setMapOrigin(map.id, position))
-
-        // FIXME This getState() stuff *can't* be best practice
-        return dispatch(updateMap(getState().maps[map.id])).then(() => {
-            return dispatch(sendSnackbarNotification("Map starting position updated successfully"))
-        })
     }
 }
 
@@ -683,128 +332,6 @@ export function logoutUser() {
     }
 }
 
-export function fetchMaps() {
-    return (dispatch: any) => {
-        dispatch(requestMaps())
-
-        return ealapi.get("/api/0.1/maps/all/", dispatch).then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-            if (response.status === 200) {
-                if (json.length > 0) {
-                    // Map maps from an array of objects to a dict keyed by mapId
-                    const maps = Object.assign(...json.map(d => ({ [d.id]: d })))
-                    dispatch(receiveMaps(maps))
-                }
-            }
-            // throw new Error(`Error ${response.status}: Failed to retrieve maps.`)
-            // return json
-        })
-    }
-}
-
-export function mapUpsert(map: object) {
-    return (dispatch: any, getState: Function) => {
-        // Upsert
-        if (map.id === undefined) {
-            return dispatch(createMap(map))
-        }
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
-
-        return ealapi.put("/api/0.1/maps/" + mapCopy["id"] + "/", mapCopy, dispatch).then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-            // throw new Error('Unhandled error updating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
-
-            if (response.status === 200) {
-                dispatch(receieveUpdatedMap(json))
-                browserHistory.push(getMapURL(json))
-                dispatch(sendSnackbarNotification("Map saved successfully"))
-            } else if (response.status === 400) {
-                // We expect that the server will return the shape:
-                // {
-                //   username: 'User does not exist',
-                //   password: 'Wrong password',
-                //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                // }
-                throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error updating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
-            }
-        })
-    }
-}
-
-export function createMap(map: object) {
-    return (dispatch: any) => {
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
-        mapCopy["json"] = {
-            // FIXME
-            map_defaults: {
-                lat: -27.121915157767,
-                lon: 133.21253738715,
-                zoom: 4,
-            },
-            layers: [],
-        }
-
-        return ealapi
-            .post("/api/0.1/maps/", mapCopy, dispatch)
-            .then(({ response, json }: any) => {
-                // FIXME Cleanup and decide how to handle error at a component and application-level
-                // throw new Error('Unhandled error creating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
-
-                if (response.status === 201) {
-                    dispatch(receiveCreatedMap(json))
-                    browserHistory.push(getMapURL(json))
-                } else if (response.status === 400) {
-                    // We expect that the server will return the shape:
-                    // {
-                    //   username: 'User does not exist',
-                    //   password: 'Wrong password',
-                    //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                    // }
-                    throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
-                } else {
-                    // We're not sure what happened, but handle it:
-                    // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
-                }
-            })
-            .catch((error: any) => {
-                if (error instanceof SubmissionError) {
-                    throw error
-                } else {
-                    throw new SubmissionError({ _error: error.message })
-                }
-            })
-    }
-}
-
-export function duplicateMap(mapId: number) {
-    return (dispatch: any) => {
-        return ealapi
-            .put("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/clone/", null, dispatch)
-            .then(({ response, json }: any) => {
-                if (response.status === 201) {
-                    dispatch(receiveCreatedMap(json))
-                    dispatch(sendSnackbarNotification("Map duplicated successfully"))
-                    browserHistory.push(getMapURL(json))
-                } else {
-                    // We're not sure what happened, but handle it:
-                    // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error cloning map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
-                }
-            })
-    }
-}
-
 /*
 So, there seems to be two approaches to handling the "How do I do some action on the site (like using React-Router to change pages)?" question.
 
@@ -817,24 +344,6 @@ Some further reading on the subject:
 - https://github.com/reactjs/redux/issues/291
 - http://stackoverflow.com/questions/36886506/redux-change-url-when-an-async-action-is-dispatched
 */
-export function deleteMap(mapId: number) {
-    return (dispatch: any) => {
-        return ealapi
-            .delete("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/", dispatch)
-            .then((response: any) => {
-                if (response.status == 204) {
-                    dispatch(receiveDeleteMap(mapId))
-                    dispatch(sendSnackbarNotification("Map deleted successfully"))
-                    browserHistory.push("/")
-                } else {
-                    var error = new Error(response.statusText)
-                    error.response = response
-                    // dispatch(deleteMapError(error));
-                    throw error
-                }
-            })
-    }
-}
 
 export function fetchDataInfo() {
     return (dispatch: any) => {
@@ -942,12 +451,6 @@ export function setLayerFormChipValues(chipValues: Array<string>) {
     }
 }
 
-export function toggleLayerFormSubmitting() {
-    return {
-        type: RECEIVE_TOGGLE_LAYERFORM_SUBMITTING,
-    }
-}
-
 export function resetDataDiscovery() {
     return {
         type: RECEIVE_RESET_DATA_DISCOVERY,
@@ -1046,96 +549,6 @@ export function receiveAppPreviousPath(previousPath: string) {
     }
 }
 
-export function receiveChangeLayerProperty(
-    mapId: number,
-    layerId: number,
-    layerPropertyPath: string,
-    layerPropertyValue: any
-) {
-    return {
-        type: CHANGE_LAYER_PROPERTY,
-        mapId,
-        layerId,
-        layerPropertyPath,
-        layerPropertyValue,
-    }
-}
-
-export function receiveMergeLayerProperties(mapId: number, layerId: number, layer: object) {
-    return {
-        type: MERGE_LAYER_PROPERTIES,
-        mapId,
-        layerId,
-        layer,
-    }
-}
-
-export function initDraftLayer(mapId: number, layerId: number) {
-    return (dispatch: any) => {
-        const payload = { layerId: layerId }
-        return ealapi.put(`/api/0.1/maps/${mapId}/initDraftLayer/`, payload, dispatch)
-    }
-}
-
-export function receiveLayerFormChanged() {
-    return {
-        type: RECEIVE_LAYER_FORM_CHANGED,
-    }
-}
-
-export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveLayerFormChanged())
-
-        // Determine if we need to recompile the layer server-side.
-        // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
-        let willCompileServerSide: boolean = false
-        if ("geometry" in layerPartial) {
-            willCompileServerSide = true
-        }
-        if (!willCompileServerSide && "fill" in layerPartial) {
-            willCompileServerSide = Object.keys(
-                layerPartial["fill"]
-            ).some((value: string, index: number, array: Array<string>) => {
-                return (
-                    [
-                        "scale_min",
-                        "scale_max",
-                        "expression",
-                        "conditional",
-                        "scale_flip",
-                        "scale_name",
-                        "scale_nlevels",
-                    ].indexOf(value) >= 0
-                )
-            })
-        }
-
-        // Where possible, simply merge our partial layer object into the Redux store.
-        if (!willCompileServerSide) {
-            return dispatch(receiveMergeLayerProperties(mapId, layerId, layerPartial))
-        } else {
-            return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: object) => {
-                if (typeof layer === "object") {
-                    // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
-                    let haveCoreFieldsChanged: boolean = false
-                    if ("fill" in layerPartial) {
-                        haveCoreFieldsChanged = Object.keys(
-                            layerPartial["fill"]
-                        ).some((value: string, index: number, array: Array<string>) => {
-                            return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
-                        })
-                    }
-
-                    if (haveCoreFieldsChanged || "geometry" in layerPartial) {
-                        dispatch(fetchLayerQuerySummary(mapId, layer.hash))
-                    }
-                }
-            })
-        }
-    }
-}
-
 export function fetchLayerQuerySummary(mapId: number, layerHash: string) {
     return (dispatch: any) => {
         const payload = { layer: layerHash }
@@ -1164,15 +577,6 @@ export function receiveLegendPeekLabel(mapId: number, layerId: number, labelText
     }
 }
 
-export function changeMapSharing(mapId: number, shared: number) {
-    return (dispatch: any, getState: Function) => {
-        dispatch(receiveChangeMapSharing(mapId, shared))
-        dispatch(updateMap(getState().maps[mapId])).then(() => {
-            dispatch(sendSnackbarNotification("Layer sharing settings updated"))
-        })
-    }
-}
-
 export function setUserMenuState(open: boolean) {
     return {
         type: RECEIVE_SET_USER_MENU_STATE,
@@ -1184,5 +588,30 @@ export function setHighlightedFeatures(featurGids: Array<number>) {
     return {
         type: RECEIVE_HIGHLIGHTED_FEATURES,
         featurGids,
+    }
+}
+
+export function receiveBeginPublishLayer() {
+    return {
+        type: RECEIVE_BEGIN_PUBLISH_LAYER,
+    }
+}
+
+export function receiveBeginRestoreMasterLayer() {
+    return {
+        type: RECEIVE_BEGIN_RESTORE_MASTER_LAYER,
+    }
+}
+
+export function toggleLayerFormSubmitting() {
+    return {
+        type: RECEIVE_TOGGLE_LAYERFORM_SUBMITTING,
+    }
+}
+
+export function receiveLayerFormErrors(errors: object) {
+    return {
+        type: RECEIVE_LAYERFORM_ERRORS,
+        errors,
     }
 }

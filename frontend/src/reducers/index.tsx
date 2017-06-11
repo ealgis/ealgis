@@ -8,26 +8,16 @@ import {
     RECEIVE_NEW_SNACKBAR_MESSAGE,
     RECEIVE_START_SNACKBAR_IF_NEEDED,
     RECEIVE_ITERATE_SNACKBAR,
-    RECEIVE_SET_MAP_ORIGIN,
+    REQUEST_MAPS,
     REQUEST_USER,
     RECEIVE_USER,
-    REQUEST_MAPS,
-    RECEIVE_MAPS,
     REQUEST_MAP_DEFINITION,
     RECEIVE_MAP_DEFINITION,
-    CREATE_MAP,
-    DELETE_MAP,
     COMPILED_LAYER_STYLE,
-    CHANGE_MAP_SHARING,
-    CHANGE_LAYER_VISIBILITY,
     REQUEST_DATA_INFO,
     RECEIVE_DATA_INFO,
     REQUEST_COLOUR_INFO,
     RECEIVE_COLOUR_INFO,
-    RECEIVE_UPDATED_MAP,
-    RECEIVE_UPDATED_LAYER,
-    RECEIVE_DELETE_MAP_LAYER,
-    RECEIVE_CLONE_MAP_LAYER,
     RECEIVE_TOGGLE_MODAL_STATE,
     RECEIVE_UPDATE_DATA_INSPECTOR,
     RECEIVE_RESET_DATA_INSPECTOR,
@@ -40,8 +30,6 @@ import {
     RECEIVE_TOGGLE_LAYERFORM_SUBMITTING,
     RECEIVE_CHIP_VALUES,
     RECEIVE_APP_PREVIOUS_PATH,
-    CHANGE_LAYER_PROPERTY,
-    MERGE_LAYER_PROPERTIES,
     RECEIVE_LAYER_QUERY_SUMMARY,
     RECEIVE_LAYERFORM_ERRORS,
     RECEIVE_LEGENDPEEK_LABEL,
@@ -178,55 +166,18 @@ function user(
     }
 }
 
-function maps(state: any = {}, action: any) {
-    switch (action.type) {
-        case REQUEST_MAPS:
-            return state
-        case RECEIVE_MAPS:
-            return action.maps
-        case RECEIVE_UPDATED_MAP:
-            return dotProp.set(state, `${action.map.id}`, action.map)
-        case CREATE_MAP:
-            return {
-                ...state,
-                [action.map.id]: action.map,
-            }
-        case DELETE_MAP:
-            let { [action.mapId]: deletedItem, ...rest } = state
-            return rest
-        case RECEIVE_UPDATED_LAYER:
-            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
-        case RECEIVE_DELETE_MAP_LAYER:
-            return dotProp.delete(state, `${action.mapId}.json.layers.${action.layerId}`)
-        case RECEIVE_CLONE_MAP_LAYER:
-            let layerCopy = JSON.parse(JSON.stringify(state[action.mapId].json.layers[action.layerId]))
-            layerCopy.name += " Copy"
-            return dotProp.set(state, `${action.mapId}.json.layers`, [...state[action.mapId].json.layers, layerCopy])
-        case CHANGE_LAYER_VISIBILITY:
-            return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
-        case CHANGE_LAYER_PROPERTY:
-            return dotProp.set(
-                state,
-                `${action.mapId}.json.layers.${action.layerId}.${action.layerPropertyPath}`,
-                action.layerPropertyValue
-            )
-        case MERGE_LAYER_PROPERTIES:
-            const newLayer = merge(dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`), action.layer)
-            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
-        case RECEIVE_SET_MAP_ORIGIN:
-            return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
-                lat: action.position.center.lat,
-                lon: action.position.center.lon,
-                zoom: action.position.zoom,
-            })
-        case COMPILED_LAYER_STYLE:
-            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.olStyle`, action.olStyle)
-        case CHANGE_MAP_SHARING:
-            return dotProp.set(state, `${action.mapId}.shared`, action.shared)
-        default:
-            return state
-    }
-}
+// function maps(state: any = {}, action: any) {
+//     switch (action.type) {
+
+//         case COMPILED_LAYER_STYLE:
+//             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.olStyle`, action.olStyle)
+
+//         default:
+//             return state
+//     }
+// }
+
+import maps from "../redux/modules/maps"
 
 function datainfo(state = {}, action: any) {
     switch (action.type) {
