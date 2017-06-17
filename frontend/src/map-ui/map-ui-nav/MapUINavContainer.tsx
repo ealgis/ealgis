@@ -3,14 +3,11 @@ import { connect } from "react-redux"
 import { browserHistory } from "react-router"
 import { proj } from "openlayers"
 import MapUINav from "./components/MapUINav"
-import {
-    resetMapPosition,
-    toggleModalState,
-    updateDataInspector,
-    resetDataInspector,
-    sendSnackbarNotification,
-} from "../../actions"
+import { toggleModalState } from "../../redux/modules/app"
+import { updateMapPosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { reset as resetDataInspector } from "../../redux/modules/datainspector"
 import { addLayer, duplicateMap, updateMapOrigin, removeMap, changeMapSharing } from "../../redux/modules/maps"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 
 interface MapUINavContainerRouteParams {
     id: Number
@@ -29,7 +26,6 @@ export interface MapUINavContainerProps {
     onDeleteMap: Function
     onToggleDeleteModalState: Function
     deleteModalOpen: boolean
-    dataInspector: Array<any>
     resetDataInspector: Function
     previousPath: string
     onExportWholeMap: Function
@@ -63,7 +59,6 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
             onDeleteMap,
             onToggleDeleteModalState,
             deleteModalOpen,
-            dataInspector,
             onExportWholeMap,
             onExportMapViewport,
             onCheckIncludeGeomAttrs,
@@ -84,7 +79,6 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                     onDeleteMap={() => onDeleteMap(mapDefinition.id)}
                     onToggleDeleteModalState={() => onToggleDeleteModalState()}
                     deleteModalOpen={deleteModalOpen}
-                    dataInspector={dataInspector}
                     onExportWholeMap={() => onExportWholeMap(mapDefinition.id)}
                     onExportMapViewport={() => onExportMapViewport(mapDefinition.id, mapPosition.extent)}
                     onCheckIncludeGeomAttrs={(event: object, isInputChecked: boolean) =>
@@ -98,14 +92,13 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps, app, user } = state
+    const { maps, app, map, ealgis } = state
     return {
-        userId: user.id,
+        userId: ealgis.user.id,
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
-        mapPosition: app.mapPosition,
-        deleteModalOpen: app.dialogs["deleteMap"] || false,
-        dataInspector: app.dataInspector,
+        mapPosition: map.position,
+        deleteModalOpen: app.modals["deleteMap"] || false,
         previousPath: app.previousPath,
     }
 }
@@ -123,7 +116,7 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         onResetOrigin: (mapDefaults: any) => {
             dispatch(
-                resetMapPosition({
+                updateMapPosition({
                     center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                     zoom: mapDefaults.zoom,
                 })

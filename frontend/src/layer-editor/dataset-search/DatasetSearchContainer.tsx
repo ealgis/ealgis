@@ -1,23 +1,17 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import DatasetSearch from "./components/DatasetSearch"
-import {
-    sendSnackbarNotification,
-    resetDataDiscovery,
-    fetchColumnsForTable,
-    fetchColumnsByName,
-    fetchColumnsForGeometry,
-    setLayerFormChipValues,
-} from "../../actions"
-
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { loadChips as layerFormLoadChips } from "../../redux/modules/layerform"
+import * as datasearchModule from "../../redux/modules/datasearch"
 export interface DatasetSearchContainerProps {
-    datainfo: object
+    geominfo: object
     geometry: object
     onChipAdd: Function
     onChipDelete: Function
     onTableLookup: Function
     chipValues: Array<string>
-    dataDiscovery: Array<any>
+    dataSearchResults: Array<any>
     onCopyToClipboard: Function
 }
 
@@ -29,7 +23,7 @@ export class DatasetSearchContainer extends React.Component<DatasetSearchContain
             onChipDelete,
             onTableLookup,
             chipValues,
-            dataDiscovery,
+            dataSearchResults,
             onCopyToClipboard,
         } = this.props
 
@@ -39,7 +33,7 @@ export class DatasetSearchContainer extends React.Component<DatasetSearchContain
                 onChipDelete={(chip: string) => onChipDelete(chip, chipValues, geometry)}
                 onTableLookup={(table: object) => onTableLookup(table, geometry)}
                 chipValues={chipValues}
-                dataDiscovery={dataDiscovery}
+                dataSearchResults={dataSearchResults}
                 onCopyToClipboard={onCopyToClipboard}
             />
         )
@@ -47,12 +41,12 @@ export class DatasetSearchContainer extends React.Component<DatasetSearchContain
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app, maps, datainfo, colourinfo, tableinfo, form } = state
+    const { ealgis, datasearch, layerform } = state
 
     return {
-        datainfo: datainfo,
-        dataDiscovery: app.dataDiscovery,
-        chipValues: app.layerForm.chipValues,
+        geominfo: ealgis.geominfo,
+        dataSearchResults: datasearch.results,
+        chipValues: layerform.chips,
     }
 }
 
@@ -83,13 +77,13 @@ const onChipChange = (chips: Array<string>, geometry: object, dispatch: Function
 
     // Filter by table names and (optionally) one or more search terms
     if (tableNamesInChips.length > 0) {
-        dispatch(fetchColumnsForTable(filterChips, geometry, tableNamesInChips))
+        dispatch(datasearchModule.fetchColumnsForTable(filterChips, geometry, tableNamesInChips))
     } else if (columnNamesInChips.length > 0) {
         // Filter by one or more column names
-        dispatch(fetchColumnsByName(columnNamesInChips, geometry))
+        dispatch(datasearchModule.fetchColumnsByName(columnNamesInChips, geometry))
     } else {
         // Filter by one or more search terms
-        dispatch(fetchColumnsForGeometry(chips, geometry))
+        dispatch(datasearchModule.fetchColumnsForGeometry(chips, geometry))
     }
 }
 
@@ -98,24 +92,24 @@ const mapDispatchToProps = (dispatch: any) => {
         onChipAdd: (chip: string, chipValues: Array<string>, geometry: object) => {
             let chips = chipValues
             chips.push(chip)
-            dispatch(setLayerFormChipValues(chips))
+            dispatch(layerFormLoadChips(chips))
 
             onChipChange(chips, geometry, dispatch)
         },
         onChipDelete: (chip: string, chipValues: Array<string>, geometry: object) => {
             let chips = chipValues.filter((item: string) => item != chip)
-            dispatch(setLayerFormChipValues(chips))
+            dispatch(layerFormLoadChips(chips))
 
             if (chips.length > 0) {
                 onChipChange(chips, geometry, dispatch)
             } else {
-                dispatch(resetDataDiscovery())
+                dispatch(datasearchModule.reset())
             }
         },
         onTableLookup: (table: object, geometry: object) => {
             const chipValues = [`table:${table.name}`]
-            dispatch(setLayerFormChipValues(chipValues))
-            dispatch(fetchColumnsForTable([], geometry, [table.name]))
+            dispatch(layerFormLoadChips(chipValues))
+            dispatch(datasearchModule.fetchColumnsForTable([], geometry, [table.name]))
         },
         onCopyToClipboard: (column_name: string) => {
             dispatch(sendSnackbarNotification(`Column '${column_name}' copied to clipboard.`))

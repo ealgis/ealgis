@@ -29,10 +29,10 @@ export class MapListContainer extends React.Component<MapListContainerProps, und
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps, user } = state
+    const { maps, ealgis } = state
     return {
         tabName: ownProps.params.tabName,
-        userId: user.id,
+        userId: ealgis.user.id,
         maps,
     }
 }

@@ -20,10 +20,10 @@ export class LayerContainer extends React.Component<LayerContainerProps, undefin
 }
 
 const mapStateToProps = (state: any) => {
-    const { app } = state
+    const { map } = state
     return {
-        debugMode: app.debug,
-        highlightedFeatures: app.highlightedFeatures,
+        debugMode: map.debug,
+        highlightedFeatures: map.highlightedFeatures,
     }
 }
 

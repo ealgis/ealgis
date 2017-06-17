@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import LayerDeleteConfirmDialog from "./components/LayerDeleteConfirmDialog"
-import { toggleModalState } from "../../actions"
+import { toggleModalState } from "../../redux/modules/app"
 import { deleteMapLayer } from "../../redux/modules/maps"
 
 interface LayerDeleteConfirmDialogContainerRouteParams {
@@ -47,7 +47,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     const { maps, app } = state
 
     return {
-        open: app.dialogs[ownProps.modalId],
+        open: app.modals[ownProps.modalId],
         map: maps[ownProps.mapId],
         layerId: ownProps.layerId,
     }

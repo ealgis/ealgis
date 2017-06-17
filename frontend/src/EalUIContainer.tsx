@@ -3,17 +3,10 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
 import EalUI from "./EalUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
-import {
-    fetchUserMapsDataAndColourInfo,
-    receiveSidebarState,
-    addNewSnackbarMessageAndStartIfNeeded,
-    handleIterateSnackbar,
-    toggleDebugMode,
-    receiveAppPreviousPath,
-    logoutUser,
-    setUserMenuState,
-    moveToGooglePlacesResult,
-} from "./actions"
+import { toggleSidebarState, setLastPage, toggleUserMenu } from "./redux/modules/app"
+import { fetchUserMapsDataAndColourInfo, logoutUser } from "./redux/modules/ealgis"
+import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
+import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
 import GoogleMapLoader from "react-google-maps-loader"
 
@@ -24,12 +17,14 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU" // Google 
 
 export interface EalContainerProps {
     app: object
+    debug: boolean
+    snackbars: any
     user: any
     dispatch: Function
     content: any
     sidebar: any
     onTapAppBarLeft: Function
-    handleRequestClose: Function
+    handleSnackbarClose: Function
     doLogout: Function
     fetchStuff: Function
     onDebugToggle: Function
@@ -66,13 +61,15 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     render() {
         const {
             app,
+            debug,
+            snackbars,
             user,
             children,
             content,
             sidebar,
             location,
             onTapAppBarLeft,
-            handleRequestClose,
+            handleSnackbarClose,
             doLogout,
             onDebugToggle,
             handleOpenUserMenu,
@@ -95,12 +92,14 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
             <MuiThemeProvider>
                 <EalUI
                     app={app}
+                    debug={debug}
+                    snackbars={snackbars}
                     user={user}
                     children={children}
                     content={content}
                     sidebar={sidebar}
                     onTapAppBarLeft={onTapAppBarLeft}
-                    handleRequestClose={handleRequestClose}
+                    handleSnackbarClose={handleSnackbarClose}
                     doLogout={doLogout}
                     onDebugToggle={onDebugToggle}
                     handleOpenUserMenu={handleOpenUserMenu}
@@ -115,10 +114,12 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app, user } = state
+    const { app, map, ealgis, snackbars } = state
     return {
-        app,
-        user,
+        app: app,
+        user: ealgis.user,
+        snackbars: snackbars,
+        debug: map.debug,
     }
 }
 
@@ -128,27 +129,27 @@ const mapDispatchToProps = (dispatch: any) => {
             dispatch(fetchUserMapsDataAndColourInfo())
         },
         onTapAppBarLeft: () => {
-            dispatch(receiveSidebarState())
+            dispatch(toggleSidebarState())
         },
-        handleRequestClose: (reason: string) => {
+        handleSnackbarClose: (reason: string) => {
             if (reason === "timeout") {
-                dispatch(handleIterateSnackbar())
+                dispatch(iterateSnackbar())
             }
         },
         onDebugToggle: () => {
             dispatch(toggleDebugMode())
         },
         onReceiveAppPreviousPath: (previousPath: string) => {
-            dispatch(receiveAppPreviousPath(previousPath))
+            dispatch(setLastPage(previousPath))
         },
         doLogout: () => {
             dispatch(logoutUser())
         },
         handleOpenUserMenu: () => {
-            dispatch(setUserMenuState(true))
+            dispatch(toggleUserMenu(true))
         },
         handleUserMenuOnRequestChange: (value: boolean) => {
-            dispatch(setUserMenuState(value))
+            dispatch(toggleUserMenu(value))
         },
         handleGooglePlacesAutocomplete: (lat: number, lon: number, result: object, pathname: string) => {
             // Only navigate if the map is visible

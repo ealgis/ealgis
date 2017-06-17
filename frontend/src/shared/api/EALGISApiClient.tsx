@@ -2,12 +2,8 @@ import "whatwg-fetch"
 import * as qs from "qs"
 import cookie from "react-cookie"
 import * as Raven from "raven-js"
-import {
-    addNewSnackbarMessageAndStartIfNeeded,
-    handleIterateSnackbar,
-    receiveBeginFetch,
-    receiveFinishFetch,
-} from "../../actions"
+import { iterate as iterateSnackbar, sendMessage as sendSnackbarMessage } from "../../redux/modules/snackbars"
+import { beginFetch, finishFetch } from "../../redux/modules/app"
 
 export class EALGISApiClient {
     // Only handles fatal errors from the API
@@ -17,20 +13,20 @@ export class EALGISApiClient {
         Raven.showReportDialog()
 
         dispatch(
-            addNewSnackbarMessageAndStartIfNeeded({
+            sendSnackbarMessage({
                 message: `Error from ${url}`,
                 // key: "SomeUID",
                 action: "Dismiss",
                 autoHideDuration: 4000,
                 onActionTouchTap: () => {
-                    dispatch(handleIterateSnackbar())
+                    dispatch(iterateSnackbar())
                 },
             })
         )
     }
 
     public get(url: string, dispatch: Function, params: object = {}) {
-        dispatch(receiveBeginFetch())
+        dispatch(beginFetch())
 
         if (Object.keys(params).length > 0) {
             // Yay, a library just to do query string operations for fetch()
@@ -42,7 +38,7 @@ export class EALGISApiClient {
             credentials: "same-origin",
         })
             .then((response: any) => {
-                dispatch(receiveFinishFetch())
+                dispatch(finishFetch())
                 return response.json().then((json: any) => ({
                     response: response,
                     json: json,
@@ -52,7 +48,7 @@ export class EALGISApiClient {
     }
 
     public post(url: string, body: object, dispatch: any) {
-        dispatch(receiveBeginFetch())
+        dispatch(beginFetch())
 
         return fetch(url, {
             method: "POST",
@@ -64,7 +60,7 @@ export class EALGISApiClient {
             body: JSON.stringify(body),
         })
             .then((response: any) => {
-                dispatch(receiveFinishFetch())
+                dispatch(finishFetch())
                 return response.json().then((json: any) => ({
                     response: response,
                     json: json,
@@ -74,7 +70,7 @@ export class EALGISApiClient {
     }
 
     public put(url: string, body: object, dispatch: any) {
-        dispatch(receiveBeginFetch())
+        dispatch(beginFetch())
 
         return fetch(url, {
             method: "PUT",
@@ -86,7 +82,7 @@ export class EALGISApiClient {
             body: JSON.stringify(body),
         })
             .then((response: any) => {
-                dispatch(receiveFinishFetch())
+                dispatch(finishFetch())
                 return response.json().then((json: any) => ({
                     response: response,
                     json: json,
@@ -96,7 +92,7 @@ export class EALGISApiClient {
     }
 
     public delete(url: string, dispatch: any) {
-        dispatch(receiveBeginFetch())
+        dispatch(beginFetch())
 
         return fetch(url, {
             method: "DELETE",
@@ -106,7 +102,7 @@ export class EALGISApiClient {
             },
         })
             .then((response: any) => {
-                dispatch(receiveFinishFetch())
+                dispatch(finishFetch())
                 return response
             })
             .catch((error: any) => this.handleError(error, url, dispatch))

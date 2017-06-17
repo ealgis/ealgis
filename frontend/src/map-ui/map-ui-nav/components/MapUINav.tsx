@@ -10,6 +10,7 @@ import Checkbox from "material-ui/Checkbox"
 import FlatButton from "material-ui/FlatButton"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import Divider from "material-ui/Divider"
+import DataInspector from "../../data-inspector/DataInspector"
 import * as CopyToClipboard from "react-copy-to-clipboard"
 
 import IconMenu from "material-ui/IconMenu"
@@ -19,7 +20,6 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton"
 
 import MapsEditLocation from "material-ui/svg-icons/maps/edit-location"
-import MapsLayers from "material-ui/svg-icons/maps/layers"
 import MapsAddLocation from "material-ui/svg-icons/maps/add-location"
 import ActionDelete from "material-ui/svg-icons/action/delete"
 import ActionBookmarkBorder from "material-ui/svg-icons/action/bookmark-border"
@@ -33,7 +33,6 @@ import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import ContentLink from "material-ui/svg-icons/content/link"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
-import InsertChart from "material-ui/svg-icons/editor/insert-chart"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
 
 const styles = {
@@ -78,7 +77,6 @@ export interface MapUINavProps {
     onDeleteMap: Function
     onToggleDeleteModalState: Function
     deleteModalOpen: boolean
-    dataInspector: Array<any>
     onExportWholeMap: Function
     onExportMapViewport: Function
     onCheckIncludeGeomAttrs: Function
@@ -99,7 +97,6 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
             onDeleteMap,
             onToggleDeleteModalState,
             deleteModalOpen,
-            dataInspector,
             onExportWholeMap,
             onExportMapViewport,
             onCheckIncludeGeomAttrs,
@@ -187,7 +184,7 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
                     </Tab>
                     {/* END LAYERS TAB */}
 
-                    {/* START DATA INSPECTOR TAB */}
+                    {/* START DATA TAB */}
                     <Tab
                         label="DATA"
                         containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`} />}
@@ -221,33 +218,10 @@ export class MapUINav extends React.Component<MapUINavProps, undefined> {
 
                             <Divider />
 
-                            <List>
-                                <ListItem
-                                    primaryText="Data Inspector"
-                                    secondaryText="Click on the map to drilldown into the data"
-                                    leftIcon={<InsertChart />}
-                                    disabled={true}
-                                />
-                                {dataInspector.map((row: any, key: number) =>
-                                    <ListItem
-                                        key={key}
-                                        primaryText={row.name}
-                                        leftIcon={<MapsLayers />}
-                                        initiallyOpen={true}
-                                        primaryTogglesNestedList={true}
-                                        nestedItems={row.properties.map((propRow: any, key: any) =>
-                                            <ListItem
-                                                key={key}
-                                                primaryText={propRow.value.toString()}
-                                                secondaryText={propRow.name}
-                                            />
-                                        )}
-                                    />
-                                )}
-                            </List>
+                            <DataInspector />
                         </div>
                     </Tab>
-                    {/* END DATA INSPECTOR TAB */}
+                    {/* END DATA TAB */}
 
                     {/* START SETTINGS TAB */}
                     {isOwner &&

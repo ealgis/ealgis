@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import LayerQuerySummary from "./components/LayerQuerySummary"
-import { fetchLayerQuerySummary } from "../../actions"
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
 
 export interface LayerQuerySummaryContainerProps {
     mapId: number
@@ -40,10 +40,10 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app } = state
+    const { layerquerysummary } = state
 
     return {
-        stats: app.layerForm.layerQuerySummary[ownProps.layerHash],
+        stats: layerquerysummary.layers[ownProps.layerHash],
     }
 }
 

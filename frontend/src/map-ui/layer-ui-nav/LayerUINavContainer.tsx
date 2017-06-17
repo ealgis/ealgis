@@ -2,7 +2,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { browserHistory } from "react-router"
 import LayerUINav from "./components/LayerUINav"
-import { toggleModalState } from "../../actions"
+import { toggleModalState } from "../../redux/modules/app"
 import { cloneMapLayer } from "../../redux/modules/maps"
 
 interface LayerUINavContainerRouteParams {
@@ -18,12 +18,12 @@ export interface LayerUINavContainerProps {
     layerId: number
     onCloneLayer: Function
     onDeleteLayer: Function
-    datainfo: object
+    geominfo: object
 }
 
 export class LayerUINavContainer extends React.Component<LayerUINavContainerProps, undefined> {
-    private getGeometryDescription(defn: object, datainfo) {
-        return datainfo[defn["schema"] + "." + defn["geometry"]].description
+    private getGeometryDescription(defn: object, geominfo) {
+        return geominfo[defn["schema"] + "." + defn["geometry"]].description
     }
 
     render() {
@@ -35,7 +35,7 @@ export class LayerUINavContainer extends React.Component<LayerUINavContainerProp
             layerId,
             onCloneLayer,
             onDeleteLayer,
-            datainfo,
+            geominfo,
         } = this.props
         const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
 
@@ -49,18 +49,18 @@ export class LayerUINavContainer extends React.Component<LayerUINavContainerProp
                 onCloneLayer={() => onCloneLayer(mapId, layerId)}
                 onDeleteLayer={() => onDeleteLayer(deleteConfirmModalId)}
                 deleteConfirmModalId={deleteConfirmModalId}
-                getGeometryDescription={(defn: object) => this.getGeometryDescription(defn, datainfo)}
+                getGeometryDescription={(defn: object) => this.getGeometryDescription(defn, geominfo)}
             />
         )
     }
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { maps, datainfo } = state
+    const { maps, ealgis } = state
     return {
         layerDefinition: ownProps.layerDefinition,
         mapId: ownProps.mapId,
-        datainfo: datainfo,
+        geominfo: ealgis.geominfo,
     }
 }
 

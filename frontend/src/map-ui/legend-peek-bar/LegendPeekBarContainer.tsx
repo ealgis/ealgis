@@ -2,7 +2,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import LegendPeekBar from "./components/LegendPeekBar"
 import * as isEqual from "lodash/isEqual"
-import { receiveLegendPeekLabel } from "../../actions"
+import { receiveLegendPeekLabel } from "../../redux/modules/legends"
 
 export interface LegendPeekBarContainerProps {
     mapId: number
@@ -43,10 +43,10 @@ export class LegendPeekBarContainer extends React.Component<LegendPeekBarContain
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app } = state
+    const { legends } = state
 
     return {
-        labelText: app.layerUINav.legendpeek[ownProps.mapId + "-" + ownProps.layerId],
+        labelText: legends.legendpeek[ownProps.mapId + "-" + ownProps.layerId],
     }
 }
 

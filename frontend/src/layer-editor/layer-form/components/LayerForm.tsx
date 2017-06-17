@@ -153,7 +153,7 @@ export interface LayerFormProps {
     onModalDiscardForm: Function
     dirtyFormModalOpen: boolean
     isDirty: boolean
-    datainfo: object
+    geominfo: object
     colourinfo: object
     layerFormSubmitting: boolean
 }
@@ -163,15 +163,15 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
     colourSchemes: Array<JSX.Element>
 
     componentWillMount() {
-        const { datainfo, colourinfo } = this.props
+        const { geominfo, colourinfo } = this.props
 
         this.geometryTables = []
-        for (let geomtable_name in datainfo) {
+        for (let geomtable_name in geominfo) {
             this.geometryTables.push(
                 <MenuItem
                     key={geomtable_name}
-                    value={JSON.stringify(datainfo[geomtable_name])}
-                    primaryText={datainfo[geomtable_name].description}
+                    value={JSON.stringify(geominfo[geomtable_name])}
+                    primaryText={geominfo[geomtable_name].description}
                 />
             )
         }

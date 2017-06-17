@@ -6,18 +6,16 @@ import * as debounce from "lodash/debounce"
 import * as isEqual from "lodash/isEqual"
 import * as reduce from "lodash/reduce"
 import LayerForm from "./components/LayerForm"
-import {
-    toggleModalState,
-    sendSnackbarNotification,
-    receiveStartLayerEditSession,
-    receiveFitScaleToData,
-} from "../../actions"
+import { toggleModalState } from "../../redux/modules/app"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
     initDraftLayer,
     publishLayer,
     restoreMasterLayer,
     restoreMasterLayerAndDiscardForm,
     handleLayerFormChange,
+    startLayerEditing,
+    fitLayerScaleToData,
 } from "../../redux/modules/maps"
 
 export interface LayerDefinitionProps {
@@ -35,7 +33,7 @@ export interface LayerFormContainerProps {
     layerId: number
     tabName: string
     layerDefinition: LayerDefinitionProps
-    datainfo: object
+    geominfo: object
     colourinfo: object
     layerFormSubmitting: boolean
     startLayerEditSession: Function
@@ -55,7 +53,7 @@ export interface LayerFormContainerProps {
     onFitScaleToData: Function
 }
 
-const getLayerFormValuesFromLayer = (layer: object, datainfo: object) => {
+const getLayerFormValuesFromLayer = (layer: object, geominfo: object) => {
     return {
         fillOpacity: layer["fill"]["opacity"],
         scaleMin: layer["fill"]["scale_min"],
@@ -69,7 +67,7 @@ const getLayerFormValuesFromLayer = (layer: object, datainfo: object) => {
         borderColour: layer["line"]["colour"],
         name: layer["name"],
         description: layer["description"],
-        geometry: JSON.stringify(datainfo[layer["schema"] + "." + layer["geometry"]]),
+        geometry: JSON.stringify(geominfo[layer["schema"] + "." + layer["geometry"]]),
     }
 }
 
@@ -196,7 +194,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, startLayerEditSession, layerDefinition, datainfo } = this.props
+        const { mapDefinition, layerId, startLayerEditSession, layerDefinition, geominfo } = this.props
 
         // Start a new layer edit session whenever the form is initialised.
         // (This happens for each layer we load the form for.)
@@ -204,7 +202,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 
         // Each layer mounts this component anew, so store their initial layer form values.
         // e.g. For use in resetting the form state (Undo/Discard Changes)
-        this.initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, datainfo)))
+        this.initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, geominfo)))
     }
 
     routerWillLeave(nextLocation: object) {
@@ -291,7 +289,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
             onSubmit,
             onSubmitFail,
             onFieldUpdate,
-            datainfo,
+            geominfo,
             colourinfo,
             onSaveForm,
             onResetForm,
@@ -332,7 +330,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
                 onModalDiscardForm={() => onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
-                datainfo={datainfo}
+                geominfo={geominfo}
                 colourinfo={colourinfo}
                 layerFormSubmitting={layerFormSubmitting}
             />
@@ -341,7 +339,7 @@ export class LayerFormContainer extends React.Component<LayerFormContainerProps,
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app, maps, datainfo, colourinfo } = state
+    const { app, maps, ealgis, layerform } = state
 
     const layerFormValues = formValueSelector("layerForm")
 
@@ -352,18 +350,18 @@ const mapStateToProps = (state: any, ownProps: any) => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme"),
         layerGeometry: layerFormValues(state, "geometry"),
-        dirtyFormModalOpen: app.dialogs["dirtyLayerForm"] || false,
+        dirtyFormModalOpen: app.modals["dirtyLayerForm"] || false,
         isDirty: isDirty("layerForm")(state),
-        datainfo: datainfo,
-        colourinfo: colourinfo,
-        layerFormSubmitting: app.layerForm.submitting,
+        geominfo: ealgis.geominfo,
+        colourinfo: ealgis.colourinfo,
+        layerFormSubmitting: layerform.submitting,
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
         startLayerEditSession: (mapId: number, layerId: number) => {
-            dispatch(receiveStartLayerEditSession())
+            dispatch(startLayerEditing())
             dispatch(initDraftLayer(mapId, layerId))
         },
         onSubmit: (mapId: number, layerId: number, layerFormValues: object) => {
@@ -402,7 +400,7 @@ const mapDispatchToProps = (dispatch: any) => {
             }
         },
         onFitScaleToData: (mapId: number, layerId: number, stats: object) => {
-            dispatch(receiveFitScaleToData())
+            dispatch(fitLayerScaleToData())
             dispatch(change("layerForm", "scaleMin", stats.min))
             dispatch(change("layerForm", "scaleMax", stats.max))
 

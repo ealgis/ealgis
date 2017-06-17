@@ -73,19 +73,18 @@ export interface DatasetSearchProps {
     onChipAdd: Function
     onChipDelete: Function
     chipValues: Array<string>
-    dataDiscovery: Array<any>
+    dataSearchResults: Array<any>
     onCopyToClipboard: Function
     onTableLookup: Function
 }
 
 export class DatasetSearch extends React.Component<DatasetSearchProps, undefined> {
     render() {
-        const { onChipAdd, onChipDelete, chipValues, dataDiscovery, onCopyToClipboard, onTableLookup } = this.props
-
-        const dataDiscoveryResultLength = Object.keys(dataDiscovery).length
-        let showExpandableButton = dataDiscoveryResultLength == 1 ? false : true
-        let actAsExpander = dataDiscoveryResultLength == 1 ? false : true
-        let expandable = dataDiscoveryResultLength == 1 ? false : true
+        const { onChipAdd, onChipDelete, chipValues, dataSearchResults, onCopyToClipboard, onTableLookup } = this.props
+        const dataSearchResultLength = Object.keys(dataSearchResults).length
+        let showExpandableButton = dataSearchResultLength == 1 ? false : true
+        let actAsExpander = dataSearchResultLength == 1 ? false : true
+        let expandable = dataSearchResultLength == 1 ? false : true
 
         return (
             <div>
@@ -148,13 +147,13 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                     }}
                 />
 
-                {Object.keys(dataDiscovery).map((tableId: any, key: number) =>
+                {Object.keys(dataSearchResults).map((tableId: any, key: number) =>
                     <Card key={key} style={styles.searchResultsCard}>
                         <CardHeader
-                            title={`${dataDiscovery[tableId]["table"].metadata_json["type"]} (${dataDiscovery[tableId][
-                                "columns"
-                            ].length})`}
-                            subtitle={dataDiscovery[tableId]["table"].metadata_json["kind"]}
+                            title={`${dataSearchResults[tableId]["table"].metadata_json["type"]} (${dataSearchResults[
+                                tableId
+                            ]["columns"].length})`}
+                            subtitle={dataSearchResults[tableId]["table"].metadata_json["kind"]}
                             showExpandableButton={showExpandableButton}
                             actAsExpander={actAsExpander}
                         />
@@ -165,21 +164,21 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                                         <div key={key}>
                                             <Card style={styles.searchResultItemCard}>
                                                 <CardHeader
-                                                    title={`${dataDiscovery[tableId]["columns"][key].metadata_json[
+                                                    title={`${dataSearchResults[tableId]["columns"][key].metadata_json[
                                                         "kind"
-                                                    ]} (${dataDiscovery[tableId]["columns"][key].name})`}
+                                                    ]} (${dataSearchResults[tableId]["columns"][key].name})`}
                                                     subtitle={
-                                                        dataDiscovery[tableId]["columns"][key].metadata_json["type"]
+                                                        dataSearchResults[tableId]["columns"][key].metadata_json["type"]
                                                     }
                                                     textStyle={styles.searchResultItemTextStyle}
                                                     style={styles.searchResultItemStyle}
                                                 />
                                                 <CardActions>
                                                     <CopyToClipboard
-                                                        text={dataDiscovery[tableId]["columns"][key].name}
+                                                        text={dataSearchResults[tableId]["columns"][key].name}
                                                         onCopy={() =>
                                                             onCopyToClipboard(
-                                                                dataDiscovery[tableId]["columns"][key].name
+                                                                dataSearchResults[tableId]["columns"][key].name
                                                             )}
                                                     >
                                                         <RaisedButton
@@ -193,7 +192,7 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                                             </Card>
                                             <Divider />
                                         </div>}
-                                    length={dataDiscovery[tableId]["columns"].length}
+                                    length={dataSearchResults[tableId]["columns"].length}
                                     type={"simple"}
                                 />
                             </div>
@@ -204,7 +203,7 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                                 primary={true}
                                 style={styles.lookupTableButton}
                                 icon={<ContentFilterList />}
-                                onTouchTap={(evt: object) => onTableLookup(dataDiscovery[tableId]["table"])}
+                                onTouchTap={(evt: object) => onTableLookup(dataSearchResults[tableId]["table"])}
                             />
                         </CardActions>
                     </Card>

@@ -40,11 +40,13 @@ export interface EalUIAppProps {
 
 export interface EalUIProps {
     app: EalUIAppProps
+    debug: boolean
+    snackbars: any
     user: any
     sidebar: any
     content: any
     onTapAppBarLeft: any
-    handleRequestClose: any
+    handleSnackbarClose: any
     doLogout: Function
     onDebugToggle: any
     handleOpenUserMenu: Function
@@ -72,11 +74,13 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
     render() {
         const {
             app,
+            debug,
+            snackbars,
             user,
             content,
             sidebar,
             onTapAppBarLeft,
-            handleRequestClose,
+            handleSnackbarClose,
             doLogout,
             onDebugToggle,
             handleOpenUserMenu,
@@ -147,7 +151,7 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                                     >
                                         {user.is_staff &&
                                             <MenuItem
-                                                primaryText={app.debug ? "Debug Mode: ON" : "Debug Mode: OFF"}
+                                                primaryText={debug ? "Debug Mode: ON" : "Debug Mode: OFF"}
                                                 leftIcon={<ActionBugReport />}
                                                 onClick={onDebugToggle}
                                             />}
@@ -171,12 +175,12 @@ export class EalUI extends React.Component<EalUIProps, undefined> {
                     </nav>
                 </div>
                 <Snackbar
-                    open={app.snackbar.open}
-                    message={app.snackbar.active.message}
-                    action={app.snackbar.active.action}
-                    autoHideDuration={app.snackbar.active.autoHideDuration}
-                    onActionTouchTap={() => app.snackbar.active.onActionTouchTap()}
-                    onRequestClose={handleRequestClose}
+                    open={snackbars.open}
+                    message={snackbars.active.message}
+                    action={snackbars.active.action}
+                    autoHideDuration={snackbars.active.autoHideDuration}
+                    onActionTouchTap={() => snackbars.active.onActionTouchTap()}
+                    onRequestClose={handleSnackbarClose}
                 />
             </div>
         )

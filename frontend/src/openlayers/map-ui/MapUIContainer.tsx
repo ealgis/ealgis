@@ -2,7 +2,8 @@ import * as React from "react"
 import MapUI from "./components/MapUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
-import { onMapMoveEnd, sendToDataInspector, setHighlightedFeatures } from "../../actions"
+import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
+import { saveMapPosition, setHighlightedFeatures } from "../../redux/modules/map"
 
 import "openlayers/css/ol.css"
 
@@ -35,11 +36,11 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
 }
 
 const mapStateToProps = (state: any, ownProps: any) => {
-    const { app, maps } = state
+    const { map, maps } = state
 
     return {
         mapDefinition: maps[ownProps.params.mapId],
-        position: app.mapPosition,
+        position: map.position,
     }
 }
 
@@ -64,7 +65,7 @@ const mapDispatchToProps = (dispatch: any) => {
             })
 
             dispatch(setHighlightedFeatures(featurGids))
-            dispatch(sendToDataInspector(mapId, features))
+            dispatch(loadDataInspector(mapId, features))
         },
         onMoveEnd: (event: object) => {
             const view = event.map.getView()
@@ -79,7 +80,7 @@ const mapDispatchToProps = (dispatch: any) => {
                 resolution: view.getResolution(),
                 extent: view.calculateExtent(event.map.getSize()),
             }
-            dispatch(onMapMoveEnd(position))
+            dispatch(saveMapPosition(position))
         },
     }
 }
