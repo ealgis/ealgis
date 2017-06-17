@@ -16,7 +16,7 @@ function dockerwait {
 }
 
 dockerwait $DB_HOST $DB_PORT
-sleep 3
+sleep 6
 
 django-admin migrate
 
