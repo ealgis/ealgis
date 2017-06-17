@@ -25,7 +25,7 @@ export class EALGISApiClient {
         )
     }
 
-    public get(url: string, dispatch: Function, params: object = {}) {
+    public get(url: string, dispatch: Function, params: object = {}): Promise<void> {
         dispatch(beginFetch())
 
         if (Object.keys(params).length > 0) {
@@ -107,4 +107,17 @@ export class EALGISApiClient {
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
+}
+
+// Models
+export interface IEALGISApiClient {
+    handleError: Function
+    get: Function
+    post: Function
+    put: Function
+    delete: Function
+}
+
+export interface IHttpResponse {
+    status: number
 }

@@ -108,7 +108,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         mapPosition: map.position,
-        deleteModalOpen: app.modals["deleteMap"] || false,
+        deleteModalOpen: app.modals.get("deleteMap") || false,
         previousPath: app.previousPath,
     }
 }

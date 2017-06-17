@@ -11,6 +11,7 @@ import ActionSearch from "material-ui/svg-icons/action/search"
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from "material-ui/Card"
 import * as ReactList from "react-list"
 import * as CopyToClipboard from "react-copy-to-clipboard"
+import { ITableAndCols } from "../../../redux/modules/datasearch"
 
 import Divider from "material-ui/Divider"
 
@@ -73,7 +74,7 @@ export interface DatasetSearchProps {
     onChipAdd: Function
     onChipDelete: Function
     chipValues: Array<string>
-    dataSearchResults: Array<any>
+    dataSearchResults: Map<string, ITableAndCols>
     onCopyToClipboard: Function
     onTableLookup: Function
 }
@@ -81,7 +82,8 @@ export interface DatasetSearchProps {
 export class DatasetSearch extends React.Component<DatasetSearchProps, undefined> {
     render() {
         const { onChipAdd, onChipDelete, chipValues, dataSearchResults, onCopyToClipboard, onTableLookup } = this.props
-        const dataSearchResultLength = Object.keys(dataSearchResults).length
+
+        const dataSearchResultLength = dataSearchResults.size
         let showExpandableButton = dataSearchResultLength == 1 ? false : true
         let actAsExpander = dataSearchResultLength == 1 ? false : true
         let expandable = dataSearchResultLength == 1 ? false : true
@@ -147,67 +149,61 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                     }}
                 />
 
-                {Object.keys(dataSearchResults).map((tableId: any, key: number) =>
-                    <Card key={key} style={styles.searchResultsCard}>
-                        <CardHeader
-                            title={`${dataSearchResults[tableId]["table"].metadata_json["type"]} (${dataSearchResults[
-                                tableId
-                            ]["columns"].length})`}
-                            subtitle={dataSearchResults[tableId]["table"].metadata_json["kind"]}
-                            showExpandableButton={showExpandableButton}
-                            actAsExpander={actAsExpander}
-                        />
-                        <CardText style={styles.searchResultsCardText} expandable={expandable}>
-                            <div style={styles.searchResultsReactList}>
-                                <ReactList
-                                    itemRenderer={(index: any, key: any) =>
-                                        <div key={key}>
-                                            <Card style={styles.searchResultItemCard}>
-                                                <CardHeader
-                                                    title={`${dataSearchResults[tableId]["columns"][key].metadata_json[
-                                                        "kind"
-                                                    ]} (${dataSearchResults[tableId]["columns"][key].name})`}
-                                                    subtitle={
-                                                        dataSearchResults[tableId]["columns"][key].metadata_json["type"]
-                                                    }
-                                                    textStyle={styles.searchResultItemTextStyle}
-                                                    style={styles.searchResultItemStyle}
-                                                />
-                                                <CardActions>
-                                                    <CopyToClipboard
-                                                        text={dataSearchResults[tableId]["columns"][key].name}
-                                                        onCopy={() =>
-                                                            onCopyToClipboard(
-                                                                dataSearchResults[tableId]["columns"][key].name
-                                                            )}
-                                                    >
-                                                        <RaisedButton
-                                                            label="Copy Column"
-                                                            secondary={true}
-                                                            style={styles.copyColumnButton}
-                                                            icon={<ContentCopy />}
-                                                        />
-                                                    </CopyToClipboard>
-                                                </CardActions>
-                                            </Card>
-                                            <Divider />
-                                        </div>}
-                                    length={dataSearchResults[tableId]["columns"].length}
-                                    type={"simple"}
-                                />
-                            </div>
-                        </CardText>
-                        <CardActions>
-                            <RaisedButton
-                                label="Lookup Table"
-                                primary={true}
-                                style={styles.lookupTableButton}
-                                icon={<ContentFilterList />}
-                                onTouchTap={(evt: object) => onTableLookup(dataSearchResults[tableId]["table"])}
+                {dataSearchResultLength > 0 &&
+                    Array.from(dataSearchResults.values()).map((table: ITableAndCols, key: number) =>
+                        <Card key={key} style={styles.searchResultsCard}>
+                            <CardHeader
+                                title={`${table["table"].metadata_json["type"]} (${table["columns"].length})`}
+                                subtitle={table["table"].metadata_json["kind"]}
+                                showExpandableButton={showExpandableButton}
+                                actAsExpander={actAsExpander}
                             />
-                        </CardActions>
-                    </Card>
-                )}
+                            <CardText style={styles.searchResultsCardText} expandable={expandable}>
+                                <div style={styles.searchResultsReactList}>
+                                    <ReactList
+                                        itemRenderer={(index: any, key: any) =>
+                                            <div key={key}>
+                                                <Card style={styles.searchResultItemCard}>
+                                                    <CardHeader
+                                                        title={`${table["columns"][key].metadata_json["kind"]} (${table[
+                                                            "columns"
+                                                        ][key].name})`}
+                                                        subtitle={table["columns"][key].metadata_json["type"]}
+                                                        textStyle={styles.searchResultItemTextStyle}
+                                                        style={styles.searchResultItemStyle}
+                                                    />
+                                                    <CardActions>
+                                                        <CopyToClipboard
+                                                            text={table["columns"][key].name}
+                                                            onCopy={() => onCopyToClipboard(table["columns"][key].name)}
+                                                        >
+                                                            <RaisedButton
+                                                                label="Copy Column"
+                                                                secondary={true}
+                                                                style={styles.copyColumnButton}
+                                                                icon={<ContentCopy />}
+                                                            />
+                                                        </CopyToClipboard>
+                                                    </CardActions>
+                                                </Card>
+                                                <Divider />
+                                            </div>}
+                                        length={table["columns"].length}
+                                        type={"simple"}
+                                    />
+                                </div>
+                            </CardText>
+                            <CardActions>
+                                <RaisedButton
+                                    label="Lookup Table"
+                                    primary={true}
+                                    style={styles.lookupTableButton}
+                                    icon={<ContentFilterList />}
+                                    onTouchTap={(evt: object) => onTableLookup(table["table"])}
+                                />
+                            </CardActions>
+                        </Card>
+                    )}
             </div>
         )
     }

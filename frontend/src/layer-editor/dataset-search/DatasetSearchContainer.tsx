@@ -11,7 +11,7 @@ export interface DatasetSearchContainerProps {
     onChipDelete: Function
     onTableLookup: Function
     chipValues: Array<string>
-    dataSearchResults: Array<any>
+    dataSearchResults: Map<string, datasearchModule.ITableAndCols>
     onCopyToClipboard: Function
 }
 

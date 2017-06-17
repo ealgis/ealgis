@@ -47,7 +47,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     const { maps, app } = state
 
     return {
-        open: app.modals[ownProps.modalId],
+        open: app.modals.get(ownProps.modalId) || false,
         map: maps[ownProps.mapId],
         layerId: ownProps.layerId,
     }

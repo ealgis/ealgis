@@ -350,7 +350,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme"),
         layerGeometry: layerFormValues(state, "geometry"),
-        dirtyFormModalOpen: app.modals["dirtyLayerForm"] || false,
+        dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
         geominfo: ealgis.geominfo,
         colourinfo: ealgis.colourinfo,
