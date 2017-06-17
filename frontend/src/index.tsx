@@ -14,13 +14,15 @@ import * as injectTapEventPlugin from "react-tap-event-plugin"
 injectTapEventPlugin()
 
 // FIXME
-// Raven.config("https://43c72d220a2140e4b36fb75c5042f6e0@sentry.io/173078").install()
+Raven.config("https://43c72d220a2140e4b36fb75c5042f6e0@sentry.io/173078").install()
 
 import reducers from "./redux/modules/reducer"
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware, AnalyticsMiddleware)))
-// , createRavenMiddleware(Raven)
+const store = createStore(
+    reducers,
+    composeEnhancers(applyMiddleware(thunkMiddleware, AnalyticsMiddleware, createRavenMiddleware(Raven)))
+)
 
 const history = syncHistoryWithStore(browserHistory, store)
 

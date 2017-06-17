@@ -4,9 +4,18 @@ import { browserHistory } from "react-router"
 import { proj } from "openlayers"
 import MapUINav from "./components/MapUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { updateMapPosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures } from "../../redux/modules/map"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
-import { addLayer, duplicateMap, updateMapOrigin, removeMap, changeMapSharing } from "../../redux/modules/maps"
+import {
+    addLayer,
+    duplicateMap,
+    updateMapOrigin,
+    removeMap,
+    changeMapSharing,
+    exportMap,
+    exportMapViewport,
+    copyShareableLink,
+} from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 
 interface MapUINavContainerRouteParams {
@@ -19,6 +28,7 @@ export interface MapUINavContainerProps {
     mapDefinition: MapUINavContainerRouteParams
     mapPosition: object
     onSetOrigin: Function
+    onMoveToPosition: Function
     onResetOrigin: Function
     onChangeSharing: Function
     onAddLayer: Function
@@ -35,13 +45,13 @@ export interface MapUINavContainerProps {
 
 export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
     componentDidMount() {
-        const { resetDataInspector, onResetOrigin, mapDefinition, location, previousPath } = this.props
+        const { resetDataInspector, onMoveToPosition, mapDefinition, location, previousPath } = this.props
         resetDataInspector()
 
         // If we came from anywhere except for a sub-route of /map/{mapId} then ensure
         // we reset the map extents to the default for this map.
         if (mapDefinition !== undefined && !previousPath.startsWith(location.pathname)) {
-            onResetOrigin(mapDefinition.json.map_defaults)
+            onMoveToPosition(mapDefinition.json.map_defaults)
         }
     }
 
@@ -114,9 +124,17 @@ const mapDispatchToProps = (dispatch: any) => {
         onSetOrigin: (mapDefinition: object, position: object) => {
             dispatch(updateMapOrigin(mapDefinition, position))
         },
+        onMoveToPosition: (mapDefaults: any) => {
+            dispatch(
+                moveToPosition({
+                    center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+                    zoom: mapDefaults.zoom,
+                })
+            )
+        },
         onResetOrigin: (mapDefaults: any) => {
             dispatch(
-                updateMapPosition({
+                restoreDefaultMapPosition({
                     center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                     zoom: mapDefaults.zoom,
                 })
@@ -136,11 +154,14 @@ const mapDispatchToProps = (dispatch: any) => {
             dispatch(resetDataInspector())
         },
         onExportWholeMap: (mapId: number) => {
+            dispatch(exportMap())
             const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
             window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
         },
         onExportMapViewport: (mapId: number, extent: Array<number>) => {
             const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
+            dispatch(exportMapViewport(include_geom_attrs))
+
             const extentLonLat = proj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
             window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
         },
@@ -149,6 +170,7 @@ const mapDispatchToProps = (dispatch: any) => {
             this.isIncludeGeomAttrsChecked = isInputChecked
         },
         onGetShareableLink: () => {
+            dispatch(copyShareableLink())
             dispatch(sendSnackbarNotification(`Map link copied to clipboard.`))
         },
     }

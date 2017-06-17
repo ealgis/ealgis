@@ -3,7 +3,7 @@ import MapUI from "./components/MapUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
-import { saveMapPosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
 
 import "openlayers/css/ol.css"
 
@@ -80,7 +80,7 @@ const mapDispatchToProps = (dispatch: any) => {
                 resolution: view.getResolution(),
                 extent: view.calculateExtent(event.map.getSize()),
             }
-            dispatch(saveMapPosition(position))
+            dispatch(savePosition(position))
         },
     }
 }
