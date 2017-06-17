@@ -3,7 +3,7 @@ import MapUI from "./components/MapUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
-import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { savePosition, setHighlightedFeatures, IPosition } from "../../redux/modules/map"
 
 import "openlayers/css/ol.css"
 
@@ -69,13 +69,9 @@ const mapDispatchToProps = (dispatch: any) => {
         },
         onMoveEnd: (event: object) => {
             const view = event.map.getView()
-            const centreLonLat = proj.transform(view.getCenter(), "EPSG:900913", "EPSG:4326")
 
-            const position = {
-                center: {
-                    lon: centreLonLat[0],
-                    lat: centreLonLat[1],
-                },
+            const position: IPosition = {
+                center: proj.transform(view.getCenter(), "EPSG:900913", "EPSG:4326"),
                 zoom: view.getZoom(),
                 resolution: view.getResolution(),
                 extent: view.calculateExtent(event.map.getSize()),

@@ -49,4 +49,10 @@ const fireAnalyticsTracking = () => {
     gaTrack.pageview(window.location.pathname + window.location.search)
 }
 
-export { AnalyticsMiddleware, fireAnalyticsTracking }
+interface IAnalyticsMeta {
+    category: string
+    type?: string
+    payload?: object
+}
+
+export { AnalyticsMiddleware, fireAnalyticsTracking, IAnalyticsMeta }

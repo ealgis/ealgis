@@ -1,4 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
 const TOGGLE_DEBUG_MODE = "ealgis/map/TOGGLE_DEBUG_MODE"
@@ -7,14 +8,14 @@ const RESTORE_DEFAULT_POSITION = "ealgis/map/RESTORE_DEFAULT_POSITION"
 const LOAD_HIGHLIGHTED_FEATURES = "ealgis/map/LOAD_HIGHLIGHTED_FEATURES"
 const RECEIVE_GOOGLE_PLACES_RESULT = "ealgis/map/RECEIVE_GOOGLE_PLACES_RESULT"
 
-const initialState = {
+const initialState: IState = {
     debug: false,
     position: {},
     highlightedFeatures: [],
 }
 
 // Reducer
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case TOGGLE_DEBUG_MODE:
             return dotProp.toggle(state, "debug")
@@ -29,20 +30,20 @@ export default function reducer(state = initialState, action = {}) {
 }
 
 // Action Creators
-export function toggleDebugMode() {
+export function toggleDebugMode(): IAction {
     return {
         type: TOGGLE_DEBUG_MODE,
     }
 }
 
-export function savePosition(position: object) {
+export function savePosition(position: IPosition): IAction {
     return {
         type: SAVE_POSITION,
         position,
     }
 }
 
-export function restoreDefaultPosition(position: object) {
+export function restoreDefaultPosition(position: IPosition): IAction {
     return {
         type: RESTORE_DEFAULT_POSITION,
         position,
@@ -54,14 +55,14 @@ export function restoreDefaultPosition(position: object) {
     }
 }
 
-export function setHighlightedFeatures(featurGids: Array<number>) {
+export function setHighlightedFeatures(featurGids: Array<number>): IAction {
     return {
         type: LOAD_HIGHLIGHTED_FEATURES,
         featurGids,
     }
 }
 
-export function receiveGooglePlacesResult() {
+export function receiveGooglePlacesResult(): IAction {
     return {
         type: RECEIVE_GOOGLE_PLACES_RESULT,
         meta: {
@@ -73,42 +74,52 @@ export function receiveGooglePlacesResult() {
 }
 
 // Models
+export interface IState {
+    debug: boolean
+    position: IPosition
+    highlightedFeatures: Array<number>
+}
 
-// Side effects, only as applicable
-// e.g. thunks, epics, et cetera
-export function restoreDefaultMapPosition(mapDefaults: any) {
-    return (dispatch: any) => {
-        dispatch(
-            restoreDefaultPosition({
-                center: mapDefaults.center,
-                zoom: mapDefaults.zoom,
-                allowUpdate: true,
-            })
-        )
+export interface IAction {
+    type: string
+    position?: IPosition
+    featurGids?: Array<number>
+    meta?: {
+        analytics: IAnalyticsMeta
     }
 }
 
-export function moveToPosition(mapDefaults: any) {
+export interface IPosition {
+    center?: Array<number>
+    zoom?: number
+    resolution?: number
+    extent?: Array<number>
+    allowUpdate?: boolean
+}
+
+// Side effects, only as applicable
+// e.g. thunks, epics, et cetera
+export function restoreDefaultMapPosition(position: IPosition) {
     return (dispatch: any) => {
-        dispatch(
-            savePosition({
-                center: mapDefaults.center,
-                zoom: mapDefaults.zoom,
-                allowUpdate: true,
-            })
-        )
+        dispatch(restoreDefaultPosition(Object.assign(position, { allowUpdate: true })))
+    }
+}
+
+export function moveToPosition(position: IPosition) {
+    return (dispatch: any) => {
+        dispatch(savePosition(Object.assign(position, { allowUpdate: true })))
     }
 }
 
 export function moveToGooglePlacesResult(extent: Array<number>) {
     return (dispatch: any) => {
         dispatch(receiveGooglePlacesResult())
-        dispatch(
-            savePosition({
-                extent: extent,
-                zoom: 18,
-                allowUpdate: true,
-            })
-        )
+
+        const position: IPosition = {
+            extent: extent,
+            zoom: 18,
+            allowUpdate: true,
+        }
+        dispatch(savePosition(position))
     }
 }

@@ -4,7 +4,7 @@ import { browserHistory } from "react-router"
 import { proj } from "openlayers"
 import MapUINav from "./components/MapUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures, IPosition } from "../../redux/modules/map"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
 import {
     addLayer,
@@ -125,20 +125,18 @@ const mapDispatchToProps = (dispatch: any) => {
             dispatch(updateMapOrigin(mapDefinition, position))
         },
         onMoveToPosition: (mapDefaults: any) => {
-            dispatch(
-                moveToPosition({
-                    center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
-                    zoom: mapDefaults.zoom,
-                })
-            )
+            const position: IPosition = {
+                center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+                zoom: mapDefaults.zoom,
+            }
+            dispatch(moveToPosition(position))
         },
         onResetOrigin: (mapDefaults: any) => {
-            dispatch(
-                restoreDefaultMapPosition({
-                    center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
-                    zoom: mapDefaults.zoom,
-                })
-            )
+            const position: IPosition = {
+                center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+                zoom: mapDefaults.zoom,
+            }
+            dispatch(restoreDefaultMapPosition(position))
         },
         onChangeSharing: (mapId: number, shared: number) => {
             dispatch(changeMapSharing(mapId, shared))
