@@ -1,3 +1,4 @@
+import "es6-promise"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { compose, combineReducers, createStore, applyMiddleware } from "redux"
@@ -18,10 +19,15 @@ Raven.config("https://43c72d220a2140e4b36fb75c5042f6e0@sentry.io/173078").instal
 
 import reducers from "./redux/modules/reducer"
 
+import { EALGISApiClient } from "./shared/api/EALGISApiClient"
+const ealapi = new EALGISApiClient()
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const store = createStore(
     reducers,
-    composeEnhancers(applyMiddleware(thunkMiddleware, AnalyticsMiddleware, createRavenMiddleware(Raven)))
+    composeEnhancers(
+        applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), AnalyticsMiddleware, createRavenMiddleware(Raven))
+    )
 )
 
 const history = syncHistoryWithStore(browserHistory, store)
