@@ -1,5 +1,4 @@
 recipes/
-modules/
 backend/geoserver/data/
 .vagrant
 .*swp
