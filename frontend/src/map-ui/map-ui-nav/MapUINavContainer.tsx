@@ -22,11 +22,11 @@ interface MapUINavContainerRouteParams {
     id: Number
 }
 
-export interface MapUINavContainerProps {
+interface MapUINavContainerProps {
     userId: number
     tabName: string
     mapDefinition: MapUINavContainerRouteParams
-    mapPosition: object
+    mapPosition: IPosition
     onSetOrigin: Function
     onMoveToPosition: Function
     onResetOrigin: Function
@@ -121,7 +121,7 @@ const mapDispatchToProps = (dispatch: any) => {
         onDuplicateMap: (mapId: number) => {
             dispatch(duplicateMap(mapId))
         },
-        onSetOrigin: (mapDefinition: object, position: object) => {
+        onSetOrigin: (mapDefinition: object, position: IPosition) => {
             dispatch(updateMapOrigin(mapDefinition, position))
         },
         onMoveToPosition: (mapDefaults: any) => {

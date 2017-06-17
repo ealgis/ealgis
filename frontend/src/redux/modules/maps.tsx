@@ -5,6 +5,7 @@ import { getMapURL } from "../../shared/utils"
 import { SubmissionError } from "redux-form"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { getUserIdFromState, getGeomInfoFromState } from "../../redux/modules/ealgis"
+import { IPosition } from "../../redux/modules/map"
 
 import * as layerFormModule from "../../redux/modules/layerform"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
@@ -124,7 +125,7 @@ export function addDuplicateMap(map: Map) {
     }
 }
 
-export function setMapOrigin(mapId: number, position: MapPosition) {
+export function setMapOrigin(mapId: number, position: IPosition) {
     return {
         type: SET_ORIGIN,
         mapId,
@@ -312,12 +313,6 @@ export type Map = {
     name: string
 }
 
-export type MapPosition = {
-    lat: number
-    lon: number
-    zoom: number
-}
-
 export type MapSharing = {
     level: number
 }
@@ -450,7 +445,7 @@ export function mapUpsert(map: object) {
     }
 }
 
-export function updateMapOrigin(map: object, position: MapPosition) {
+export function updateMapOrigin(map: object, position: IPosition) {
     return (dispatch: Function, getState: Function, ealapi: object) => {
         dispatch(setMapOrigin(map.id, position))
 

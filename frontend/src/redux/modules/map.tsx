@@ -8,14 +8,14 @@ const RESTORE_DEFAULT_POSITION = "ealgis/map/RESTORE_DEFAULT_POSITION"
 const LOAD_HIGHLIGHTED_FEATURES = "ealgis/map/LOAD_HIGHLIGHTED_FEATURES"
 const RECEIVE_GOOGLE_PLACES_RESULT = "ealgis/map/RECEIVE_GOOGLE_PLACES_RESULT"
 
-const initialState: IState = {
+const initialState: IMap = {
     debug: false,
     position: {},
     highlightedFeatures: [],
 }
 
 // Reducer
-export default function reducer(state = initialState, action: IAction) {
+export default function reducer(state = initialState, action: IMapAction) {
     switch (action.type) {
         case TOGGLE_DEBUG_MODE:
             return dotProp.toggle(state, "debug")
@@ -30,20 +30,20 @@ export default function reducer(state = initialState, action: IAction) {
 }
 
 // Action Creators
-export function toggleDebugMode(): IAction {
+export function toggleDebugMode(): IMapAction {
     return {
         type: TOGGLE_DEBUG_MODE,
     }
 }
 
-export function savePosition(position: IPosition): IAction {
+export function savePosition(position: IPosition): IMapAction {
     return {
         type: SAVE_POSITION,
         position,
     }
 }
 
-export function restoreDefaultPosition(position: IPosition): IAction {
+export function restoreDefaultPosition(position: IPosition): IMapAction {
     return {
         type: RESTORE_DEFAULT_POSITION,
         position,
@@ -55,14 +55,14 @@ export function restoreDefaultPosition(position: IPosition): IAction {
     }
 }
 
-export function setHighlightedFeatures(featurGids: Array<number>): IAction {
+export function setHighlightedFeatures(featurGids: Array<number>): IMapAction {
     return {
         type: LOAD_HIGHLIGHTED_FEATURES,
         featurGids,
     }
 }
 
-export function receiveGooglePlacesResult(): IAction {
+export function receiveGooglePlacesResult(): IMapAction {
     return {
         type: RECEIVE_GOOGLE_PLACES_RESULT,
         meta: {
@@ -74,13 +74,13 @@ export function receiveGooglePlacesResult(): IAction {
 }
 
 // Models
-export interface IState {
+export interface IMap {
     debug: boolean
     position: IPosition
     highlightedFeatures: Array<number>
 }
 
-export interface IAction {
+export interface IMapAction {
     type: string
     position?: IPosition
     featurGids?: Array<number>

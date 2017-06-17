@@ -4,7 +4,7 @@ import { routerReducer } from "react-router-redux"
 
 import ealgis from "./ealgis"
 import app from "./app"
-import map from "./map"
+import { default as map, IMap } from "./map"
 import legends from "./legends"
 import maps from "./maps"
 import datainspector from "./datainspector"
@@ -14,7 +14,11 @@ import layerquerysummary from "./layerquerysummary"
 import snackbars from "./snackbars"
 import { reduxFormReducer as layerFormReducer } from "./layerform"
 
-export default combineReducers({
+interface IStore {
+    map: IMap
+}
+
+const rootReducer: Redux.Reducer<IStore> = combineReducers<IStore>({
     ealgis,
     app,
     map,
@@ -30,3 +34,5 @@ export default combineReducers({
         layerForm: layerFormReducer,
     }),
 })
+
+export default rootReducer

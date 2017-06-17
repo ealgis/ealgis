@@ -15,7 +15,7 @@ export interface MapContainerProps {
     dispatch: Function
     params: any
     mapDefinition: MapContainerRouteParams
-    position: object
+    position: IPosition
     onSingleClick: Function
     onMoveEnd: Function
 }

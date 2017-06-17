@@ -2,10 +2,11 @@ import * as React from "react"
 import LayerContainerWrapped from "../../layer/LayerContainer"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
+import { IPosition } from "../../../redux/modules/map"
 
 export interface MapUIProps {
     defn: any
-    position: object
+    position: IPosition
     onSingleClick: Function
     onMoveEnd: Function
 }
