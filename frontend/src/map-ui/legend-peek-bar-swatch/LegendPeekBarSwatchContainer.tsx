@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import LegendPeekBarSwatch from "./components/LegendPeekBarSwatch"
-import * as isEqual from "lodash/isEqual"
+import { isEqual } from "lodash-es"
 import { IOLStyleDef } from "../../redux/modules/interfaces"
 
 export interface IProps {

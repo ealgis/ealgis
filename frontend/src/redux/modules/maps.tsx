@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
-import * as merge from "lodash/merge"
+import { merge } from "lodash-es"
 import { browserHistory } from "react-router"
 import { getMapURL } from "../../shared/utils"
 import { SubmissionError } from "redux-form"
