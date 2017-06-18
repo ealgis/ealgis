@@ -28,45 +28,54 @@ const styles = {
     },
 }
 
-export interface GooglePlacesAutocompleteProps {
+export interface IProps {
     // Google componentRestrictions
-    componentRestrictions: React.PropTypes.object
-    types: React.PropTypes.array
+    componentRestrictions: object
+    types: Array<any>
     // AutoComplete properties
-    anchorOrigin: React.PropTypes.object
-    animated: React.PropTypes.bool
-    animation: React.PropTypes.func
-    errorStyle: React.PropTypes.object
-    errorText: React.PropTypes.any
-    floatingLabelText: React.PropTypes.string
-    fullWidth: React.PropTypes.bool
-    hintText: React.PropTypes.string
-    listStyle: React.PropTypes.object
-    maxSearchResults: React.PropTypes.number
-    menuCloseDelay: React.PropTypes.number
-    menuProps: React.PropTypes.object
-    menuStyle: React.PropTypes.object
-    onClose: React.PropTypes.func
-    onNewRequest: React.PropTypes.func
-    onUpdateInput: React.PropTypes.func
-    open: React.PropTypes.bool
-    openOnFocus: React.PropTypes.bool
-    popoverProps: React.PropTypes.object
-    searchText: React.PropTypes.string
-    style: React.PropTypes.object
-    targetOrigin: React.PropTypes.object
-    textFieldStyle: React.PropTypes.object
+    anchorOrigin: object
+    animated: boolean
+    animation: Function
+    errorStyle: object
+    errorText: any
+    floatingLabelText: string
+    fullWidth: boolean
+    hintText: string
+    listStyle: object
+    maxSearchResults: number
+    menuCloseDelay: number
+    menuProps: object
+    menuStyle: object
+    onClose: Function
+    onNewRequest: Function
+    onUpdateInput: Function
+    open: boolean
+    openOnFocus: boolean
+    popoverProps: object
+    searchText: string
+    style: object
+    targetOrigin: object
+    textFieldStyle: object
     // Prop types for dataSource
-    innerDivStyle: React.PropTypes.object
-    menuItemStyle: React.PropTypes.object
-    results: React.PropTypes.func
+    innerDivStyle: object
+    menuItemStyle: object
+    results: Function
     // Our props
-    inputStyle: React.PropTypes.object
-    name: React.PropTypes.string
+    inputStyle: object
+    name: string
+    // Internals
 }
 
-class GooglePlacesAutocomplete extends React.Component<GooglePlacesAutocompleteProps, undefined> {
-    constructor(props) {
+export interface IState {
+    data?: Array<any>
+    searchText?: string
+}
+
+class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
+    geocoder: any
+    service: any
+
+    constructor(props: IProps) {
         super(props)
 
         this.state = {
@@ -92,13 +101,13 @@ class GooglePlacesAutocomplete extends React.Component<GooglePlacesAutocompleteP
         return this.state.data
     }
 
-    getLatLgn(locationID, cb) {
-        this.geocoder.geocode({ placeId: locationID }, (results, status) => {
+    getLatLgn(locationID: any, cb: Function) {
+        this.geocoder.geocode({ placeId: locationID }, (results: Array<any>, status: any) => {
             cb(results, status)
         })
     }
 
-    updateInput(searchText) {
+    updateInput(searchText: string) {
         if (searchText.length > 0) {
             this.setState(
                 {
@@ -112,7 +121,7 @@ class GooglePlacesAutocomplete extends React.Component<GooglePlacesAutocompleteP
                             componentRestrictions: this.props.componentRestrictions,
                             types: this.props.types,
                         },
-                        predictions => {
+                        (predictions: Array<any>) => {
                             if (predictions) {
                                 outerScope.populateData(predictions)
                             }
@@ -123,7 +132,7 @@ class GooglePlacesAutocomplete extends React.Component<GooglePlacesAutocompleteP
         }
     }
 
-    populateData(array) {
+    populateData(array: Array<any>) {
         this.setState({ data: array })
     }
 
