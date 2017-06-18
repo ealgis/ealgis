@@ -1,4 +1,4 @@
-FROM node:7.2-wheezy
+FROM node:8.1.2-wheezy
 
 RUN mkdir /npm /frontend
 WORKDIR /frontend
