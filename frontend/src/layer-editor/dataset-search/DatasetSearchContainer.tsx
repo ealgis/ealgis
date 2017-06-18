@@ -4,18 +4,20 @@ import DatasetSearch from "./components/DatasetSearch"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loadChips as layerFormLoadChips } from "../../redux/modules/layerform"
 import * as datasearchModule from "../../redux/modules/datasearch"
-export interface DatasetSearchContainerProps {
-    geominfo: object
-    geometry: object
+import { IGeomTable, IGeomInfo } from "../../redux/modules/ealgis"
+
+export interface IProps {
+    geominfo: IGeomInfo
+    dataSearchResults: Map<string, datasearchModule.ITableAndCols>
+    chipValues: Array<string>
+    geometry: IGeomTable
     onChipAdd: Function
     onChipDelete: Function
     onTableLookup: Function
-    chipValues: Array<string>
-    dataSearchResults: Map<string, datasearchModule.ITableAndCols>
     onCopyToClipboard: Function
 }
 
-export class DatasetSearchContainer extends React.Component<DatasetSearchContainerProps, undefined> {
+export class DatasetSearchContainer extends React.Component<IProps, {}> {
     render() {
         const {
             geometry,
@@ -29,11 +31,11 @@ export class DatasetSearchContainer extends React.Component<DatasetSearchContain
 
         return (
             <DatasetSearch
+                dataSearchResults={dataSearchResults}
+                chipValues={chipValues}
                 onChipAdd={(chip: string) => onChipAdd(chip, chipValues, geometry)}
                 onChipDelete={(chip: string) => onChipDelete(chip, chipValues, geometry)}
-                onTableLookup={(table: object) => onTableLookup(table, geometry)}
-                chipValues={chipValues}
-                dataSearchResults={dataSearchResults}
+                onTableLookup={(table: datasearchModule.ITable) => onTableLookup(table, geometry)}
                 onCopyToClipboard={onCopyToClipboard}
             />
         )
@@ -50,7 +52,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const onChipChange = (chips: Array<string>, geometry: object, dispatch: Function) => {
+const onChipChange = (chips: Array<string>, geometry: IGeomTable, dispatch: Function) => {
     if (geometry === null) {
         dispatch(sendSnackbarNotification("Please choose a geometry from the 'Describe' tab first."))
         return
@@ -89,14 +91,14 @@ const onChipChange = (chips: Array<string>, geometry: object, dispatch: Function
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        onChipAdd: (chip: string, chipValues: Array<string>, geometry: object) => {
+        onChipAdd: (chip: string, chipValues: Array<string>, geometry: IGeomTable) => {
             let chips = chipValues
             chips.push(chip)
             dispatch(layerFormLoadChips(chips))
 
             onChipChange(chips, geometry, dispatch)
         },
-        onChipDelete: (chip: string, chipValues: Array<string>, geometry: object) => {
+        onChipDelete: (chip: string, chipValues: Array<string>, geometry: IGeomTable) => {
             let chips = chipValues.filter((item: string) => item != chip)
             dispatch(layerFormLoadChips(chips))
 
@@ -106,7 +108,7 @@ const mapDispatchToProps = (dispatch: any) => {
                 dispatch(datasearchModule.reset())
             }
         },
-        onTableLookup: (table: object, geometry: object) => {
+        onTableLookup: (table: datasearchModule.ITable, geometry: IGeomTable) => {
             const chipValues = [`table:${table.name}`]
             dispatch(layerFormLoadChips(chipValues))
             dispatch(datasearchModule.fetchColumnsForTable([], geometry, [table.name]))
@@ -117,6 +119,6 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 }
 
-const DatasetSearchContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(DatasetSearchContainer as any)
+const DatasetSearchContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(DatasetSearchContainer)
 
 export default DatasetSearchContainerWrapped

@@ -70,16 +70,16 @@ const styles = {
     },
 }
 
-export interface DatasetSearchProps {
+export interface IProps {
+    dataSearchResults: Map<string, ITableAndCols>
+    chipValues: Array<string>
     onChipAdd: Function
     onChipDelete: Function
-    chipValues: Array<string>
-    dataSearchResults: Map<string, ITableAndCols>
-    onCopyToClipboard: Function
     onTableLookup: Function
+    onCopyToClipboard: Function
 }
 
-export class DatasetSearch extends React.Component<DatasetSearchProps, undefined> {
+export class DatasetSearch extends React.Component<IProps, {}> {
     render() {
         const { onChipAdd, onChipDelete, chipValues, dataSearchResults, onCopyToClipboard, onTableLookup } = this.props
 
@@ -115,8 +115,8 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                     fullWidth={true}
                     floatingLabelText={"Search for datasets e.g. mortgage, repayment, total"}
                     chipRenderer={(
-                        { value, text, isFocused, isDisabled, handleClick, handleRequestDelete, defaultStyle },
-                        key
+                        { value, text, isFocused, isDisabled, handleClick, handleRequestDelete, defaultStyle }: any,
+                        key: string
                     ) => {
                         let backgroundColor = null
 
@@ -141,7 +141,6 @@ export class DatasetSearch extends React.Component<DatasetSearchProps, undefined
                                 onRequestDelete={handleRequestDelete}
                                 onTouchTap={handleClick}
                                 style={defaultStyle}
-                                value={value}
                             >
                                 {text}
                             </Chip>
