@@ -29,7 +29,7 @@ module.exports = {
             "core-js/fn/object/assign",
             "core-js/fn/object/values",
             "core-js/fn/object/entries",
-            "core-js/fn/object/filter",
+            "core-js/fn/array/filter",
             "core-js/es7/map",
         ],
     },
