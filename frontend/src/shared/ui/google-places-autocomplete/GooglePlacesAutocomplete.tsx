@@ -30,39 +30,39 @@ const styles = {
 
 export interface IProps {
     // Google componentRestrictions
-    componentRestrictions: object
-    types: Array<any>
+    componentRestrictions?: object
+    types?: Array<any>
     // AutoComplete properties
-    anchorOrigin: object
-    animated: boolean
-    animation: Function
-    errorStyle: object
-    errorText: any
-    floatingLabelText: string
-    fullWidth: boolean
-    hintText: string
-    listStyle: object
-    maxSearchResults: number
-    menuCloseDelay: number
-    menuProps: object
-    menuStyle: object
-    onClose: Function
-    onNewRequest: Function
-    onUpdateInput: Function
-    open: boolean
-    openOnFocus: boolean
-    popoverProps: object
-    searchText: string
-    style: object
-    targetOrigin: object
-    textFieldStyle: object
+    anchorOrigin?: object
+    animated?: boolean
+    animation?: Function
+    errorStyle?: object
+    errorText?: any
+    floatingLabelText?: string
+    fullWidth?: boolean
+    hintText?: string
+    listStyle?: object
+    maxSearchResults?: number
+    menuCloseDelay?: number
+    menuProps?: object
+    menuStyle?: object
+    onClose?: Function
+    onNewRequest?: Function
+    onUpdateInput?: Function
+    open?: boolean
+    openOnFocus?: boolean
+    popoverProps?: object
+    searchText?: string
+    style?: object
+    targetOrigin?: object
+    textFieldStyle?: object
     // Prop types for dataSource
-    innerDivStyle: object
-    menuItemStyle: object
-    results: Function
+    innerDivStyle?: object
+    menuItemStyle?: object
+    results?: Function
     // Our props
-    inputStyle: object
-    name: string
+    inputStyle?: object
+    name?: string
     // Internals
 }
 
