@@ -28,6 +28,8 @@ module.exports = {
             "qs",
             "core-js/fn/object/assign",
             "core-js/fn/object/values",
+            "core-js/fn/object/entries",
+            "core-js/fn/object/filter",
             "core-js/es7/map",
         ],
     },

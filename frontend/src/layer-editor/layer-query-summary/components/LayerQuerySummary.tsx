@@ -1,4 +1,6 @@
 import * as React from "react"
+import { ILayerQuerySummary } from "../../../redux/modules/interfaces"
+
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import IconButton from "material-ui/IconButton"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
@@ -30,12 +32,12 @@ const styles = {
     },
 }
 
-export interface LayerQuerySummaryProps {
-    stats: object
-    onFitScaleToData: Function
+export interface IProps {
+    stats: ILayerQuerySummary
+    onFitScaleToData: any
 }
 
-export class LayerQuerySummary extends React.Component<LayerQuerySummaryProps, undefined> {
+export class LayerQuerySummary extends React.Component<IProps, {}> {
     render() {
         const { stats, onFitScaleToData } = this.props
 
@@ -70,7 +72,7 @@ export class LayerQuerySummary extends React.Component<LayerQuerySummaryProps, u
                     <IconButton
                         tooltip="Apply scale settings to layer"
                         tooltipPosition={"bottom-left"}
-                        onClick={onFitScaleToData}
+                        onTouchTap={onFitScaleToData}
                     >
                         <ContentCopy />
                     </IconButton>

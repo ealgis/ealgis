@@ -345,11 +345,7 @@ export interface IMap {
         rev?: number
         show_legend: boolean
         layers: Array<ILayer>
-        map_defaults: {
-            lat: number
-            lon: number
-            zoom: number
-        }
+        map_defaults: IMapPositionDefaults
     }
     shared: eMapShared
     owner_user_id: number
@@ -383,24 +379,8 @@ export interface ILayer {
     schema: string
     visible: boolean
     geometry: string
-    olStyleDef?: {
-        [key: number]: {
-            expr: {
-                from: {
-                    attr: string
-                    op: string
-                    v: number
-                }
-                to?: {
-                    attr: string
-                    op: string
-                    v: number
-                }
-            }
-            rgb: Array<number>
-            opacity: number
-        }
-    }
+    olStyleDef?: Array<IOLStyleDef>
+    olStyle?: any
     description: string
     latlon_bbox?: {
         maxx: number
@@ -411,7 +391,30 @@ export interface ILayer {
     _postgis_query?: string
 }
 
-enum eMapShared {
+export interface IOLStyleDef {
+    expr: {
+        from: {
+            attr: string
+            op: string
+            v: number
+        }
+        to?: {
+            attr: string
+            op: string
+            v: number
+        }
+    }
+    rgb: Array<number>
+    opacity: number
+}
+
+export interface IMapPositionDefaults {
+    lat: number
+    lon: number
+    zoom: number
+}
+
+export enum eMapShared {
     PRIVATE_SHARED = 1,
     AUTHENTICATED_USERS_SHARED = 2,
     PUBLIC_SHARED = 3,

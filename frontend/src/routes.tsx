@@ -8,8 +8,9 @@ import MapFormContainerWrapped from "./map-editor/map-form/MapFormContainer"
 import MapListContainerWrapped from "./maps-browser/map-list/MapListContainer"
 import About from "./static-pages/About"
 import Welcome from "./static-pages/Welcome"
+import { IStore } from "./redux/modules/interfaces"
 
-export default store => {
+export default (store: IStore) => {
     return (
         <Route path="/" component={EalUIContainerWrapped}>
             {/* Home (main) route */}

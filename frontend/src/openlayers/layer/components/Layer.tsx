@@ -7,15 +7,16 @@ import { Router, Route, Link, browserHistory } from "react-router"
 import { connect } from "react-redux"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
+import { IMap, ILayer } from "../../../redux/modules/interfaces"
 
-export interface LayerProps {
-    map: any
-    layer: any
+export interface IProps {
+    map: IMap
+    layer: ILayer
     layerId: number
     debugMode: boolean
 }
 
-export class Layer extends React.Component<LayerProps, undefined> {
+export class Layer extends React.Component<IProps, {}> {
     render() {
         const { map, layer, layerId, debugMode } = this.props
 

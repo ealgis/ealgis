@@ -2,16 +2,17 @@ import * as React from "react"
 import { connect } from "react-redux"
 import LayerQuerySummary from "./components/LayerQuerySummary"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import { IStore, ILayerQuerySummary } from "../../redux/modules/interfaces"
 
-export interface LayerQuerySummaryContainerProps {
+export interface IProps {
     mapId: number
     layerHash: string
-    stats: object
     onFitScaleToData: Function
-    fetchQuerySummary: Function
+    stats?: ILayerQuerySummary
+    fetchQuerySummary?: Function
 }
 
-export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummaryContainerProps, undefined> {
+export class LayerQuerySummaryContainer extends React.Component<IProps, {}> {
     componentDidMount() {
         const { fetchQuerySummary, mapId, layerHash } = this.props
         fetchQuerySummary(mapId, layerHash)
@@ -39,7 +40,7 @@ export class LayerQuerySummaryContainer extends React.Component<LayerQuerySummar
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: IProps) => {
     const { layerquerysummary } = state
 
     return {
@@ -47,7 +48,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         fetchQuerySummary: (mapId: number, layerHash: string) => {
             dispatch(fetchLayerQuerySummary(mapId, layerHash))

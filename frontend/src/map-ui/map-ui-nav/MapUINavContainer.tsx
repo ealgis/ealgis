@@ -4,7 +4,7 @@ import { browserHistory } from "react-router"
 import { proj } from "openlayers"
 import MapUINav from "./components/MapUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures, IPosition } from "../../redux/modules/map"
+import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures } from "../../redux/modules/map"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
 import {
     addLayer,
@@ -15,35 +15,43 @@ import {
     exportMap,
     exportMapViewport,
     copyShareableLink,
+    eMapShared,
 } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { IStore, IMap, IPosition, IMapPositionDefaults } from "../../redux/modules/interfaces"
 
-interface MapUINavContainerRouteParams {
-    id: Number
-}
-
-interface MapUINavContainerProps {
+interface IProps {
+    // From Props
     userId: number
     tabName: string
-    mapDefinition: MapUINavContainerRouteParams
+    mapDefinition: IMap
     mapPosition: IPosition
+    deleteModalOpen: boolean
+    previousPath: string
+    // From Dispatch to Props
+    onAddLayer: Function
+    onDuplicateMap: Function
     onSetOrigin: Function
     onMoveToPosition: Function
     onResetOrigin: Function
     onChangeSharing: Function
-    onAddLayer: Function
-    onDuplicateMap: Function
-    onDeleteMap: Function
     onToggleDeleteModalState: Function
-    deleteModalOpen: boolean
+    onDeleteMap: Function
     resetDataInspector: Function
-    previousPath: string
     onExportWholeMap: Function
     onExportMapViewport: Function
+    onCheckIncludeGeomAttrs: Function
     onGetShareableLink: Function
+    // From Router
+    location: any
 }
 
-export class MapUINavContainer extends React.Component<MapUINavContainerProps, undefined> {
+interface IRouteProps {
+    mapId: number
+    tabName: string
+}
+
+export class MapUINavContainer extends React.Component<IProps, {}> {
     componentDidMount() {
         const { resetDataInspector, onMoveToPosition, mapDefinition, location, previousPath } = this.props
         resetDataInspector()
@@ -57,10 +65,11 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
 
     render() {
         const {
+            userId,
             tabName,
             mapDefinition,
-            userId,
             mapPosition,
+            deleteModalOpen,
             onAddLayer,
             onDuplicateMap,
             onSetOrigin,
@@ -68,7 +77,6 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
             onChangeSharing,
             onDeleteMap,
             onToggleDeleteModalState,
-            deleteModalOpen,
             onExportWholeMap,
             onExportMapViewport,
             onCheckIncludeGeomAttrs,
@@ -91,7 +99,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
                     deleteModalOpen={deleteModalOpen}
                     onExportWholeMap={() => onExportWholeMap(mapDefinition.id)}
                     onExportMapViewport={() => onExportMapViewport(mapDefinition.id, mapPosition.extent)}
-                    onCheckIncludeGeomAttrs={(event: object, isInputChecked: boolean) =>
+                    onCheckIncludeGeomAttrs={(event: any, isInputChecked: boolean) =>
                         onCheckIncludeGeomAttrs(isInputChecked)}
                     onGetShareableLink={onGetShareableLink}
                 />
@@ -101,7 +109,7 @@ export class MapUINavContainer extends React.Component<MapUINavContainerProps, u
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     const { maps, app, map, ealgis } = state
     return {
         userId: ealgis.user.id,
@@ -113,7 +121,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         onAddLayer: (mapId: number) => {
             dispatch(addLayer(mapId))
@@ -121,24 +129,24 @@ const mapDispatchToProps = (dispatch: any) => {
         onDuplicateMap: (mapId: number) => {
             dispatch(duplicateMap(mapId))
         },
-        onSetOrigin: (mapDefinition: object, position: IPosition) => {
+        onSetOrigin: (mapDefinition: IMap, position: IPosition) => {
             dispatch(updateMapOrigin(mapDefinition, position))
         },
-        onMoveToPosition: (mapDefaults: any) => {
+        onMoveToPosition: (mapDefaults: IMapPositionDefaults) => {
             const position: IPosition = {
                 center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                 zoom: mapDefaults.zoom,
             }
             dispatch(moveToPosition(position))
         },
-        onResetOrigin: (mapDefaults: any) => {
+        onResetOrigin: (mapDefaults: IMapPositionDefaults) => {
             const position: IPosition = {
                 center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                 zoom: mapDefaults.zoom,
             }
             dispatch(restoreDefaultMapPosition(position))
         },
-        onChangeSharing: (mapId: number, shared: number) => {
+        onChangeSharing: (mapId: number, shared: eMapShared) => {
             dispatch(changeMapSharing(mapId, shared))
         },
         onToggleDeleteModalState: () => {
@@ -156,7 +164,7 @@ const mapDispatchToProps = (dispatch: any) => {
             const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
             window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
         },
-        onExportMapViewport: (mapId: number, extent: Array<number>) => {
+        onExportMapViewport: (mapId: number, extent: [number, number, number, number]) => {
             const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
             dispatch(exportMapViewport(include_geom_attrs))
 

@@ -19,7 +19,7 @@ export default function reducer(state = initialState, action: IAction) {
 }
 
 // Action Creators
-export function receiveLegendPeekLabel(mapId: number, layerId: string, labelText: string): IAction {
+export function receiveLegendPeekLabel(mapId: number, layerId: number, labelText: string): IAction {
     return {
         type: SET_LEGENDPEEK_LABEL,
         mapId,
@@ -46,7 +46,7 @@ export interface IAction {
         analytics: IAnalyticsMeta
     }
     mapId: number
-    layerId: string
+    layerId: number
     labelText: string
 }
 

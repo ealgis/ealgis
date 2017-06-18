@@ -3,18 +3,22 @@ import { connect } from "react-redux"
 import LegendPeekBar from "./components/LegendPeekBar"
 import * as isEqual from "lodash/isEqual"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
+import { IStore, IOLStyleDef } from "../../redux/modules/interfaces"
 
-export interface LegendPeekBarContainerProps {
+export interface IProps {
+    // From props
     mapId: number
     layerId: number
-    olStyleDef: object
+    olStyleDef: Array<IOLStyleDef>
+    // From Store
     labelText: string
+    // From Dispatch to Prps
     handleMouseEnter: Function
     handleMouseLeave: Function
 }
 
-export class LegendPeekBarContainer extends React.Component<LegendPeekBarContainerProps, undefined> {
-    shouldComponentUpdate(nextProps: any, nextState: any) {
+export class LegendPeekBarContainer extends React.Component<IProps, {}> {
+    shouldComponentUpdate(nextProps: IProps) {
         const { olStyleDef, labelText } = this.props
 
         if (!isEqual(olStyleDef, nextProps.olStyleDef)) {
@@ -42,7 +46,7 @@ export class LegendPeekBarContainer extends React.Component<LegendPeekBarContain
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: IProps) => {
     const { legends } = state
 
     return {
@@ -50,9 +54,9 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
-        handleMouseEnter: (mapId: number, layerId: number, styleDef: object) => {
+        handleMouseEnter: (mapId: number, layerId: number, styleDef: IOLStyleDef) => {
             let labelText: string = ""
             if ("to" in styleDef.expr) {
                 labelText = `${parseFloat(styleDef.expr.from.v.toFixed(2)).toLocaleString()} - ${parseFloat(

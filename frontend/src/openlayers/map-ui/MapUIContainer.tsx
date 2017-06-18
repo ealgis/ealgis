@@ -3,24 +3,26 @@ import MapUI from "./components/MapUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
-import { savePosition, setHighlightedFeatures, IPosition } from "../../redux/modules/map"
+import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { IStore, IMap, IPosition, IOLFeature, IOLFeatureProps } from "../../redux/modules/interfaces"
 
 import "openlayers/css/ol.css"
 
-interface MapContainerRouteParams {
-    mapId: Number
-}
-
-export interface MapContainerProps {
-    dispatch: Function
-    params: any
-    mapDefinition: MapContainerRouteParams
+export interface IProps {
+    // From State
+    mapDefinition: IMap
     position: IPosition
+    // From Dispatch to Props
     onSingleClick: Function
     onMoveEnd: Function
 }
 
-export class MapContainer extends React.Component<MapContainerProps, undefined> {
+export interface IRouteProps {
+    mapId: number
+    mapName: string
+}
+
+export class MapContainer extends React.Component<IProps, {}> {
     render() {
         const { mapDefinition, position, onSingleClick, onMoveEnd } = this.props
 
@@ -35,8 +37,8 @@ export class MapContainer extends React.Component<MapContainerProps, undefined> 
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
-    const { map, maps } = state
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+    const { maps, map } = state
 
     return {
         mapDefinition: maps[ownProps.params.mapId],
@@ -44,15 +46,15 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         onSingleClick: (mapId: number, evt: any) => {
-            let features: Array<any> = []
+            let features: Array<IOLFeature> = []
             let featurGids: Array<number> = []
 
             evt.map.forEachFeatureAtPixel(evt.pixel, function(feature: any, layer: any) {
                 const layerProps = layer.getProperties().properties
-                const featureProps = feature.getProperties()
+                const featureProps: IOLFeatureProps = feature.getProperties()
                 delete featureProps.geometry
 
                 features.push({
@@ -67,7 +69,7 @@ const mapDispatchToProps = (dispatch: any) => {
             dispatch(setHighlightedFeatures(featurGids))
             dispatch(loadDataInspector(mapId, features))
         },
-        onMoveEnd: (event: object) => {
+        onMoveEnd: (event: any) => {
             const view = event.map.getView()
 
             const position: IPosition = {

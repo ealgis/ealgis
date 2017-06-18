@@ -119,6 +119,6 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 }
 
-const DatasetSearchContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(DatasetSearchContainer)
+const DatasetSearchContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(DatasetSearchContainer as any)
 
 export default DatasetSearchContainerWrapped

@@ -3,29 +3,21 @@ import { connect } from "react-redux"
 import LayerDeleteConfirmDialog from "./components/LayerDeleteConfirmDialog"
 import { toggleModalState } from "../../redux/modules/app"
 import { deleteMapLayer } from "../../redux/modules/maps"
+import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"
 
-interface LayerDeleteConfirmDialogContainerRouteParams {
-    id: Number
-}
-
-export interface LayerDeleteConfirmDialogContainerProps {
+export interface IProps {
     modalId: string
+    mapId: number
+    layerId: number
+    layerDefinition: ILayer
     open: boolean
-
+    map: IMap
     onClose: Function
     onConfirm: Function
-
-    mapId: number
-    map: object
-    layerId: number
-    layerDefinition: object
 }
 
-export class LayerDeleteConfirmDialogContainer extends React.Component<
-    LayerDeleteConfirmDialogContainerProps,
-    undefined
-> {
-    public static defaultProps: Partial<LayerDeleteConfirmDialogContainerProps> = {
+export class LayerDeleteConfirmDialogContainer extends React.Component<IProps, {}> {
+    public static defaultProps: Partial<IProps> = {
         open: false,
     }
 
@@ -43,22 +35,21 @@ export class LayerDeleteConfirmDialogContainer extends React.Component<
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: IProps) => {
     const { maps, app } = state
 
     return {
         open: app.modals.get(ownProps.modalId) || false,
         map: maps[ownProps.mapId],
-        layerId: ownProps.layerId,
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         onClose: (modalId: string) => {
             dispatch(toggleModalState(modalId))
         },
-        onConfirm: (modalId: string, map: object, layerId: number) => {
+        onConfirm: (modalId: string, map: IMap, layerId: number) => {
             dispatch(toggleModalState(modalId))
             dispatch(deleteMapLayer(map, layerId))
         },

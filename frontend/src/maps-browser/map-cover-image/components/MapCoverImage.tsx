@@ -1,12 +1,13 @@
 import * as React from "react"
+import { IMap } from "../../../redux/modules/interfaces"
 
-export interface MapCoverImageProps {
-    defn: any
+export interface IProps {
+    defn: IMap
     width: number
     height: number
 }
 
-export class MapCoverImage extends React.Component<MapCoverImageProps, undefined> {
+export class MapCoverImage extends React.Component<IProps, {}> {
     render() {
         const { defn, width, height } = this.props
 

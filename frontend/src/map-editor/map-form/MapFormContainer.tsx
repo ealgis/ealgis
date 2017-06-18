@@ -2,14 +2,25 @@ import * as React from "react"
 import { connect } from "react-redux"
 import MapForm from "./components/MapForm"
 import { mapUpsert } from "../../redux/modules/maps"
+import { IStore, IMap } from "../../redux/modules/interfaces"
 
-export interface MapFormContainerProps {
-    mapDefinition: any
+export interface IMapFormValues {
+    name: string
+    description: string
+}
+
+export interface IProps {
+    mapDefinition: IMap
     onSubmit: Function
 }
 
-export class MapFormContainer extends React.Component<MapFormContainerProps, undefined> {
-    private deriveMapFormValuesFromMap = function(map: object) {
+interface IRouteProps {
+    mapId: number
+    mapName: string
+}
+
+export class MapFormContainer extends React.Component<IProps, {}> {
+    private deriveMapFormValuesFromMap = function(map: IMap) {
         return {
             name: map["name"],
             description: map["description"],
@@ -31,13 +42,13 @@ export class MapFormContainer extends React.Component<MapFormContainerProps, und
             <MapForm
                 mapDefinition={mapDefinition}
                 initialValues={initialValues}
-                onSubmit={(formValues: Array<undefined>) => onSubmit(mapDefinition, formValues)}
+                onSubmit={(formValues: IMapFormValues) => onSubmit(mapDefinition, formValues)}
             />
         )
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     const { maps } = state
 
     return {
@@ -45,15 +56,15 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
-        onSubmit: (map: object, values: Array<undefined>) => {
+        onSubmit: (map: IMap, values: IMapFormValues) => {
             // Merge form values into our map object
             if (map === undefined) {
-                map = {}
+                map = {} as IMap
             }
             map = Object.assign(map, values)
-            return dispatch(mapUpsert(map))
+            // return dispatch(mapUpsert(map))
         },
     }
 }

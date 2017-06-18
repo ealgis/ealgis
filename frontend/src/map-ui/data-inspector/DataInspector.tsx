@@ -3,13 +3,14 @@ import { connect } from "react-redux"
 import { List, ListItem } from "material-ui/List"
 import InsertChart from "material-ui/svg-icons/editor/insert-chart"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
-import { loadRecords } from "../../redux/modules/datainspector"
+import { IStore, IFeature } from "../../redux/modules/interfaces"
 
-export interface DataInspectorProps {
-    records: Array<any>
+export interface IProps {
+    // From Store
+    records?: Array<IFeature>
 }
 
-export class DataInspector extends React.Component<DataInspectorProps, undefined> {
+export class DataInspector extends React.Component<IProps, {}> {
     render() {
         const { records } = this.props
 
@@ -38,14 +39,15 @@ export class DataInspector extends React.Component<DataInspectorProps, undefined
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: IProps) => {
     const { datainspector } = state
+
     return {
         records: datainspector.records,
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {}
 }
 

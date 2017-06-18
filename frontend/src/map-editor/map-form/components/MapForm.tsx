@@ -1,4 +1,6 @@
 import * as React from "react"
+import { IMap } from "../../../redux/modules/interfaces"
+
 import { Link } from "react-router"
 import RaisedButton from "material-ui/RaisedButton"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
@@ -10,7 +12,7 @@ import IconButton from "material-ui/IconButton"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 import { red500 } from "material-ui/styles/colors"
 
-const required = value => (value ? undefined : "Required")
+const required = (value: any) => (value ? undefined : "Required")
 
 const styles = {
     form: {
@@ -26,15 +28,15 @@ const styles = {
     },
 }
 
-export interface MapFormProps {
-    mapDefinition: any
-    onSubmit: Function
+export interface IProps {
+    mapDefinition: IMap
     initialValues: any
+    onSubmit: Function
 }
 
-export class MapForm extends React.Component<MapFormProps, undefined> {
+export class MapForm extends React.Component<IProps, {}> {
     render() {
-        const { error, handleSubmit, pristine, reset, submitting, onSubmit, initialValues } = this.props // from react-form
+        const { error, handleSubmit, pristine, reset, submitting, onSubmit, initialValues }: any = this.props // from react-form
         const { mapDefinition } = this.props
 
         let closeLink = mapDefinition === undefined

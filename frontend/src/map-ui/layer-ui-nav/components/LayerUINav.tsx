@@ -2,12 +2,13 @@ import * as React from "react"
 import { Link } from "react-router"
 import LegendPeekBar from "../../legend-peek-bar/LegendPeekBarContainer"
 import Paper from "material-ui/Paper"
+import Toggle from "material-ui/Toggle"
 import Subheader from "material-ui/Subheader"
 import { List, ListItem } from "material-ui/List"
 import RaisedButton from "material-ui/RaisedButton"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
-import LayerToggle from "../../layer-toggle/LayerToggleContainer"
 import LayerDeleteConfirmDialog from "../../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
+import { IMap, ILayer } from "../../../redux/modules/interfaces"
 
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -37,6 +38,9 @@ const styles = {
         paddingBottom: "0px",
         marginLeft: "17px",
     },
+    layerToggle: {
+        marginRight: 35,
+    },
 }
 
 const iconButtonElement = (
@@ -45,19 +49,21 @@ const iconButtonElement = (
     </IconButton>
 )
 
-export interface LayerUINavProps {
-    defn: any
+export interface IProps {
+    // Props
+    defn: ILayer
     layerId: number
     mapId: number
     isMapOwner: boolean
     mapNameURLSafe: string
     onCloneLayer: any
     onDeleteLayer: any
+    onToggleVisibility: any
     deleteConfirmModalId: string
     getGeometryDescription: Function
 }
 
-export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
+export class LayerUINav extends React.Component<IProps, {}> {
     render() {
         const {
             defn,
@@ -67,11 +73,12 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
             mapNameURLSafe,
             onCloneLayer,
             onDeleteLayer,
+            onToggleVisibility,
             deleteConfirmModalId,
             getGeometryDescription,
         } = this.props
 
-        let legendPeekProps: object = {}
+        let legendPeekProps: any = {}
         if ("olStyleDef" in defn) {
             legendPeekProps.open = true
             legendPeekProps.style = styles.layerListItemWithLegend
@@ -85,7 +92,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
             ]
         }
 
-        let mapOwnerProps: object = {}
+        let mapOwnerProps: any = {}
         if (isMapOwner) {
             mapOwnerProps.rightIconButton = (
                 <IconMenu iconButtonElement={iconButtonElement}>
@@ -103,6 +110,7 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
         return (
             <Paper style={styles.paperListItem} zDepth={1}>
                 <ListItem
+                    primaryText={defn.name}
                     secondaryText={
                         <p>
                             {getGeometryDescription(defn)}<br />
@@ -111,7 +119,9 @@ export class LayerUINav extends React.Component<LayerUINavProps, undefined> {
                     }
                     secondaryTextLines={2}
                     {...mapOwnerProps}
-                    rightToggle={<LayerToggle layerDefinition={defn} layerId={layerId} mapId={mapId} />}
+                    rightToggle={
+                        <Toggle toggled={defn.visible} onToggle={onToggleVisibility} style={styles.layerToggle} />
+                    }
                     {...legendPeekProps}
                 />
 

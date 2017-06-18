@@ -1,4 +1,5 @@
 import * as React from "react"
+import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
 const styles = {
     flexboxColumn: {
@@ -7,13 +8,13 @@ const styles = {
     },
 }
 
-export interface LegendPeekBarSwatchNavProps {
-    styleDef: object
+export interface IProps {
+    styleDef: IOLStyleDef
     onMouseEnter: Function
     onMouseLeave: Function
 }
 
-export class LegendPeekBarSwatchNav extends React.Component<LegendPeekBarSwatchNavProps, undefined> {
+export class LegendPeekBarSwatchNav extends React.Component<IProps, {}> {
     render() {
         const { styleDef, onMouseEnter, onMouseLeave } = this.props
         const columnStyle = Object.assign(styles.flexboxColumn, { backgroundColor: `rgb(${styleDef.rgb.join(",")})` })

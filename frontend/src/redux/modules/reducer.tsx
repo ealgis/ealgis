@@ -17,6 +17,7 @@ import { reduxFormReducer as layerFormReducer } from "./layerform"
 export interface IStore {
     ealgis: IEALGISModule
     app: IAppModule
+    map: IMapModule
     legends: ILegendsModule
     maps: IMapsModule
     datainspector: IDataInspectorpModule

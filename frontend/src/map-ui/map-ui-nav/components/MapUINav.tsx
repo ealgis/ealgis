@@ -12,6 +12,7 @@ import NavigationClose from "material-ui/svg-icons/navigation/close"
 import Divider from "material-ui/Divider"
 import DataInspector from "../../data-inspector/DataInspector"
 import * as CopyToClipboard from "react-copy-to-clipboard"
+import { IMap } from "../../../redux/modules/interfaces"
 
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -65,32 +66,32 @@ const styles = {
     },
 }
 
-export interface MapUINavProps {
+export interface IProps {
     tabName: string
-    defn: any
+    defn: IMap
     isOwner: boolean
-    onAddLayer: Function
-    onDuplicateMap: Function
-    onSetOrigin: Function
-    onResetOrigin: Function
-    onChangeSharing: Function
-    onDeleteMap: Function
-    onToggleDeleteModalState: Function
+    onDuplicateMap: any
+    onAddLayer: any
+    onSetOrigin: any
+    onChangeSharing: any
+    onResetOrigin: any
+    onDeleteMap: any
+    onToggleDeleteModalState: any
     deleteModalOpen: boolean
-    onExportWholeMap: Function
-    onExportMapViewport: Function
-    onCheckIncludeGeomAttrs: Function
-    onGetShareableLink: Function
+    onExportWholeMap: any
+    onExportMapViewport: any
+    onCheckIncludeGeomAttrs: any
+    onGetShareableLink: any
 }
 
-export class MapUINav extends React.Component<MapUINavProps, undefined> {
+export class MapUINav extends React.Component<IProps, {}> {
     render() {
         const {
             tabName,
             defn,
             isOwner,
-            onAddLayer,
             onDuplicateMap,
+            onAddLayer,
             onSetOrigin,
             onResetOrigin,
             onChangeSharing,

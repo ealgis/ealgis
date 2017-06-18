@@ -3,38 +3,42 @@ import { connect } from "react-redux"
 import { browserHistory } from "react-router"
 import LayerUINav from "./components/LayerUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { cloneMapLayer } from "../../redux/modules/maps"
+import { cloneMapLayer, changeLayerVisibility } from "../../redux/modules/maps"
+import { IStore, IMap, ILayer, IGeomInfo } from "../../redux/modules/interfaces"
 
-interface LayerUINavContainerRouteParams {
-    id: Number
-}
-
-export interface LayerUINavContainerProps {
-    layerDefinition: LayerUINavContainerRouteParams
+export interface IProps {
+    // Props
+    // key: number
+    layerId: number
+    layerDefinition: ILayer
     mapId: number
     isMapOwner: boolean
     mapNameURLSafe: string
-    mapDefinition: object
-    layerId: number
+    // From Store
+    mapDefinition: IMap
+    geominfo: IGeomInfo
+    // From Dispatch to Props
     onCloneLayer: Function
     onDeleteLayer: Function
-    geominfo: object
+    onToggleVisibility: Function
 }
 
-export class LayerUINavContainer extends React.Component<LayerUINavContainerProps, undefined> {
-    private getGeometryDescription(defn: object, geominfo) {
-        return geominfo[defn["schema"] + "." + defn["geometry"]].description
+export class LayerUINavContainer extends React.Component<IProps, {}> {
+    private getGeometryDescription(layer: ILayer, geominfo: IGeomInfo) {
+        return geominfo[layer["schema"] + "." + layer["geometry"]].description
     }
 
     render() {
         const {
-            layerDefinition,
             mapId,
+            mapDefinition,
+            layerDefinition,
             isMapOwner,
             mapNameURLSafe,
             layerId,
             onCloneLayer,
             onDeleteLayer,
+            onToggleVisibility,
             geominfo,
         } = this.props
         const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
@@ -48,29 +52,33 @@ export class LayerUINavContainer extends React.Component<LayerUINavContainerProp
                 mapNameURLSafe={mapNameURLSafe}
                 onCloneLayer={() => onCloneLayer(mapId, layerId)}
                 onDeleteLayer={() => onDeleteLayer(deleteConfirmModalId)}
+                onToggleVisibility={() => onToggleVisibility(mapDefinition, layerId)}
                 deleteConfirmModalId={deleteConfirmModalId}
-                getGeometryDescription={(defn: object) => this.getGeometryDescription(defn, geominfo)}
+                getGeometryDescription={(layer: ILayer) => this.getGeometryDescription(layer, geominfo)}
             />
         )
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: IProps) => {
     const { maps, ealgis } = state
+
     return {
-        layerDefinition: ownProps.layerDefinition,
-        mapId: ownProps.mapId,
+        mapDefinition: maps[ownProps.mapId],
         geominfo: ealgis.geominfo,
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         onCloneLayer: (mapId: number, layerId: number) => {
             dispatch(cloneMapLayer(mapId, layerId))
         },
         onDeleteLayer: (modalId: string) => {
             dispatch(toggleModalState(modalId))
+        },
+        onToggleVisibility: (map: IMap, layerId: number) => {
+            dispatch(changeLayerVisibility(map, layerId))
         },
     }
 }

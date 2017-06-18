@@ -1,5 +1,6 @@
 import * as React from "react"
 import LegendPeekBarSwatch from "../../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
+import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
 const styles = {
     peekBarContainer: {
@@ -21,15 +22,15 @@ const styles = {
     },
 }
 
-export interface LegendPeekBarNavProps {
+export interface IProps {
     layerId: number
-    olStyleDef: object
+    olStyleDef: Array<IOLStyleDef>
     handleMouseEnter: Function
     handleMouseLeave: Function
     labelText: string
 }
 
-export class LegendPeekBarNav extends React.Component<LegendPeekBarNavProps, undefined> {
+export class LegendPeekBarNav extends React.Component<IProps, {}> {
     render() {
         const { layerId, olStyleDef, handleMouseEnter, handleMouseLeave, labelText } = this.props
 
@@ -37,7 +38,7 @@ export class LegendPeekBarNav extends React.Component<LegendPeekBarNavProps, und
             <div style={styles.peekBarContainer}>
                 <div style={styles.labelText}>{labelText || "Legend"}</div>
                 <div style={styles.flexContainer}>
-                    {olStyleDef.map((styleDef: object, key: number) => {
+                    {olStyleDef.map((styleDef: IOLStyleDef, key: number) => {
                         return (
                             <LegendPeekBarSwatch
                                 key={key}

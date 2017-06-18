@@ -2,16 +2,16 @@ import * as React from "react"
 import LayerContainerWrapped from "../../layer/LayerContainer"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
-import { IPosition } from "../../../redux/modules/map"
+import { IMap, ILayer, IPosition } from "../../../redux/modules/interfaces"
 
-export interface MapUIProps {
-    defn: any
+export interface IProps {
+    defn: IMap
     position: IPosition
     onSingleClick: Function
     onMoveEnd: Function
 }
 
-export class MapUI extends React.Component<MapUIProps, undefined> {
+export class MapUI extends React.Component<IProps, {}> {
     render() {
         const { defn, position, onSingleClick, onMoveEnd } = this.props
 
@@ -23,10 +23,10 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
 
         // FIXME Fix the map definitions
         if (defn !== undefined) {
-            let zoom = parseInt(defn.json.map_defaults.zoom) || 4
+            let zoom = defn.json.map_defaults.zoom || 4
             let center =
                 ol.proj.transform(
-                    [parseFloat(defn.json.map_defaults.lon), parseFloat(defn.json.map_defaults.lat)],
+                    [defn.json.map_defaults.lon, defn.json.map_defaults.lat],
                     "EPSG:4326",
                     "EPSG:900913"
                 ) || ol.proj.transform([135, -27], "EPSG:4326", "EPSG:900913")
@@ -40,7 +40,7 @@ export class MapUI extends React.Component<MapUIProps, undefined> {
                         <olr.source.XYZ url={mapbox_url} attributions={mapbox_attribution} />
                     </olr.layer.Tile>
                     <div>
-                        {defn.json.layers.map((l: any, key: number) => {
+                        {defn.json.layers.map((l: ILayer, key: number) => {
                             return <LayerContainerWrapped key={key} layerId={key} map={defn} layer={l} />
                         })}
                     </div>

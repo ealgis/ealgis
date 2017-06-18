@@ -47,7 +47,7 @@ export interface IAction {
 export interface ILayerQuerySummary {
     min: number
     max: number
-    stdddev: number
+    stddev: number
 }
 
 // Side effects, only as applicable

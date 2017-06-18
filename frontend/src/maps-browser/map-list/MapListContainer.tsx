@@ -1,17 +1,24 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import MapList from "./components/MapList"
+import { IStore, IMap, IMapModule } from "../../redux/modules/interfaces"
 
-export interface MapListContainerProps {
+export interface IProps {
+    // From Store
     tabName: string
     userId: number
-    maps: any
+    maps: IMapModule
     getMyMaps: Function
     getSharedMaps: Function
     getPublicMaps: Function
+    // From Route
 }
 
-export class MapListContainer extends React.Component<MapListContainerProps, undefined> {
+export interface IRouteProps {
+    tabName: string
+}
+
+export class MapListContainer extends React.Component<IProps, {}> {
     render() {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
 
@@ -28,29 +35,30 @@ export class MapListContainer extends React.Component<MapListContainerProps, und
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     const { maps, ealgis } = state
+
     return {
-        tabName: ownProps.params.tabName,
+        // tabName: ownProps.params.tabName,
         userId: ealgis.user.id,
         maps,
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
-        getMyMaps: (maps: Array<object>, userId: number) => {
-            return maps.filter((item: object) => {
+        getMyMaps: (maps: Array<any>, userId: number) => {
+            return maps.filter((item: any) => {
                 return item[1].owner_user_id === userId
             })
         },
-        getSharedMaps: (maps: Array<object>, userId: number) => {
-            return maps.filter((item: object) => {
+        getSharedMaps: (maps: Array<any>, userId: number) => {
+            return maps.filter((item: any) => {
                 return item[1].owner_user_id !== userId && item[1].shared === 2
             })
         },
-        getPublicMaps: (maps: Array<object>, userId: number) => {
-            return maps.filter((item: object) => {
+        getPublicMaps: (maps: Array<any>, userId: number) => {
+            return maps.filter((item: any) => {
                 return item[1].owner_user_id !== userId && item[1].shared === 3
             })
         },

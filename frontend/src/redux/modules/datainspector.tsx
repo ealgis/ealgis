@@ -68,16 +68,27 @@ export interface IFeatureProps {
     value: any
 }
 
+export interface IOLFeature {
+    mapId: number
+    layerId: number
+    featureProps: IOLFeatureProps
+}
+
+export interface IOLFeatureProps {
+    gid: number
+    q: number
+}
+
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-export function loadRecords(mapId: number, features: Array<any>) {
+export function loadRecords(mapId: number, features: Array<IOLFeature>) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const map = getMapFromState(getState, mapId)
         const records: Array<IFeature> = []
 
         await Promise.all(
-            features.map(async olFeature => {
-                const featureProps = olFeature.featureProps
+            features.map(async (olFeature: IOLFeature) => {
+                const featureProps: IOLFeatureProps = olFeature.featureProps
                 const layer = map.json.layers[olFeature.layerId]
 
                 const { response, json } = await ealapi.get(
