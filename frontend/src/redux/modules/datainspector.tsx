@@ -70,43 +70,46 @@ export interface IFeatureProps {
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-export function loadRecords(mapId: number, features: Array<undefined>) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        features.forEach((feature: any) => {
-            const featureProps = feature.featureProps
-            const map = getMapFromState(getState, feature.mapId)
-            const layer = map.json.layers[feature.layerId]
+export function loadRecords(mapId: number, features: Array<any>) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        const map = getMapFromState(getState, mapId)
+        const records: Array<IFeature> = []
 
-            ealapi
-                .get(`/api/0.1/datainfo/${layer.geometry}/?schema=${layer.schema}&gid=${featureProps.gid}`, dispatch)
-                .then(({ response, json }: any) => {
-                    let dataRowProps: Array<any> = [
-                        {
-                            name: "Value",
-                            value: featureProps.q,
-                        },
-                    ]
+        await Promise.all(
+            features.map(async olFeature => {
+                const featureProps = olFeature.featureProps
+                const layer = map.json.layers[olFeature.layerId]
 
-                    for (let key in json) {
-                        if (key !== "gid") {
-                            dataRowProps.push({
-                                name: key,
-                                value: json[key],
-                            })
-                        }
+                const { response, json } = await ealapi.get(
+                    `/api/0.1/datainfo/${layer.geometry}/?schema=${layer.schema}&gid=${featureProps.gid}`,
+                    dispatch
+                )
+
+                // Initialise properties list with the value "q" that resulted from the query expression
+                let dataRowProps: Array<IFeatureProps> = [
+                    {
+                        name: "Value",
+                        value: featureProps.q,
+                    },
+                ]
+
+                for (let key in json) {
+                    if (key !== "gid") {
+                        dataRowProps.push({
+                            name: key,
+                            value: json[key],
+                        })
                     }
+                }
 
-                    dispatch(
-                        load([
-                            {
-                                name: `Layer ${layer.name}`,
-                                properties: dataRowProps,
-                            },
-                        ])
-                    )
-
-                    browserHistory.push(getMapURL(map) + "/data")
+                records.push({
+                    name: `Layer ${layer.name}`,
+                    properties: dataRowProps,
                 })
-        })
+            })
+        )
+
+        dispatch(load(records))
+        browserHistory.push(getMapURL(map) + "/data")
     }
 }

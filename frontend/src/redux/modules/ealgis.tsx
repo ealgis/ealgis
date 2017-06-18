@@ -22,64 +22,61 @@ const initialState: IModule = {
 export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_USER:
-            return dotProp.set(state, "user", action.json)
+            return dotProp.set(state, "user", action.user)
         case LOAD_GEOM:
-            return dotProp.set(state, "geominfo", action.json)
-        case LOAD_COLOURS:
-            return dotProp.set(state, "colourinfo", action.json)
+            return dotProp.set(state, "geominfo", action.geominfo)
         case LOAD_TABLES:
-            return dotProp.set(state, "tableinfo", action.json)
+            return dotProp.set(state, "tableinfo", action.tableinfo)
+        case LOAD_COLOURS:
+            return dotProp.set(state, "colourinfo", action.colourinfo)
         default:
             return state
     }
 }
 
 // Action Creators
-export function loadUser(json: any) {
+export function loadUser(user: IUser) {
     return {
         type: LOAD_USER,
-        json,
+        user,
     }
 }
 
-export function loadGeom(json: any) {
+export function loadGeom(geominfo: IGeomInfo) {
     return {
         type: LOAD_GEOM,
-        json,
+        geominfo,
     }
 }
 
-export function loadColours(json: any) {
-    return {
-        type: LOAD_COLOURS,
-        json,
-    }
-}
-
-export function loadTables(json: any) {
+export function loadTables(tableinfo: ITableInfo) {
     return {
         type: LOAD_TABLES,
-        json,
+        tableinfo,
+    }
+}
+
+export function loadColours(colourinfo: IColourInfo) {
+    return {
+        type: LOAD_COLOURS,
+        colourinfo,
     }
 }
 
 // Models
 export interface IModule {
     user: IUser
-    geominfo: {
-        [key: string]: Array<IGeomTable>
-    }
-    tableinfo: {
-        [key: number]: Array<ITable>
-    }
-    colourinfo: {
-        [key: string]: Array<number>
-    }
+    geominfo: IGeomInfo
+    tableinfo: ITableInfo
+    colourinfo: IColourInfo
 }
 
 export interface IAction {
     type: string
-    json: any
+    user: IUser
+    geominfo: IGeomInfo
+    tableinfo: ITableInfo
+    colourinfo: IColourInfo
 }
 
 export interface IUser {
@@ -93,6 +90,25 @@ export interface IUser {
     is_active: boolean
     date_joined: string
     groups: Array<string>
+}
+
+export interface IUserPartial {
+    id: number
+    username: string
+    first_name: string
+    last_name: string
+}
+
+export interface IGeomInfo {
+    [key: string]: Array<IGeomTable>
+}
+
+export interface ITableInfo {
+    [key: number]: ITable
+}
+
+export interface IColourInfo {
+    [key: string]: Array<number>
 }
 
 export interface IGeomTable {

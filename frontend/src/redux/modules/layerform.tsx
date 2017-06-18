@@ -1,4 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
 const SUBMITTED = "ealgis/layerform/SUBMITTED"
@@ -7,13 +8,13 @@ const RESTORE_MASTER = "ealgis/layerform/RESTORE_MASTER"
 const LOAD_CHIPS = "ealgis/layerform/LOAD_CHIPS"
 const VALIDATION_ERRORS = "ealgis/layerform/VALIDATION_ERRORS"
 
-const initialState = {
+const initialState: IModule = {
     submitting: false,
     chips: [],
 }
 
 // Reducer
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case RESTORE_MASTER:
         case PUBLISH:
@@ -38,7 +39,7 @@ export const reduxFormReducer = (state: {}, action: any) => {
 }
 
 // Action Creators
-export function beginPublish() {
+export function beginPublish(): IAction {
     return {
         type: PUBLISH,
         meta: {
@@ -49,7 +50,7 @@ export function beginPublish() {
     }
 }
 
-export function beginRestoreMaster() {
+export function beginRestoreMaster(): IAction {
     return {
         type: RESTORE_MASTER,
         meta: {
@@ -60,20 +61,20 @@ export function beginRestoreMaster() {
     }
 }
 
-export function finishedSubmitting() {
+export function finishedSubmitting(): IAction {
     return {
         type: SUBMITTED,
     }
 }
 
-export function loadChips(chips: Array<string>) {
+export function loadChips(chips: Array<string>): IAction {
     return {
         type: LOAD_CHIPS,
         chips,
     }
 }
 
-export function loadValidationErrors(errors: object) {
+export function loadValidationErrors(errors: object): IAction {
     return {
         type: VALIDATION_ERRORS,
         errors,
@@ -81,6 +82,19 @@ export function loadValidationErrors(errors: object) {
 }
 
 // Models
+export interface IModule {
+    submitting: boolean
+    chips: Array<string>
+}
+
+export interface IAction {
+    type: string
+    meta?: {
+        analytics: IAnalyticsMeta
+    }
+    chips?: Array<string>
+    errors?: object
+}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera

@@ -1,11 +1,12 @@
 import * as dotProp from "dot-prop-immutable"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
 const ADD_MESSAGE = "ealgis/snackbars/ADD_MESSAGE"
 const START = "ealgis/snackbars/START"
 const NEXT = "ealgis/snackbars/NEXT"
 
-const initialState = {
+const initialState: IModule = {
     open: false,
     active: {
         message: "",
@@ -14,7 +15,7 @@ const initialState = {
 }
 
 // Reducer
-export default function reducer(state = initialState, action = {}) {
+export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case ADD_MESSAGE:
             state.messages.push(action.message)
@@ -45,26 +46,46 @@ export default function reducer(state = initialState, action = {}) {
 }
 
 // Action Creators
-export function addMessage(message: object) {
+export function addMessage(message: ISnackbarMessage): IAction {
     return {
         type: ADD_MESSAGE,
         message,
     }
 }
 
-export function startIfNeeded() {
+export function startIfNeeded(): IAction {
     return {
         type: START,
     }
 }
 
-export function next() {
+export function next(): IAction {
     return {
         type: NEXT,
     }
 }
 
 // Models
+export interface IModule {
+    open: boolean
+    active: ISnackbarMessage
+    messages: Array<ISnackbarMessage>
+}
+
+export interface IAction {
+    type: string
+    meta?: {
+        analytics: IAnalyticsMeta
+    }
+    message?: ISnackbarMessage
+}
+
+export interface ISnackbarMessage {
+    message: string
+    autoHideDuration?: number
+    action?: string
+    onActionTouchTap?: Function
+}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
@@ -74,7 +95,7 @@ export function iterate() {
     }
 }
 
-export function sendMessage(message: object) {
+export function sendMessage(message: ISnackbarMessage) {
     return (dispatch: any) => {
         dispatch(addMessage(message))
         return dispatch(startIfNeeded())

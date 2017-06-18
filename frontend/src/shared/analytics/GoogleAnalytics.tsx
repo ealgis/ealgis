@@ -52,7 +52,9 @@ const fireAnalyticsTracking = () => {
 interface IAnalyticsMeta {
     category: string
     type?: string
-    payload?: object
+    payload?: {
+        [key: string]: any
+    }
 }
 
 export { AnalyticsMiddleware, fireAnalyticsTracking, IAnalyticsMeta }

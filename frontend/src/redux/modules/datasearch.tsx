@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
-import { loadTables, IGeomTable } from "../../redux/modules/ealgis"
+import { loadTables, ITableInfo, IGeomTable } from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 
 // Actions
@@ -90,9 +90,7 @@ export interface MetadataJSON {
 
 interface ColumnInfoSearchResponse {
     columns: Array<IColumn>
-    tables: {
-        [key: string]: ITable
-    }
+    tables: ITableInfo
 }
 
 // Side effects, only as applicable

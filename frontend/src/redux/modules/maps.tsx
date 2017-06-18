@@ -1,10 +1,13 @@
 import * as dotProp from "dot-prop-immutable"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+
 import * as merge from "lodash/merge"
 import { browserHistory } from "react-router"
 import { getMapURL } from "../../shared/utils"
 import { SubmissionError } from "redux-form"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { getUserIdFromState, getGeomInfoFromState } from "../../redux/modules/ealgis"
+import { getUserIdFromState, getGeomInfoFromState, IUserPartial, IGeomTable } from "../../redux/modules/ealgis"
 import { IPosition } from "../../redux/modules/map"
 
 import * as layerFormModule from "../../redux/modules/layerform"
@@ -31,8 +34,10 @@ const EXPORT_MAP = "ealgis/maps/EXPORT_MAP"
 const EXPORT_MAP_VIEWPORT = "ealgis/maps/EXPORT_MAP_VIEWPORT"
 const COPY_SHAREABLE_LINK = "ealgis/maps/COPY_SHAREABLE_LINK"
 
+const initialState: IModule = {}
+
 // Reducer
-export default function reducer(state = {}, action = {}) {
+export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case LOAD:
             return action.maps
@@ -46,8 +51,8 @@ export default function reducer(state = {}, action = {}) {
             }
         case SET_ORIGIN:
             return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
-                lat: action.position.center.lat,
-                lon: action.position.center.lon,
+                lon: action.position.center[0],
+                lat: action.position.center[1],
                 zoom: action.position.zoom,
             })
         case SET_SHARING:
@@ -74,7 +79,10 @@ export default function reducer(state = {}, action = {}) {
                 action.layerPropertyValue
             )
         case MERGE_LAYER_PROPERTIES:
-            const newLayer = merge(dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`), action.layer)
+            const newLayer = merge(
+                dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`),
+                action.layerPartial
+            )
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
         default:
             return state
@@ -82,14 +90,14 @@ export default function reducer(state = {}, action = {}) {
 }
 
 // Action Creators
-export function loadMaps(maps: object) {
+export function loadMaps(maps: Array<IMap>): IAction {
     return {
         type: LOAD,
         maps,
     }
 }
 
-export function receieveUpdatedMap(map: Map) {
+export function receieveUpdatedMap(map: IMap): IAction {
     return {
         type: UPDATE,
         map,
@@ -101,7 +109,7 @@ export function receieveUpdatedMap(map: Map) {
     }
 }
 
-export function addMap(map: Map) {
+export function addMap(map: IMap): IAction {
     return {
         type: CREATE,
         map,
@@ -113,7 +121,7 @@ export function addMap(map: Map) {
     }
 }
 
-export function addDuplicateMap(map: Map) {
+export function addDuplicateMap(map: IMap): IAction {
     return {
         type: DUPLICATE,
         map,
@@ -125,7 +133,7 @@ export function addDuplicateMap(map: Map) {
     }
 }
 
-export function setMapOrigin(mapId: number, position: IPosition) {
+export function setMapOrigin(mapId: number, position: IPosition): IAction {
     return {
         type: SET_ORIGIN,
         mapId,
@@ -138,7 +146,7 @@ export function setMapOrigin(mapId: number, position: IPosition) {
     }
 }
 
-export function setMapSharing(mapId: number, shared: number) {
+export function setMapSharing(mapId: number, shared: eMapShared): IAction {
     return {
         type: SET_SHARING,
         mapId,
@@ -151,7 +159,7 @@ export function setMapSharing(mapId: number, shared: number) {
     }
 }
 
-export function deleteMap(mapId: number) {
+export function deleteMap(mapId: number): IAction {
     return {
         type: DELETE_MAP,
         mapId,
@@ -163,7 +171,7 @@ export function deleteMap(mapId: number) {
     }
 }
 
-export function startLayerEditing() {
+export function startLayerEditing(): IAction {
     return {
         type: START_LAYER_EDITING,
         meta: {
@@ -174,7 +182,7 @@ export function startLayerEditing() {
     }
 }
 
-export function fitLayerScaleToData() {
+export function fitLayerScaleToData(): IAction {
     return {
         type: FIT_LAYER_SCALE_TO_DATA,
         meta: {
@@ -185,7 +193,7 @@ export function fitLayerScaleToData() {
     }
 }
 
-export function receieveUpdatedLayer(mapId: number, layerId: number, layer: Layer) {
+export function receieveUpdatedLayer(mapId: number, layerId: number, layer: ILayer): IAction {
     return {
         type: UPDATE_LAYER,
         mapId,
@@ -194,7 +202,7 @@ export function receieveUpdatedLayer(mapId: number, layerId: number, layer: Laye
     }
 }
 
-export function addNewLayer(mapId: number, layerId: number, layer: Layer) {
+export function addNewLayer(mapId: number, layerId: number, layer: ILayer): IAction {
     return {
         type: ADD_LAYER,
         mapId,
@@ -208,7 +216,7 @@ export function addNewLayer(mapId: number, layerId: number, layer: Layer) {
     }
 }
 
-export function receiveCloneMapLayer(mapId: number, layerId: number) {
+export function receiveCloneMapLayer(mapId: number, layerId: number): IAction {
     return {
         type: CLONE_MAP_LAYER,
         mapId,
@@ -221,7 +229,7 @@ export function receiveCloneMapLayer(mapId: number, layerId: number) {
     }
 }
 
-export function receiveChangeLayerVisibility(mapId: number, layerId: number) {
+export function receiveChangeLayerVisibility(mapId: number, layerId: number): IAction {
     return {
         type: SET_LAYER_VISIBILITY,
         mapId,
@@ -234,7 +242,7 @@ export function receiveChangeLayerVisibility(mapId: number, layerId: number) {
     }
 }
 
-export function receiveDeleteMapLayer(mapId: number, layerId: number) {
+export function receiveDeleteMapLayer(mapId: number, layerId: number): IAction {
     return {
         type: DELETE_LAYER,
         mapId,
@@ -252,7 +260,7 @@ export function receiveChangeLayerProperty(
     layerId: number,
     layerPropertyPath: string,
     layerPropertyValue: any
-) {
+): IAction {
     return {
         type: CHANGE_LAYER_PROPERTY,
         mapId,
@@ -262,16 +270,16 @@ export function receiveChangeLayerProperty(
     }
 }
 
-export function receiveMergeLayerProperties(mapId: number, layerId: number, layer: object) {
+export function receiveMergeLayerProperties(mapId: number, layerId: number, layerPartial: object): IAction {
     return {
         type: MERGE_LAYER_PROPERTIES,
         mapId,
         layerId,
-        layer,
+        layerPartial,
     }
 }
 
-export function exportMap() {
+export function exportMap(): IAction {
     return {
         type: EXPORT_MAP,
         meta: {
@@ -282,7 +290,7 @@ export function exportMap() {
     }
 }
 
-export function exportMapViewport(includeGeomAttributes: boolean) {
+export function exportMapViewport(includeGeomAttributes: boolean): IAction {
     return {
         type: EXPORT_MAP_VIEWPORT,
         meta: {
@@ -296,7 +304,7 @@ export function exportMapViewport(includeGeomAttributes: boolean) {
     }
 }
 
-export function copyShareableLink() {
+export function copyShareableLink(): IAction {
     return {
         type: COPY_SHAREABLE_LINK,
         meta: {
@@ -308,37 +316,127 @@ export function copyShareableLink() {
 }
 
 // Models
-export type Map = {
-    id: number
-    name: string
+export interface IModule {
+    [key: number]: IMap
 }
 
-export type MapSharing = {
-    level: number
+export interface IAction {
+    type: string
+    meta?: {
+        analytics: IAnalyticsMeta
+    }
+    maps?: Array<IMap>
+    map?: IMap
+    mapId?: number
+    layer?: ILayer
+    layerPartial?: object
+    layerId?: number
+    position?: IPosition
+    shared?: eMapShared
+    layerPropertyPath?: string
+    layerPropertyValue?: any
 }
 
-export type Layer = {
+export interface IMap {
     id: number
     name: string
+    description: string
+    json: {
+        rev?: number
+        show_legend: boolean
+        layers: Array<ILayer>
+        map_defaults: {
+            lat: number
+            lon: number
+            zoom: number
+        }
+    }
+    shared: eMapShared
+    owner_user_id: number
+    owner: IUserPartial
+    "name-url-safe": string
+}
+
+export interface ILayer {
+    fill: {
+        opacity: number
+        scale_max: number
+        scale_min: number
+        expression: string
+        scale_flip: boolean
+        scale_name: string
+        conditional: string
+        scale_nlevels: number
+    }
+    hash: string
+    line: {
+        width: number
+        colour: {
+            a: number
+            r: number
+            g: number
+            b: number
+        }
+    }
+    name: string
+    type: string
+    schema: string
+    visible: boolean
+    geometry: string
+    olStyleDef?: {
+        [key: number]: {
+            expr: {
+                from: {
+                    attr: string
+                    op: string
+                    v: number
+                }
+                to?: {
+                    attr: string
+                    op: string
+                    v: number
+                }
+            }
+            rgb: Array<number>
+            opacity: number
+        }
+    }
+    description: string
+    latlon_bbox: {
+        maxx: number
+        maxy: number
+        minx: number
+        miny: number
+    }
+    _postgis_query: string
+}
+
+enum eMapShared {
+    PRIVATE_SHARED = 1,
+    AUTHENTICATED_USERS_SHARED = 2,
+    PUBLIC_SHARED = 3,
 }
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 export function fetchMaps() {
-    return async (dispatch: Function, getState: Function, ealapi: object) => {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/maps/all/", dispatch)
 
         if (response.status === 200 && json.length > 0) {
             // Map maps from an array of objects to a dict keyed by mapId
-            const maps = Object.assign(...json.map(d => ({ [d.id]: d })))
+            const maps = Object.assign(
+                {},
+                ...json.map((map: IMap, index: number, array: Array<IMap>) => ({ [map.id]: map }))
+            )
             dispatch(loadMaps(maps))
         }
     }
 }
 
-export function createMap(map: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
+export function createMap(map: IMap) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        let mapCopy: IMap = JSON.parse(JSON.stringify(map))
         mapCopy["json"] = {
             // FIXME
             map_defaults: {
@@ -347,6 +445,7 @@ export function createMap(map: object) {
                 zoom: 4,
             },
             layers: [],
+            show_legend: true,
         }
 
         return ealapi
@@ -384,8 +483,8 @@ export function createMap(map: object) {
     }
 }
 
-export function updateMap(map: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function updateMap(map: IMap) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         return ealapi.put("/api/0.1/maps/" + map["id"] + "/", map, dispatch).then(({ response, json }: any) => {
             // FIXME Cleanup and decide how to handle error at a component and application-level
 
@@ -410,13 +509,13 @@ export function updateMap(map: object) {
     }
 }
 
-export function mapUpsert(map: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function mapUpsert(map: IMap) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // Upsert
         if (map.id === undefined) {
             return dispatch(createMap(map))
         }
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
+        let mapCopy: IMap = JSON.parse(JSON.stringify(map))
 
         return ealapi.put("/api/0.1/maps/" + mapCopy["id"] + "/", mapCopy, dispatch).then(({ response, json }: any) => {
             // FIXME Cleanup and decide how to handle error at a component and application-level
@@ -445,8 +544,8 @@ export function mapUpsert(map: object) {
     }
 }
 
-export function updateMapOrigin(map: object, position: IPosition) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function updateMapOrigin(map: IMap, position: IPosition) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(setMapOrigin(map.id, position))
 
         // FIXME This getState() stuff *can't* be best practice
@@ -456,8 +555,8 @@ export function updateMapOrigin(map: object, position: IPosition) {
     }
 }
 
-export function changeMapSharing(mapId: number, shared: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function changeMapSharing(mapId: number, shared: eMapShared) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(setMapSharing(mapId, shared))
         dispatch(updateMap(getMapFromState(getState, mapId))).then(() => {
             dispatch(sendSnackbarNotification("Layer sharing settings updated"))
@@ -466,7 +565,7 @@ export function changeMapSharing(mapId: number, shared: number) {
 }
 
 export function duplicateMap(mapId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         return ealapi
             .put("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/clone/", null, dispatch)
             .then(({ response, json }: any) => {
@@ -486,7 +585,7 @@ export function duplicateMap(mapId: number) {
 }
 
 export function removeMap(mapId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         return ealapi
             .delete("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/", dispatch)
             .then((response: any) => {
@@ -495,21 +594,18 @@ export function removeMap(mapId: number) {
                     dispatch(sendSnackbarNotification("Map deleted successfully"))
                     browserHistory.push("/maps")
                 } else {
-                    var error = new Error(response.statusText)
-                    error.response = response
-                    // dispatch(deleteMapError(error));
-                    throw error
+                    throw new Error(response.statusText)
                 }
             })
     }
 }
 
 export function addLayer(mapId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // Default to 2011 SA4s or whatever the first geometry is
         // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
         const geominfo = getGeomInfoFromState(getState)
-        let defaultGeometry: object = undefined
+        let defaultGeometry: IGeomTable = undefined
 
         if (geominfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
             defaultGeometry = geominfo["aus_census_2011.sa4_2011_aust_pow"]
@@ -558,15 +654,15 @@ export function addLayer(mapId: number) {
 }
 
 export function cloneMapLayer(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(receiveCloneMapLayer(mapId, layerId))
         dispatch(updateMap(getMapFromState(getState, mapId)))
         dispatch(sendSnackbarNotification("Layer cloned successfully"))
     }
 }
 
-export function changeLayerVisibility(map: object, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function changeLayerVisibility(map: IMap, layerId: number) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(receiveChangeLayerVisibility(map["id"], layerId))
 
         if (getUserIdFromState(getState) === map.owner_user_id) {
@@ -577,9 +673,9 @@ export function changeLayerVisibility(map: object, layerId: number) {
     }
 }
 
-export function deleteMapLayer(map: object, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
-        let mapCopy: object = JSON.parse(JSON.stringify(map))
+export function deleteMapLayer(map: IMap, layerId: number) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        let mapCopy: IMap = JSON.parse(JSON.stringify(map))
         if (mapCopy["json"]["layers"][layerId] !== undefined) {
             mapCopy["json"]["layers"].splice(layerId, 1)
         }
@@ -609,14 +705,14 @@ export function deleteMapLayer(map: object, layerId: number) {
 }
 
 export function initDraftLayer(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const payload = { layerId: layerId }
         return ealapi.put(`/api/0.1/maps/${mapId}/initDraftLayer/`, payload, dispatch)
     }
 }
 
 export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // Determine if we need to recompile the layer server-side.
         // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
         let willCompileServerSide: boolean = false
@@ -645,7 +741,7 @@ export function handleLayerFormChange(layerPartial: object, mapId: number, layer
         if (!willCompileServerSide) {
             return dispatch(receiveMergeLayerProperties(mapId, layerId, layerPartial))
         } else {
-            return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: object) => {
+            return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: ILayer) => {
                 if (typeof layer === "object") {
                     // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
                     let haveCoreFieldsChanged: boolean = false
@@ -666,8 +762,8 @@ export function handleLayerFormChange(layerPartial: object, mapId: number, layer
     }
 }
 
-export function updateLayer(mapId: number, layerId: number, layer: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function updateLayer(mapId: number, layerId: number, layer: ILayer) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const payload = {
             layerId: layerId,
             layer: JSON.parse(JSON.stringify(layer)),
@@ -677,8 +773,8 @@ export function updateLayer(mapId: number, layerId: number, layer: object) {
     }
 }
 
-export function publishLayer(mapId: number, layerId: number, layer: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+export function publishLayer(mapId: number, layerId: number, layer: ILayer) {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(layerFormModule.beginPublish())
 
         return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
@@ -699,7 +795,7 @@ export function publishLayer(mapId: number, layerId: number, layer: object) {
 }
 
 export function restoreMasterLayer(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(layerFormModule.beginRestoreMaster())
 
         const payload = {
@@ -721,7 +817,7 @@ export function restoreMasterLayer(mapId: number, layerId: number) {
 }
 
 export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
             browserHistory.push(getMapURL(getMapFromState(getState, mapId)))
         })
@@ -729,7 +825,7 @@ export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number)
 }
 
 export function editDraftLayer(mapId: number, layerId: number, layerPartial: object) {
-    return (dispatch: Function, getState: Function, ealapi: object) => {
+    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const payload = {
             layerId: layerId,
             layer: layerPartial,
