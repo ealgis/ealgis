@@ -44,8 +44,6 @@ export interface IAction {
     }
 }
 
-export interface ILayerHash {}
-
 export interface ILayerQuerySummary {
     min: number
     max: number

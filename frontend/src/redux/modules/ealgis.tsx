@@ -100,7 +100,7 @@ export interface IUserPartial {
 }
 
 export interface IGeomInfo {
-    [key: string]: Array<IGeomTable>
+    [key: string]: IGeomTable
 }
 
 export interface ITableInfo {

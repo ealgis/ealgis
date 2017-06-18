@@ -368,7 +368,7 @@ export interface ILayer {
         conditional: string
         scale_nlevels: number
     }
-    hash: string
+    hash?: string
     line: {
         width: number
         colour: {
@@ -402,13 +402,13 @@ export interface ILayer {
         }
     }
     description: string
-    latlon_bbox: {
+    latlon_bbox?: {
         maxx: number
         maxy: number
         minx: number
         miny: number
     }
-    _postgis_query: string
+    _postgis_query?: string
 }
 
 enum eMapShared {

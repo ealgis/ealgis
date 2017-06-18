@@ -14,7 +14,7 @@ import { default as layerquerysummary, IModule as ILayerQuerySummaryModule } fro
 import { default as snackbars, IModule as ISnackbarsModule } from "./snackbars"
 import { reduxFormReducer as layerFormReducer } from "./layerform"
 
-interface IStore {
+export interface IStore {
     ealgis: IEALGISModule
     app: IAppModule
     legends: ILegendsModule

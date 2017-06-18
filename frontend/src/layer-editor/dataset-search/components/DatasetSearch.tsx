@@ -11,7 +11,7 @@ import ActionSearch from "material-ui/svg-icons/action/search"
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from "material-ui/Card"
 import * as ReactList from "react-list"
 import * as CopyToClipboard from "react-copy-to-clipboard"
-import { ITableAndCols } from "../../../redux/modules/datasearch"
+import { ITableAndCols } from "../../../redux/modules/interfaces"
 
 import Divider from "material-ui/Divider"
 

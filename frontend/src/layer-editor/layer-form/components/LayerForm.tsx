@@ -11,6 +11,16 @@ import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import DatasetSearch from "../../dataset-search/DatasetSearchContainer"
 import LayerQuerySummary from "../../layer-query-summary/LayerQuerySummaryContainer"
+import {
+    IStore,
+    IEALGISModule,
+    ILayerQuerySummary,
+    IGeomInfo,
+    IGeomTable,
+    IColourInfo,
+    IMap,
+    ILayer,
+} from "../../../redux/modules/interfaces"
 
 import { Field, Fields, reduxForm } from "redux-form"
 import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
@@ -23,7 +33,7 @@ import MenuItem from "material-ui/MenuItem"
 import IconButton from "material-ui/IconButton"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 
-const required = value => (value || value === 0 ? undefined : "Required")
+const required = (value: any) => (value || value === 0 ? undefined : "Required")
 
 const styles = {
     tabBody: {
@@ -132,33 +142,33 @@ const FillColourSchemeFields = (fields: any) => {
     )
 }
 
-export interface LayerFormProps {
+export interface IProps {
     tabName: string
     mapId: number
     mapNameURLSafe: string
     layerId: number
     layerHash: string
-    initialValues: object
     layerFillColourScheme: string
-    layerGeometry: object
-    onFormChange: Function
+    layerGeometry: IGeomTable
+    dirtyFormModalOpen: boolean
+    isDirty: boolean
+    geominfo: IGeomInfo
+    colourinfo: IColourInfo
+    layerFormSubmitting: boolean
+    initialValues: object
     onSubmit: Function
     onSubmitFail: Function
     onFieldBlur: Function
     onFieldChange: Function
+    onFormChange: Function
     onFitScaleToData: Function
-    onSaveForm: Function
-    onResetForm: Function
-    onModalSaveForm: Function
-    onModalDiscardForm: Function
-    dirtyFormModalOpen: boolean
-    isDirty: boolean
-    geominfo: object
-    colourinfo: object
-    layerFormSubmitting: boolean
+    onSaveForm: any
+    onResetForm: any
+    onModalSaveForm: any
+    onModalDiscardForm: any
 }
 
-export class LayerForm extends React.Component<LayerFormProps, undefined> {
+class LayerForm extends React.Component<IProps, {}> {
     geometryTables: Array<JSX.Element>
     colourSchemes: Array<JSX.Element>
 
@@ -183,7 +193,7 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
     }
 
     render() {
-        const { error, handleSubmit, pristine, reset, submitting, change, initialValues } = this.props // from react-form
+        const { error, handleSubmit, pristine, reset, submitting, change, initialValues }: any = this.props // from react-form
         const {
             mapId,
             mapNameURLSafe,
@@ -224,13 +234,13 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
                             label={"Save"}
                             disabled={layerFormSubmitting || !isDirty}
                             primary={true}
-                            onClick={onSaveForm}
+                            onTouchTap={onSaveForm}
                         />
                         <RaisedButton
                             label={"Undo"}
                             disabled={layerFormSubmitting || !isDirty}
                             primary={true}
-                            onClick={onResetForm}
+                            onTouchTap={onResetForm}
                         />
                     </ToolbarGroup>
 
@@ -474,12 +484,12 @@ export class LayerForm extends React.Component<LayerFormProps, undefined> {
 }
 
 // Decorate the form component
-let LayerForm = reduxForm({
+let LayerFormReduxForm = reduxForm({
     form: "layerForm", // a unique name for this form
     enableReinitialize: true,
-    onChange: (values: object, dispatch: Function, props: object) => {
+    onChange: (values: object, dispatch: Function, props: any) => {
         props.onFormChange(values, dispatch, props)
     },
 })(LayerForm)
 
-export default LayerForm
+export default LayerFormReduxForm

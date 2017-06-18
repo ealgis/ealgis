@@ -27,6 +27,7 @@ module.exports = {
             "lodash",
             "qs",
             "core-js/fn/object/assign",
+            "core-js/fn/object/values",
             "core-js/es7/map",
         ],
     },

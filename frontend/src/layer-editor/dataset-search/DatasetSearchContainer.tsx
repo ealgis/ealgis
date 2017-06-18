@@ -4,7 +4,7 @@ import DatasetSearch from "./components/DatasetSearch"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loadChips as layerFormLoadChips } from "../../redux/modules/layerform"
 import * as datasearchModule from "../../redux/modules/datasearch"
-import { IGeomTable, IGeomInfo } from "../../redux/modules/ealgis"
+import { IStore, IGeomTable, IGeomInfo } from "../../redux/modules/interfaces"
 
 export interface IProps {
     geominfo: IGeomInfo
@@ -42,7 +42,7 @@ export class DatasetSearchContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore) => {
     const { ealgis, datasearch, layerform } = state
 
     return {
