@@ -1,4 +1,5 @@
 import * as ol from "openlayers"
+import { ILayer, IOLFeatureProps, IOLStyleDef } from "../../redux/modules/interfaces"
 
 function getHighlightedFeaturePattern() {
     // Courtesy of http://openlayers.org/en/latest/examples/canvas-gradient-pattern.html
@@ -57,11 +58,11 @@ function createDebugFeatures(feature: any) {
     }
 }
 
-export function compileLayerStyle(l: Object, debugMode: boolean, highlightedFeatures: Array<number>) {
-    let styleCache: object = {}
+export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeatures: Array<number>) {
+    let styleCache: any = {}
     let do_fill = l["fill"]["expression"] != ""
 
-    return (feature: Object, resolution: number) => {
+    return (feature: IOLFeatureProps, resolution: number) => {
         let q = feature.get("q")
         const isDebugFeature = debugMode === true && feature.get("debug") === true ? true : false
 
@@ -72,7 +73,7 @@ export function compileLayerStyle(l: Object, debugMode: boolean, highlightedFeat
             if (highlightedFeatures.indexOf(feature.get("gid")) >= 0) {
                 let styleId = "_highlightedFeatures"
             } else if (do_fill) {
-                let ruleId = l["olStyleDef"].findIndex((rule: object, key: number) => {
+                let ruleId = l["olStyleDef"].findIndex((rule: IOLStyleDef, key: number) => {
                     if (rule["expr"]["to"] === undefined) {
                         return true
                     } else if (q < rule["expr"]["to"]["v"]) {
@@ -85,7 +86,7 @@ export function compileLayerStyle(l: Object, debugMode: boolean, highlightedFeat
                 let styleId = `${l.hash}`
             }
 
-            if (styleCache[styleId] !== undefined) {
+            if (styleId !== null && styleCache[styleId] !== undefined) {
                 // console.log(`Cache Hit for ${styleId}!`)
                 return styleCache[styleId]
             }

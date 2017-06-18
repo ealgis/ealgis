@@ -1,4 +1,5 @@
 import * as ReactGA from "react-ga"
+import { IStore } from "../../redux/modules/interfaces"
 
 // FIXME Where should config props like API keys live?
 ReactGA.initialize("UA-100057077-1")
@@ -36,7 +37,7 @@ class GATracker {
 
 const gaTrack = new GATracker()
 
-const AnalyticsMiddleware = store => next => action => {
+const AnalyticsMiddleware = (store: IStore) => (next: Function) => (action: any) => {
     if ("meta" in action && "analytics" in action.meta) {
         gaTrack.event(Object.assign(action.meta.analytics, { type: action.type }))
     }

@@ -77,6 +77,7 @@ export interface IOLFeature {
 export interface IOLFeatureProps {
     gid: number
     q: number
+    get(attributeName: string): any
 }
 
 // Side effects, only as applicable

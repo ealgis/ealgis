@@ -9,33 +9,36 @@ import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
 import GoogleMapLoader from "react-google-maps-loader"
+import { IStore, IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
 
 import "./FixedLayout.css"
 
 // FIXME - Where should API keys be stored?
 const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU" // Google Maps JavaScript API
 
-export interface EalContainerProps {
-    app: object
+export interface IProps {
+    // From Props
+    app: IAppModule
+    user: IUser
+    snackbars: ISnackbarsModule
     debug: boolean
-    snackbars: any
-    user: any
-    dispatch: Function
-    content: any
-    sidebar: any
+    // From Dispatch to Props
+    fetchStuff: Function
     onTapAppBarLeft: Function
     handleSnackbarClose: Function
-    doLogout: Function
-    fetchStuff: Function
     onDebugToggle: Function
-    location: object
     onReceiveAppPreviousPath: Function
+    doLogout: Function
     handleOpenUserMenu: Function
     handleUserMenuOnRequestChange: Function
     handleGooglePlacesAutocomplete: Function
+    // From Route
+    content: any
+    sidebar: any
+    location: any
 }
 
-export class EalContainer extends React.Component<EalContainerProps, undefined> {
+export class EalContainer extends React.Component<IProps, {}> {
     componentDidMount() {
         const { fetchStuff } = this.props
         fetchStuff()
@@ -50,7 +53,7 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
         }
     }
 
-    componentWillReceiveProps(nextProps: object) {
+    componentWillReceiveProps(nextProps: IProps) {
         // Store the last page in history for navigation/ui that depeneds on knowing that sort of thing
         const { onReceiveAppPreviousPath, location } = this.props
         if (nextProps.location.pathname !== location.pathname) {
@@ -61,24 +64,24 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
     render() {
         const {
             app,
-            debug,
-            snackbars,
             user,
+            snackbars,
+            debug,
+            onTapAppBarLeft,
+            handleSnackbarClose,
+            onDebugToggle,
+            doLogout,
+            handleOpenUserMenu,
+            handleUserMenuOnRequestChange,
+            handleGooglePlacesAutocomplete,
             children,
             content,
             sidebar,
             location,
-            onTapAppBarLeft,
-            handleSnackbarClose,
-            doLogout,
-            onDebugToggle,
-            handleOpenUserMenu,
-            handleUserMenuOnRequestChange,
-            handleGooglePlacesAutocomplete,
         } = this.props
 
         // Google Places Autocomplete should only appear when there is a map in the UI
-        const showGooglePlacesBar = location.pathname.startsWith("/map/")
+        const showGooglePlacesBar: boolean = location.pathname.startsWith("/map/")
 
         if (app.loading === true) {
             return (
@@ -92,29 +95,30 @@ export class EalContainer extends React.Component<EalContainerProps, undefined> 
             <MuiThemeProvider>
                 <EalUI
                     app={app}
-                    debug={debug}
-                    snackbars={snackbars}
                     user={user}
+                    snackbars={snackbars}
+                    debug={debug}
+                    onTapAppBarLeft={onTapAppBarLeft}
+                    handleSnackbarClose={handleSnackbarClose}
+                    onDebugToggle={onDebugToggle}
+                    doLogout={doLogout}
+                    handleOpenUserMenu={handleOpenUserMenu}
+                    handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
+                    handleGooglePlacesAutocomplete={(lat: number, lon: number, result: object) =>
+                        handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)}
                     children={children}
                     content={content}
                     sidebar={sidebar}
-                    onTapAppBarLeft={onTapAppBarLeft}
-                    handleSnackbarClose={handleSnackbarClose}
-                    doLogout={doLogout}
-                    onDebugToggle={onDebugToggle}
-                    handleOpenUserMenu={handleOpenUserMenu}
-                    handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
                     showGooglePlacesBar={showGooglePlacesBar}
-                    handleGooglePlacesAutocomplete={(lat, lon, result) =>
-                        handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)}
                 />
             </MuiThemeProvider>
         )
     }
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
+const mapStateToProps = (state: IStore) => {
     const { app, map, ealgis, snackbars } = state
+
     return {
         app: app,
         user: ealgis.user,
@@ -123,7 +127,7 @@ const mapStateToProps = (state: any, ownProps: any) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Function) => {
     return {
         fetchStuff: () => {
             dispatch(fetchUserMapsDataAndColourInfo())
@@ -151,7 +155,7 @@ const mapDispatchToProps = (dispatch: any) => {
         handleUserMenuOnRequestChange: (value: boolean) => {
             dispatch(toggleUserMenu(value))
         },
-        handleGooglePlacesAutocomplete: (lat: number, lon: number, result: object, pathname: string) => {
+        handleGooglePlacesAutocomplete: (lat: number, lon: number, result: any, pathname: string) => {
             // Only navigate if the map is visible
             if (pathname.startsWith("/map")) {
                 const viewport = result.geometry.viewport.toJSON()

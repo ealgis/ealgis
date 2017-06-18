@@ -17,42 +17,23 @@ import ActionSearch from "material-ui/svg-icons/action/search"
 import SocialSentinmentVeryDissatisfied from "material-ui/svg-icons/social/sentiment-very-dissatisfied"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
+import { IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
 
-export interface EalUISnackbarNotificationProps {
-    message: string
-    key: string
-    action: string
-    autoHideDuration: number
-    onActionTouchTap: any
-}
-
-export interface EalUISnackbarProps {
-    open: boolean
-    active: EalUISnackbarNotificationProps
-    messages: Array<EalUISnackbarNotificationProps>
-}
-
-export interface EalUIAppProps {
-    loading: boolean
-    sidebarOpen: boolean
-    snackbar: EalUISnackbarProps
-}
-
-export interface EalUIProps {
-    app: EalUIAppProps
-    debug: boolean
-    snackbars: any
+export interface IProps {
+    app: IAppModule
     user: any
-    sidebar: any
-    content: any
+    snackbars: ISnackbarsModule
+    debug: boolean
     onTapAppBarLeft: any
     handleSnackbarClose: any
-    doLogout: Function
     onDebugToggle: any
-    handleOpenUserMenu: Function
-    handleUserMenuOnRequestChange: Function
+    doLogout: any
+    handleOpenUserMenu: any
+    handleUserMenuOnRequestChange: any
+    handleGooglePlacesAutocomplete: any
+    content: any
+    sidebar: any
     showGooglePlacesBar: boolean
-    handleGooglePlacesAutocomplete: Function
 }
 
 const styles = {
@@ -70,23 +51,23 @@ const styles = {
     },
 }
 
-export class EalUI extends React.Component<EalUIProps, undefined> {
+export class EalUI extends React.Component<IProps, {}> {
     render() {
         const {
             app,
-            debug,
-            snackbars,
             user,
-            content,
-            sidebar,
+            snackbars,
+            debug,
             onTapAppBarLeft,
             handleSnackbarClose,
-            doLogout,
             onDebugToggle,
+            doLogout,
             handleOpenUserMenu,
             handleUserMenuOnRequestChange,
-            showGooglePlacesBar,
             handleGooglePlacesAutocomplete,
+            content,
+            sidebar,
+            showGooglePlacesBar,
         } = this.props
 
         const linearProgressStyle = {

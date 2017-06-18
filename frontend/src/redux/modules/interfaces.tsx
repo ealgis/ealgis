@@ -1,5 +1,5 @@
 export { IStore } from "./reducer"
-export { IModule as IEALGISModule, IUserPartial, IGeomInfo, IGeomTable, ITableInfo, IColourInfo } from "./ealgis"
+export { IModule as IEALGISModule, IUser, IUserPartial, IGeomInfo, IGeomTable, ITableInfo, IColourInfo } from "./ealgis"
 export { IModule as IAppModule } from "./app"
 export { IModule as IMapModule, IPosition } from "./map"
 export { IModule as ILegendsModule } from "./legends"
