@@ -103,6 +103,10 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             olStyleDef = self.createOLStyleDef(layer)
             if olStyleDef is not False:
                 layer["olStyleDef"] = olStyleDef
+
+            # FIXME
+            if "width" in layer["line"] and not isinstance(layer["line"]["width"], int):
+                layer["line"]["width"] = int(layer["line"]["width"])
         return map
 
     def createOLStyleDef(self, layer):
