@@ -196,7 +196,7 @@ export function processResults(response: IHttpResponse, json: ColumnInfoSearchRe
         }
 
         let tableInfo = columnsByTable.get(tableName)
-        tableInfo.columns.push(col)
+        tableInfo!.columns.push(col)
     }
     dispatch(load(columnsByTable))
 }

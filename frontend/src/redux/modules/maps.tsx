@@ -42,31 +42,31 @@ export default function reducer(state = initialState, action: IAction) {
         case LOAD:
             return action.maps
         case UPDATE:
-            return dotProp.set(state, `${action.map.id}`, action.map)
+            return dotProp.set(state, `${action.map!.id}`, action.map)
         case CREATE:
         case DUPLICATE:
             return {
                 ...state,
-                [action.map.id]: action.map,
+                [action.map!.id]: action.map,
             }
         case SET_ORIGIN:
             return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
-                lon: action.position.center[0],
-                lat: action.position.center[1],
-                zoom: action.position.zoom,
+                lon: action.position.center![0],
+                lat: action.position.center![1],
+                zoom: action.position!.zoom,
             })
         case SET_SHARING:
             return dotProp.set(state, `${action.mapId}.shared`, action.shared)
         case DELETE_MAP:
-            let { [action.mapId]: deletedItem, ...rest } = state
+            let { [action.mapId!]: deletedItem, ...rest } = state
             return rest
         case UPDATE_LAYER:
         case ADD_LAYER:
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, action.layer)
         case CLONE_MAP_LAYER:
-            let layerCopy = JSON.parse(JSON.stringify(state[action.mapId].json.layers[action.layerId]))
+            let layerCopy = JSON.parse(JSON.stringify(state[action.mapId!].json.layers[action.layerId!]))
             layerCopy.name += " Copy"
-            return dotProp.set(state, `${action.mapId}.json.layers`, [...state[action.mapId].json.layers, layerCopy])
+            return dotProp.set(state, `${action.mapId}.json.layers`, [...state[action.mapId!].json.layers, layerCopy])
         case SET_LAYER_VISIBILITY:
             return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
         case DELETE_LAYER:

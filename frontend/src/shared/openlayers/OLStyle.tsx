@@ -60,7 +60,7 @@ function createDebugFeatures(feature: any) {
 
 export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeatures: Array<number>) {
     let styleCache: any = {}
-    let do_fill = l["fill"]["expression"] != ""
+    let do_fill = l["fill"]["expression"] != "" && "olStyleDef" in l
 
     return (feature: IOLFeatureProps, resolution: number) => {
         let q = feature.get("q")
@@ -73,10 +73,10 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
             if (highlightedFeatures.indexOf(feature.get("gid")) >= 0) {
                 let styleId = "_highlightedFeatures"
             } else if (do_fill) {
-                let ruleId = l["olStyleDef"].findIndex((rule: IOLStyleDef, key: number) => {
+                let ruleId = l["olStyleDef"]!.findIndex((rule: IOLStyleDef, key: number) => {
                     if (rule["expr"]["to"] === undefined) {
                         return true
-                    } else if (q < rule["expr"]["to"]["v"]) {
+                    } else if (q < rule["expr"]["to"]!["v"]) {
                         return true
                     }
                 })
@@ -101,7 +101,7 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
                 })
             } else if (do_fill) {
                 // Fill according to a set of user-defined styling rules
-                let rule = l["olStyleDef"][ruleId]
+                let rule = l["olStyleDef"]![ruleId]
                 let rgb = rule["rgb"]
 
                 if (rgb.length > 0) {

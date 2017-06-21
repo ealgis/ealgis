@@ -60,7 +60,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             let labelText: string = ""
             if ("to" in styleDef.expr) {
                 labelText = `${parseFloat(styleDef.expr.from.v.toFixed(2)).toLocaleString()} - ${parseFloat(
-                    styleDef.expr.to.v.toFixed(2)
+                    styleDef.expr.to!.v.toFixed(2)
                 ).toLocaleString()}`
             } else {
                 labelText = `>= ${parseFloat(styleDef.expr.from.v.toFixed(2)).toLocaleString()}`

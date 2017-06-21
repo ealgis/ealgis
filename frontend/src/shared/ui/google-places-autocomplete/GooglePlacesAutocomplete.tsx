@@ -172,14 +172,14 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
                 filter={AutoComplete.noFilter}
                 onNewRequest={(chosenRequest, index) => {
                     this.getLatLgn(chosenRequest.placeId, results => {
-                        this.props.results(
+                        this.props.results!(
                             results[0].geometry.location.lat(),
                             results[0].geometry.location.lng(),
                             results[0]
                         )
                     })
                 }}
-                dataSource={this.state.data.map((item, i, a) => {
+                dataSource={this.state.data!.map((item, i, a) => {
                     if (i === a.length - 1) {
                         return this.getPoweredByGoogleMenuItem()
                     }
