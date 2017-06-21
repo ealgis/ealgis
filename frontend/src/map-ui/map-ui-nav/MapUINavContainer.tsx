@@ -66,6 +66,8 @@ export class MapUINavContainer extends React.Component<IProps, {}> {
     }
 
     render() {
+        const that: MapUINavContainer = this
+
         const {
             userId,
             tabName,
@@ -99,18 +101,14 @@ export class MapUINavContainer extends React.Component<IProps, {}> {
                     onDeleteMap={() => onDeleteMap(mapDefinition.id)}
                     onToggleDeleteModalState={() => onToggleDeleteModalState()}
                     deleteModalOpen={deleteModalOpen}
-                    onExportWholeMap={function(this: typeof MapUINavContainer) {
-                        onExportWholeMap(this, mapDefinition.id)
+                    onExportWholeMap={() => {
+                        onExportWholeMap(that, mapDefinition.id)
                     }}
-                    onExportMapViewport={function(this: typeof MapUINavContainer) {
-                        onExportMapViewport(this, mapDefinition.id, mapPosition.extent)
+                    onExportMapViewport={() => {
+                        onExportMapViewport(that, mapDefinition.id, mapPosition.extent)
                     }}
-                    onCheckIncludeGeomAttrs={function(
-                        this: typeof MapUINavContainer,
-                        event: any,
-                        isInputChecked: boolean
-                    ) {
-                        onCheckIncludeGeomAttrs(this, isInputChecked)
+                    onCheckIncludeGeomAttrs={(event: any, isInputChecked: boolean) => {
+                        onCheckIncludeGeomAttrs(that, isInputChecked)
                     }}
                     onGetShareableLink={onGetShareableLink}
                 />
@@ -170,25 +168,25 @@ const mapDispatchToProps = (dispatch: Function) => {
         resetDataInspector: () => {
             dispatch(resetDataInspector())
         },
-        onExportWholeMap: function(this: MapUINavContainer, mapId: number) {
+        onExportWholeMap: function(that: MapUINavContainer, mapId: number) {
             dispatch(exportMap())
-            const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
+            const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
             window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
         },
         onExportMapViewport: function(
-            this: MapUINavContainer,
+            that: MapUINavContainer,
             mapId: number,
             extent: [number, number, number, number]
         ) {
-            const include_geom_attrs: boolean = this.isIncludeGeomAttrsChecked ? true : false
+            const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
             dispatch(exportMapViewport(include_geom_attrs))
 
             const extentLonLat = proj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
             window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
         },
-        onCheckIncludeGeomAttrs: function(this: MapUINavContainer, isInputChecked: boolean) {
+        onCheckIncludeGeomAttrs: function(that: MapUINavContainer, isInputChecked: boolean) {
             // FIXME Should be in state or props. What's best practice for attributes like this?
-            this.isIncludeGeomAttrsChecked = isInputChecked
+            that.isIncludeGeomAttrsChecked = isInputChecked
         },
         onGetShareableLink: () => {
             dispatch(copyShareableLink())
