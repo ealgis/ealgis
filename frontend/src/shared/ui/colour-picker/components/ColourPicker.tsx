@@ -1,13 +1,14 @@
 import * as React from "react"
 import reactCSS from "reactcss"
-import { SwatchesPicker } from "react-color"
+import { SwatchesPicker, RGBColor } from "react-color"
+import { Colour } from "../../alpha-picker/components/AlphaPicker"
 
 export interface ColourPickerProps {
-    colour: object
+    colour: RGBColor
     input: any
 }
 
-class ColourPicker extends React.Component<ColourPickerProps, undefined> {
+class ColourPicker extends React.Component<ColourPickerProps, {}> {
     state = {
         displayColorPicker: false,
     }
@@ -20,7 +21,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
         this.setState({ displayColorPicker: false })
     }
 
-    handleChange = (colour: object) => {
+    handleChange = (colour: Colour) => {
         const { input: { onChange } } = this.props
         onChange(colour.rgb)
         this.handleClose()
@@ -47,7 +48,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
                 },
                 popover: {
                     position: "absolute",
-                    zIndex: "2",
+                    zIndex: 2,
                 },
                 cover: {
                     position: "fixed",

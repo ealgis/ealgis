@@ -1,6 +1,5 @@
 import * as React from "react"
-import reactCSS from "reactcss"
-import { AlphaPicker } from "react-color"
+import { AlphaPicker, HSLColor, RGBColor } from "react-color"
 
 export interface ColourPickerProps {
     alpha: number
@@ -8,8 +7,24 @@ export interface ColourPickerProps {
     input: any
 }
 
+export interface Colour {
+    hex: string
+    hsl: HSLColor
+    hsv: HSVColor
+    oldHue: number
+    rgb: RGBColor
+    source: string
+}
+
+interface HSVColor {
+    h: number
+    s: number
+    v: number
+    a: number
+}
+
 class ColourPicker extends React.Component<ColourPickerProps, undefined> {
-    handleChange = (color: object) => {
+    handleChange = (color: Colour) => {
         const { input: { onChange } } = this.props
         onChange(color.rgb.a)
     }

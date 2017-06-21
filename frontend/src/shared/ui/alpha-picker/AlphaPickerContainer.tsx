@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import AlphaPicker from "./components/AlphaPicker"
 
 export interface AlphaPickerContainerProps {
-    input: object
+    input: any
     width: string
 }
 

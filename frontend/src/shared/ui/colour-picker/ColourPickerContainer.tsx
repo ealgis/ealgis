@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import ColourPicker from "./components/ColourPicker"
 
 export interface ColourPickerContainerProps {
-    input: object
+    input: any
 }
 
 export class ColourPickerContainer extends React.Component<ColourPickerContainerProps, undefined> {
