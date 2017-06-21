@@ -9,7 +9,7 @@ export interface IProps {
     layerHash: string
     onFitScaleToData: Function
     stats?: ILayerQuerySummary
-    fetchQuerySummary?: Function
+    fetchQuerySummary: Function
 }
 
 export class LayerQuerySummaryContainer extends React.Component<IProps, {}> {

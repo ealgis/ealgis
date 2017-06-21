@@ -35,8 +35,15 @@ export class Layer extends React.Component<IProps, {}> {
 
         // For VectorTiles
         // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
-        const bbox = layer.latlon_bbox
-        const extent = ol.proj.transformExtent([bbox.minx, bbox.miny, bbox.maxx, bbox.maxy], "EPSG:4326", "EPSG:900913")
+        if ("latlon_bbox" in layer) {
+            const bbox = layer.latlon_bbox
+            console.log("bbox", bbox)
+            const extent = ol.proj.transformExtent(
+                [bbox.minx, bbox.miny, bbox.maxx, bbox.maxy],
+                "EPSG:4326",
+                "EPSG:900913"
+            )
+        }
         const renderMode = "hybrid"
         const layerPropreties = {
             mapId: map.id,

@@ -22,18 +22,23 @@ export class DataInspector extends React.Component<IProps, {}> {
                     leftIcon={<InsertChart />}
                     disabled={true}
                 />
-                {records.map((row: any, key: number) =>
-                    <ListItem
-                        key={key}
-                        primaryText={row.name}
-                        leftIcon={<MapsLayers />}
-                        initiallyOpen={true}
-                        primaryTogglesNestedList={true}
-                        nestedItems={row.properties.map((propRow: any, key: any) =>
-                            <ListItem key={key} primaryText={propRow.value.toString()} secondaryText={propRow.name} />
-                        )}
-                    />
-                )}
+                {records !== undefined &&
+                    records.map((row: any, key: number) =>
+                        <ListItem
+                            key={key}
+                            primaryText={row.name}
+                            leftIcon={<MapsLayers />}
+                            initiallyOpen={true}
+                            primaryTogglesNestedList={true}
+                            nestedItems={row.properties.map((propRow: any, key: any) =>
+                                <ListItem
+                                    key={key}
+                                    primaryText={propRow.value.toString()}
+                                    secondaryText={propRow.name}
+                                />
+                            )}
+                        />
+                    )}
             </List>
         )
     }

@@ -7,7 +7,7 @@ import FlatButton from "material-ui/FlatButton"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
 import { grey500, grey200 } from "material-ui/styles/colors"
 import MapCoverImage from "../../map-cover-image/MapCoverImageContainer"
-import { IMap, IMapModule } from "../../../redux/modules/interfaces"
+import { IMap, IMapsModule } from "../../../redux/modules/interfaces"
 
 const styles: React.CSSProperties = {
     root: {
@@ -35,7 +35,7 @@ const styles: React.CSSProperties = {
 export interface IProps {
     tabName: string
     userId: number
-    maps: IMapModule
+    maps: IMapsModule
     getMyMaps: Function
     getSharedMaps: Function
     getPublicMaps: Function
@@ -45,8 +45,8 @@ export class MapList extends React.Component<IProps, {}> {
     render() {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
 
-        const mapGridTiles = (maps: IMapModule) =>
-            maps.map(([mapId, map]) =>
+        const mapGridTiles = (maps: Array<Array<any>>) =>
+            maps.map(([mapId, map]: Array<any>) =>
                 <GridTile
                     key={mapId}
                     containerElement={<Link to={`/map/${map.id}/${map["name-url-safe"]}`} />}
@@ -55,7 +55,7 @@ export class MapList extends React.Component<IProps, {}> {
                     cols={1}
                     titleBackground={"rgba(0, 188, 212, 0.7)"}
                 >
-                    <MapCoverImage mapDefinition={map} width={370} height={180} />
+                    <MapCoverImage mapDefinition={map as IMap} width={370} height={180} />
                 </GridTile>
             )
 
