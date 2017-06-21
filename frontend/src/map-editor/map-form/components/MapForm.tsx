@@ -14,7 +14,7 @@ import { red500 } from "material-ui/styles/colors"
 
 const required = (value: any) => (value ? undefined : "Required")
 
-const styles = {
+const styles: React.CSSProperties = {
     form: {
         margin: "10px",
     },

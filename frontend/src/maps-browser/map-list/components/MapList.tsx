@@ -9,7 +9,7 @@ import { grey500, grey200 } from "material-ui/styles/colors"
 import MapCoverImage from "../../map-cover-image/MapCoverImageContainer"
 import { IMap, IMapModule } from "../../../redux/modules/interfaces"
 
-const styles = {
+const styles: React.CSSProperties = {
     root: {
         display: "flex",
         flexWrap: "wrap",

@@ -36,7 +36,7 @@ export interface IProps {
     showGooglePlacesBar: boolean
 }
 
-const styles = {
+const styles: React.CSSProperties = {
     hiddenIconButton: {
         width: "0px",
         height: "0px",

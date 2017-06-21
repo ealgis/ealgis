@@ -12,7 +12,7 @@ import * as React from "react"
 import { AutoComplete, MenuItem } from "material-ui"
 import Marker from "material-ui/svg-icons/maps/place"
 
-const styles = {
+const styles: React.CSSProperties = {
     menuItem: {
         fontSize: 13,
         display: "block",

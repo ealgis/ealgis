@@ -2,7 +2,7 @@ import * as React from "react"
 import LegendPeekBarSwatch from "../../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
 import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
-const styles = {
+const styles: React.CSSProperties = {
     peekBarContainer: {
         position: "relative",
     },

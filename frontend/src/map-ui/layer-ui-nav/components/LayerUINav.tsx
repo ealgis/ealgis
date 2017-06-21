@@ -25,7 +25,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 
 import { grey400, darkBlack, lightBlack } from "material-ui/styles/colors"
 
-const styles = {
+const styles: React.CSSProperties = {
     paperListItem: {
         margin: "7px",
     },

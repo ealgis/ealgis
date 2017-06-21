@@ -7,7 +7,7 @@ import ContentCopy from "material-ui/svg-icons/content/content-copy"
 
 import { indigo900, grey100 } from "material-ui/styles/colors"
 
-const styles = {
+const styles: React.CSSProperties = {
     querySummaryTableHeaderColumn: {
         backgroundColor: indigo900,
         color: grey100,

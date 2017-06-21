@@ -17,7 +17,7 @@ import Divider from "material-ui/Divider"
 
 import { blue300, grey500, indigo900, orange400, cyan400 } from "material-ui/styles/colors"
 
-const styles = {
+const styles: React.CSSProperties = {
     datasetSearchHeader: {
         marginTop: "20px",
         marginBottom: "0px",

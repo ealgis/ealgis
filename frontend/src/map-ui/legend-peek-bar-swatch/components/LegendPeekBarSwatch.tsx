@@ -1,7 +1,7 @@
 import * as React from "react"
 import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
-const styles = {
+const styles: React.CSSProperties = {
     flexboxColumn: {
         height: "15px",
         flexGrow: 1,

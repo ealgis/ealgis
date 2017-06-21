@@ -36,7 +36,7 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
 
-const styles = {
+const styles: React.CSSProperties = {
     mapName: {
         textAlign: "center",
     },
