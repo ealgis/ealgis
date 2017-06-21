@@ -4,7 +4,7 @@ import { ILayer, IOLFeatureProps, IOLStyleDef } from "../../redux/modules/interf
 function getHighlightedFeaturePattern() {
     // Courtesy of http://openlayers.org/en/latest/examples/canvas-gradient-pattern.html
     var canvas = document.createElement("canvas")
-    var context = canvas.getContext("2d")
+    var context = canvas.getContext("2d") as CanvasRenderingContext2D
 
     // Gradient and pattern are in canvas pixel space, so we adjust for the
     // renderer's pixel ratio
@@ -70,20 +70,25 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
             return createDebugFeatures(feature)
         } else {
             // START REGULAR FEATURES
+            let styleId: any = null
+            let ruleId: any = null
+            let olStyle: any = null
+
             if (highlightedFeatures.indexOf(feature.get("gid")) >= 0) {
-                let styleId = "_highlightedFeatures"
+                styleId = "_highlightedFeatures"
             } else if (do_fill) {
-                let ruleId = l["olStyleDef"]!.findIndex((rule: IOLStyleDef, key: number) => {
+                ruleId = l["olStyleDef"]!.findIndex((rule: IOLStyleDef, key: number) => {
                     if (rule["expr"]["to"] === undefined) {
                         return true
                     } else if (q < rule["expr"]["to"]!["v"]) {
                         return true
                     }
+                    return false
                 })
 
-                let styleId = `${l.hash}.${ruleId}`
+                styleId = `${l.hash}.${ruleId}`
             } else {
-                let styleId = `${l.hash}`
+                styleId = `${l.hash}`
             }
 
             if (styleId !== null && styleCache[styleId] !== undefined) {
@@ -94,7 +99,7 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
 
             // Apply our special feature highlight pattern to these!
             if (highlightedFeatures.indexOf(feature.get("gid")) >= 0) {
-                let olStyle = new ol.style.Style({
+                olStyle = new ol.style.Style({
                     fill: new ol.style.Fill({
                         color: getHighlightedFeaturePattern(),
                     }),
@@ -106,7 +111,7 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
 
                 if (rgb.length > 0) {
                     if (l["line"].width > 0) {
-                        let olStyle = new ol.style.Style({
+                        olStyle = new ol.style.Style({
                             fill: new ol.style.Fill({
                                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
                             }),
@@ -118,7 +123,7 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
                             }),
                         })
                     } else {
-                        let olStyle = new ol.style.Style({
+                        olStyle = new ol.style.Style({
                             fill: new ol.style.Fill({
                                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
                             }),
@@ -127,7 +132,7 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
                 }
             } else {
                 // No fill - border style only
-                let olStyle = new ol.style.Style({
+                olStyle = new ol.style.Style({
                     stroke: new ol.style.Stroke({
                         color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l["line"]
                             .colour.a})`,
