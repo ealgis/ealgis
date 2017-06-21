@@ -42,15 +42,6 @@ export class EalContainer extends React.Component<IProps, {}> {
     componentDidMount() {
         const { fetchStuff } = this.props
         fetchStuff()
-
-        // Because LiveReload still hardcodes HTTP by default
-        // https://github.com/statianzo/webpack-livereload-plugin/issues/23
-        if (DEVELOPMENT === true) {
-            const script = document.createElement("script")
-            script.src = "//localhost:35729/livereload.js"
-            script.async = true
-            document.body.appendChild(script)
-        }
     }
 
     componentWillReceiveProps(nextProps: IProps) {

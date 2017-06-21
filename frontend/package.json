@@ -46,6 +46,7 @@
     "react-router-redux": "~4.0.7",
     "react-tap-event-plugin": "~2.0.1",
     "redux": "~3.6.0",
+    "redux-devtools-extension": "~2.13.2",
     "redux-form": "~6.7.0",
     "redux-form-material-ui": "~4.2.0",
     "redux-thunk": "~2.2.0",
