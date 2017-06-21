@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from "redux-form"
 import { withRouter } from "react-router"
 import { isEqual, debounce, reduce } from "lodash-es"
+import { values as objectValues } from "core-js/library/fn/object"
 import LayerForm from "./components/LayerForm"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
@@ -298,7 +299,7 @@ export class LayerFormContainer extends React.Component<IProps, {}> {
                 []
             )
 
-            if (!isEqual(Object.values(diff), ["olStyle"])) {
+            if (!isEqual(objectValues(diff), ["olStyle"])) {
                 return true
             }
         }
@@ -356,7 +357,7 @@ export class LayerFormContainer extends React.Component<IProps, {}> {
                     onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
                 onFieldChange={(fieldName: string, newValue: any) =>
                     this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
-                onFormChange={(values: ILayerFormValues, dispatch: Function, props: object) =>
+                onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) =>
                     onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
                 onSaveForm={() => onSaveForm(mapDefinition.id, layerId, isDirty)}
@@ -415,7 +416,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             const layerPartial = getLayerFromLayerFormValuesPartial(formValues)
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
-        onFormChange: (values: ILayerFormValues, dispatch: Function, props: object) => {
+        onFormChange: (values: ILayerFormValues, dispatch: Function, props: any) => {
             const colourSchemeLevels = props.colourinfo[values["fillColourScheme"]]
                 ? props.colourinfo[values["fillColourScheme"]]
                 : []

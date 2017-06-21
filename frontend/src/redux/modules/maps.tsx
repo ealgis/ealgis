@@ -354,6 +354,7 @@ export interface IMap {
 }
 
 export interface ILayer {
+    [key: string]: any
     fill: {
         opacity: number
         scale_max: number

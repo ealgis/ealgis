@@ -118,7 +118,7 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                         { value, text, isFocused, isDisabled, handleClick, handleRequestDelete, defaultStyle }: any,
                         key: string
                     ) => {
-                        let backgroundColor = null
+                        let backgroundColor = undefined
 
                         if (value.startsWith("column:")) {
                             text = "Column " + text.split(":")[1]

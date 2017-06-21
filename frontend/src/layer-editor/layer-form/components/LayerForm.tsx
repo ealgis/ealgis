@@ -35,7 +35,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 
 const required = (value: any) => (value || value === 0 ? undefined : "Required")
 
-const styles = {
+const styles: React.CSSProperties = {
     tabBody: {
         margin: "10px",
     },
