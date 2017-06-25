@@ -9,8 +9,13 @@ export interface IMapFormValues {
     description: string
 }
 
-export interface IProps {
+export interface IProps {}
+
+export interface IStoreProps {
     mapDefinition: IMap
+}
+
+export interface IDispatchProps {
     onSubmit: Function
 }
 
@@ -19,7 +24,7 @@ interface IRouteProps {
     mapName: string
 }
 
-export class MapFormContainer extends React.Component<IProps, {}> {
+export class MapFormContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     private deriveMapFormValuesFromMap = function(map: IMap) {
         return {
             name: map["name"],
@@ -48,7 +53,7 @@ export class MapFormContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStoreProps => {
     const { maps } = state
 
     return {
@@ -56,7 +61,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         onSubmit: (map: IMap, values: IMapFormValues) => {
             // Merge form values into our map object
@@ -69,6 +74,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const MapFormContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(MapFormContainer as any)
+const MapFormContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapFormContainer)
 
 export default MapFormContainerWrapped

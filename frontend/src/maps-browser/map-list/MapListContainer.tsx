@@ -4,22 +4,24 @@ import { entries as objectEntries } from "core-js/library/fn/object"
 import MapList from "./components/MapList"
 import { IStore, IMap, IMapsModule } from "../../redux/modules/interfaces"
 
-export interface IProps {
-    // From Store
-    tabName: string
+export interface IProps {}
+
+export interface IStoreProps {
     userId: number
     maps: IMapsModule
+}
+
+export interface IDispatchProps {
     getMyMaps: Function
     getSharedMaps: Function
     getPublicMaps: Function
-    // From Route
 }
 
 export interface IRouteProps {
     tabName: string
 }
 
-export class MapListContainer extends React.Component<IProps, {}> {
+export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
 
@@ -36,7 +38,7 @@ export class MapListContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStoreProps => {
     const { maps, ealgis } = state
 
     return {
@@ -46,7 +48,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         getMyMaps: (maps: Array<Array<any>>, userId: number) => {
             return maps.filter((item: any) => {
@@ -66,6 +68,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const MapListContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(MapListContainer as any)
+const MapListContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapListContainer)
 
 export default MapListContainerWrapped

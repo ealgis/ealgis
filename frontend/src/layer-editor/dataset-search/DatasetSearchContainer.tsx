@@ -7,17 +7,23 @@ import * as datasearchModule from "../../redux/modules/datasearch"
 import { IStore, IGeomTable, IGeomInfo } from "../../redux/modules/interfaces"
 
 export interface IProps {
+    geometry: IGeomTable
+}
+
+export interface IStateProps {
     geominfo: IGeomInfo
     dataSearchResults: Map<string, datasearchModule.ITableAndCols>
     chipValues: Array<string>
-    geometry: IGeomTable
+}
+
+export interface IDispatchProps {
     onChipAdd: Function
     onChipDelete: Function
     onTableLookup: Function
     onCopyToClipboard: Function
 }
 
-export class DatasetSearchContainer extends React.Component<IProps, {}> {
+export class DatasetSearchContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
     render() {
         const {
             geometry,
@@ -42,7 +48,7 @@ export class DatasetSearchContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore) => {
+const mapStateToProps = (state: IStore): IStateProps => {
     const { ealgis, datasearch, layerform } = state
 
     return {
@@ -89,7 +95,7 @@ const onChipChange = (chips: Array<string>, geometry: IGeomTable, dispatch: Func
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: any): IDispatchProps => {
     return {
         onChipAdd: (chip: string, chipValues: Array<string>, geometry: IGeomTable) => {
             let chips = chipValues
@@ -119,6 +125,8 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 }
 
-const DatasetSearchContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(DatasetSearchContainer as any)
+const DatasetSearchContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+    DatasetSearchContainer
+)
 
 export default DatasetSearchContainerWrapped

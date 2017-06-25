@@ -5,12 +5,13 @@ import InsertChart from "material-ui/svg-icons/editor/insert-chart"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
 import { IStore, IFeature } from "../../redux/modules/interfaces"
 
-export interface IProps {
-    // From Store
-    records?: Array<IFeature>
+export interface IProps {}
+
+export interface IStoreProps {
+    records: Array<IFeature>
 }
 
-export class DataInspector extends React.Component<IProps, {}> {
+export class DataInspector extends React.Component<IProps & IStoreProps, {}> {
     render() {
         const { records } = this.props
 
@@ -44,7 +45,7 @@ export class DataInspector extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps) => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { datainspector } = state
 
     return {
@@ -56,6 +57,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     return {}
 }
 
-const DataInspectorWrapped = connect(mapStateToProps, mapDispatchToProps)(DataInspector as any)
+const DataInspectorWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataInspector)
 
 export default DataInspectorWrapped

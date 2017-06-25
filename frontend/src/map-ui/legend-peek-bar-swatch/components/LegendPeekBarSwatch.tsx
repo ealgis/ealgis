@@ -9,8 +9,8 @@ const FlexboxColumnBase = styled.div`
 
 export interface IProps {
     styleDef: IOLStyleDef
-    onMouseEnter: Function
-    onMouseLeave: Function
+    onMouseEnter: any
+    onMouseLeave: any
 }
 
 export class LegendPeekBarSwatchNav extends React.Component<IProps, {}> {

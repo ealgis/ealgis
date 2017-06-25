@@ -7,23 +7,26 @@ import { cloneMapLayer, changeLayerVisibility } from "../../redux/modules/maps"
 import { IStore, IMap, ILayer, IGeomInfo } from "../../redux/modules/interfaces"
 
 export interface IProps {
-    // Props
     // key: number
     layerId: number
     layerDefinition: ILayer
     mapId: number
     isMapOwner: boolean
     mapNameURLSafe: string
-    // From Store
+}
+
+export interface IStateProps {
     mapDefinition: IMap
     geominfo: IGeomInfo
-    // From Dispatch to Props
+}
+
+export interface IDispatchProps {
     onCloneLayer: Function
     onDeleteLayer: Function
     onToggleVisibility: Function
 }
 
-export class LayerUINavContainer extends React.Component<IProps, {}> {
+export class LayerUINavContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
     private getGeometryDescription(layer: ILayer, geominfo: IGeomInfo) {
         return geominfo[layer["schema"] + "." + layer["geometry"]].description
     }
@@ -60,7 +63,7 @@ export class LayerUINavContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps) => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     const { maps, ealgis } = state
 
     return {
@@ -69,7 +72,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         onCloneLayer: (mapId: number, layerId: number) => {
             dispatch(cloneMapLayer(mapId, layerId))
@@ -83,6 +86,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const LayerUINavContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(LayerUINavContainer as any)
+const LayerUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerUINavContainer)
 
 export default LayerUINavContainerWrapped

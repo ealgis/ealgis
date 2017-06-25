@@ -16,13 +16,15 @@ import "./FixedLayout.css"
 // FIXME - Where should API keys be stored?
 const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU" // Google Maps JavaScript API
 
-export interface IProps {
+export interface IStateProps {
     // From Props
     app: IAppModule
     user: IUser
     snackbars: ISnackbarsModule
     debug: boolean
-    // From Dispatch to Props
+}
+
+export interface IDispatchProps {
     fetchStuff: Function
     onTapAppBarLeft: Function
     handleSnackbarClose: Function
@@ -32,19 +34,21 @@ export interface IProps {
     handleOpenUserMenu: Function
     handleUserMenuOnRequestChange: Function
     handleGooglePlacesAutocomplete: Function
-    // From Route
+}
+
+export interface IRouteProps {
     content: any
     sidebar: any
     location: any
 }
 
-export class EalContainer extends React.Component<IProps, {}> {
+export class EalContainer extends React.Component<IStateProps & IDispatchProps & IRouteProps, {}> {
     componentDidMount() {
         const { fetchStuff } = this.props
         fetchStuff()
     }
 
-    componentWillReceiveProps(nextProps: IProps) {
+    componentWillReceiveProps(nextProps: IRouteProps) {
         // Store the last page in history for navigation/ui that depeneds on knowing that sort of thing
         const { onReceiveAppPreviousPath, location } = this.props
         if (nextProps.location.pathname !== location.pathname) {
@@ -107,7 +111,7 @@ export class EalContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore) => {
+const mapStateToProps = (state: IStore): IStateProps => {
     const { app, map, ealgis, snackbars } = state
 
     return {
@@ -118,7 +122,7 @@ const mapStateToProps = (state: IStore) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchStuff: () => {
             dispatch(fetchUserMapsDataAndColourInfo())
@@ -164,7 +168,7 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const EalContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(EalContainer as any)
+const EalContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(EalContainer)
 
 // export default EalContainerWrapped
 export default GoogleMapLoader(EalContainerWrapped, {

@@ -8,11 +8,15 @@ import { IStore, IMap, IPosition, IOLFeature, IOLFeatureProps } from "../../redu
 
 import "openlayers/css/ol.css"
 
-export interface IProps {
+export interface IProps {}
+
+export interface IStateProps {
     // From State
     mapDefinition: IMap
     position: IPosition
-    // From Dispatch to Props
+}
+
+export interface IDispatchProps {
     onSingleClick: Function
     onMoveEnd: Function
 }
@@ -22,7 +26,7 @@ export interface IRouteProps {
     mapName: string
 }
 
-export class MapContainer extends React.Component<IProps, {}> {
+export class MapContainer extends React.Component<IProps & IStateProps & IDispatchProps & IRouteProps, {}> {
     render() {
         const { mapDefinition, position, onSingleClick, onMoveEnd } = this.props
 
@@ -37,7 +41,7 @@ export class MapContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStateProps => {
     const { maps, map } = state
 
     return {
@@ -46,7 +50,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         onSingleClick: (mapId: number, evt: any) => {
             let features: Array<IOLFeature> = []
@@ -83,6 +87,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const MapContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(MapContainer as any)
+const MapContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapContainer)
 
 export default MapContainerWrapped

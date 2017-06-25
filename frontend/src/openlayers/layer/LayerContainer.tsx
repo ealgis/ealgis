@@ -5,16 +5,17 @@ import { connect } from "react-redux"
 import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"
 
 export interface IProps {
-    // From Props
     layerId: number
     map: IMap
     layer: ILayer
-    // From Store
+}
+
+export interface IStoreProps {
     debugMode: boolean
     highlightedFeatures: Array<number>
 }
 
-export class LayerContainer extends React.Component<IProps, {}> {
+export class LayerContainer extends React.Component<IProps & IStoreProps, {}> {
     render() {
         const { map, layer, layerId, debugMode, highlightedFeatures } = this.props
         layer.olStyle = compileLayerStyle(layer, debugMode, highlightedFeatures)
@@ -31,6 +32,6 @@ const mapStateToProps = (state: IStore) => {
     }
 }
 
-const LayerContainerWrapped = connect(mapStateToProps)(LayerContainer)
+const LayerContainerWrapped = connect<{}, {}, IProps>(mapStateToProps)(LayerContainer)
 
 export default LayerContainerWrapped

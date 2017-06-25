@@ -20,6 +20,6 @@ const mapStateToProps = (state: IStore) => {
     return {}
 }
 
-const MapCoverImageContainerWrapped = connect(mapStateToProps)(MapCoverImageContainer)
+const MapCoverImageContainerWrapped = connect<{}, {}, IProps>(mapStateToProps)(MapCoverImageContainer)
 
 export default MapCoverImageContainerWrapped

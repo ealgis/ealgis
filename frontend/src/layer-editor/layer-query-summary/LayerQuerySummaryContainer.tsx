@@ -8,11 +8,17 @@ export interface IProps {
     mapId: number
     layerHash: string
     onFitScaleToData: Function
-    stats?: ILayerQuerySummary
+}
+
+export interface IStoreProps {
+    stats: ILayerQuerySummary
+}
+
+export interface IDispachProps {
     fetchQuerySummary: Function
 }
 
-export class LayerQuerySummaryContainer extends React.Component<IProps, {}> {
+export class LayerQuerySummaryContainer extends React.Component<IProps & IStoreProps & IDispachProps, {}> {
     componentDidMount() {
         const { fetchQuerySummary, mapId, layerHash } = this.props
         fetchQuerySummary(mapId, layerHash)
@@ -40,7 +46,7 @@ export class LayerQuerySummaryContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps) => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { layerquerysummary } = state
 
     return {
@@ -48,7 +54,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispachProps => {
     return {
         fetchQuerySummary: (mapId: number, layerHash: string) => {
             dispatch(fetchLayerQuerySummary(mapId, layerHash))
@@ -56,8 +62,8 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const LayerQuerySummaryContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(
-    LayerQuerySummaryContainer as any
+const LayerQuerySummaryContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+    LayerQuerySummaryContainer
 )
 
 export default LayerQuerySummaryContainerWrapped

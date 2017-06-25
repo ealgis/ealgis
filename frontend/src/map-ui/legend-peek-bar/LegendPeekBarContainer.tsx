@@ -6,19 +6,22 @@ import { receiveLegendPeekLabel } from "../../redux/modules/legends"
 import { IStore, IOLStyleDef } from "../../redux/modules/interfaces"
 
 export interface IProps {
-    // From props
     mapId: number
     layerId: number
     olStyleDef: Array<IOLStyleDef>
-    // From Store
+}
+
+export interface IStateProps {
     labelText: string
-    // From Dispatch to Prps
+}
+
+export interface IDispatchProps {
     handleMouseEnter: Function
     handleMouseLeave: Function
 }
 
-export class LegendPeekBarContainer extends React.Component<IProps, {}> {
-    shouldComponentUpdate(nextProps: IProps) {
+export class LegendPeekBarContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
+    shouldComponentUpdate(nextProps: IProps & IStateProps) {
         const { olStyleDef, labelText } = this.props
 
         if (!isEqual(olStyleDef, nextProps.olStyleDef)) {
@@ -46,7 +49,7 @@ export class LegendPeekBarContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps) => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
     const { legends } = state
 
     return {
@@ -54,7 +57,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         handleMouseEnter: (mapId: number, layerId: number, styleDef: IOLStyleDef) => {
             let labelText: string = ""
@@ -74,6 +77,8 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const LegendPeekBarContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(LegendPeekBarContainer as any)
+const LegendPeekBarContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+    LegendPeekBarContainer
+)
 
 export default LegendPeekBarContainerWrapped

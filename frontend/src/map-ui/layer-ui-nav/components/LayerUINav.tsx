@@ -89,7 +89,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
             legendPeekProps.nestedItems = [
                 <LegendPeekBarListItem
                     key={`legendpeek-${mapId}-${layerId}`}
-                    primaryText={<LegendPeekBar mapId={mapId} layerId={layerId} olStyleDef={defn.olStyleDef} />}
+                    primaryText={<LegendPeekBar mapId={mapId} layerId={layerId} olStyleDef={defn.olStyleDef!} />}
                     disabled={true}
                 />,
             ]

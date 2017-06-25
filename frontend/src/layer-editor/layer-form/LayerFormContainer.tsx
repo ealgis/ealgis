@@ -48,7 +48,9 @@ export interface ILayerFormValues {
     valueExpression: string
 }
 
-export interface IProps {
+export interface IProps {}
+
+export interface IStoreProps {
     tabName: string
     mapDefinition: IMap
     layerId: number
@@ -60,7 +62,9 @@ export interface IProps {
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
+}
 
+export interface IDispatchProps {
     startLayerEditSession: Function
     onSubmit: Function
     onSubmitFail: Function
@@ -72,6 +76,9 @@ export interface IProps {
     onModalSaveForm: Function
     onModalDiscardForm: Function
     onToggleDirtyFormModalState: Function
+}
+
+interface IRouterProps {
     router: any
     route: object
 }
@@ -203,11 +210,14 @@ const getLayerFromLayerFormValuesPartial = (formValues: any) => {
     return layer
 }
 
-export class LayerFormContainer extends React.Component<IProps, {}> {
+export class LayerFormContainer extends React.Component<
+    IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
+    {}
+> {
     onFieldChangeDebounced: Function
     initialValues: object
 
-    constructor(props: IProps) {
+    constructor(props: IDispatchProps & IRouterProps) {
         super(props)
         const { onFieldUpdate } = props
 
@@ -255,7 +265,7 @@ export class LayerFormContainer extends React.Component<IProps, {}> {
         }
     }
 
-    shouldComponentUpdate(nextProps: IProps) {
+    shouldComponentUpdate(nextProps: IStoreProps) {
         const {
             mapDefinition,
             layerId,
@@ -369,7 +379,7 @@ export class LayerFormContainer extends React.Component<IProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStoreProps => {
     const { app, maps, ealgis, layerform } = state
     const layerFormValues = formValueSelector("layerForm")
 
@@ -378,8 +388,8 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
-        layerFillColourScheme: layerFormValues(state, "fillColourScheme"),
-        layerGeometry: layerFormValues(state, "geometry"),
+        layerFillColourScheme: layerFormValues(state, "fillColourScheme") as string,
+        layerGeometry: layerFormValues(state, "geometry") as string,
         dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
         geominfo: ealgis.geominfo,
@@ -388,7 +398,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         startLayerEditSession: (mapId: number, layerId: number) => {
             dispatch(startLayerEditing())
@@ -463,6 +473,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const LayerFormContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(LayerFormContainer as any)
+const LayerFormContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerFormContainer)
 
 export default withRouter(LayerFormContainerWrapped)

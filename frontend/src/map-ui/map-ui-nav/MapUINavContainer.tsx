@@ -20,7 +20,9 @@ import {
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IStore, IMap, IPosition, IMapPositionDefaults } from "../../redux/modules/interfaces"
 
-interface IProps {
+interface IProps {}
+
+export interface IStateProps {
     // From Props
     userId: number
     tabName: string
@@ -28,7 +30,9 @@ interface IProps {
     mapPosition: IPosition
     deleteModalOpen: boolean
     previousPath: string
-    // From Dispatch to Props
+}
+
+export interface IDispatchProps {
     onAddLayer: Function
     onDuplicateMap: Function
     onSetOrigin: Function
@@ -42,8 +46,6 @@ interface IProps {
     onExportMapViewport: Function
     onCheckIncludeGeomAttrs: Function
     onGetShareableLink: Function
-    // From Router
-    location: any
 }
 
 interface IRouteProps {
@@ -51,7 +53,14 @@ interface IRouteProps {
     tabName: string
 }
 
-export class MapUINavContainer extends React.Component<IProps, {}> {
+interface IRouterProps {
+    location: any
+}
+
+export class MapUINavContainer extends React.Component<
+    IProps & IStateProps & IDispatchProps & IRouteProps & IRouterProps,
+    {}
+> {
     isIncludeGeomAttrsChecked: boolean = false
 
     componentDidMount() {
@@ -195,6 +204,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const MapUINavContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(MapUINavContainer as any)
+const MapUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapUINavContainer)
 
 export default MapUINavContainerWrapped

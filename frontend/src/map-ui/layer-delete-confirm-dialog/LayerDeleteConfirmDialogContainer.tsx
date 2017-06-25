@@ -10,17 +10,19 @@ export interface IProps {
     mapId: number
     layerId: number
     layerDefinition: ILayer
+}
+
+export interface IStoreProps {
     open: boolean
     map: IMap
+}
+
+export interface IDispatchProps {
     onClose: Function
     onConfirm: Function
 }
 
-export class LayerDeleteConfirmDialogContainer extends React.Component<IProps, {}> {
-    public static defaultProps: Partial<IProps> = {
-        open: false,
-    }
-
+export class LayerDeleteConfirmDialogContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     render() {
         const { modalId, open, onClose, onConfirm, map, layerId, layerDefinition } = this.props
 
@@ -35,7 +37,7 @@ export class LayerDeleteConfirmDialogContainer extends React.Component<IProps, {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps) => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { maps, app } = state
 
     return {
@@ -44,7 +46,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         onClose: (modalId: string) => {
             dispatch(toggleModalState(modalId))
@@ -56,8 +58,8 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const LayerDeleteConfirmDialogContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(
-    LayerDeleteConfirmDialogContainer as any
+const LayerDeleteConfirmDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+    LayerDeleteConfirmDialogContainer
 )
 
 export default LayerDeleteConfirmDialogContainerWrapped
