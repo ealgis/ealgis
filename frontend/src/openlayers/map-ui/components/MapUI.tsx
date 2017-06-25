@@ -41,7 +41,9 @@ export class MapUI extends React.Component<IProps, {}> {
                     </olr.layer.Tile>
                     <div>
                         {defn.json.layers.map((l: ILayer, key: number) => {
-                            return <LayerContainerWrapped key={key} layerId={key} map={defn} layer={l} />
+                            if ("latlon_bbox" in l) {
+                                return <LayerContainerWrapped key={key} layerId={key} map={defn} layer={l} />
+                            }
                         })}
                     </div>
                 </olr.Map>

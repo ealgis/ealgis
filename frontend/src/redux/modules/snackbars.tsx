@@ -18,7 +18,7 @@ const initialState: IModule = {
 export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case ADD_MESSAGE:
-            state.messages.push(action.message)
+            state.messages.push(action.message!)
             return dotProp.set(state, `messages`, state.messages)
         case START:
             if (state.open === false && state.messages.length > 0) {

@@ -1,4 +1,4 @@
-import { combineReducers } from "redux"
+import * as Redux from "redux"
 import { reducer as form } from "redux-form"
 import { routerReducer } from "react-router-redux"
 
@@ -27,7 +27,7 @@ export interface IStore {
     snackbars: ISnackbarsModule
 }
 
-const rootReducer: Redux.Reducer<IStore> = combineReducers<IStore>({
+const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     ealgis,
     app,
     map,

@@ -77,6 +77,7 @@ export interface IOLFeature {
 export interface IOLFeatureProps {
     gid: number
     q: number
+    geometry: object
     get(attributeName: string): any
 }
 

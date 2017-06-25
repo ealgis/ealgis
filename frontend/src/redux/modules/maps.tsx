@@ -51,8 +51,8 @@ export default function reducer(state = initialState, action: IAction) {
             }
         case SET_ORIGIN:
             return dotProp.set(state, `${action.mapId}.json.map_defaults`, {
-                lon: action.position.center![0],
-                lat: action.position.center![1],
+                lon: action.position!.center![0],
+                lat: action.position!.center![1],
                 zoom: action.position!.zoom,
             })
         case SET_SHARING:
@@ -609,7 +609,7 @@ export function addLayer(mapId: number) {
         // Default to 2011 SA4s or whatever the first geometry is
         // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
         const geominfo = getGeomInfoFromState(getState)
-        let defaultGeometry: IGeomTable = undefined
+        let defaultGeometry: IGeomTable
 
         if (geominfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
             defaultGeometry = geominfo["aus_census_2011.sa4_2011_aust_pow"]
@@ -715,7 +715,7 @@ export function initDraftLayer(mapId: number, layerId: number) {
     }
 }
 
-export function handleLayerFormChange(layerPartial: object, mapId: number, layerId: number) {
+export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: number, layerId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // Determine if we need to recompile the layer server-side.
         // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
@@ -758,7 +758,7 @@ export function handleLayerFormChange(layerPartial: object, mapId: number, layer
                     }
 
                     if (haveCoreFieldsChanged || "geometry" in layerPartial) {
-                        dispatch(fetchLayerQuerySummary(mapId, layer.hash))
+                        dispatch(fetchLayerQuerySummary(mapId, layer.hash!))
                     }
                 }
             })

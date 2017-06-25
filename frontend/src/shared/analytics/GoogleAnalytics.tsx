@@ -1,4 +1,7 @@
+declare var DEVELOPMENT: boolean
+
 import * as ReactGA from "react-ga"
+import { Middleware, MiddlewareAPI } from "redux"
 import { IStore } from "../../redux/modules/interfaces"
 
 // FIXME Where should config props like API keys live?
@@ -24,7 +27,7 @@ class GATracker {
         }
     }
 
-    event(cfg: object) {
+    event(cfg: ReactGA.EventArgs) {
         if (DEVELOPMENT === false || this.always_send === true) {
             ReactGA.event(cfg)
         }

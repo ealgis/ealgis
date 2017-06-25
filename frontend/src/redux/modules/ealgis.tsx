@@ -153,10 +153,8 @@ export function fetchGeomInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/datainfo/", dispatch)
 
-        const ordered: {
-            [key: string]: Array<IGeomTable>
-        } = {}
-        Object.keys(json).sort().forEach(function(key) {
+        const ordered: IGeomInfo = {}
+        Object.keys(json).sort().forEach(function(key: string) {
             ordered[key] = json[key]
         })
         dispatch(loadGeom(ordered))

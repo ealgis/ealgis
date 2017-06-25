@@ -145,7 +145,11 @@ export class EalUI extends React.Component<IProps, {}> {
                     message={snackbars.active.message}
                     action={snackbars.active.action}
                     autoHideDuration={snackbars.active.autoHideDuration}
-                    onActionTouchTap={() => snackbars.active.onActionTouchTap()}
+                    onActionTouchTap={() => {
+                        if ("onActionTouchTap" in snackbars.active) {
+                            snackbars.active.onActionTouchTap!()
+                        }
+                    }}
                     onRequestClose={handleSnackbarClose}
                 />
             </div>

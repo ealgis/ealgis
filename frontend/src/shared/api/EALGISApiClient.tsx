@@ -10,7 +10,7 @@ export class EALGISApiClient {
     // FIXME Refactor to be able to handle errors that the calling action can't handle
     public handleError(error: any, url: string, dispatch: any) {
         Raven.captureException(error)
-        Raven.showReportDialog()
+        Raven.showReportDialog({})
 
         dispatch(
             sendSnackbarMessage({
