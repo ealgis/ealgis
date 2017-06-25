@@ -1,26 +1,26 @@
 import * as React from "react"
+import styled from "styled-components"
 import LegendPeekBarSwatch from "../../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
 import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
-const styles: React.CSSProperties = {
-    peekBarContainer: {
-        position: "relative",
-    },
-    flexContainer: {
-        display: "-ms-flex",
-        display: "-webkit-flex",
-        display: "flex",
-        WebkitFlexDirection: "row",
-        flexDirection: "row",
-    },
-    labelText: {
-        height: "16px",
-        paddingTop: "4px",
-        paddingBottom: "4px",
-        fontSize: "12px",
-        color: "rgba(0, 0, 0, 0.3)",
-    },
-}
+const PeerBarContainer = styled.div`
+    position: relative;
+`
+
+const LabelText = styled.div`
+    height: 16px
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+`
+
+const FlexboxContainer = styled.div`
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: row;
+`
 
 export interface IProps {
     layerId: number
@@ -35,9 +35,9 @@ export class LegendPeekBarNav extends React.Component<IProps, {}> {
         const { layerId, olStyleDef, handleMouseEnter, handleMouseLeave, labelText } = this.props
 
         return (
-            <div style={styles.peekBarContainer}>
-                <div style={styles.labelText}>{labelText || "Legend"}</div>
-                <div style={styles.flexContainer}>
+            <PeerBarContainer>
+                <LabelText>{labelText || "Legend"}</LabelText>
+                <FlexboxContainer>
                     {olStyleDef.map((styleDef: IOLStyleDef, key: number) => {
                         return (
                             <LegendPeekBarSwatch
@@ -48,8 +48,8 @@ export class LegendPeekBarNav extends React.Component<IProps, {}> {
                             />
                         )
                     })}
-                </div>
-            </div>
+                </FlexboxContainer>
+            </PeerBarContainer>
         )
     }
 }

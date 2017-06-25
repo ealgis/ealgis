@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { Link } from "react-router"
 import AppBar from "material-ui/AppBar"
 import Snackbar from "material-ui/Snackbar"
@@ -19,6 +20,21 @@ import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
 import { IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
 
+const HiddenIconButton = styled(IconButton)`
+    width: 0px !important;
+    height: 0px !important;
+    padding: 0px !important;
+`
+
+const HeaderBarButton = styled(FlatButton)`
+    color: #ffffff !important;
+    margin: 4px 0px !important;
+`
+
+const SearchIconButton = styled(IconButton)`
+    padding: 0px !important;
+`
+
 export interface IProps {
     app: IAppModule
     user: any
@@ -34,21 +50,6 @@ export interface IProps {
     content: any
     sidebar: any
     showGooglePlacesBar: boolean
-}
-
-const styles: React.CSSProperties = {
-    hiddenIconButton: {
-        width: "0px",
-        height: "0px",
-        padding: "0px",
-    },
-    appBarButtonStyle: {
-        color: "#ffffff",
-        margin: "4px 0px",
-    },
-    searchIconButton: {
-        padding: "0px",
-    },
 }
 
 export class EalUI extends React.Component<IProps, {}> {
@@ -87,12 +88,9 @@ export class EalUI extends React.Component<IProps, {}> {
                         iconElementRight={
                             <ToolbarGroup>
                                 {showGooglePlacesBar &&
-                                    <IconButton
-                                        style={styles.searchIconButton}
-                                        tooltip={"Search for a place or address"}
-                                    >
+                                    <SearchIconButton tooltip={"Search for a place or address"}>
                                         <ActionSearch color={"white"} />
-                                    </IconButton>}
+                                    </SearchIconButton>}
                                 {showGooglePlacesBar &&
                                     <GooglePlacesAutocomplete
                                         results={handleGooglePlacesAutocomplete}
@@ -102,31 +100,18 @@ export class EalUI extends React.Component<IProps, {}> {
                                         textFieldStyle={{ width: "100%" }}
                                         name={"google-places-autocomplete"}
                                     />}
-                                <FlatButton
-                                    label="Home"
-                                    containerElement={<Link to={"/"} />}
-                                    style={styles.appBarButtonStyle}
-                                />
-                                <FlatButton
-                                    label="Maps"
-                                    containerElement={<Link to={"/maps"} />}
-                                    style={styles.appBarButtonStyle}
-                                />
-                                <FlatButton
-                                    label="About"
-                                    containerElement={<Link to={"/about"} />}
-                                    style={styles.appBarButtonStyle}
-                                />
+                                <HeaderBarButton label="Home" containerElement={<Link to={"/"} />} />
+                                <HeaderBarButton label="Maps" containerElement={<Link to={"/maps"} />} />
+                                <HeaderBarButton label="About" containerElement={<Link to={"/about"} />} />
                                 {user.id !== null &&
-                                    <FlatButton
+                                    <HeaderBarButton
                                         label={user.username}
-                                        icon={<ActionFace />}
+                                        icon={<ActionFace color={"white"} />}
                                         onTouchTap={handleOpenUserMenu}
-                                        style={styles.appBarButtonStyle}
                                     />}
                                 {user.id !== null &&
                                     <IconMenu
-                                        iconButtonElement={<IconButton style={styles.hiddenIconButton} />}
+                                        iconButtonElement={<HiddenIconButton />}
                                         open={app.userMenuState}
                                         onRequestChange={handleUserMenuOnRequestChange}
                                     >

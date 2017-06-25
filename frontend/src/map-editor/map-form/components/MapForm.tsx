@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { IMap } from "../../../redux/modules/interfaces"
 
 import { Link } from "react-router"
@@ -14,19 +15,20 @@ import { red500 } from "material-ui/styles/colors"
 
 const required = (value: any) => (value ? undefined : "Required")
 
-const styles: React.CSSProperties = {
-    form: {
-        margin: "10px",
-    },
-    formErrorText: {
-        fontSize: "12px",
-        color: red500,
-        marginTop: "40px",
-    },
-    hiddenSubmitButton: {
-        display: "none",
-    },
-}
+const Form = styled.form`
+    margin: 10px;
+`
+
+const FormErrorMessage = styled.span`
+    font-weight: bold;
+    font-size: 12px;
+    color: ${red500};
+    margin-top: 40px;
+`
+
+const HiddenButton = styled.button`
+    display: none;
+`
 
 export interface IProps {
     mapDefinition: IMap
@@ -66,7 +68,7 @@ export class MapForm extends React.Component<IProps, {}> {
                     </ToolbarGroup>
                 </Toolbar>
 
-                <form style={styles.form} onSubmit={handleSubmit(onSubmit)}>
+                <Form onSubmit={handleSubmit(onSubmit)}>
                     <Field
                         name="name"
                         component={TextField}
@@ -91,10 +93,10 @@ export class MapForm extends React.Component<IProps, {}> {
                         autoComplete="off"
                     />
 
-                    {error && <strong style={styles.formErrorText}>{error}</strong>}
+                    {error && <FormErrorMessage>{error}</FormErrorMessage>}
 
-                    <button type="submit" style={styles.hiddenSubmitButton} />
-                </form>
+                    <HiddenButton type="submit" />
+                </Form>
             </div>
         )
     }

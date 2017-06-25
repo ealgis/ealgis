@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { Link } from "react-router"
 import { connect } from "react-redux"
 import RaisedButton from "material-ui/RaisedButton"
@@ -35,28 +36,45 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 
 const required = (value: any) => (value || value === 0 ? undefined : "Required")
 
+const TabContainer = styled.div`
+    margin: 10px
+`
+
+const HiddenButton = styled.button`
+    display: none;
+`
+
+const FlexboxContainer = styled.div`
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const FirstFlexboxColumn = styled.div`
+    flex: 1;
+    margin-right: 20px;
+`
+
+const SecondFlexboxColumn = styled.div`
+    flex: 1;
+`
+
+const FauxFieldLabel = styled.h5`
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
+    transform: scale(1) translate(0px, -4px);
+    transform-origin: left top 0px;
+`
+
+const FillOpacityPickerContainer = styled.div`
+    margin-bottom: 0px;
+    margin-top: 0px;
+`
+
 const styles: React.CSSProperties = {
-    tabBody: {
-        margin: "10px",
-    },
-    hiddenSubmitButton: {
-        display: "none",
-    },
-    // FIXME What is the proper way to do CSS styling in JSX? -> ReactCSS
-    flexboxContainer: {
-        display: "-ms-flex",
-        display: "-webkit-flex",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    flexboxFirstColumn: {
-        flex: "1",
-        marginRight: "20px",
-    },
-    flexboxSecondColumn: {
-        flex: "1",
-    },
     fauxFiedlLabel: {
         fontSize: "12px",
         color: "rgba(0, 0, 0, 0.3)",
@@ -68,10 +86,6 @@ const styles: React.CSSProperties = {
         marginBottom: "0px",
         marginTop: "0px",
     },
-    fillOpacityPicker: {
-        marginTop: "14px",
-        marginBottom: "10px",
-    },
 }
 
 const FillColourSchemeFields = (fields: any) => {
@@ -80,8 +94,8 @@ const FillColourSchemeFields = (fields: any) => {
         : []
 
     return (
-        <div style={styles.flexboxContainer}>
-            <div style={styles.flexboxFirstColumn}>
+        <FlexboxContainer>
+            <FirstFlexboxColumn>
                 <Field
                     name="fillColourScheme"
                     component={SelectField}
@@ -116,9 +130,9 @@ const FillColourSchemeFields = (fields: any) => {
                         <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
                     )}
                 </Field>
-            </div>
+            </FirstFlexboxColumn>
 
-            <div style={styles.flexboxSecondColumn}>
+            <SecondFlexboxColumn>
                 <Field
                     name="fillColourSchemeLevels"
                     component={SelectField}
@@ -137,8 +151,8 @@ const FillColourSchemeFields = (fields: any) => {
                         <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
                     )}
                 </Field>
-            </div>
-        </div>
+            </SecondFlexboxColumn>
+        </FlexboxContainer>
     )
 }
 
@@ -263,7 +277,7 @@ class LayerForm extends React.Component<IProps, {}> {
                             label="DESCRIBE"
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}
                         >
-                            <div style={styles.tabBody}>
+                            <TabContainer>
                                 <Field
                                     name="name"
                                     component={TextField}
@@ -305,7 +319,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 >
                                     {this.geometryTables}
                                 </Field>
-                            </div>
+                            </TabContainer>
                         </Tab>
                         {/* END DESCRIBE TAB */}
 
@@ -315,7 +329,7 @@ class LayerForm extends React.Component<IProps, {}> {
                             label="DATA"
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                         >
-                            <div style={styles.tabBody}>
+                            <TabContainer>
                                 <Field
                                     name="valueExpression"
                                     component={TextField}
@@ -345,7 +359,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 />
 
                                 <DatasetSearch geometry={layerGeometry} />
-                            </div>
+                            </TabContainer>
                         </Tab>
                         {/* END DATA TAB */}
 
@@ -357,10 +371,10 @@ class LayerForm extends React.Component<IProps, {}> {
                                 <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />
                             }
                         >
-                            <div style={styles.tabBody}>
-                                <div style={styles.flexboxContainer}>
-                                    <div style={styles.flexboxFirstColumn}>
-                                        <h5 style={styles.fauxFiedlLabel}>Border colour</h5>
+                            <TabContainer>
+                                <FlexboxContainer>
+                                    <FirstFlexboxColumn>
+                                        <FauxFieldLabel>Border colour</FauxFieldLabel>
                                         <Field
                                             name="borderColour"
                                             component={ColourPicker}
@@ -368,10 +382,10 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onChange={(junk: object, newValue: object, previousValue: object) =>
                                                 onFieldChange("borderColour", newValue)}
                                         />
-                                    </div>
+                                    </FirstFlexboxColumn>
 
-                                    <div style={styles.flexboxSecondColumn}>
-                                        <h5 style={styles.fauxFiedlLabel}>Border size</h5>
+                                    <SecondFlexboxColumn>
+                                        <FauxFieldLabel>Border size</FauxFieldLabel>
                                         <Field
                                             name="borderSize"
                                             component={Slider}
@@ -383,8 +397,8 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onChange={(event: any, newValue: string, previousValue: string) =>
                                                 onFieldChange("borderSize", newValue)}
                                         />
-                                    </div>
-                                </div>
+                                    </SecondFlexboxColumn>
+                                </FlexboxContainer>
 
                                 <Fields
                                     names={["fillColourScheme", "fillColourSchemeLevels"]}
@@ -393,8 +407,8 @@ class LayerForm extends React.Component<IProps, {}> {
                                     colourinfo={colourinfo}
                                 />
 
-                                <div style={styles.flexboxContainer}>
-                                    <div style={styles.flexboxFirstColumn}>
+                                <FlexboxContainer>
+                                    <FirstFlexboxColumn>
                                         <Field
                                             name="fillColourScaleFlip"
                                             component={Checkbox}
@@ -404,11 +418,11 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onChange={(event: any, newValue: string, previousValue: string) =>
                                                 onFieldChange("fillColourScaleFlip", newValue)}
                                         />
-                                    </div>
+                                    </FirstFlexboxColumn>
 
-                                    <div style={styles.flexboxSecondColumn}>
-                                        <h5 style={styles.fauxFiedlLabel}>Fill opacity</h5>
-                                        <div style={styles.fillOpacityPicker}>
+                                    <SecondFlexboxColumn>
+                                        <FauxFieldLabel>Fill opacity</FauxFieldLabel>
+                                        <FillOpacityPickerContainer>
                                             <Field
                                                 name="fillOpacity"
                                                 component={AlphaPicker}
@@ -416,12 +430,12 @@ class LayerForm extends React.Component<IProps, {}> {
                                                 onChange={(event: any, newValue: object, previousValue: object) =>
                                                     onFieldChange("fillOpacity", newValue)}
                                             />
-                                        </div>
-                                    </div>
-                                </div>
+                                        </FillOpacityPickerContainer>
+                                    </SecondFlexboxColumn>
+                                </FlexboxContainer>
 
-                                <div style={styles.flexboxContainer}>
-                                    <div style={styles.flexboxFirstColumn}>
+                                <FlexboxContainer>
+                                    <FirstFlexboxColumn>
                                         <Field
                                             name="scaleMin"
                                             component={TextField}
@@ -436,9 +450,9 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onBlur={(event: any, newValue: string, previousValue: string) =>
                                                 onFieldBlur(event.target.name, newValue, previousValue)}
                                         />
-                                    </div>
+                                    </FirstFlexboxColumn>
 
-                                    <div style={styles.flexboxSecondColumn}>
+                                    <SecondFlexboxColumn>
                                         <Field
                                             name="scaleMax"
                                             component={TextField}
@@ -453,20 +467,20 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onBlur={(event: any, newValue: string, previousValue: string) =>
                                                 onFieldBlur(event.target.name, newValue, previousValue)}
                                         />
-                                    </div>
-                                </div>
+                                    </SecondFlexboxColumn>
+                                </FlexboxContainer>
 
                                 <LayerQuerySummary
                                     mapId={mapId}
                                     layerHash={layerHash}
                                     onFitScaleToData={onFitScaleToData}
                                 />
-                            </div>
+                            </TabContainer>
                         </Tab>
                         {/* END VISUALISE TAB */}
                     </Tabs>
 
-                    <button type="submit" style={styles.hiddenSubmitButton} />
+                    <HiddenButton type="submit" />
                 </form>
 
                 <Dialog

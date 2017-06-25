@@ -55,6 +55,7 @@
     "redux-form": "~6.7.0",
     "redux-form-material-ui": "~4.2.0",
     "redux-thunk": "~2.2.0",
+    "styled-components": "~2.1.0",
     "whatwg-fetch": "~2.0.3"
   },
   "devDependencies": {

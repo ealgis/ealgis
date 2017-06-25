@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { Link } from "react-router"
 import { connect } from "react-redux"
 import { Tabs, Tab } from "material-ui/Tabs"
@@ -9,28 +10,29 @@ import { grey500, grey200 } from "material-ui/styles/colors"
 import MapCoverImage from "../../map-cover-image/MapCoverImageContainer"
 import { IMap, IMapsModule } from "../../../redux/modules/interfaces"
 
-const styles: React.CSSProperties = {
-    root: {
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-around",
-        martinTop: 30,
-        padding: "10px",
-    },
-    gridList: {
-        overflowY: "auto",
-        width: "100%",
-    },
-    createMapIconButtonBig: {
-        width: "100%",
-        height: "100%",
-    },
-    createMapIconBig: {
-        width: "15%",
-        height: "15%",
-        marginBottom: "25px",
-    },
-}
+const MapListContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    martin-top: 30,
+    padding: 10px;
+`
+
+const MapGridList = styled(GridList)`
+    overflow-y: auto !important;
+    width: 100% !important;
+`
+
+const HugeCreateMapButton = styled(FlatButton)`
+    width: 100% !important;
+    height: 100% !important;
+`
+
+const HugeCreateMapIcon = styled(MapsLayers)`
+    width: 15% !important;
+    height: 15% !important;
+    margin-bottom: 25px !important;
+`
 
 export interface IProps {
     tabName: string
@@ -64,8 +66,8 @@ export class MapList extends React.Component<IProps, {}> {
                 <Tabs value={tabName}>
                     {/* START MY MAPS TAB */}
                     <Tab label="My Maps" containerElement={<Link to={"/maps"} />} value="maps">
-                        <div style={styles.root}>
-                            <GridList style={styles.gridList} cols={4} cellHeight={180} padding={10}>
+                        <MapListContainer>
+                            <MapGridList cols={4} cellHeight={180} padding={10}>
                                 <GridTile
                                     key={"create-new-map"}
                                     containerElement={<Link to={"/new/map/"} />}
@@ -74,25 +76,22 @@ export class MapList extends React.Component<IProps, {}> {
                                     titleBackground={"rgba(0, 188, 212, 0.7)"}
                                     cols={1}
                                 >
-                                    <FlatButton
-                                        icon={<MapsLayers color={grey500} style={styles.createMapIconBig} />}
-                                        style={styles.createMapIconButtonBig}
-                                    />
+                                    <HugeCreateMapButton icon={<HugeCreateMapIcon color={grey500} />} />
                                 </GridTile>
 
                                 {mapGridTiles(getMyMaps())}
-                            </GridList>
-                        </div>
+                            </MapGridList>
+                        </MapListContainer>
                     </Tab>
                     {/* END MY MAPS TAB */}
 
                     {/* START SHARED TAB */}
                     <Tab label="Shared" containerElement={<Link to={"/shared"} />} value="shared">
-                        <div style={styles.root}>
-                            <GridList style={styles.gridList} cols={4} cellHeight={180} padding={10}>
+                        <MapListContainer>
+                            <MapGridList cols={4} cellHeight={180} padding={10}>
                                 {mapGridTiles(getSharedMaps())}
-                            </GridList>
-                        </div>
+                            </MapGridList>
+                        </MapListContainer>
                     </Tab>
                     {/* START SHARED TAB */}
 
@@ -102,16 +101,15 @@ export class MapList extends React.Component<IProps, {}> {
                     containerElement={<Link to={"/public"}/>}
                     value="public"
                 >
-                    <div style={styles.root}>
-                        <GridList
-                            style={styles.gridList}
+                    <MapListContainer>
+                        <MapGridList
                             cols={4}
                             cellHeight={180}
                             padding={10}
                         >
                             {mapGridTiles(getPublicMaps())}
-                        </GridList>
-                    </div>
+                        </MapGridList>
+                    </MapListContainer>
                 </Tab>*/}
                     {/* START PUBLIC TAB */}
                 </Tabs>

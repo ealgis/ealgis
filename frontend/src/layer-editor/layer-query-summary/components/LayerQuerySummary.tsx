@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { ILayerQuerySummary } from "../../../redux/modules/interfaces"
 
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
@@ -7,30 +8,30 @@ import ContentCopy from "material-ui/svg-icons/content/content-copy"
 
 import { indigo900, grey100 } from "material-ui/styles/colors"
 
-const styles: React.CSSProperties = {
-    querySummaryTableHeaderColumn: {
-        backgroundColor: indigo900,
-        color: grey100,
-    },
-    querySummaryTable: {
-        marginTop: "10px",
-    },
-    // FIXME What is the proper way to do CSS styling in JSX? -> ReactCSS
-    flexboxContainer: {
-        display: "-ms-flex",
-        display: "-webkit-flex",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    flexboxFirstColumn: {
-        flexGrow: "1",
-        // "marginRight": "20px",
-    },
-    flexboxSecondColumn: {
-        padding: "8px",
-    },
-}
+const FlexboxContainer = styled.div`
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const FirstFlexboxColumn = styled.div`
+    flex-grow: 1;
+`
+
+const SecondFlexboxColumn = styled.div`
+    padding: 8px;
+`
+
+const StyledTable = styled(Table)`
+    margin-top: 10px;
+`
+
+const StyledTableHeaderColumn = styled(TableHeaderColumn)`
+    background-color: ${indigo900} !important;
+    color: ${grey100} !important;
+`
 
 export interface IProps {
     stats: ILayerQuerySummary
@@ -46,16 +47,14 @@ export class LayerQuerySummary extends React.Component<IProps, {}> {
         stats.stddev = parseFloat(stats.stddev.toFixed(3))
 
         return (
-            <div style={styles.flexboxContainer}>
-                <div style={styles.flexboxFirstColumn}>
-                    <Table style={styles.querySummaryTable}>
+            <FlexboxContainer>
+                <FirstFlexboxColumn>
+                    <StyledTable>
                         <TableHeader adjustForCheckbox={false} displaySelectAll={false} enableSelectAll={false}>
                             <TableRow>
-                                <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MIN</TableHeaderColumn>
-                                <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>MAX</TableHeaderColumn>
-                                <TableHeaderColumn style={styles.querySummaryTableHeaderColumn}>
-                                    STDEV
-                                </TableHeaderColumn>
+                                <StyledTableHeaderColumn>MIN</StyledTableHeaderColumn>
+                                <StyledTableHeaderColumn>MAX</StyledTableHeaderColumn>
+                                <StyledTableHeaderColumn>STDEV</StyledTableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody displayRowCheckbox={false}>
@@ -65,10 +64,10 @@ export class LayerQuerySummary extends React.Component<IProps, {}> {
                                 <TableRowColumn>{stats.stddev}</TableRowColumn>
                             </TableRow>
                         </TableBody>
-                    </Table>
-                </div>
+                    </StyledTable>
+                </FirstFlexboxColumn>
 
-                <div style={styles.flexboxSecondColumn}>
+                <SecondFlexboxColumn>
                     <IconButton
                         tooltip="Apply scale settings to layer"
                         tooltipPosition={"bottom-left"}
@@ -76,8 +75,8 @@ export class LayerQuerySummary extends React.Component<IProps, {}> {
                     >
                         <ContentCopy />
                     </IconButton>
-                </div>
-            </div>
+                </SecondFlexboxColumn>
+            </FlexboxContainer>
         )
     }
 }

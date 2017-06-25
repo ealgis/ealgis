@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { Link } from "react-router"
 import LayerUINav from "../../layer-ui-nav/LayerUINavContainer"
 import Subheader from "material-ui/Subheader"
@@ -36,19 +37,28 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
 
+const MapName = styled.h2`
+    text-align: center;
+`
+
+const TabContainer = styled.div`
+    margin: 10px;
+`
+
+const DownloadButton = styled(RaisedButton)`
+    margin: 12px !important;
+`
+
+const IncludeGeomCheckbox = styled(Checkbox)`
+    margin: 12px !important;
+`
+
+const SharingDescription = styled.div`
+    overflow: visible;
+    margin-bottom: 10px;
+`
+
 const styles: React.CSSProperties = {
-    mapName: {
-        textAlign: "center",
-    },
-    tabBody: {
-        margin: "10px",
-    },
-    downloadButton: {
-        margin: "12px",
-    },
-    includeGeomAttrsCheckbox: {
-        margin: "12px",
-    },
     radioButton: {
         marginBottom: "0px",
     },
@@ -59,10 +69,6 @@ const styles: React.CSSProperties = {
         paddingLeft: "8px",
         paddingRight: "12px",
         paddingTop: "16px",
-    },
-    radioButtonSecondaryText: {
-        overflow: "visible",
-        marginBottom: "10px",
     },
 }
 
@@ -111,7 +117,7 @@ export class MapUINav extends React.Component<IProps, {}> {
 
         return (
             <div>
-                <h2 style={styles.mapName}>{defn.name}</h2>
+                <MapName>{defn.name}</MapName>
 
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
@@ -168,7 +174,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                         containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}`} />}
                         value={""}
                     >
-                        <div style={styles.tabBody}>
+                        <TabContainer>
                             <List>
                                 {defn.json.layers.map((l: any, key: number) =>
                                     <LayerUINav
@@ -181,7 +187,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     />
                                 )}
                             </List>
-                        </div>
+                        </TabContainer>
                     </Tab>
                     {/* END LAYERS TAB */}
 
@@ -191,36 +197,33 @@ export class MapUINav extends React.Component<IProps, {}> {
                         containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`} />}
                         value={"data"}
                     >
-                        <div style={styles.tabBody}>
+                        <TabContainer>
                             <Subheader>Download Data</Subheader>
 
-                            <RaisedButton
+                            <DownloadButton
                                 label="Whole Map"
                                 secondary={true}
-                                style={styles.downloadButton}
                                 icon={<FileFileDownload />}
                                 onClick={onExportWholeMap}
                             />
-                            <RaisedButton
+                            <DownloadButton
                                 label="Map Viewport"
                                 secondary={true}
-                                style={styles.downloadButton}
                                 icon={<FileFileDownload />}
                                 onClick={onExportMapViewport}
                             />
 
-                            <Checkbox
+                            <IncludeGeomCheckbox
                                 checkedIcon={<ImageGridOn />}
                                 uncheckedIcon={<ImageGridOff />}
                                 label="Include extra attributes from the geometry source"
-                                style={styles.includeGeomAttrsCheckbox}
                                 onCheck={onCheckIncludeGeomAttrs}
                             />
 
                             <Divider />
 
                             <DataInspector />
-                        </div>
+                        </TabContainer>
                     </Tab>
                     {/* END DATA TAB */}
 
@@ -231,7 +234,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                             containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/settings`} />}
                             value={"settings"}
                         >
-                            <div style={styles.tabBody}>
+                            <TabContainer>
                                 <Subheader>Map</Subheader>
 
                                 <ListItem
@@ -263,9 +266,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                             <ListItem
                                                 primaryText="Private"
                                                 secondaryText={
-                                                    <div style={styles.radioButtonSecondaryText}>
+                                                    <SharingDescription>
                                                         Your map is not shared with anyone - only you can see it.
-                                                    </div>
+                                                    </SharingDescription>
                                                 }
                                                 secondaryTextLines={2}
                                             />
@@ -282,10 +285,10 @@ export class MapUINav extends React.Component<IProps, {}> {
                                             <ListItem
                                                 primaryText="Shared"
                                                 secondaryText={
-                                                    <div style={styles.radioButtonSecondaryText}>
+                                                    <SharingDescription>
                                                         Your map is shared with everyone in the EALGIS community. They
                                                         can view the map or make a copy for themselves.
-                                                    </div>
+                                                    </SharingDescription>
                                                 }
                                                 secondaryTextLines={2}
                                             />
@@ -310,7 +313,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 style={(defn.shared === 3) ? styles.radioButtonSelected : styles.radioButton}
                             />*/}
                                 </RadioButtonGroup>
-                            </div>
+                            </TabContainer>
                         </Tab>}
                     {/* END SETTINGS TAB */}
                 </Tabs>

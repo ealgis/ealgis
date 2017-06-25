@@ -1,4 +1,5 @@
 import * as React from "react"
+import styled from "styled-components"
 import { Link } from "react-router"
 import LegendPeekBar from "../../legend-peek-bar/LegendPeekBarContainer"
 import Paper from "material-ui/Paper"
@@ -25,21 +26,24 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 
 import { grey400, darkBlack, lightBlack } from "material-ui/styles/colors"
 
+const PaperListItem = styled(Paper)`
+    margin: 7px !important;
+`
+
+const LegendPeekBarListItem = styled(ListItem)`
+    padding-left: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    margin-left: 17px !important;
+`
+
+const LayerToggle = styled(Toggle)`
+    margin-right: 35px !important;
+`
+
 const styles: React.CSSProperties = {
-    paperListItem: {
-        margin: "7px",
-    },
     layerListItemWithLegend: {
         paddingBottom: "0px",
-    },
-    legendPeekBar: {
-        paddingLeft: "0px",
-        paddingTop: "0px",
-        paddingBottom: "0px",
-        marginLeft: "17px",
-    },
-    layerToggle: {
-        marginRight: 35,
     },
 }
 
@@ -83,9 +87,8 @@ export class LayerUINav extends React.Component<IProps, {}> {
             legendPeekProps.open = true
             legendPeekProps.style = styles.layerListItemWithLegend
             legendPeekProps.nestedItems = [
-                <ListItem
+                <LegendPeekBarListItem
                     key={`legendpeek-${mapId}-${layerId}`}
-                    style={styles.legendPeekBar}
                     primaryText={<LegendPeekBar mapId={mapId} layerId={layerId} olStyleDef={defn.olStyleDef} />}
                     disabled={true}
                 />,
@@ -108,7 +111,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
         }
 
         return (
-            <Paper style={styles.paperListItem} zDepth={1}>
+            <PaperListItem zDepth={1}>
                 <ListItem
                     primaryText={defn.name}
                     secondaryText={
@@ -119,9 +122,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     }
                     secondaryTextLines={2}
                     {...mapOwnerProps}
-                    rightToggle={
-                        <Toggle toggled={defn.visible} onToggle={onToggleVisibility} style={styles.layerToggle} />
-                    }
+                    rightToggle={<LayerToggle toggled={defn.visible} onToggle={onToggleVisibility} />}
                     {...legendPeekProps}
                 />
 
@@ -131,7 +132,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     layerId={layerId}
                     layerDefinition={defn}
                 />
-            </Paper>
+            </PaperListItem>
         )
     }
 }

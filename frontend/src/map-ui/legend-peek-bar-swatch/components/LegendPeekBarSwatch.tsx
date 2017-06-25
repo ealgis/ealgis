@@ -1,12 +1,11 @@
 import * as React from "react"
+import styled from "styled-components"
 import { IOLStyleDef } from "../../../redux/modules/interfaces"
 
-const styles: React.CSSProperties = {
-    flexboxColumn: {
-        height: "15px",
-        flexGrow: 1,
-    },
-}
+const FlexboxColumnBase = styled.div`
+    height: 15px;
+    flex-grow: 1;
+`
 
 export interface IProps {
     styleDef: IOLStyleDef
@@ -17,9 +16,11 @@ export interface IProps {
 export class LegendPeekBarSwatchNav extends React.Component<IProps, {}> {
     render() {
         const { styleDef, onMouseEnter, onMouseLeave } = this.props
-        const columnStyle = Object.assign(styles.flexboxColumn, { backgroundColor: `rgb(${styleDef.rgb.join(",")})` })
+        const FlexboxColumn = FlexboxColumnBase.extend`
+            background-color: rgb(${styleDef.rgb.join(",")});
+        `
 
-        return <div style={columnStyle} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} />
+        return <FlexboxColumn onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} />
     }
 }
 
