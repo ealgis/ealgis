@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import ColourPicker from "./components/ColourPicker"
+import ColourPicker from "./ColourPicker"
 
 export interface ColourPickerContainerProps {
     input: any

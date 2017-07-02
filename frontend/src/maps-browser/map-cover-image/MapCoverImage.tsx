@@ -1,5 +1,5 @@
 import * as React from "react"
-import { IMap } from "../../../redux/modules/interfaces"
+import { IMap } from "../../redux/modules/interfaces"
 
 export interface IProps {
     defn: IMap

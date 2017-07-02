@@ -1,6 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
-import { ILayerQuerySummary } from "../../../redux/modules/interfaces"
+import { ILayerQuerySummary } from "../../redux/modules/interfaces"
 
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import IconButton from "material-ui/IconButton"

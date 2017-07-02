@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import LayerQuerySummary from "./components/LayerQuerySummary"
+import LayerQuerySummary from "./LayerQuerySummary"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
 import { IStore, ILayerQuerySummary } from "../../redux/modules/interfaces"
 

@@ -1,5 +1,5 @@
 import * as React from "react"
-import Layer from "./components/Layer"
+import Layer from "./Layer"
 import { compileLayerStyle } from "../../shared/openlayers/OLStyle"
 import { connect } from "react-redux"
 import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"

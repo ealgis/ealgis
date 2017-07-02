@@ -7,7 +7,7 @@ import { Router, Route, Link, browserHistory } from "react-router"
 import { connect } from "react-redux"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
-import { IMap, ILayer } from "../../../redux/modules/interfaces"
+import { IMap, ILayer } from "../../redux/modules/interfaces"
 
 export interface IProps {
     map: IMap

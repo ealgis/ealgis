@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { browserHistory } from "react-router"
-import LayerUINav from "./components/LayerUINav"
+import LayerUINav from "./LayerUINav"
 import { toggleModalState } from "../../redux/modules/app"
 import { cloneMapLayer, changeLayerVisibility } from "../../redux/modules/maps"
 import { IStore, IMap, ILayer, IGeomInfo } from "../../redux/modules/interfaces"

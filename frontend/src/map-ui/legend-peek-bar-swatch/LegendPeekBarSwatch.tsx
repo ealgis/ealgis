@@ -1,6 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
-import { IOLStyleDef } from "../../../redux/modules/interfaces"
+import { IOLStyleDef } from "../../redux/modules/interfaces"
 
 const FlexboxColumnBase = styled.div`
     height: 15px;

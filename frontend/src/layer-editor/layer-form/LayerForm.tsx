@@ -10,8 +10,8 @@ import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
-import DatasetSearch from "../../dataset-search/DatasetSearchContainer"
-import LayerQuerySummary from "../../layer-query-summary/LayerQuerySummaryContainer"
+import DatasetSearch from "../dataset-search/DatasetSearchContainer"
+import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
 import {
     IStore,
     IEALGISModule,
@@ -21,12 +21,12 @@ import {
     IColourInfo,
     IMap,
     ILayer,
-} from "../../../redux/modules/interfaces"
+} from "../../redux/modules/interfaces"
 
 import { Field, Fields, Config, reduxForm } from "redux-form"
 import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
-import ColourPicker from "../../../shared/ui/colour-picker/ColourPickerContainer"
-import AlphaPicker from "../../../shared/ui/alpha-picker/AlphaPickerContainer"
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
 
 import Divider from "material-ui/Divider"
 import MenuItem from "material-ui/MenuItem"

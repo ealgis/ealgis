@@ -1,7 +1,7 @@
 import * as React from "react"
 import styled from "styled-components"
-import LegendPeekBarSwatch from "../../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
-import { IOLStyleDef } from "../../../redux/modules/interfaces"
+import LegendPeekBarSwatch from "../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
+import { IOLStyleDef } from "../../redux/modules/interfaces"
 
 const PeerBarContainer = styled.div`
     position: relative;

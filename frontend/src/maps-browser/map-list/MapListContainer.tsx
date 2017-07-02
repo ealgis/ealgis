@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { entries as objectEntries } from "core-js/library/fn/object"
-import MapList from "./components/MapList"
+import MapList from "./MapList"
 import { IStore, IMap, IMapsModule } from "../../redux/modules/interfaces"
 
 export interface IProps {}

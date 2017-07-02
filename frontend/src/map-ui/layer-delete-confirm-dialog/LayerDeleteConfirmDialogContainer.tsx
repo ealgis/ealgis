@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import LayerDeleteConfirmDialog from "./components/LayerDeleteConfirmDialog"
+import LayerDeleteConfirmDialog from "./LayerDeleteConfirmDialog"
 import { toggleModalState } from "../../redux/modules/app"
 import { deleteMapLayer } from "../../redux/modules/maps"
 import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"

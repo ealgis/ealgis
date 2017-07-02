@@ -1,5 +1,5 @@
 import * as React from "react"
-import MapUI from "./components/MapUI"
+import MapUI from "./MapUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"

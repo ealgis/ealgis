@@ -1,7 +1,7 @@
 import * as React from "react"
 import reactCSS from "reactcss"
 import { SwatchesPicker, RGBColor } from "react-color"
-import { Colour } from "../../alpha-picker/components/AlphaPicker"
+import { Colour } from "../alpha-picker/AlphaPicker"
 
 export interface ColourPickerProps {
     colour: RGBColor

@@ -1,6 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
-import { IMap } from "../../../redux/modules/interfaces"
+import { IMap } from "../../redux/modules/interfaces"
 
 import { Link } from "react-router"
 import RaisedButton from "material-ui/RaisedButton"

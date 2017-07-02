@@ -1,8 +1,8 @@
 import * as React from "react"
-import LayerContainerWrapped from "../../layer/LayerContainer"
+import LayerContainerWrapped from "../layer/LayerContainer"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
-import { IMap, ILayer, IPosition } from "../../../redux/modules/interfaces"
+import { IMap, ILayer, IPosition } from "../../redux/modules/interfaces"
 
 export interface IProps {
     defn: IMap

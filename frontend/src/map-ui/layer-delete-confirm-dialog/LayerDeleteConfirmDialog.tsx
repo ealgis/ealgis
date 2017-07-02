@@ -1,7 +1,7 @@
 import * as React from "react"
 import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
-import { IStore, ILayer } from "../../../redux/modules/interfaces"
+import { IStore, ILayer } from "../../redux/modules/interfaces"
 
 export interface IProps {
     open: boolean

@@ -7,8 +7,8 @@ import { GridList, GridTile } from "material-ui/GridList"
 import FlatButton from "material-ui/FlatButton"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
 import { grey500, grey200 } from "material-ui/styles/colors"
-import MapCoverImage from "../../map-cover-image/MapCoverImageContainer"
-import { IMap, IMapsModule } from "../../../redux/modules/interfaces"
+import MapCoverImage from "../map-cover-image/MapCoverImageContainer"
+import { IMap, IMapsModule } from "../../redux/modules/interfaces"
 
 const MapListContainer = styled.div`
     display: flex;

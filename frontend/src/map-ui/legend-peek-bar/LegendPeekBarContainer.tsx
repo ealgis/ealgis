@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import LegendPeekBar from "./components/LegendPeekBar"
+import LegendPeekBar from "./LegendPeekBar"
 import { isEqual } from "lodash-es"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
 import { IStore, IOLStyleDef } from "../../redux/modules/interfaces"

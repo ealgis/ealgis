@@ -1,5 +1,5 @@
 import * as React from "react"
-import MapCoverImage from "./components/MapCoverImage"
+import MapCoverImage from "./MapCoverImage"
 import { connect } from "react-redux"
 import { IStore, IMap } from "../../redux/modules/interfaces"
 

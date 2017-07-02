@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import MapForm from "./components/MapForm"
+import MapForm from "./MapForm"
 import { mapUpsert } from "../../redux/modules/maps"
 import { IStore, IMap } from "../../redux/modules/interfaces"
 

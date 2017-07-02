@@ -4,7 +4,7 @@ import { formValueSelector, getFormValues, isDirty, initialize, submit, change }
 import { withRouter } from "react-router"
 import { isEqual, debounce, reduce } from "lodash-es"
 import { values as objectValues } from "core-js/library/fn/object"
-import LayerForm from "./components/LayerForm"
+import LayerForm from "./LayerForm"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {

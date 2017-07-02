@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import DatasetSearch from "./components/DatasetSearch"
+import DatasetSearch from "./DatasetSearch"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loadChips as layerFormLoadChips } from "../../redux/modules/layerform"
 import * as datasearchModule from "../../redux/modules/datasearch"

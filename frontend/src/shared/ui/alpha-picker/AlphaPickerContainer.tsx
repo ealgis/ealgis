@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import AlphaPicker from "./components/AlphaPicker"
+import AlphaPicker from "./AlphaPicker"
 
 export interface AlphaPickerContainerProps {
     input: any
