@@ -15,7 +15,7 @@ import Toggle from "material-ui/Toggle"
 import ActionBugReport from "material-ui/svg-icons/action/bug-report"
 import ActionFace from "material-ui/svg-icons/action/face"
 import ActionSearch from "material-ui/svg-icons/action/search"
-import SocialSentimentVeryDissatisfied from "material-ui/svg-icons/social/sentiment-very-dissatisfied"
+import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
 import { IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
@@ -123,7 +123,7 @@ export class EalUI extends React.Component<IProps, {}> {
                                             />}
                                         <MenuItem
                                             primaryText="Logout"
-                                            leftIcon={<SocialSentimentVeryDissatisfied />}
+                                            leftIcon={<ActionExitToApp />}
                                             onClick={doLogout}
                                         />
                                     </IconMenu>}

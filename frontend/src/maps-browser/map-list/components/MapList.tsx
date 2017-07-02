@@ -72,7 +72,6 @@ export class MapList extends React.Component<IProps, {}> {
                                     key={"create-new-map"}
                                     containerElement={<Link to={"/new/map/"} />}
                                     title={"Create Map"}
-                                    titleStyle={{ color: "#ffffff" }}
                                     titleBackground={"rgba(0, 188, 212, 0.7)"}
                                     cols={1}
                                 >

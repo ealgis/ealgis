@@ -34,16 +34,16 @@ const composeEnhancers = composeWithDevTools(
 const store: Store<IStore> = createStore(
     reducers,
     composeEnhancers(
-        applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), AnalyticsMiddleware, createRavenMiddleware(Raven))
+        applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), AnalyticsMiddleware as any, createRavenMiddleware(Raven))
     )
 )
 
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(browserHistory as any, store)
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={history} onUpdate={fireAnalyticsTracking}>
-            {getRoutes(store)}
+        <Router history={history as any} onUpdate={fireAnalyticsTracking}>
+            {getRoutes(store as any)}
         </Router>
     </Provider>,
     document.getElementById("ealgis")

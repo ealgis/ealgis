@@ -23,7 +23,7 @@ import {
     ILayer,
 } from "../../../redux/modules/interfaces"
 
-import { Field, Fields, reduxForm } from "redux-form"
+import { Field, Fields, Config, reduxForm } from "redux-form"
 import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
 import ColourPicker from "../../../shared/ui/colour-picker/ColourPickerContainer"
 import AlphaPicker from "../../../shared/ui/alpha-picker/AlphaPickerContainer"
@@ -504,6 +504,6 @@ let LayerFormReduxForm = reduxForm({
     onChange: (values: object, dispatch: Function, props: any) => {
         props.onFormChange(values, dispatch, props)
     },
-})(LayerForm)
+} as Config<any, any, any>)(LayerForm)
 
 export default LayerFormReduxForm

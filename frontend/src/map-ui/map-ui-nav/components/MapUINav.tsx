@@ -271,7 +271,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     </SharingDescription>
                                                 }
                                                 secondaryTextLines={2}
-                                            />
+                                            /> as any
                                         }
                                         checkedIcon={<ActionLock />}
                                         uncheckedIcon={<ActionLock />}
@@ -291,7 +291,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     </SharingDescription>
                                                 }
                                                 secondaryTextLines={2}
-                                            />
+                                            /> as any
                                         }
                                         checkedIcon={<ActionLockOpen />}
                                         uncheckedIcon={<ActionLockOpen />}

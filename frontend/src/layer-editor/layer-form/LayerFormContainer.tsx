@@ -351,7 +351,7 @@ export class LayerFormContainer extends React.Component<
                 mapId={mapDefinition.id}
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
                 layerId={layerId}
-                layerHash={layerDefinition.hash}
+                layerHash={layerDefinition.hash || ""}
                 layerFillColourScheme={layerFillColourScheme}
                 layerGeometry={layerGeometry ? JSON.parse(layerGeometry) : undefined}
                 dirtyFormModalOpen={dirtyFormModalOpen}

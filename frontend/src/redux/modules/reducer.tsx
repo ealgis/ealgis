@@ -14,6 +14,8 @@ import { default as layerquerysummary, IModule as ILayerQuerySummaryModule } fro
 import { default as snackbars, IModule as ISnackbarsModule } from "./snackbars"
 import { reduxFormReducer as layerFormReducer } from "./layerform"
 
+const formReducer: any = form // Silencing TypeScript errors due to older @types/redux-form package
+
 export interface IStore {
     ealgis: IEALGISModule
     app: IAppModule
@@ -39,7 +41,7 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     layerquerysummary,
     snackbars,
     routing: routerReducer,
-    form: form.plugin({
+    form: formReducer.plugin({
         layerForm: layerFormReducer,
     }),
 })

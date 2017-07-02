@@ -71,6 +71,10 @@ export interface IState {
     searchText?: string
 }
 
+declare global {
+    interface Window { google: any; }
+}
+
 class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
     geocoder: any
     service: any
@@ -165,13 +169,13 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
 
         return (
             <AutoComplete
-                {...autocompleteProps}
+                {...autocompleteProps as any}
                 // Used by Google Places API / No user input
                 searchText={this.state.searchText}
                 onUpdateInput={this.updateInput}
                 filter={AutoComplete.noFilter}
                 onNewRequest={(chosenRequest, index) => {
-                    this.getLatLgn(chosenRequest.placeId, results => {
+                    this.getLatLgn(chosenRequest.placeId, (results: Array<any>, status: any) => {
                         this.props.results!(
                             results[0].geometry.location.lat(),
                             results[0].geometry.location.lng(),
