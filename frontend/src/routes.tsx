@@ -16,6 +16,9 @@ export default (store: IStore) => {
             {/* Home (main) route */}
             <IndexRoute components={{ content: Welcome }} />
 
+            {/* Static pages */}
+            <Route path="about" components={{ content: About }} />
+
             {/* Maps browser routes */}
             <Route path="(:tabName)" components={{ content: MapListContainerWrapped }} />
 
@@ -33,9 +36,6 @@ export default (store: IStore) => {
                 components={{ content: MapUIContainerWrapped, sidebar: LayerFormContainerWrapped }}
             />
             <Route path="new/map/" components={{ content: MapUIContainerWrapped, sidebar: MapFormContainerWrapped }} />
-
-            {/* Static pages */}
-            <Route path="about" components={{ content: About }} />
         </Route>
     )
 }
