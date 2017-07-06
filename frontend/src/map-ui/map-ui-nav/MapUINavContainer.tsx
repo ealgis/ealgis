@@ -18,11 +18,19 @@ import {
     eMapShared,
 } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { IStore, IMap, IPosition, IMapPositionDefaults } from "../../redux/modules/interfaces"
+import {
+    IStore,
+    IMap,
+    IPosition,
+    IMapPositionDefaults,
+    IMUITheme,
+    IMUIThemePalette,
+} from "../../redux/modules/interfaces"
+import muiThemeable from "material-ui/styles/muiThemeable"
 
 interface IProps {}
 
-export interface IStateProps {
+export interface IStoreProps {
     // From Props
     userId: number
     tabName: string
@@ -30,6 +38,7 @@ export interface IStateProps {
     mapPosition: IPosition
     deleteModalOpen: boolean
     previousPath: string
+    muiThemePalette: IMUIThemePalette
 }
 
 export interface IDispatchProps {
@@ -57,8 +66,13 @@ interface IRouterProps {
     location: any
 }
 
+interface IOwnProps {
+    params: IRouteProps
+    muiTheme: IMUITheme
+}
+
 export class MapUINavContainer extends React.Component<
-    IProps & IStateProps & IDispatchProps & IRouteProps & IRouterProps,
+    IProps & IStoreProps & IDispatchProps & IRouteProps & IRouterProps,
     {}
 > {
     isIncludeGeomAttrsChecked: boolean = false
@@ -83,6 +97,7 @@ export class MapUINavContainer extends React.Component<
             mapDefinition,
             mapPosition,
             deleteModalOpen,
+            muiThemePalette,
             onAddLayer,
             onDuplicateMap,
             onSetOrigin,
@@ -99,6 +114,7 @@ export class MapUINavContainer extends React.Component<
         if (mapDefinition !== undefined) {
             return (
                 <MapUINav
+                    muiThemePalette={muiThemePalette}
                     tabName={tabName}
                     defn={mapDefinition}
                     isOwner={mapDefinition.owner_user_id === userId}
@@ -127,7 +143,7 @@ export class MapUINavContainer extends React.Component<
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
+const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { maps, app, map, ealgis } = state
     return {
         userId: ealgis.user.id,
@@ -136,6 +152,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }) => {
         mapPosition: map.position,
         deleteModalOpen: app.modals.get("deleteMap") || false,
         previousPath: app.previousPath,
+        muiThemePalette: ownProps.muiTheme.palette,
     }
 }
 
@@ -206,4 +223,4 @@ const mapDispatchToProps = (dispatch: Function) => {
 
 const MapUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapUINavContainer)
 
-export default MapUINavContainerWrapped
+export default muiThemeable()(MapUINavContainerWrapped)

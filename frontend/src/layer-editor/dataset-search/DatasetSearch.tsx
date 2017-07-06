@@ -15,7 +15,7 @@ import { ITableAndCols } from "../../redux/modules/interfaces"
 
 import Divider from "material-ui/Divider"
 
-import { blue300, grey500, indigo900, orange400, cyan400 } from "material-ui/styles/colors"
+import { blue300, grey500, deepPurple100, orange400, cyan400 } from "material-ui/styles/colors"
 
 const styles: React.CSSProperties = {
     datasetSearchHeader: {
@@ -46,7 +46,7 @@ const styles: React.CSSProperties = {
         marginBottom: "10px",
     },
     searchResultsCardText: {
-        backgroundColor: indigo900,
+        backgroundColor: deepPurple100,
     },
     searchResultsReactList: {
         overflow: "auto",

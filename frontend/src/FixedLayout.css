@@ -4,59 +4,67 @@ html,
 body,
 #ealgis,
 .page {
-  height: 100%; /* needed for proper layout */
-  font-family: 'Roboto', sans-serif;
+    height: 100%; /* needed for proper layout */
+    font-family: 'Roboto', sans-serif;
 }
 
 body {
-  overflow: hidden;
-  margin: 0;
+    overflow: hidden;
+    margin: 0;
 }
 
 p {
-  margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 .page {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .page-header {
-  flex: 0 0 auto;
-  background-color: #dcdcdc;
+    flex: 0 0 auto;
+    background-color: #dcdcdc;
 }
 
 .page-content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .page-nav {
-  order: -1;
-  overflow: auto;
+    order: -1;
+    overflow: auto;
 }
 
 @media (min-width: 768px) {
-  .page-content {
-    flex-direction: row;
-    flex: 1;
-  }
-  .page-main-content {
-    flex: 1;
-  }
-  .page-main-content > div,
-  .page-main-content > div > div {
-    height: 100%
-  }
-  .page-nav {
-    /* Third param is the width of the column */
-    flex: 0 0 24em;
-  }
+    .page-content {
+        flex-direction: row;
+        flex: 1;
+    }
+    .page-main-content {
+        flex: 1;
+    }
+    .page-main-content > div,
+    .page-main-content > div > div {
+        height: 100%;
+    }
+    .page-nav {
+        /* Third param is the width of the column */
+        flex: 0 0 24em;
+    }
 }
 
 .page-footer {
-  flex: 0 0 auto;
-  background-color: #dcdcdc;
+    flex: 0 0 auto;
+    background-color: #dcdcdc;
+}
+
+.ol-control button {
+    background-color: #673ab7 !important; /* deepPurple500 */
+}
+
+.ol-control button:focus {
+    outline-color: #9575cd !important; /* deepPurple300 */
 }

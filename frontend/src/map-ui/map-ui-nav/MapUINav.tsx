@@ -13,7 +13,8 @@ import NavigationClose from "material-ui/svg-icons/navigation/close"
 import Divider from "material-ui/Divider"
 import DataInspector from "../data-inspector/DataInspector"
 import * as CopyToClipboard from "react-copy-to-clipboard"
-import { IMap } from "../../redux/modules/interfaces"
+import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { white } from "material-ui/styles/colors"
 
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -37,13 +38,13 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
 
-const MapName = styled.h2`
-    text-align: center;
+const MapName = styled.h3`
+    font-weight: bold;
+    color: ${white};
+    padding-left: 20px;
 `
 
-const TabContainer = styled.div`
-    margin: 10px;
-`
+const TabContainer = styled.div`margin: 0px;`
 
 const DownloadButton = styled(RaisedButton)`
     margin: 12px !important;
@@ -73,6 +74,7 @@ const styles: React.CSSProperties = {
 }
 
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     tabName: string
     defn: IMap
     isOwner: boolean
@@ -93,6 +95,7 @@ export interface IProps {
 export class MapUINav extends React.Component<IProps, {}> {
     render() {
         const {
+            muiThemePalette,
             tabName,
             defn,
             isOwner,
@@ -117,57 +120,53 @@ export class MapUINav extends React.Component<IProps, {}> {
 
         return (
             <div>
-                <MapName>{defn.name}</MapName>
-
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
-                        {isOwner &&
-                            <IconButton tooltip="Add a new layer" tooltipPosition="bottom-right" onClick={onAddLayer}>
-                                <MapsAddLocation />
-                            </IconButton>}
-                        {isOwner &&
-                            <IconButton
-                                tooltip="Edit the name and description of your map"
-                                tooltipPosition="bottom-right"
-                                containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}
-                            >
-                                <ModeEdit />
-                            </IconButton>}
-                        <IconButton
-                            tooltip="Duplicate this map and use it to create a new map"
-                            tooltipPosition="bottom-right"
-                            onClick={onDuplicateMap}
-                        >
-                            <ContentCopy />
-                        </IconButton>
-                        <IconButton
-                            tooltip="Reset the position of this map to its default view"
-                            tooltipPosition="bottom-right"
-                            onClick={onResetOrigin}
-                        >
-                            <ActionHome />
-                        </IconButton>
-                        {isOwner &&
-                            <IconButton
-                                tooltip="Delete this map"
-                                tooltipPosition="bottom-right"
-                                onClick={onToggleDeleteModalState}
-                            >
-                                <ActionDelete />
-                            </IconButton>}
+                        <MapName>
+                            {defn.name}
+                        </MapName>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
+                        <IconMenu
+                            iconButtonElement={
+                                <IconButton touch={true}>
+                                    <MoreVertIcon color={white} />
+                                </IconButton>
+                            }
+                        >
+                            {isOwner &&
+                                <MenuItem
+                                    primaryText="Add Layer"
+                                    leftIcon={<MapsAddLocation />}
+                                    onClick={onAddLayer}
+                                />}
+                            {isOwner &&
+                                <MenuItem
+                                    primaryText="Edit Map"
+                                    leftIcon={<ModeEdit />}
+                                    containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}
+                                />}
+                            <MenuItem primaryText="Duplicate Map" leftIcon={<ContentCopy />} onClick={onDuplicateMap} />
+                            <MenuItem primaryText="Reset Position" leftIcon={<ActionHome />} onClick={onResetOrigin} />
+                            {isOwner &&
+                                <MenuItem
+                                    primaryText="Delete Map"
+                                    leftIcon={<ActionDelete />}
+                                    onClick={onToggleDeleteModalState}
+                                />}
+                        </IconMenu>
+
                         <IconButton
                             tooltip="Close this map and return to your list of maps"
                             tooltipPosition="bottom-right"
                             containerElement={<Link to={"/maps"} />}
                         >
-                            <NavigationClose />
+                            <NavigationClose color={white} />
                         </IconButton>
                     </ToolbarGroup>
                 </Toolbar>
 
-                <Tabs value={tabName}>
+                <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                     {/* START LAYERS TAB */}
                     <Tab
                         label="LAYERS"
@@ -263,15 +262,17 @@ export class MapUINav extends React.Component<IProps, {}> {
                                         value={1}
                                         iconStyle={styles.radioButtonIconStyle}
                                         label={
-                                            <ListItem
-                                                primaryText="Private"
-                                                secondaryText={
-                                                    <SharingDescription>
-                                                        Your map is not shared with anyone - only you can see it.
-                                                    </SharingDescription>
-                                                }
-                                                secondaryTextLines={2}
-                                            /> as any
+                                            (
+                                                <ListItem
+                                                    primaryText="Private"
+                                                    secondaryText={
+                                                        <SharingDescription>
+                                                            Your map is not shared with anyone - only you can see it.
+                                                        </SharingDescription>
+                                                    }
+                                                    secondaryTextLines={2}
+                                                />
+                                            ) as any
                                         }
                                         checkedIcon={<ActionLock />}
                                         uncheckedIcon={<ActionLock />}
@@ -282,16 +283,18 @@ export class MapUINav extends React.Component<IProps, {}> {
                                         value={2}
                                         iconStyle={styles.radioButtonIconStyle}
                                         label={
-                                            <ListItem
-                                                primaryText="Shared"
-                                                secondaryText={
-                                                    <SharingDescription>
-                                                        Your map is shared with everyone in the EALGIS community. They
-                                                        can view the map or make a copy for themselves.
-                                                    </SharingDescription>
-                                                }
-                                                secondaryTextLines={2}
-                                            /> as any
+                                            (
+                                                <ListItem
+                                                    primaryText="Shared"
+                                                    secondaryText={
+                                                        <SharingDescription>
+                                                            Your map is shared with everyone in the EALGIS community.
+                                                            They can view the map or make a copy for themselves.
+                                                        </SharingDescription>
+                                                    }
+                                                    secondaryTextLines={2}
+                                                />
+                                            ) as any
                                         }
                                         checkedIcon={<ActionLockOpen />}
                                         uncheckedIcon={<ActionLockOpen />}

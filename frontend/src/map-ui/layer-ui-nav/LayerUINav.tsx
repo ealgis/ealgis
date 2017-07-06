@@ -5,11 +5,12 @@ import LegendPeekBar from "../legend-peek-bar/LegendPeekBarContainer"
 import Paper from "material-ui/Paper"
 import Toggle from "material-ui/Toggle"
 import Subheader from "material-ui/Subheader"
+import Divider from "material-ui/Divider"
 import { List, ListItem } from "material-ui/List"
 import RaisedButton from "material-ui/RaisedButton"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import LayerDeleteConfirmDialog from "../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
-import { IMap, ILayer } from "../../redux/modules/interfaces"
+import { IMap, ILayer, IMUIThemePalette } from "../../redux/modules/interfaces"
 
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -23,8 +24,6 @@ import ActionDelete from "material-ui/svg-icons/action/delete"
 import ActionBookmark from "material-ui/svg-icons/action/bookmark"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
-
-import { grey400, darkBlack, lightBlack } from "material-ui/styles/colors"
 
 const PaperListItem = styled(Paper)`
     margin: 7px !important;
@@ -47,13 +46,8 @@ const styles: React.CSSProperties = {
     },
 }
 
-const iconButtonElement = (
-    <IconButton touch={true}>
-        <MoreVertIcon color={grey400} />
-    </IconButton>
-)
-
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     // Props
     defn: ILayer
     layerId: number
@@ -70,6 +64,7 @@ export interface IProps {
 export class LayerUINav extends React.Component<IProps, {}> {
     render() {
         const {
+            muiThemePalette,
             defn,
             layerId,
             mapId,
@@ -81,6 +76,12 @@ export class LayerUINav extends React.Component<IProps, {}> {
             deleteConfirmModalId,
             getGeometryDescription,
         } = this.props
+
+        const iconButtonElement = (
+            <IconButton touch={true}>
+                <MoreVertIcon color={muiThemePalette.accent2Color} />
+            </IconButton>
+        )
 
         let legendPeekProps: any = {}
         if ("olStyleDef" in defn) {
@@ -111,12 +112,13 @@ export class LayerUINav extends React.Component<IProps, {}> {
         }
 
         return (
-            <PaperListItem zDepth={1}>
+            <div>
                 <ListItem
                     primaryText={defn.name}
                     secondaryText={
                         <p>
-                            {getGeometryDescription(defn)}<br />
+                            {getGeometryDescription(defn)}
+                            <br />
                             {defn.description}
                         </p>
                     }
@@ -125,6 +127,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     rightToggle={<LayerToggle toggled={defn.visible} onToggle={onToggleVisibility} />}
                     {...legendPeekProps}
                 />
+                <Divider />
 
                 <LayerDeleteConfirmDialog
                     modalId={deleteConfirmModalId}
@@ -132,7 +135,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     layerId={layerId}
                     layerDefinition={defn}
                 />
-            </PaperListItem>
+            </div>
         )
     }
 }

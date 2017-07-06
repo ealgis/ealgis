@@ -34,7 +34,11 @@ const composeEnhancers = composeWithDevTools(
 const store: Store<IStore> = createStore(
     reducers,
     composeEnhancers(
-        applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), AnalyticsMiddleware as any, createRavenMiddleware(Raven))
+        applyMiddleware(
+            thunkMiddleware.withExtraArgument(ealapi),
+            AnalyticsMiddleware as any,
+            createRavenMiddleware(Raven)
+        )
     )
 )
 

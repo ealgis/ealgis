@@ -1,5 +1,22 @@
 import * as React from "react"
+import styled from "styled-components"
+import {
+    deepPurple900,
+    deepPurple800,
+    deepPurple700,
+    deepPurple600,
+    deepPurple500,
+    deepPurple400,
+    deepPurple300,
+    deepPurple200,
+    deepPurple100,
+    white,
+    fullBlack,
+    yellow500,
+} from "material-ui/styles/colors"
+import { fade } from "material-ui/utils/colorManipulator"
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
+import getMuiTheme from "material-ui/styles/getMuiTheme"
 import EalUI from "./EalUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
@@ -8,10 +25,44 @@ import { fetchUserMapsDataAndColourInfo, logoutUser } from "./redux/modules/ealg
 import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
+import LinearProgress from "material-ui/LinearProgress"
 import GoogleMapLoader from "react-google-maps-loader"
-import { IStore, IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
+import { IStore, IAppModule, ISnackbarsModule, IUser, IMUITheme } from "./redux/modules/interfaces"
 
 import "./FixedLayout.css"
+
+const muiTheme = getMuiTheme({
+    palette: {
+        primary1Color: deepPurple500, // AppBar and Tabs, Buttons, Active textfield et cetera
+        primary2Color: yellow500, // Whatever this is used for, we don't use that element
+        primary3Color: deepPurple100, // Switch background
+        accent1Color: deepPurple500, // Active tab highlight colour
+        accent2Color: deepPurple400, // Toolbars and switch buttons
+        accent3Color: deepPurple300, // Our app LinearProgress bar and Tabs
+        textColor: fullBlack,
+        alternateTextColor: white, // Buttons and Tabs
+        canvasColor: white,
+        borderColor: deepPurple100, // Unselected textfield, Divider, et cetera fields
+        disabledColor: fade(deepPurple500, 0.5), // Unselected textfield et cetera label colour
+        pickerHeaderColor: yellow500, // Unused
+        clockCircleColor: fade(yellow500, 0.07), // Unused
+        shadowColor: fullBlack,
+    },
+    appBar: {
+        height: 50,
+    },
+})
+
+const EALGISLogo = styled.img`
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 384px;
+    height: 226px;
+`
 
 // FIXME - Where should API keys be stored?
 const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU" // Google Maps JavaScript API
@@ -80,15 +131,21 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
 
         if (app.loading === true) {
             return (
-                <MuiThemeProvider>
-                    <CircularProgress style={{ marginLeft: "48%", marginTop: "24%" }} />
+                <MuiThemeProvider muiTheme={muiTheme}>
+                    <div style={{ backgroundColor: muiTheme.palette!.primary1Color, width: "100%", height: "100%" }}>
+                        <LinearProgress mode="indeterminate" color={muiTheme.palette!.accent3Color} />
+                        <EALGISLogo
+                            src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background.png")}
+                        />
+                    </div>
                 </MuiThemeProvider>
             )
         }
 
         return (
-            <MuiThemeProvider>
+            <MuiThemeProvider muiTheme={muiTheme}>
                 <EalUI
+                    muiThemePalette={!muiTheme.palette}
                     app={app}
                     user={user}
                     snackbars={snackbars}

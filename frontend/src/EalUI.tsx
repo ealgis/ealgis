@@ -9,7 +9,6 @@ import IconMenu from "material-ui/IconMenu"
 import MenuItem from "material-ui/MenuItem"
 import IconButton from "material-ui/IconButton"
 import LinearProgress from "material-ui/LinearProgress"
-import { cyanA400 } from "material-ui/styles/colors"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import Toggle from "material-ui/Toggle"
 import ActionBugReport from "material-ui/svg-icons/action/bug-report"
@@ -18,7 +17,12 @@ import ActionSearch from "material-ui/svg-icons/action/search"
 import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
-import { IAppModule, ISnackbarsModule, IUser } from "./redux/modules/interfaces"
+import { IAppModule, ISnackbarsModule, IUser, IMUIThemePalette } from "./redux/modules/interfaces"
+
+const EALGISLogo = styled.img`
+    width: 160px;
+    padding: 10px;
+`
 
 const HiddenIconButton = styled(IconButton)`
     width: 0px !important;
@@ -36,6 +40,7 @@ const SearchIconButton = styled(IconButton)`
 `
 
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     app: IAppModule
     user: any
     snackbars: ISnackbarsModule
@@ -55,6 +60,7 @@ export interface IProps {
 export class EalUI extends React.Component<IProps, {}> {
     render() {
         const {
+            muiThemePalette,
             app,
             user,
             snackbars,
@@ -81,9 +87,17 @@ export class EalUI extends React.Component<IProps, {}> {
         return (
             <div className="page">
                 <div className="page-header">
-                    <LinearProgress mode="indeterminate" color={cyanA400} style={linearProgressStyle} />
+                    <LinearProgress
+                        mode="indeterminate"
+                        color={muiThemePalette.accent3Color}
+                        style={linearProgressStyle}
+                    />
                     <AppBar
-                        title="EALGIS"
+                        title={
+                            <EALGISLogo
+                                src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background_header_bar.png")}
+                            />
+                        }
                         onLeftIconButtonTouchTap={onTapAppBarLeft}
                         iconElementRight={
                             <ToolbarGroup>

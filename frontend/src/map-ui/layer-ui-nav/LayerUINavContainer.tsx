@@ -4,7 +4,8 @@ import { browserHistory } from "react-router"
 import LayerUINav from "./LayerUINav"
 import { toggleModalState } from "../../redux/modules/app"
 import { cloneMapLayer, changeLayerVisibility } from "../../redux/modules/maps"
-import { IStore, IMap, ILayer, IGeomInfo } from "../../redux/modules/interfaces"
+import { IStore, IMap, ILayer, IGeomInfo, IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
+import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface IProps {
     // key: number
@@ -18,12 +19,18 @@ export interface IProps {
 export interface IStateProps {
     mapDefinition: IMap
     geominfo: IGeomInfo
+    muiThemePalette: IMUIThemePalette
 }
 
 export interface IDispatchProps {
     onCloneLayer: Function
     onDeleteLayer: Function
     onToggleVisibility: Function
+}
+
+interface IOwnProps {
+    mapId: number
+    muiTheme: IMUITheme
 }
 
 export class LayerUINavContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
@@ -43,11 +50,13 @@ export class LayerUINavContainer extends React.Component<IProps & IStateProps & 
             onDeleteLayer,
             onToggleVisibility,
             geominfo,
+            muiThemePalette,
         } = this.props
         const deleteConfirmModalId = "LayerDeleteConfirmDialog_" + mapId + "_" + layerId
 
         return (
             <LayerUINav
+                muiThemePalette={muiThemePalette}
                 defn={layerDefinition}
                 layerId={layerId}
                 mapId={mapId}
@@ -63,12 +72,13 @@ export class LayerUINavContainer extends React.Component<IProps & IStateProps & 
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
+const mapStateToProps = (state: IStore, ownProps: any): IStateProps => {
     const { maps, ealgis } = state
 
     return {
         mapDefinition: maps[ownProps.mapId],
         geominfo: ealgis.geominfo,
+        muiThemePalette: ownProps.muiTheme.palette,
     }
 }
 
@@ -88,4 +98,4 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 const LayerUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerUINavContainer)
 
-export default LayerUINavContainerWrapped
+export default muiThemeable()(LayerUINavContainerWrapped)

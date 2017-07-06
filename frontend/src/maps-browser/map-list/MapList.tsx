@@ -6,9 +6,8 @@ import { Tabs, Tab } from "material-ui/Tabs"
 import { GridList, GridTile } from "material-ui/GridList"
 import FlatButton from "material-ui/FlatButton"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
-import { grey500, grey200 } from "material-ui/styles/colors"
 import MapCoverImage from "../map-cover-image/MapCoverImageContainer"
-import { IMap, IMapsModule } from "../../redux/modules/interfaces"
+import { IMap, IMapsModule, IMUIThemePalette } from "../../redux/modules/interfaces"
 
 const MapListContainer = styled.div`
     display: flex;
@@ -35,6 +34,7 @@ const HugeCreateMapIcon = styled(MapsLayers)`
 `
 
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     tabName: string
     userId: number
     maps: IMapsModule
@@ -45,7 +45,7 @@ export interface IProps {
 
 export class MapList extends React.Component<IProps, {}> {
     render() {
-        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
+        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
 
         const mapGridTiles = (maps: Array<Array<any>>) =>
             maps.map(([mapId, map]: Array<any>) =>
@@ -54,8 +54,8 @@ export class MapList extends React.Component<IProps, {}> {
                     containerElement={<Link to={`/map/${map.id}/${map["name-url-safe"]}`} />}
                     title={map.name}
                     subtitle={map.owner_user_id == userId ? map.description : `By ${map.owner.username}`}
+                    titleBackground={muiThemePalette.accent1Color}
                     cols={1}
-                    titleBackground={"rgba(0, 188, 212, 0.7)"}
                 >
                     <MapCoverImage mapDefinition={map as IMap} width={370} height={180} />
                 </GridTile>
@@ -63,7 +63,7 @@ export class MapList extends React.Component<IProps, {}> {
 
         return (
             <div>
-                <Tabs value={tabName}>
+                <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                     {/* START MY MAPS TAB */}
                     <Tab label="My Maps" containerElement={<Link to={"/maps"} />} value="maps">
                         <MapListContainer>
@@ -72,10 +72,13 @@ export class MapList extends React.Component<IProps, {}> {
                                     key={"create-new-map"}
                                     containerElement={<Link to={"/new/map/"} />}
                                     title={"Create Map"}
-                                    titleBackground={"rgba(0, 188, 212, 0.7)"}
+                                    subtitle={" "}
+                                    titleBackground={muiThemePalette.accent1Color}
                                     cols={1}
                                 >
-                                    <HugeCreateMapButton icon={<HugeCreateMapIcon color={grey500} />} />
+                                    <HugeCreateMapButton
+                                        icon={<HugeCreateMapIcon color={muiThemePalette.accent3Color} />}
+                                    />
                                 </GridTile>
 
                                 {mapGridTiles(getMyMaps())}

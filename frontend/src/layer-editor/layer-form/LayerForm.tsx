@@ -21,6 +21,7 @@ import {
     IColourInfo,
     IMap,
     ILayer,
+    IMUIThemePalette,
 } from "../../redux/modules/interfaces"
 
 import { Field, Fields, Config, reduxForm } from "redux-form"
@@ -36,13 +37,9 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 
 const required = (value: any) => (value || value === 0 ? undefined : "Required")
 
-const TabContainer = styled.div`
-    margin: 10px
-`
+const TabContainer = styled.div`margin: 10px;`
 
-const HiddenButton = styled.button`
-    display: none;
-`
+const HiddenButton = styled.button`display: none;`
 
 const FlexboxContainer = styled.div`
     display: -ms-flex;
@@ -57,9 +54,7 @@ const FirstFlexboxColumn = styled.div`
     margin-right: 20px;
 `
 
-const SecondFlexboxColumn = styled.div`
-    flex: 1;
-`
+const SecondFlexboxColumn = styled.div`flex: 1;`
 
 const FauxFieldLabel = styled.h5`
     font-size: 12px;
@@ -157,6 +152,7 @@ const FillColourSchemeFields = (fields: any) => {
 }
 
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     tabName: string
     mapId: number
     mapNameURLSafe: string
@@ -209,6 +205,7 @@ class LayerForm extends React.Component<IProps, {}> {
     render() {
         const { error, handleSubmit, pristine, reset, submitting, change, initialValues }: any = this.props // from react-form
         const {
+            muiThemePalette,
             mapId,
             mapNameURLSafe,
             layerId,
@@ -264,13 +261,16 @@ class LayerForm extends React.Component<IProps, {}> {
                             tooltipPosition="bottom-right"
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
                         >
-                            <NavigationClose />
+                            <NavigationClose color={muiThemePalette.alternateTextColor} />
                         </IconButton>
                     </ToolbarGroup>
                 </Toolbar>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Tabs initialSelectedIndex={tabId}>
+                    <Tabs
+                        initialSelectedIndex={tabId}
+                        tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}
+                    >
                         {/* START DESCRIBE TAB */}
                         <Tab
                             icon={<ContentCreate />}
@@ -498,12 +498,14 @@ class LayerForm extends React.Component<IProps, {}> {
 }
 
 // Decorate the form component
-let LayerFormReduxForm = reduxForm({
-    form: "layerForm", // a unique name for this form
-    enableReinitialize: true,
-    onChange: (values: object, dispatch: Function, props: any) => {
-        props.onFormChange(values, dispatch, props)
-    },
-} as Config<any, any, any>)(LayerForm)
+let LayerFormReduxForm = reduxForm(
+    {
+        form: "layerForm", // a unique name for this form
+        enableReinitialize: true,
+        onChange: (values: object, dispatch: Function, props: any) => {
+            props.onFormChange(values, dispatch, props)
+        },
+    } as Config<any, any, any>
+)(LayerForm)
 
 export default LayerFormReduxForm

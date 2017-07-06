@@ -25,7 +25,10 @@ import {
     IColourInfo,
     IMap,
     ILayer,
+    IMUITheme,
+    IMUIThemePalette,
 } from "../../redux/modules/interfaces"
+import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface ILayerFormValues {
     borderColour: {
@@ -62,6 +65,7 @@ export interface IStoreProps {
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
+    muiThemePalette: IMUIThemePalette
 }
 
 export interface IDispatchProps {
@@ -88,6 +92,11 @@ interface IRouteProps {
     mapName: string
     layerId: number
     tabName: string
+}
+
+interface IOwnProps {
+    params: IRouteProps
+    muiTheme: IMUITheme
 }
 
 const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayerFormValues => {
@@ -343,10 +352,12 @@ export class LayerFormContainer extends React.Component<
             layerGeometry,
             onFormChange,
             layerFormSubmitting,
+            muiThemePalette,
         } = this.props
 
         return (
             <LayerForm
+                muiThemePalette={muiThemePalette}
                 tabName={tabName}
                 mapId={mapDefinition.id}
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
@@ -379,7 +390,7 @@ export class LayerFormContainer extends React.Component<
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { app, maps, ealgis, layerform } = state
     const layerFormValues = formValueSelector("layerForm")
 
@@ -395,6 +406,7 @@ const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): ISto
         geominfo: ealgis.geominfo,
         colourinfo: ealgis.colourinfo,
         layerFormSubmitting: layerform.submitting,
+        muiThemePalette: ownProps.muiTheme.palette,
     }
 }
 
@@ -475,4 +487,4 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 const LayerFormContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerFormContainer)
 
-export default withRouter(LayerFormContainerWrapped)
+export default muiThemeable()(withRouter(LayerFormContainerWrapped))

@@ -9,3 +9,14 @@ export { IModule as IDataSearchModule, ITableAndCols, ITable, IColumn, MetadataJ
 export { IModule as ILayerFormModule } from "./layerform"
 export { IModule as ILayerQuerySummaryModule, ILayerQuerySummary } from "./layerquerysummary"
 export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"
+
+/* Material UI muiThemeable palette object */
+export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
+
+export interface IMUITheme {
+    palette: IMUIThemePalette
+}
+
+export interface IMUIThemeProps {
+    muiTheme: IMUITheme
+}

@@ -2,13 +2,15 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { entries as objectEntries } from "core-js/library/fn/object"
 import MapList from "./MapList"
-import { IStore, IMap, IMapsModule } from "../../redux/modules/interfaces"
+import { IStore, IMap, IMapsModule, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
+import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface IProps {}
 
 export interface IStoreProps {
     userId: number
     maps: IMapsModule
+    muiThemePalette: IMUIThemePalette
 }
 
 export interface IDispatchProps {
@@ -23,10 +25,11 @@ export interface IRouteProps {
 
 export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
-        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps } = this.props
+        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
 
         return (
             <MapList
+                muiThemePalette={muiThemePalette}
                 tabName={tabName}
                 userId={userId}
                 maps={maps}
@@ -38,13 +41,13 @@ export class MapListContainer extends React.Component<IProps & IStoreProps & IDi
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps => {
     const { maps, ealgis } = state
 
     return {
-        // tabName: ownProps.params.tabName,
         userId: ealgis.user.id,
         maps,
+        muiThemePalette: ownProps.muiTheme.palette,
     }
 }
 
@@ -70,4 +73,4 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 const MapListContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapListContainer)
 
-export default MapListContainerWrapped
+export default muiThemeable()(MapListContainerWrapped)

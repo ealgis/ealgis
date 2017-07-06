@@ -8,3 +8,5 @@ declare module "redux-form-material-ui"
 declare module "ol-react"
 declare module "dot-prop-immutable"
 declare module "react-cookie"
+declare module "react-svg"
+declare function require(string: string): string

@@ -1,5 +1,6 @@
 var webpack = require("webpack")
 var LiveReloadPlugin = require("webpack-livereload-plugin")
+var CopyWebpackPlugin = require("copy-webpack-plugin")
 var fs = require("fs")
 
 module.exports = {
@@ -49,6 +50,10 @@ module.exports = {
             //  goes into the vendor chunk)
             minChunks: Infinity,
         }),
+        new CopyWebpackPlugin([
+            { from: __dirname + "/src/assets/brand/ealgis_white_favicon.png" },
+            { from: __dirname + "/src/assets/brand/ealgis_white_logo_transparent_background.png" },
+        ]),
     ],
     output: {
         filename: "bundle.js",
