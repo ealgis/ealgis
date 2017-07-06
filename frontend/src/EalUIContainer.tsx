@@ -43,7 +43,7 @@ const muiTheme = getMuiTheme({
         alternateTextColor: white, // Buttons and Tabs
         canvasColor: white,
         borderColor: deepPurple100, // Unselected textfield, Divider, et cetera fields
-        disabledColor: fade(deepPurple500, 0.5), // Unselected textfield et cetera label colour
+        disabledColor: fade(fullBlack, 0.5), // Unselected textfield et cetera label colour
         pickerHeaderColor: yellow500, // Unused
         clockCircleColor: fade(yellow500, 0.07), // Unused
         shadowColor: fullBlack,
