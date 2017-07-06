@@ -22,17 +22,6 @@ const MapGridList = styled(GridList)`
     width: 100% !important;
 `
 
-const HugeCreateMapButton = styled(FlatButton)`
-    width: 100% !important;
-    height: 100% !important;
-`
-
-const HugeCreateMapIcon = styled(MapsLayers)`
-    width: 15% !important;
-    height: 15% !important;
-    margin-bottom: 25px !important;
-`
-
 export interface IProps {
     muiThemePalette: IMUIThemePalette
     tabName: string
@@ -68,19 +57,6 @@ export class MapList extends React.Component<IProps, {}> {
                     <Tab label="My Maps" containerElement={<Link to={"/maps"} />} value="maps">
                         <MapListContainer>
                             <MapGridList cols={4} cellHeight={180} padding={10}>
-                                <GridTile
-                                    key={"create-new-map"}
-                                    containerElement={<Link to={"/new/map/"} />}
-                                    title={"Create Map"}
-                                    subtitle={" "}
-                                    titleBackground={muiThemePalette.accent1Color}
-                                    cols={1}
-                                >
-                                    <HugeCreateMapButton
-                                        icon={<HugeCreateMapIcon color={muiThemePalette.accent3Color} />}
-                                    />
-                                </GridTile>
-
                                 {mapGridTiles(getMyMaps())}
                             </MapGridList>
                         </MapListContainer>

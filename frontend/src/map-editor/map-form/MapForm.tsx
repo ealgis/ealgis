@@ -11,7 +11,7 @@ import { TextField } from "redux-form-material-ui"
 
 import IconButton from "material-ui/IconButton"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import { red500 } from "material-ui/styles/colors"
+import { red500, white } from "material-ui/styles/colors"
 
 const required = (value: any) => (value ? undefined : "Required")
 
@@ -39,7 +39,7 @@ export class MapForm extends React.Component<IProps, {}> {
 
         let closeLink =
             mapDefinition === undefined
-                ? <Link to={`/`} />
+                ? <Link to={`/maps`} />
                 : <Link to={`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}`} />
 
         return (
@@ -60,7 +60,7 @@ export class MapForm extends React.Component<IProps, {}> {
                             tooltipPosition="bottom-right"
                             containerElement={closeLink}
                         >
-                            <NavigationClose />
+                            <NavigationClose color={white} />
                         </IconButton>
                     </ToolbarGroup>
                 </Toolbar>
