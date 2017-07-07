@@ -2,10 +2,12 @@ declare var DEVELOPMENT: boolean
 
 import * as ReactGA from "react-ga"
 import { Middleware, MiddlewareAPI } from "redux"
-import { IStore } from "../../redux/modules/interfaces"
+import { IStore, IConfig } from "../../redux/modules/interfaces"
+const Config: IConfig = require("Config") as any
 
-// FIXME Where should config props like API keys live?
-ReactGA.initialize("UA-100057077-1")
+if ("GOOGLE_ANALYTICS_UA" in Config) {
+    ReactGA.initialize("UA-100057077-1")
+}
 
 class GATracker {
     verbose: boolean

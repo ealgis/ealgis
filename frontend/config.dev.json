@@ -1,0 +1,10 @@
+{
+    "GOOGLE_ANALYTICS_UA": "UA-100057077-1",
+    "GOOGLE_MAPS_API_KEY": "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU",
+    "RAVEN_URL": "https://43c72d220a2140e4b36fb75c5042f6e0@sentry.io/173078",
+    "DEFAULT_MAP_POSITION": {
+        "lat": -27.121915157767,
+        "lon": 133.21253738715,
+        "zoom": 4
+    }
+}

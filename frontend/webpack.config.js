@@ -34,6 +34,9 @@ module.exports = {
             "core-js/es7/map",
         ],
     },
+    externals: {
+        Config: JSON.stringify(require("./config.dev.json")),
+    },
     plugins: [
         new LiveReloadPlugin({
             appendScriptTag: false,

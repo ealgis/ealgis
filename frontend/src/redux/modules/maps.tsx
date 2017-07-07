@@ -12,6 +12,8 @@ import { IPosition } from "../../redux/modules/map"
 
 import * as layerFormModule from "../../redux/modules/layerform"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import { IConfig } from "./interfaces"
+const Config: IConfig = require("Config") as any
 
 // Actions
 const LOAD = "ealgis/maps/LOAD"
@@ -443,11 +445,8 @@ export function createMap(map: IMap) {
         let mapCopy: IMap = JSON.parse(JSON.stringify(map))
         mapCopy["json"] = {
             // FIXME
-            map_defaults: {
-                lat: -27.121915157767,
-                lon: 133.21253738715,
-                zoom: 4,
-            },
+            // DEFAULT_MAP_POSITION
+            map_defaults: Config["DEFAULT_MAP_POSITION"],
             layers: [],
             show_legend: true,
         }

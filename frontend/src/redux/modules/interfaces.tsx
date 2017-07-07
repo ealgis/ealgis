@@ -10,6 +10,14 @@ export { IModule as ILayerFormModule } from "./layerform"
 export { IModule as ILayerQuerySummaryModule, ILayerQuerySummary } from "./layerquerysummary"
 export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"
 
+import { IMapPositionDefaults } from "./maps"
+export interface IConfig {
+    "GOOGLE_ANALYTICS_UA": string
+    "GOOGLE_MAPS_API_KEY": string
+    "RAVEN_URL": string
+    "DEFAULT_MAP_POSITION": IMapPositionDefaults
+}
+
 /* Material UI muiThemeable palette object */
 export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
 

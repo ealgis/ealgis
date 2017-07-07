@@ -27,7 +27,8 @@ import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
 import LinearProgress from "material-ui/LinearProgress"
 import GoogleMapLoader from "react-google-maps-loader"
-import { IStore, IAppModule, ISnackbarsModule, IUser, IMUITheme } from "./redux/modules/interfaces"
+import { IStore, IAppModule, ISnackbarsModule, IUser, IMUITheme, IConfig } from "./redux/modules/interfaces"
+const Config: IConfig = require("Config") as any
 
 import "./FixedLayout.css"
 
@@ -63,9 +64,6 @@ const EALGISLogo = styled.img`
     width: 384px;
     height: 226px;
 `
-
-// FIXME - Where should API keys be stored?
-const GOOGLE_MAPS_API_KEY = "AIzaSyBkKVBFX3fXV-kApr_TXLyQQKj9LhBrpQU" // Google Maps JavaScript API
 
 export interface IStateProps {
     // From Props
@@ -230,5 +228,5 @@ const EalContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(EalCont
 // export default EalContainerWrapped
 export default GoogleMapLoader(EalContainerWrapped, {
     libraries: ["places"],
-    key: GOOGLE_MAPS_API_KEY,
+    key: "GOOGLE_MAPS_API_KEY" in Config ? Config["GOOGLE_MAPS_API_KEY"] : "",
 })
