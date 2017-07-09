@@ -2,13 +2,13 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { entries as objectEntries } from "core-js/library/fn/object"
 import MapList from "./MapList"
-import { IStore, IMap, IMapsModule, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
+import { IStore, IUser, IMap, IMapsModule, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface IProps {}
 
 export interface IStoreProps {
-    userId: number
+    user: IUser
     maps: IMapsModule
     muiThemePalette: IMUIThemePalette
 }
@@ -25,17 +25,21 @@ export interface IRouteProps {
 
 export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
-        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
+        const { tabName, user, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
+
+        if (user === null) {
+            return <div />
+        }
 
         return (
             <MapList
                 muiThemePalette={muiThemePalette}
                 tabName={tabName}
-                userId={userId}
+                userId={user.id}
                 maps={maps}
-                getMyMaps={() => getMyMaps(objectEntries(maps), userId)}
-                getSharedMaps={() => getSharedMaps(objectEntries(maps), userId)}
-                getPublicMaps={() => getPublicMaps(objectEntries(maps), userId)}
+                getMyMaps={() => getMyMaps(objectEntries(maps), user.id)}
+                getSharedMaps={() => getSharedMaps(objectEntries(maps), user.id)}
+                getPublicMaps={() => getPublicMaps(objectEntries(maps), user.id)}
             />
         )
     }
@@ -45,7 +49,7 @@ const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps =
     const { maps, ealgis } = state
 
     return {
-        userId: ealgis.user.id,
+        user: ealgis.user,
         maps,
         muiThemePalette: ownProps.muiTheme.palette,
     }

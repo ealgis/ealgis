@@ -35,10 +35,10 @@ export default function reducer(state = initialState, action: IAction) {
 }
 
 // Action Creators
-export function loadUser(user: IUser) {
+export function loadUser(self: ISelf) {
     return {
         type: LOAD_USER,
-        user,
+        user: self.user,
     }
 }
 
@@ -79,6 +79,11 @@ export interface IAction {
     colourinfo: IColourInfo
 }
 
+export interface ISelf {
+    is_logged_in: boolean
+    user: IUser
+}
+
 export interface IUser {
     id: number
     url: string
@@ -90,6 +95,7 @@ export interface IUser {
     is_active: boolean
     date_joined: string
     groups: Array<string>
+    is_approved: boolean
 }
 
 export interface IUserPartial {
@@ -125,8 +131,8 @@ export function fetchUserMapsDataAndColourInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(appLoading())
 
-        const user = await dispatch(fetchUser())
-        if (user.id !== null) {
+        const self: ISelf = await dispatch(fetchUser())
+        if (self.is_logged_in && self.user.is_approved) {
             await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo()), dispatch(fetchColourInfo())])
         }
 

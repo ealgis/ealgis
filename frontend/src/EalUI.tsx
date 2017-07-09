@@ -16,6 +16,7 @@ import ActionFace from "material-ui/svg-icons/action/face"
 import ActionSearch from "material-ui/svg-icons/action/search"
 import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
+import { NotApprovedDialog } from "./authentication/not-approved-dialog/NotApprovedDialog"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
 import { IAppModule, ISnackbarsModule, IUser, IMUIThemePalette } from "./redux/modules/interfaces"
 
@@ -117,13 +118,13 @@ export class EalUI extends React.Component<IProps, {}> {
                                 <HeaderBarButton label="Home" containerElement={<Link to={"/"} />} />
                                 <HeaderBarButton label="Maps" containerElement={<Link to={"/maps"} />} />
                                 <HeaderBarButton label="About" containerElement={<Link to={"/about"} />} />
-                                {user.id !== null &&
+                                {user !== null &&
                                     <HeaderBarButton
                                         label={user.username}
                                         icon={<ActionFace color={"white"} />}
                                         onTouchTap={handleOpenUserMenu}
                                     />}
-                                {user.id !== null &&
+                                {user !== null &&
                                     <IconMenu
                                         iconButtonElement={<HiddenIconButton />}
                                         open={app.userMenuState}
@@ -146,7 +147,8 @@ export class EalUI extends React.Component<IProps, {}> {
                     />
                 </div>
                 <div className="page-content" style={{ display: app.sidebarOpen ? "flex" : "block" }}>
-                    <LoginDialog open={user.id === null} />
+                    <LoginDialog open={user === null} />
+                    <NotApprovedDialog open={user !== null && !user.is_approved} />
                     <main className="page-main-content">
                         {content || this.props.children}
                     </main>
