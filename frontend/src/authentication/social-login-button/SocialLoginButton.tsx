@@ -1,7 +1,11 @@
 import * as React from "react"
 import RaisedButton from "material-ui/RaisedButton"
 
-export interface SocialLoginButtonProps { providerName: string; providerUrl: string }
+export interface SocialLoginButtonProps {
+    providerName: string
+    providerUrl: string
+    colour: string
+}
 export interface SocialLoginButtonState {}
 
 export class SocialLoginButton extends React.Component<SocialLoginButtonProps, SocialLoginButtonState> {
@@ -9,14 +13,17 @@ export class SocialLoginButton extends React.Component<SocialLoginButtonProps, S
         window.location.href = this.props.providerUrl
     }
     render() {
-        const buttonStyle = {
-            margin: 12,
-            display: "block",
-        }
+        const { providerName, colour } = this.props
+
         return (
             <RaisedButton
-                label={"Log in with " + this.props.providerName}
-                style={buttonStyle}
+                label={providerName}
+                style={{
+                    margin: 12,
+                    display: "block",
+                }}
+                backgroundColor={colour}
+                labelColor={"#ffffff"}
                 onTouchTap={this.handleClick}
             />
         )
