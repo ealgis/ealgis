@@ -391,7 +391,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                             component={Slider}
                                             validate={[required]}
                                             min={0}
-                                            max={20}
+                                            max={10}
                                             sliderStyle={styles.borderSizeSlider}
                                             step={1}
                                             onChange={(event: any, newValue: string, previousValue: string) =>
