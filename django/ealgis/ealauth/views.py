@@ -10,7 +10,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .permissions import IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
+from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
 from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
@@ -30,11 +30,25 @@ def api_not_found(request):
 
 class CurrentUserView(APIView):
     def get(self, request):
-        serializer = UserSerializer(request.user, context={'request': request})
-        return Response(serializer.data)
+        if request.user.is_authenticated():
+            serializer = UserSerializer(
+                request.user, context={'request': request}
+            )
+
+            return Response({
+                "is_logged_in": True,
+                "user": serializer.data
+            })
+        else:
+            return Response({
+                "is_logged_in": False,
+                "user": None
+            })
 
 
 class LogoutUserView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         logout(request)
         return Response({})
@@ -53,8 +67,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     """
     API endpoint to allow map definitions to be viewed or edited by the user that owns them.
     """
+    permission_classes = (IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly,)
     serializer_class = MapDefinitionSerializer
-    permission_classes = (IsAuthenticated, IsMapOwnerOrReadOnly,)
 
     def get_queryset(self):
         # More complex example from SO:
@@ -62,7 +76,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return MapDefinition.objects.filter(
             Q(owner_user_id=self.request.user) |
             Q(
-                ~Q(owner_user_id=self.request.user) & Q(shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+                ~Q(owner_user_id=self.request.user) & Q(
+                    shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
             )
             # owner_user_id=self.request.user
         )
@@ -80,13 +95,15 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def shared(self, request, format=None):
-        maps = MapDefinition.objects.all().filter(shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
+        maps = MapDefinition.objects.all().filter(
+            shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
     @list_route(methods=['get'])
     def public(self, request, format=None):
-        maps = MapDefinition.objects.all().filter(shared=MapDefinition.PUBLIC_SHARED).exclude(owner_user_id=request.user)
+        maps = MapDefinition.objects.all().filter(
+            shared=MapDefinition.PUBLIC_SHARED).exclude(owner_user_id=request.user)
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
@@ -121,7 +138,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             json["layers"] = []  # Just in case
         json["layers"].append(request.data["layer"])
 
-        serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
+        serializer = MapDefinitionSerializer(
+            map, data={"json": json}, partial=True)
         if serializer.is_valid():
             serializer.save()
 
@@ -162,7 +180,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         layer["draft"] = True
         json["layers"][layerId] = layer
 
-        serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
+        serializer = MapDefinitionSerializer(
+            map, data={"json": json}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({})
@@ -175,7 +194,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
-            raise ValidationError(detail="LayerId and/or Layer object not found.")
+            raise ValidationError(
+                detail="LayerId and/or Layer object not found.")
 
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
@@ -188,7 +208,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         json["layers"][layerId] = deepupdate(layer, request.data["layer"])
 
-        serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
+        serializer = MapDefinitionSerializer(
+            map, data={"json": json}, partial=True)
         if serializer.is_valid():
             serializer.save()
 
@@ -210,7 +231,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
-            raise ValidationError(detail="LayerId and/or Layer object not found.")
+            raise ValidationError(
+                detail="LayerId and/or Layer object not found.")
 
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
@@ -218,7 +240,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         json = map.json
         json["layers"][layerId] = request.data["layer"]
 
-        serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
+        serializer = MapDefinitionSerializer(
+            map, data={"json": json}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data["json"]["layers"][layerId])
@@ -231,18 +254,22 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         layerId = int(request.data["layerId"])
 
         if not (layerId >= 0 or type(request.data["layer"]) is dict):
-            raise ValidationError(detail="LayerId and/or Layer object not found.")
+            raise ValidationError(
+                detail="LayerId and/or Layer object not found.")
 
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
 
         if "master" not in map.json["layers"][layerId] or "draft" not in map.json["layers"][layerId]:
-            raise ValidationError(detail="Layer has not been edited - nothing to restore.")
+            raise ValidationError(
+                detail="Layer has not been edited - nothing to restore.")
 
         json = map.json
-        json["layers"][layerId] = copy.deepcopy(json["layers"][layerId]["master"])
+        json["layers"][layerId] = copy.deepcopy(
+            json["layers"][layerId]["master"])
 
-        serializer = MapDefinitionSerializer(map, data={"json": json}, partial=True)
+        serializer = MapDefinitionSerializer(
+            map, data={"json": json}, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data["json"]["layers"][layerId])
@@ -272,11 +299,12 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
 
-    @detail_route(methods=['put'], permission_classes=(IsAuthenticated, CanCloneMap, ))
+    @detail_route(methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanCloneMap,))
     def clone(self, request, pk=None, format=None):
         map = self.get_object()
 
-        map.name = "{} Copied {}".format(map.name, int(round(time.time() * 1000)))[:32]
+        map.name = "{} Copied {}".format(
+            map.name, int(round(time.time() * 1000)))[:32]
         map.json["rev"] = 0
         map.id = None
         map.pk = None
@@ -287,7 +315,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(map)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @detail_route(methods=['get'], permission_classes=(IsMapOwner,))
+    @detail_route(methods=['get'], permission_classes=(IsAuthenticatedAndApproved, IsMapOwner,))
     def query_summary(self, request, pk=None, format=None):
         map = self.get_object()
         qp = request.query_params
@@ -309,19 +337,23 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'])
     def export_csv(self, request, pk=None, format=None):
         mapDefn = self.get_object()
-        include_geom_attrs = request.query_params.get("include_geom_attrs", False)
+        include_geom_attrs = request.query_params.get(
+            "include_geom_attrs", False)
         include_geom_attrs = True if (include_geom_attrs == "true") else False
 
         from ..dataexport import export_csv_iter
-        response = HttpResponse(export_csv_iter(mapDefn, include_geom_attrs=include_geom_attrs), content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % urllib.parse.quote(mapDefn.name)
+        response = HttpResponse(export_csv_iter(
+            mapDefn, include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % urllib.parse.quote(
+            mapDefn.name)
         response['Cache-Control'] = 'max-age=86400, public'
         return response
 
     @detail_route(methods=['get'])
     def export_csv_viewport(self, request, pk=None, format=None):
         mapDefn = self.get_object()
-        include_geom_attrs = request.query_params.get("include_geom_attrs", False)
+        include_geom_attrs = request.query_params.get(
+            "include_geom_attrs", False)
         include_geom_attrs = True if (include_geom_attrs == "true") else False
 
         ne = list(map(float, request.query_params.get("ne", None).split(',')))
@@ -330,8 +362,10 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         from ..dataexport import export_csv_iter
-        response = HttpResponse(export_csv_iter(mapDefn, bounds=(ne, sw), include_geom_attrs=include_geom_attrs), content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="%s_%f_%f_%f_%f.csv"' % (urllib.parse.quote(mapDefn.name), ne[0], ne[1], sw[0], sw[1])
+        response = HttpResponse(export_csv_iter(mapDefn, bounds=(
+            ne, sw), include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="%s_%f_%f_%f_%f.csv"' % (
+            urllib.parse.quote(mapDefn.name), ne[0], ne[1], sw[0], sw[1])
         response['Cache-Control'] = 'max-age=86400, public'
         return response
 
@@ -395,11 +429,13 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         # Format OK?
         if "format" not in qp or qp["format"] not in ["geojson", "pbf"]:
-            raise ValidationError(detail="Unknown format '{format}".format(format=format))
+            raise ValidationError(
+                detail="Unknown format '{format}".format(format=format))
 
         # Has Tile Coordinates OK?
         if not("x" in qp and "y" in qp and "z" in qp):
-            raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
+            raise ValidationError(
+                detail="Tile coordinates (X, Y, Z) not found.")
 
         # OK, generate a GeoJSON Vector Tile
         def row_to_dict(row):
@@ -428,7 +464,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         from django.core.cache import cache
         format = qp["format"]
-        cache_key = "layer_{}_{}_{}_{}".format(qp["layer"], qp["x"], qp["y"], qp["z"])
+        cache_key = "layer_{}_{}_{}_{}".format(
+            qp["layer"], qp["x"], qp["y"], qp["z"])
         cache_time = 60 * 60 * 24 * 365  # time to live in seconds
         debugMode = True if "debug" in qp else False
         memcachedEnabled = False if "no_memcached" in qp or debugMode is True else True
@@ -442,7 +479,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if memcachedEnabled is False or features is None:
             eal = apps.get_app_config('ealauth').eal
             # tileSQLStartTime = int(round(time.time() * 1000))
-            results = eal.get_tile_mv(layer, int(qp["x"]), int(qp["y"]), int(qp["z"]))
+            results = eal.get_tile_mv(layer, int(
+                qp["x"]), int(qp["y"]), int(qp["z"]))
             # tileSQLEndTime = int(round(time.time() * 1000))
 
             if qp["format"] == "geojson":
@@ -480,7 +518,9 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if qp["format"] == "geojson":
             # Inject features in debug mode to allow OpenLayers to style the tile coordinates and feature count
             if debugMode:
-                features = features + debug_features(features, int(qp["x"]), int(qp["y"]), int(qp["z"]))
+                features = features + \
+                    debug_features(features, int(
+                        qp["x"]), int(qp["y"]), int(qp["z"]))
 
             return Response({
                 "type": "FeatureCollection",
@@ -488,13 +528,16 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             }, headers=headers)
 
         elif qp["format"] == "pbf":
-            response = HttpResponse(features, content_type="application/x-protobuf")
+            response = HttpResponse(
+                features, content_type="application/x-protobuf")
             for key, val in headers.items():
                 response[key] = val
             return response
 
 
 class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticatedAndApproved,)
+
     def retrieve(self, request, format=None, pk=None):
         schema_name = self.get_schema_from_request(request)
 
@@ -514,7 +557,8 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
         elif schema_name not in eal.get_schemas():
-            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
+            raise ValidationError(
+                detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
 
     def add_columns_to_table(self, table, schema_name):
@@ -534,7 +578,7 @@ class DataInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tabular tables to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedAndApproved,)
     serializer_class = DataInfoSerializer
     getter_method = apps.get_app_config('ealauth').eal.get_data_info
 
@@ -558,7 +602,8 @@ class DataInfoViewSet(viewsets.ViewSet):
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
         elif schema_name not in eal.get_schemas():
-            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
+            raise ValidationError(
+                detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
 
     @list_route(methods=['get'])
@@ -571,13 +616,16 @@ class DataInfoViewSet(viewsets.ViewSet):
         if "table_name" in qp and "schema_name" in qp:
             table = eal.get_data_info(qp["table_name"], qp["schema_name"])
             tables = "{}.{}".format(qp["schema_name"], table.name)
-            viewNames.append(eal.create_materialised_view_for_table(table.name, qp["schema_name"], execute))
+            viewNames.append(eal.create_materialised_view_for_table(
+                table.name, qp["schema_name"], execute))
         elif "all_tables" in qp:
             tables = eal.get_datainfo()
             for key in tables:
-                viewNames.append(eal.create_materialised_view_for_table(tables[key]["name"], tables[key]["schema_name"], execute))
+                viewNames.append(eal.create_materialised_view_for_table(
+                    tables[key]["name"], tables[key]["schema_name"], execute))
         else:
-            raise ValidationError(detail="Invalid query - must specify table_name or all_tables and schema_name.")
+            raise ValidationError(
+                detail="Invalid query - must specify table_name or all_tables and schema_name.")
 
         if execute:
             return Response({"views": viewNames})
@@ -593,7 +641,7 @@ class TableInfoViewSet(ReadOnlyGenericTableInfoViewSet):
     """
     API endpoint that allows data tables to be viewed or edited.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedAndApproved,)
     serializer_class = TableInfoWithColumnsSerializer
     getter_method = apps.get_app_config('ealauth').eal.get_table_info
 
@@ -607,7 +655,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows data columns to be viewed.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedAndApproved,)
     serializer_class = ColumnInfoSerializer
 
     def get_queryset(self):
@@ -638,11 +686,13 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if "geo_source_id" in qp:
             # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011
             # All "Indigenous: Males" (i13) columns in the whole 2011 Census schema
-            query = eal.get_column_info_by_names(qp["name"].split(","), schema_name, qp["geo_source_id"])
+            query = eal.get_column_info_by_names(
+                qp["name"].split(","), schema_name, qp["geo_source_id"])
         else:
             # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011&geo_source_id=4
             # Find the "Indigenous: Males" (i13) column for the SA3 geometry source in the 2011 Census schema
-            query = eal.get_column_info_by_names(qp["name"].split(","), schema_name)
+            query = eal.get_column_info_by_names(
+                qp["name"].split(","), schema_name)
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
@@ -670,7 +720,8 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         schema_name = self.get_schema_from_request(request)
         qp = request.query_params
 
-        columninfo, geometrylinkage, tableinfo = eal.get_table_classes(["column_info", "geometry_linkage", "table_info"], schema_name)
+        columninfo, geometrylinkage, tableinfo = eal.get_table_classes(
+            ["column_info", "geometry_linkage", "table_info"], schema_name)
         search_terms = qp["search"].split(",") if qp["search"] != "" else []
 
         # Constrain our search window to a given geometry source (e.g. All columns relating to SA3s)
@@ -684,7 +735,8 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 .filter(geometrylinkage.geo_source_id == datainfo_id)
 
             if len(search_terms) == 0:
-                raise ValidationError(detail="At least one search term is required when searching by geometry.")
+                raise ValidationError(
+                    detail="At least one search term is required when searching by geometry.")
 
         elif "tableinfo_id" in qp or "tableinfo_name" in qp:
             # Constrain our search window to a given table (e.g. All columns relating to a specific table)
@@ -708,11 +760,13 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 .filter(columninfo.tableinfo_id.in_(tableinfo_id))
 
         else:
-            raise ValidationError(detail="No geo_source_id or tableinfo_id provided.")
+            raise ValidationError(
+                detail="No geo_source_id or tableinfo_id provided.")
 
         # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
         for term in search_terms:
-            query = query.filter(columninfo.metadata_json.ilike("%{}%".format(term)))
+            query = query.filter(
+                columninfo.metadata_json.ilike("%{}%".format(term)))
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
@@ -741,7 +795,8 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
         elif schema_name not in eal.get_schemas():
-            raise ValidationError(detail="Schema name '{}' is not a known schema.".format(schema_name))
+            raise ValidationError(
+                detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
 
 
@@ -749,7 +804,7 @@ class ColoursViewset(viewsets.ViewSet):
     """
     API endpoint that returns available colours scale for styling.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
         return Response(definitions.get_json())
@@ -763,6 +818,7 @@ class SchemasViewSet(viewsets.ViewSet):
     """
     API endpoint that scans the database for EAlGIS-compliant schemas.
     """
+    permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal

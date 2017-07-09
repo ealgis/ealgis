@@ -17,6 +17,11 @@ class CompilationError(Exception):
     pass
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_approved = models.BooleanField(default=False)
+
+
 class MapDefinition(models.Model):
     PRIVATE_SHARED = 1
     AUTHENTICATED_USERS_SHARED = 2
@@ -32,7 +37,8 @@ class MapDefinition(models.Model):
     owner_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     json = JSONField(null=True)
-    shared = models.IntegerField(choices=SHARED_CHOICES, default=PRIVATE_SHARED)
+    shared = models.IntegerField(
+        choices=SHARED_CHOICES, default=PRIVATE_SHARED)
 
     class Meta:
         unique_together = ('name', 'owner_user_id')
@@ -48,7 +54,8 @@ class MapDefinition(models.Model):
         from ealgis.dataexpr import DataExpression
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
-        geometry_source = self.eal.get_geometry_source(geometry_source_name, schema_name)
+        geometry_source = self.eal.get_geometry_source(
+            geometry_source_name, schema_name)
 
         return DataExpression(
             layer['name'],
@@ -73,7 +80,8 @@ class MapDefinition(models.Model):
             return old != new
 
         if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
-            logger.debug("compiling query for layer: {}".format(layer.get('name')))
+            logger.debug(
+                "compiling query for layer: {}".format(layer.get('name')))
             expr = self.compile_expr(layer)
             layer['_postgis_query'] = expr.get_postgis_query()
             logger.debug("... compilation complete; query:")
@@ -91,7 +99,8 @@ class MapDefinition(models.Model):
             "expression": layer["fill"]["expression"],
             "conditional": layer["fill"]["conditional"],
         }
-        layer['hash'] = hashlib.sha1(json.dumps(hash_obj).encode("utf-8")).hexdigest()[:8]
+        layer['hash'] = hashlib.sha1(json.dumps(
+            hash_obj).encode("utf-8")).hexdigest()[:8]
 
     def _layer_set_latlon_bbox(self, layer, bbox):
         layer["latlon_bbox"] = bbox
@@ -136,7 +145,8 @@ class MapDefinition(models.Model):
                     if jump_to_obj is not None:
                         _private_copy_over(v, jump_to_obj)
 
-        old_defn = copy.deepcopy(self.get())  # Otherwise _private_clear() ends up removing private properties from old_layer too
+        # Otherwise _private_clear() ends up removing private properties from old_layer too
+        old_defn = copy.deepcopy(self.get())
         if 'layers' not in defn:
             defn['layers'] = []
         if 'layers' not in old_defn:
