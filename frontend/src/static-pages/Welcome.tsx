@@ -1,10 +1,15 @@
 import * as React from "react"
+import ActionHome from "material-ui/svg-icons/action/home"
+import ActionFeedback from "material-ui/svg-icons/action/feedback"
+import ActionSpeakerNotes from "material-ui/svg-icons/action/speaker-notes"
 
 export class Welcome extends React.Component<undefined, undefined> {
     render() {
         return (
             <div>
-                <h2>Welcome</h2>
+                <h2>
+                    <ActionHome /> Welcome
+                </h2>
 
                 <p>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ultricies eros sed leo pharetra
@@ -17,7 +22,9 @@ export class Welcome extends React.Component<undefined, undefined> {
                     nec ligula mi. Donec gravida sapien eget risus lacinia, a placerat enim tristique.
                 </p>
 
-                <h2>Welcome Back</h2>
+                <h2>
+                    <ActionHome /> Welcome Back
+                </h2>
 
                 <p>
                     Donec hendrerit quam libero, vitae cursus magna scelerisque ac. Donec ullamcorper sit amet libero
@@ -37,12 +44,32 @@ export class Welcome extends React.Component<undefined, undefined> {
                     <li>Nunc ornare tellus fermentum leo rutrum dapibus id eget mi. Aliquam erat volutpat.</li>
                 </ul>
 
-                <h2>Feedback</h2>
+                <h2>
+                    <ActionFeedback /> Feedback
+                </h2>
 
                 <p>
                     Nullam lacinia eget dui in laoreet. Suspendisse gravida, velit sed mattis blandit, nisl felis
                     sodales magna, quis aliquet enim sem vitae elit. Maecenas sed viverra massa. Nulla lacinia ligula eu
                     venenatis ornare.
+                </p>
+
+                <h2>
+                    <ActionSpeakerNotes /> Attribution
+                </h2>
+
+                <p>
+                    When using Census data through EALGIS you will need to adhere to the ABS data attribution
+                    requirements for the Census and ASGS data, as per the{" "}
+                    <a href="https://creativecommons.org/licenses/by/2.5/au/" target="_blank">
+                        Creative Commons (Attribution) license
+                    </a>. More information:{" "}
+                    <a
+                        href="http://www.abs.gov.au/websitedbs/d3310114.nsf/Home/Attributing+ABS+Material"
+                        target="_blank"
+                    >
+                        abs.gov.au - Attributing ABS material
+                    </a>
                 </p>
             </div>
         )
