@@ -6,7 +6,7 @@ import MapUINavContainerWrapped from "./map-ui/map-ui-nav/MapUINavContainer"
 import LayerFormContainerWrapped from "./layer-editor/layer-form/LayerFormContainer"
 import MapFormContainerWrapped from "./map-editor/map-form/MapFormContainer"
 import MapListContainerWrapped from "./maps-browser/map-list/MapListContainer"
-import CreateMap from "./maps-browser/create-map/CreateMap"
+import CreateMapSidebar from "./maps-browser/create-map/CreateMapSidebarContainer"
 import About from "./static-pages/About"
 import Welcome from "./static-pages/Welcome"
 import { IStore } from "./redux/modules/interfaces"
@@ -21,7 +21,7 @@ export default (store: IStore) => {
             <Route path="about" components={{ content: About }} />
 
             {/* Maps browser routes */}
-            <Route path="(:tabName)" components={{ content: MapListContainerWrapped, sidebar: CreateMap }} />
+            <Route path="(:tabName)" components={{ content: MapListContainerWrapped, sidebar: CreateMapSidebar }} />
 
             {/* Map and layer routes */}
             <Route

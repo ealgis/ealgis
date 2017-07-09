@@ -3,8 +3,6 @@ import styled from "styled-components"
 import { Link } from "react-router"
 import RaisedButton from "material-ui/RaisedButton"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
-import { IMUITheme } from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
 
 const HugeCreateMapButton = styled(RaisedButton)`
   width: 95%;
@@ -18,22 +16,23 @@ const HugeCreateMapIcon = styled(MapsLayers)`
 `
 
 export interface IProps {
-    muiTheme: IMUITheme
+    isApprovedUser: boolean
 }
 
 export class CreateMap extends React.Component<IProps, {}> {
     render() {
-        const { muiTheme } = this.props
+        const { isApprovedUser } = this.props
 
         return (
             <HugeCreateMapButton
                 containerElement={<Link to={"/new/map/"} />}
                 label="New Map"
                 secondary={true}
+                disabled={!isApprovedUser}
                 icon={<MapsLayers />}
             />
         )
     }
 }
 
-export default muiThemeable()(CreateMap)
+export default CreateMap
