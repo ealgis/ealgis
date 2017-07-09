@@ -1,5 +1,6 @@
 import itertools
 import logging
+import os
 
 
 def pairwise(iterable):
@@ -13,7 +14,8 @@ def make_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
-    fmt = logging.Formatter("%(asctime)s [%(levelname)-7s] [%(threadName)s]  %(message)s")
+    fmt = logging.Formatter(
+        "%(asctime)s [%(levelname)-7s] [%(threadName)s]  %(message)s")
     handler.setFormatter(fmt)
     logger.addHandler(handler)
     return logger
@@ -31,3 +33,10 @@ def deepupdate(original, update):
         elif isinstance(value, dict):
             deepupdate(value, update[key])
     return update
+
+
+def get_env(k, d=None):
+    if k not in os.environ:
+        return d
+    v = os.environ[k]
+    return v

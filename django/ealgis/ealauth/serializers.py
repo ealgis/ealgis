@@ -1,7 +1,7 @@
 import json
 from django.contrib.auth.models import User
 from .models import (
-    MapDefinition)
+    MapDefinition, Profile)
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
@@ -10,7 +10,16 @@ from ealgis.ealgis import ValueError, NoMatches, TooManyMatches, CompilationErro
 from urllib.parse import quote_plus
 
 
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            'is_approved')
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    is_approved = serializers.BooleanField(source='profile.is_approved')
+
     class Meta:
         model = User
         fields = (
@@ -23,7 +32,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'is_staff',
             'is_active',
             'date_joined',
-            'groups')
+            'groups',
+            'is_approved')
 
 
 class UserPublicDetailsSerializer(serializers.ModelSerializer):

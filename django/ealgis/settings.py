@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from ealgis.util import get_env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,14 +63,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ROOT_URLCONF = 'ealgis.urls'
-
-
-def get_env(k, d=None):
-    if k not in os.environ:
-        return d
-    v = os.environ[k]
-    return v
-
 
 SOCIAL_AUTH_TWITTER_KEY = get_env('SOCIAL_AUTH_TWITTER_KEY')
 SOCIAL_AUTH_TWITTER_SECRET = get_env('SOCIAL_AUTH_TWITTER_SECRET')
