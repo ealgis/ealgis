@@ -1,5 +1,6 @@
 import json
 import os
+import math
 
 import sqlalchemy as sqlalchemy
 from sqlalchemy import create_engine, inspect
@@ -426,7 +427,21 @@ class EAlGIS(object):
             resolution = 6378137.0 * 2.0 * math.pi / 256.0 / math.pow(2.0, z)
             tolerance = resolution / 20
 
-            extent_buffer = resolution * 2.5
+            # Buffer the tile extent to ensure the rendered features line up
+            # and, importantly, by the size of the border line width to ensure
+            # we don't see the clipped borders of tiles.
+            tileSize = 256  # pixels
+            # Roughly how many metres in a given pixel at this zoom level
+            pixelInMetres = (east - west) / tileSize
+            minRenderBuffer = 2  # Ensure our buffer is never lower than 2 pixels
+            renderBufferPixel = minRenderBuffer
+
+            if "line" in layer and layer["line"]["width"] > 0:
+                # 0.5 to ensure the whole tile border is outside the visible part of the tile
+                renderBufferPixel = max(minRenderBuffer, math.ceil(
+                    layer["line"]["width"] / 2) + 0.5)
+
+            extent_buffer = pixelInMetres * renderBufferPixel
 
             # A bit of a hack - assign the minimum area a feature must have to be visible at each zoom level.
             # if(z <= 4):
@@ -658,6 +673,9 @@ class EAlGIS(object):
                 # Substitute in our zoom-level specific geom column name
                 query = query.replace(".geom_4326", ".{geom_column_name}".format(
                     geom_column_name=geomColumnName))
+
+                # print("{}, {} / {} / {}".format(east, west,
+                #                                 east - west, (east - west) / 256))
 
                 # print("Use matview column {} for zoom {}".format(geomColumnName, z))
                 sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName,
