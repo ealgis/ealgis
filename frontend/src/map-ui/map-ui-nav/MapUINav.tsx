@@ -39,7 +39,7 @@ import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
 
 const MapName = styled.h3`
-    font-weight: bold;
+    font-weight: normal;
     color: ${white};
     padding-left: 20px;
 `
