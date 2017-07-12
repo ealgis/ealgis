@@ -427,9 +427,14 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
             let formValues: object = {}
-            // The Fill Colour Scheme fields are controlled by a single <Fields> component
+            // The Fill Colour Scheme and Border fields are controlled by two <Fields> components
             // and submit their value as an object containing both fields.
-            if (fieldName === "fillColourScheme" || fieldName === "fillColourSchemeLevels") {
+            if (
+                fieldName === "fillColourScheme" ||
+                fieldName === "fillColourSchemeLevels" ||
+                fieldName === "borderColour" ||
+                fieldName === "borderSize"
+            ) {
                 formValues = newValue
             } else {
                 formValues = { [fieldName]: newValue }

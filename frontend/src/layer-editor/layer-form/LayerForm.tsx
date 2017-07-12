@@ -83,6 +83,44 @@ const styles: React.CSSProperties = {
     },
 }
 
+const BorderSizeAndColourFields = (fields: any) => {
+    return (
+        <FlexboxContainer>
+            <FirstFlexboxColumn>
+                <FauxFieldLabel>Border colour</FauxFieldLabel>
+                <Field
+                    name="borderColour"
+                    component={ColourPicker}
+                    color={fields.initialBorderColour}
+                    onChange={(junk: object, newValue: object, previousValue: object) =>
+                        fields.onFieldChange("borderColour", {
+                            borderColour: newValue,
+                            borderSize: fields["borderSize"].input.value,
+                        })}
+                />
+            </FirstFlexboxColumn>
+
+            <SecondFlexboxColumn>
+                <FauxFieldLabel>Border size</FauxFieldLabel>
+                <Field
+                    name="borderSize"
+                    component={Slider}
+                    validate={[required]}
+                    min={0}
+                    max={10}
+                    sliderStyle={styles.borderSizeSlider}
+                    step={1}
+                    onChange={(event: any, newValue: string, previousValue: string) =>
+                        fields.onFieldChange("borderSize", {
+                            borderColour: fields["borderColour"],
+                            borderSize: newValue,
+                        })}
+                />
+            </SecondFlexboxColumn>
+        </FlexboxContainer>
+    )
+}
+
 const FillColourSchemeFields = (fields: any) => {
     const colourSchemeLevels = fields.colourinfo[fields["fillColourScheme"].input.value]
         ? fields.colourinfo[fields["fillColourScheme"].input.value]
@@ -372,33 +410,12 @@ class LayerForm extends React.Component<IProps, {}> {
                             }
                         >
                             <TabContainer>
-                                <FlexboxContainer>
-                                    <FirstFlexboxColumn>
-                                        <FauxFieldLabel>Border colour</FauxFieldLabel>
-                                        <Field
-                                            name="borderColour"
-                                            component={ColourPicker}
-                                            color={initialValues["borderColour"]}
-                                            onChange={(junk: object, newValue: object, previousValue: object) =>
-                                                onFieldChange("borderColour", newValue)}
-                                        />
-                                    </FirstFlexboxColumn>
-
-                                    <SecondFlexboxColumn>
-                                        <FauxFieldLabel>Border size</FauxFieldLabel>
-                                        <Field
-                                            name="borderSize"
-                                            component={Slider}
-                                            validate={[required]}
-                                            min={0}
-                                            max={10}
-                                            sliderStyle={styles.borderSizeSlider}
-                                            step={1}
-                                            onChange={(event: any, newValue: string, previousValue: string) =>
-                                                onFieldChange("borderSize", newValue)}
-                                        />
-                                    </SecondFlexboxColumn>
-                                </FlexboxContainer>
+                                <Fields
+                                    names={["borderColour", "borderSize"]}
+                                    component={BorderSizeAndColourFields}
+                                    onFieldChange={onFieldChange}
+                                    initialBorderColour={initialValues["borderColour"]}
+                                />
 
                                 <Fields
                                     names={["fillColourScheme", "fillColourSchemeLevels"]}

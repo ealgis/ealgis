@@ -331,7 +331,7 @@ export interface IAction {
     map?: IMap
     mapId?: number
     layer?: ILayer
-    layerPartial?: object
+    layerPartial?: Partial<ILayer>
     layerId?: number
     position?: IPosition
     shared?: eMapShared
