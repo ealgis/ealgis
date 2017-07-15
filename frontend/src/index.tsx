@@ -1,4 +1,4 @@
-import "es6-promise"
+import "es6-promise/auto"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { compose, combineReducers, createStore, applyMiddleware, Store } from "redux"

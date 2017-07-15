@@ -26,7 +26,7 @@ SECRET_KEY = 'lga89_xe^o#o&7xkcocvzz3zua^p2v_^ya22&ek-dbq(j+%*u$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "10.0.2.2", "ealgis.org"]
 
 
 # Application definition
