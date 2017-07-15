@@ -2,7 +2,8 @@ import * as React from "react"
 import LayerContainerWrapped from "../layer/LayerContainer"
 import * as olr from "ol-react"
 import * as ol from "openlayers"
-import { IMap, ILayer, IPosition } from "../../redux/modules/interfaces"
+import { IConfig, IMap, ILayer, IPosition } from "../../redux/modules/interfaces"
+const Config: IConfig = require("Config") as any
 
 export interface IProps {
     defn: IMap
@@ -15,9 +16,9 @@ export class MapUI extends React.Component<IProps, {}> {
     render() {
         const { defn, position, onSingleClick, onMoveEnd } = this.props
 
-        const mapbox_key =
-            "pk.eyJ1Ijoia2VpdGhtb3NzIiwiYSI6IjkxMTViNjcxN2U5ZDBjMTYzYzY2MzQwNTJkZjM1NGFkIn0.HS40UI-OD5lQWBxUCZOwZg" // Where should this live?
-        const mapbox_url = `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${mapbox_key}`
+        const mapbox_url = `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${Config[
+            "MAPBOX_API_KEY"
+        ]}`
         const mapbox_attribution =
             '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright"> OpenStreetMap contributors</a>'
 

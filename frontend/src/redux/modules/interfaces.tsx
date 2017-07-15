@@ -23,6 +23,7 @@ import { IMapPositionDefaults } from "./maps"
 export interface IConfig {
     "GOOGLE_ANALYTICS_UA": string
     "GOOGLE_MAPS_API_KEY": string
+    "MAPBOX_API_KEY": string
     "RAVEN_URL": string
     "DEFAULT_MAP_POSITION": IMapPositionDefaults
 }
