@@ -322,8 +322,6 @@ class EAlGIS(object):
 
                 return places
 
-            import math
-
             srid = "3857"
             west, south = mercantile.xy(bounds.west, bounds.south)
             east, north = mercantile.xy(bounds.east, bounds.north)
@@ -708,7 +706,6 @@ class EAlGIS(object):
             # to work out the area of a pixel at each zoom level so we can do a better job of ejecting and
             # simplifying features.
 
-            import math
             resolution = 6378137.0 * 2.0 * math.pi / \
                 256.0 / math.pow(2.0, zoom_level)
             tolerance = resolution / 20
