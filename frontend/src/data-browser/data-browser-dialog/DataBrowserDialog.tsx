@@ -5,6 +5,8 @@ import FlatButton from "material-ui/FlatButton"
 import { List, ListItem } from "material-ui/List"
 import Subheader from "material-ui/Subheader"
 
+import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
+
 const FlexboxContainer = styled.div`
     display: -ms-flex;
     display: -webkit-flex;
@@ -50,7 +52,12 @@ export class MapUINav extends React.Component<IProps, {}> {
                             </List>
                         </FirstFlexboxColumn>
 
-                        <SecondFlexboxColumn>Foobar.</SecondFlexboxColumn>
+                        <SecondFlexboxColumn>
+                            <Subheader>Data Schemas</Subheader>
+                            <DataSchemaGrid />
+
+                            <Subheader>Popular Datasets</Subheader>
+                        </SecondFlexboxColumn>
                     </FlexboxContainer>
                 </Dialog>
             </div>
