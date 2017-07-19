@@ -57,6 +57,7 @@ module.exports = {
         new CopyWebpackPlugin([
             { from: __dirname + "/src/assets/brand/ealgis_white_favicon.png" },
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_transparent_background.png" },
+            { from: __dirname + "/src/assets/brand/ealgis_white_logo_only_transparent_background.png" },
         ]),
     ],
     output: {
