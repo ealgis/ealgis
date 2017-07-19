@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
@@ -556,7 +556,7 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schemas():
+        elif schema_name not in eal.get_schema_names():
             raise ValidationError(
                 detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
@@ -601,7 +601,7 @@ class DataInfoViewSet(viewsets.ViewSet):
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schemas():
+        elif schema_name not in eal.get_schema_names():
             raise ValidationError(
                 detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
@@ -794,7 +794,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schemas():
+        elif schema_name not in eal.get_schema_names():
             raise ValidationError(
                 detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
@@ -822,5 +822,8 @@ class SchemasViewSet(viewsets.ViewSet):
 
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
-        schema_names = eal.get_schemas()
-        return Response(schema_names)
+        schemas = eal.get_schemas()
+        schemasJSON = {}
+        for schema_name in schemas:
+            schemasJSON[schema_name] = EALGISMetadataSerializer(schemas[schema_name]).data
+        return Response(schemasJSON)

@@ -166,4 +166,5 @@ class EALGISMetadata(Base):
     name = db.Column(db.String(256))
     version = db.Column(db.Float())
     description = db.Column(db.Text())
+    family = db.Column(db.String(256))
     date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)

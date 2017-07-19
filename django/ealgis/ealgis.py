@@ -45,6 +45,7 @@ class EAlGIS(object):
         Session.configure(bind=self.db)
         self.session = Session()
 
+        self.schema_names = None
         self.schemas = None
         self.datainfo = None
         self.tableinfo = None
@@ -106,8 +107,8 @@ class EAlGIS(object):
 
         return False
 
-    def get_schemas(self, skip_cache=False):
-        """identify and load EAlGIS-compliant schemas available in the database"""
+    def get_schema_names(self, skip_cache=False):
+        """identify and report on EAlGIS-compliant schemas available in the database"""
 
         def make_schemas():
             # PostgreSQL and PostGIS system schemas
@@ -121,6 +122,22 @@ class EAlGIS(object):
                 if schema_name not in system_schemas:
                     if self.is_compliant_schema(schema_name):
                         schemas.append(schema_name)
+            return schemas
+
+        if skip_cache is True or self.schema_names is None:
+            self.schema_names = make_schemas()
+        return self.schema_names
+
+    def get_schemas(self, skip_cache=False):
+        """identify and load the metadata for EAlGIS-compliant schemas available in the database"""
+
+        def make_schemas():
+            schemas = {}
+            for schema_name in self.get_schema_names(skip_cache):
+                ealgismetadata = self.get_table_class(
+                    "ealgis_metadata", schema_name)
+                schemas[schema_name] = self.session.query(
+                    ealgismetadata).first()
             return schemas
 
         if skip_cache is True or self.schemas is None:
@@ -157,7 +174,7 @@ class EAlGIS(object):
             # our geography sources
             info = {}
 
-            for schema_name in self.get_schemas():
+            for schema_name in self.get_schema_names():
                 geometrysource, tableinfo = self.get_table_classes(
                     ["geometry_source", "table_info"], schema_name)
 
@@ -189,7 +206,7 @@ class EAlGIS(object):
             # our tabular sources
             info = {}
 
-            for schema_name in self.get_schemas():
+            for schema_name in self.get_schema_names():
                 tableinfo = self.get_table_class("table_info", schema_name)
                 geodata_tables = [v["name"]
                                   for (k, v) in self.get_datainfo().items()]

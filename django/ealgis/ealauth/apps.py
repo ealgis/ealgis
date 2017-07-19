@@ -16,6 +16,6 @@ class EalauthConfig(AppConfig):
         self.map_srid = 3857
         self.projected_srid = 3112
 
-        schema_names = self.eal.get_schemas()
+        schema_names = self.eal.get_schema_names()
         logger.info(
             "Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))

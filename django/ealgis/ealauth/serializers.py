@@ -179,3 +179,12 @@ class GeometryLinkageSerializer(serializers.Serializer):
     geo_column = serializers.CharField()
     attr_table_info_id = serializers.IntegerField()
     attr_column = serializers.CharField()
+
+
+class EALGISMetadataSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    version = serializers.FloatField()
+    description = serializers.CharField()
+    family = serializers.CharField()
+    date = serializers.DateTimeField()
