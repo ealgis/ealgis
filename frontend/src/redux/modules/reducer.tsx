@@ -9,6 +9,7 @@ import { default as legends, IModule as ILegendsModule } from "./legends"
 import { default as maps, IModule as IMapsModule } from "./maps"
 import { default as datainspector, IModule as IDataInspectorpModule } from "./datainspector"
 import { default as datasearch, IModule as IDataSearchModule } from "./datasearch"
+import { default as databrowser, IModule as IDataBrowserModule } from "./databrowser"
 import { default as layerform, IModule as ILayerFormModule } from "./layerform"
 import { default as layerquerysummary, IModule as ILayerQuerySummaryModule } from "./layerquerysummary"
 import { default as snackbars, IModule as ISnackbarsModule } from "./snackbars"
@@ -24,6 +25,7 @@ export interface IStore {
     maps: IMapsModule
     datainspector: IDataInspectorpModule
     datasearch: IDataSearchModule
+    databrowser: IDataBrowserModule
     layerform: ILayerFormModule
     layerquerysummary: ILayerQuerySummaryModule
     snackbars: ISnackbarsModule
@@ -37,6 +39,7 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     maps,
     datainspector,
     datasearch,
+    databrowser,
     layerform,
     layerquerysummary,
     snackbars,
