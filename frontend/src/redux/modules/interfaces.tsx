@@ -8,6 +8,7 @@ export {
     IGeomTable,
     IColourInfo,
     ITableInfo,
+    ISchema,
     ISchemaInfo,
 } from "./ealgis"
 export { IModule as IAppModule } from "./app"

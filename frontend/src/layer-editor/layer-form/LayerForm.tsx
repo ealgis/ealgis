@@ -369,7 +369,7 @@ class LayerForm extends React.Component<IProps, {}> {
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                         >
                             <TabContainer>
-                                {/* <DataBrowserDialog /> */}
+                                <DataBrowserDialog />
 
                                 <Field
                                     name="valueExpression"

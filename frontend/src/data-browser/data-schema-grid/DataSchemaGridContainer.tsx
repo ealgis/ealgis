@@ -2,13 +2,14 @@ import * as React from "react"
 import { connect } from "react-redux"
 import DataSchemaGrid from "./DataSchemaGrid"
 import { toggleModalState } from "../../redux/modules/app"
-import { IStore, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
+import { IStore, ISchemaInfo, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
 interface IProps {}
 
 export interface IStoreProps {
     // From Props
+    schemainfo: ISchemaInfo
     muiThemePalette: IMUIThemePalette
 }
 
@@ -22,15 +23,16 @@ interface IOwnProps {
 
 export class DataSchemaGridContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
-        const { muiThemePalette } = this.props
+        const { schemainfo, muiThemePalette } = this.props
 
-        return <DataSchemaGrid muiThemePalette={muiThemePalette} />
+        return <DataSchemaGrid schemainfo={schemainfo} muiThemePalette={muiThemePalette} />
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps => {
-    const {} = state
+    const { ealgis } = state
     return {
+        schemainfo: ealgis.schemainfo,
         muiThemePalette: ownProps.muiTheme.palette,
     }
 }

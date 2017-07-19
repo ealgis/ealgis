@@ -17,7 +17,7 @@ const initialState: IModule = {
     geominfo: {},
     tableinfo: {},
     colourinfo: {},
-    schemainfo: {} as ISchemaInfo,
+    schemainfo: {},
 }
 
 // Reducer
@@ -146,13 +146,17 @@ export interface IGeomTable {
     schema_name: string
 }
 
-export interface ISchemaInfo {
+export interface ISchema {
     _id: number
     name: string
     version: number
     description: string
     family: string
     date: string
+}
+
+export interface ISchemaInfo {
+    [key: string]: ISchema
 }
 
 // Side effects, only as applicable
