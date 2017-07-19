@@ -10,12 +10,14 @@ const LOAD_USER = "ealgis/ealgis/LOAD_USER"
 const LOAD_GEOM = "ealgis/ealgis/LOAD_GEOM"
 const LOAD_COLOURS = "ealgis/ealgis/LOAD_COLOURS"
 const LOAD_TABLES = "ealgis/ealgis/LOAD_TABLES"
+const LOAD_SCHEMAS = "ealgis/ealgis/LOAD_SCHEMAS"
 
 const initialState: IModule = {
     user: {} as IUser,
     geominfo: {},
     tableinfo: {},
     colourinfo: {},
+    schemainfo: {} as ISchemaInfo,
 }
 
 // Reducer
@@ -25,10 +27,12 @@ export default function reducer(state = initialState, action: IAction) {
             return dotProp.set(state, "user", action.user)
         case LOAD_GEOM:
             return dotProp.set(state, "geominfo", action.geominfo)
-        case LOAD_TABLES:
-            return dotProp.set(state, "tableinfo", action.tableinfo)
         case LOAD_COLOURS:
             return dotProp.set(state, "colourinfo", action.colourinfo)
+        case LOAD_TABLES:
+            return dotProp.set(state, "tableinfo", action.tableinfo)
+        case LOAD_SCHEMAS:
+            return dotProp.set(state, "schemainfo", action.schemainfo)
         default:
             return state
     }
@@ -49,13 +53,6 @@ export function loadGeom(geominfo: IGeomInfo) {
     }
 }
 
-export function loadTables(tableinfo: ITableInfo) {
-    return {
-        type: LOAD_TABLES,
-        tableinfo,
-    }
-}
-
 export function loadColours(colourinfo: IColourInfo) {
     return {
         type: LOAD_COLOURS,
@@ -63,12 +60,27 @@ export function loadColours(colourinfo: IColourInfo) {
     }
 }
 
+export function loadTables(tableinfo: ITableInfo) {
+    return {
+        type: LOAD_TABLES,
+        tableinfo,
+    }
+}
+
+export function loadSchemas(schemainfo: ISchemaInfo) {
+    return {
+        type: LOAD_SCHEMAS,
+        schemainfo,
+    }
+}
+
 // Models
 export interface IModule {
     user: IUser
     geominfo: IGeomInfo
-    tableinfo: ITableInfo
     colourinfo: IColourInfo
+    tableinfo: ITableInfo
+    schemainfo: ISchemaInfo
 }
 
 export interface IAction {
@@ -77,6 +89,7 @@ export interface IAction {
     geominfo: IGeomInfo
     tableinfo: ITableInfo
     colourinfo: IColourInfo
+    schemainfo: ISchemaInfo
 }
 
 export interface ISelf {
@@ -125,15 +138,37 @@ export interface IGeomTable {
     schema_name: string
 }
 
+export interface IGeomTable {
+    _id: number
+    description: string
+    geometry_type: string
+    name: string
+    schema_name: string
+}
+
+export interface ISchemaInfo {
+    _id: number
+    name: string
+    version: number
+    description: string
+    family: string
+    date: string
+}
+
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-export function fetchUserMapsDataAndColourInfo() {
+export function fetchUserMapsDataColourAndSchemaInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         dispatch(appLoading())
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in && self.user.is_approved) {
-            await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo()), dispatch(fetchColourInfo())])
+            await Promise.all([
+                dispatch(fetchMaps()),
+                dispatch(fetchGeomInfo()),
+                dispatch(fetchColourInfo()),
+                dispatch(fetchSchemaInfo()),
+            ])
         }
 
         dispatch(appLoaded())
@@ -171,6 +206,13 @@ export function fetchColourInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/colours/", dispatch)
         dispatch(loadColours(json))
+    }
+}
+
+export function fetchSchemaInfo() {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        const { response, json } = await ealapi.get("/api/0.1/schemas/", dispatch)
+        dispatch(loadSchemas(json))
     }
 }
 

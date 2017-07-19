@@ -21,7 +21,7 @@ import EalUI from "./EalUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { toggleSidebarState, setLastPage, toggleUserMenu } from "./redux/modules/app"
-import { fetchUserMapsDataAndColourInfo, logoutUser } from "./redux/modules/ealgis"
+import { fetchUserMapsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
 import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
@@ -180,7 +180,7 @@ const mapStateToProps = (state: IStore): IStateProps => {
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchStuff: () => {
-            dispatch(fetchUserMapsDataAndColourInfo())
+            dispatch(fetchUserMapsDataColourAndSchemaInfo())
         },
         onTapAppBarLeft: () => {
             dispatch(toggleSidebarState())

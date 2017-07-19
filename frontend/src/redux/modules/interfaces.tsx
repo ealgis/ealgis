@@ -6,8 +6,9 @@ export {
     IUserPartial,
     IGeomInfo,
     IGeomTable,
-    ITableInfo,
     IColourInfo,
+    ITableInfo,
+    ISchemaInfo,
 } from "./ealgis"
 export { IModule as IAppModule } from "./app"
 export { IModule as IMapModule, IPosition } from "./map"
