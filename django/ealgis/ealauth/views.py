@@ -3,6 +3,7 @@ from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
 from .models import MapDefinition
+from sqlalchemy import not_
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
@@ -637,18 +638,90 @@ class DataInfoViewSet(viewsets.ViewSet):
             return HttpResponse("\n\n\n".join(sqlAllViews), content_type="text/plain")
 
 
-class TableInfoViewSet(ReadOnlyGenericTableInfoViewSet):
+class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint that allows data tables to be viewed or edited.
     """
     permission_classes = (IsAuthenticatedAndApproved,)
-    serializer_class = TableInfoWithColumnsSerializer
-    getter_method = apps.get_app_config('ealauth').eal.get_table_info
+    serializer_class = TableInfoSerializer
+
+    def get_queryset(self):
+        pass
 
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
-        tables = eal.get_tableinfo()
-        return Response(tables)
+        return Response(eal.get_tableinfo())
+
+    @list_route(methods=['get'])
+    def search(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+        qp = request.query_params
+
+        geometrylinkage, tableinfo = eal.get_table_classes(
+            ["geometry_linkage", "table_info"], schema_name)
+        search_terms = qp["search"].split(
+            ",") if "search" in qp and qp["search"] != "" else []
+        search_terms_excluded = qp["search_excluded"].split(
+            ",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
+
+        # A list of all tables that have a geometry_linkage row
+        # (i.e. they're data tables, not geom tables)
+        # FIXME This can go once geometries are in a separate schema.
+        datatable_ids_subq = eal.session.query(tableinfo.id)\
+            .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
+            .subquery()
+
+        # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
+        # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
+        # Find all columns mentioning "landlord" at SA3 level
+        if "geo_source_id" in qp:
+            datainfo_id = qp["geo_source_id"]
+            query = eal.session.query(tableinfo)\
+                .filter(tableinfo.id.in_(datatable_ids_subq))\
+                .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
+                .filter(geometrylinkage.geo_source_id == datainfo_id)
+
+        else:
+            query = eal.session.query(tableinfo).filter(
+                tableinfo.id.in_(datatable_ids_subq))
+
+        # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
+        for term in search_terms:
+            query = query.filter(
+                tableinfo.metadata_json.ilike("%{}%".format(term)))
+
+        # Further filter the resultset by one or more excluded search terms (e.g. "diploma,advaned,females")
+        for term in search_terms_excluded:
+            query = query.filter(
+                not_(tableinfo.metadata_json.ilike("%{}%".format(term))))
+
+        # Split the response into an array of columns and an object of tables.
+        # Often columns will refer to the same table, so this reduces payload size.
+        response = {
+
+        }
+        for tableinfo in query.all():
+            table = TableInfoSerializer(tableinfo).data
+            table["schema_name"] = schema_name
+            key = "{}.{}".format(table["schema_name"], tableinfo.name)
+            if key not in response:
+                response[key] = table
+
+        if len(response) == 0:
+            raise NotFound()
+        return Response(response)
+
+    def get_schema_from_request(self, request):
+        eal = apps.get_app_config('ealauth').eal
+
+        schema_name = request.query_params.get('schema', None)
+        if schema_name is None or not schema_name:
+            raise ValidationError(detail="No schema name provided.")
+        elif schema_name not in eal.get_schema_names():
+            raise ValidationError(
+                detail="Schema name '{}' is not a known schema.".format(schema_name))
+        return schema_name
 
 
 class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -825,5 +898,6 @@ class SchemasViewSet(viewsets.ViewSet):
         schemas = eal.get_schemas()
         schemasJSON = {}
         for schema_name in schemas:
-            schemasJSON[schema_name] = EALGISMetadataSerializer(schemas[schema_name]).data
+            schemasJSON[schema_name] = EALGISMetadataSerializer(
+                schemas[schema_name]).data
         return Response(schemasJSON)

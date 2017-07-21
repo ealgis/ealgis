@@ -140,7 +140,9 @@ class JSONMetadataField(serializers.Field):
 
     def to_representation(self, metadata_json):
         json_metadata = json.loads(metadata_json)
-        json_metadata["type"] = json_metadata["type"].replace("_", " ")
+        # FIXME Just for Census
+        if "type" in json_metadata:
+            json_metadata["type"] = json_metadata["type"].replace("_", " ")
         return json_metadata
 
     def to_internal_value(self, metadata_json):
