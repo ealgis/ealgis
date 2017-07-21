@@ -56,7 +56,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                             <Subheader>Data Schemas</Subheader>
                             <DataSchemaGrid />
 
-                            <Subheader>Popular Datasets</Subheader>
+                            {/* <Subheader>Popular Datasets</Subheader> */}
                         </SecondFlexboxColumn>
                     </FlexboxContainer>
                 </Dialog>

@@ -23,7 +23,7 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
         const { schemainfo, muiThemePalette } = this.props
 
         return (
-            <GridList cols={4} cellHeight={180} padding={10}>
+            <GridList cols={3} cellHeight={180} padding={10}>
                 {Object.keys(schemainfo).map((schemaId: string, key: number) => {
                     const schema: ISchema = schemainfo[schemaId]
                     return (
@@ -32,7 +32,6 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
                             title={schema.name}
                             subtitle={schema.family}
                             titleBackground={muiThemePalette.accent1Color}
-                            cols={1}
                         >
                             <EALGISLogo
                                 src={require("base64-inline-loader!../../assets/brand/ealgis_white_logo_only_transparent_background.png")}
