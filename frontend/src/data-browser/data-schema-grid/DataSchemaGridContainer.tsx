@@ -5,7 +5,9 @@ import { toggleModalState } from "../../redux/modules/app"
 import { IStore, ISchemaInfo, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
-interface IProps {}
+interface IProps {
+    handleClickSchema: Function
+}
 
 export interface IStoreProps {
     // From Props
@@ -23,9 +25,15 @@ interface IOwnProps {
 
 export class DataSchemaGridContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
-        const { schemainfo, muiThemePalette } = this.props
+        const { schemainfo, handleClickSchema, muiThemePalette } = this.props
 
-        return <DataSchemaGrid schemainfo={schemainfo} muiThemePalette={muiThemePalette} />
+        return (
+            <DataSchemaGrid
+                schemainfo={schemainfo}
+                handleClickSchema={handleClickSchema}
+                muiThemePalette={muiThemePalette}
+            />
+        )
     }
 }
 

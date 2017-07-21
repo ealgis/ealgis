@@ -5,6 +5,7 @@ import { ISchema, ISchemaInfo, IMUIThemePalette } from "../../redux/modules/inte
 
 const DataSchemaGridTile = styled(GridTile)`
   background-color: rgba(204, 204, 204, 0.65);
+  cursor: pointer;
 `
 
 const EALGISLogo = styled.img`
@@ -15,12 +16,13 @@ const EALGISLogo = styled.img`
 
 export interface IProps {
     schemainfo: ISchemaInfo
+    handleClickSchema: Function
     muiThemePalette: IMUIThemePalette
 }
 
 export class DataSchemaGrid extends React.Component<IProps, {}> {
     render() {
-        const { schemainfo, muiThemePalette } = this.props
+        const { schemainfo, handleClickSchema, muiThemePalette } = this.props
 
         return (
             <GridList cols={3} cellHeight={180} padding={10}>
@@ -32,6 +34,7 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
                             title={schema.name}
                             subtitle={schema.family}
                             titleBackground={muiThemePalette.accent1Color}
+                            onTouchTap={() => handleClickSchema(schema)}
                         >
                             <EALGISLogo
                                 src={require("base64-inline-loader!../../assets/brand/ealgis_white_logo_only_transparent_background.png")}
