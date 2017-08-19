@@ -30,7 +30,7 @@ export default function reducer(state = initialState, action: IAction) {
         case LOAD_COLOURS:
             return dotProp.set(state, "colourinfo", action.colourinfo)
         case LOAD_TABLES:
-            return dotProp.set(state, "tableinfo", action.tableinfo)
+            return dotProp.set(state, "tableinfo", { ...state.tableinfo, ...action.tableinfo })
         case LOAD_SCHEMAS:
             return dotProp.set(state, "schemainfo", action.schemainfo)
         default:
@@ -123,7 +123,7 @@ export interface IGeomInfo {
 }
 
 export interface ITableInfo {
-    [key: number]: ITable
+    [key: string]: ITable
 }
 
 export interface IColourInfo {

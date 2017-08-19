@@ -365,13 +365,14 @@ export class LayerFormContainer extends React.Component<
                 layerHash={layerDefinition.hash || ""}
                 layerFillColourScheme={layerFillColourScheme}
                 layerGeometry={layerGeometry ? JSON.parse(layerGeometry) : undefined}
+                layerSelectedColumns={layerDefinition.selectedColumns || []}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
                 geominfo={geominfo}
                 colourinfo={colourinfo}
                 layerFormSubmitting={layerFormSubmitting}
                 initialValues={this.initialValues}
-                onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues)}
+                onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues, layerDefinition)}
                 onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) =>
                     onSubmitFail(errors, submitError, props)}
                 onFieldBlur={(fieldName: string, newValue: any, previousValue: any) =>
@@ -416,8 +417,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(startLayerEditing())
             dispatch(initDraftLayer(mapId, layerId))
         },
-        onSubmit: (mapId: number, layerId: number, layerFormValues: ILayerFormValues) => {
+        onSubmit: (mapId: number, layerId: number, layerFormValues: ILayerFormValues, layerDefinition: any) => {
             const layer: ILayer = getLayerFromLayerFormValues(layerFormValues)
+            layer.selectedColumns = layerDefinition.selectedColumns
             dispatch(publishLayer(mapId, layerId, layer))
             dispatch(initialize("layerForm", layerFormValues, false))
         },

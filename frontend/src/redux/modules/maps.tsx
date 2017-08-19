@@ -12,7 +12,7 @@ import { IPosition } from "../../redux/modules/map"
 
 import * as layerFormModule from "../../redux/modules/layerform"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
-import { IConfig } from "./interfaces"
+import { IConfig, IColumn } from "./interfaces"
 const Config: IConfig = require("Config") as any
 
 // Actions
@@ -35,6 +35,7 @@ const MERGE_LAYER_PROPERTIES = "ealgis/maps/MERGE_LAYER_PROPERTIES"
 const EXPORT_MAP = "ealgis/maps/EXPORT_MAP"
 const EXPORT_MAP_VIEWPORT = "ealgis/maps/EXPORT_MAP_VIEWPORT"
 const COPY_SHAREABLE_LINK = "ealgis/maps/COPY_SHAREABLE_LINK"
+const ADD_COLUMN_TO_SELECTION = "ealgis/maps/ADD_COLUMN_TO_SELECTION"
 
 const initialState: IModule = {}
 
@@ -73,7 +74,6 @@ export default function reducer(state = initialState, action: IAction) {
             return dotProp.toggle(state, `${action.mapId}.json.layers.${action.layerId}.visible`)
         case DELETE_LAYER:
             return dotProp.delete(state, `${action.mapId}.json.layers.${action.layerId}`)
-
         case CHANGE_LAYER_PROPERTY:
             return dotProp.set(
                 state,
@@ -86,6 +86,17 @@ export default function reducer(state = initialState, action: IAction) {
                 action.layerPartial
             )
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
+        case ADD_COLUMN_TO_SELECTION:
+            const selectedColumns: Array<IColumn> =
+                dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`) || []
+
+            if (selectedColumns.includes(action.selectedColumn) == false) {
+                return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`, [
+                    ...selectedColumns,
+                    action.selectedColumn,
+                ])
+            }
+            return state
         default:
             return state
     }
@@ -317,6 +328,20 @@ export function copyShareableLink(): IAction {
     }
 }
 
+export function addColumnToLayerSelection(mapId: number, layerId: number, selectedColumn: IColumn): IAction {
+    return {
+        type: ADD_COLUMN_TO_SELECTION,
+        mapId,
+        layerId,
+        selectedColumn,
+        meta: {
+            analytics: {
+                category: "Maps",
+            },
+        },
+    }
+}
+
 // Models
 export interface IModule {
     [key: number]: IMap
@@ -337,6 +362,7 @@ export interface IAction {
     shared?: eMapShared
     layerPropertyPath?: string
     layerPropertyValue?: any
+    selectedColumn?: IColumn
 }
 
 export interface IMap {
@@ -391,6 +417,7 @@ export interface ILayer {
         minx: number
         miny: number
     }
+    selectedColumns: Array<IColumn>
     _postgis_query?: string
 }
 
@@ -643,6 +670,7 @@ export function addLayer(mapId: number) {
                 visible: true,
                 geometry: defaultGeometry["name"],
                 description: "",
+                selectedColumns: [],
             },
         }
 

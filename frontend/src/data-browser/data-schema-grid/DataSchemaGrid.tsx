@@ -25,7 +25,7 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
         const { schemainfo, handleClickSchema, muiThemePalette } = this.props
 
         return (
-            <GridList cols={3} cellHeight={180} padding={10}>
+            <GridList cols={5} cellHeight={180} padding={10}>
                 {Object.keys(schemainfo).map((schemaId: string, key: number) => {
                     const schema: ISchema = schemainfo[schemaId]
                     return (
@@ -34,7 +34,7 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
                             title={schema.name}
                             subtitle={schema.family}
                             titleBackground={muiThemePalette.accent1Color}
-                            onTouchTap={() => handleClickSchema(schema)}
+                            onTouchTap={() => handleClickSchema(schemaId, schema)}
                         >
                             <EALGISLogo
                                 src={require("base64-inline-loader!../../assets/brand/ealgis_white_logo_only_transparent_background.png")}

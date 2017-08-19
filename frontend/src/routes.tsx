@@ -7,6 +7,7 @@ import LayerFormContainerWrapped from "./layer-editor/layer-form/LayerFormContai
 import MapFormContainerWrapped from "./map-editor/map-form/MapFormContainer"
 import MapListContainerWrapped from "./maps-browser/map-list/MapListContainer"
 import CreateMapSidebar from "./maps-browser/create-map/CreateMapSidebarContainer"
+import DataBrowserDialogWrapped from "./data-browser/data-browser-dialog/DataBrowserDialogContainer"
 import About from "./static-pages/About"
 import Welcome from "./static-pages/Welcome"
 import { IStore } from "./redux/modules/interfaces"
@@ -31,6 +32,10 @@ export default (store: IStore) => {
             <Route
                 path="map/:mapId/:mapName(/:tabName)"
                 components={{ content: MapUIContainerWrapped, sidebar: MapUINavContainerWrapped }}
+            />
+            <Route
+                path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)/databrowser"
+                components={{ content: DataBrowserDialogWrapped, sidebar: LayerFormContainerWrapped }}
             />
             <Route
                 path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)"

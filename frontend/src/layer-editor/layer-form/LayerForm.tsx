@@ -6,12 +6,13 @@ import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
 import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
+import Subheader from "material-ui/Subheader"
+import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from "material-ui/Card"
 import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import DatasetSearch from "../dataset-search/DatasetSearchContainer"
-import DataBrowserDialog from "../../data-browser/data-browser-dialog/DataBrowserDialogContainer"
 import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
 import {
     IStore,
@@ -22,6 +23,7 @@ import {
     IColourInfo,
     IMap,
     ILayer,
+    IColumn,
     IMUIThemePalette,
 } from "../../redux/modules/interfaces"
 
@@ -199,6 +201,7 @@ export interface IProps {
     layerHash: string
     layerFillColourScheme: string
     layerGeometry: IGeomTable
+    layerSelectedColumns: Array<IColumn>
     dirtyFormModalOpen: boolean
     isDirty: boolean
     geominfo: IGeomInfo
@@ -262,6 +265,7 @@ class LayerForm extends React.Component<IProps, {}> {
             dirtyFormModalOpen,
             onFitScaleToData,
             layerGeometry,
+            layerSelectedColumns,
             layerFormSubmitting,
             isDirty,
         } = this.props
@@ -369,8 +373,6 @@ class LayerForm extends React.Component<IProps, {}> {
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                         >
                             <TabContainer>
-                                <DataBrowserDialog />
-
                                 <Field
                                     name="valueExpression"
                                     component={TextField}
@@ -399,7 +401,42 @@ class LayerForm extends React.Component<IProps, {}> {
                                         onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
-                                <DatasetSearch geometry={layerGeometry} />
+                                <Subheader>Selected Columns</Subheader>
+                                <RaisedButton
+                                    containerElement={
+                                        <Link
+                                            to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`}
+                                        />
+                                    }
+                                >
+                                    Add Column
+                                </RaisedButton>
+                                {layerSelectedColumns.map((column: IColumn, key: number) => {
+                                    return (
+                                        <Card key={key}>
+                                            <CardHeader title={column["id"]} subtitle={column["schema_name"]} />
+                                            <CardText>
+                                                {column["id"]}
+                                            </CardText>
+                                        </Card>
+                                    )
+
+                                    {
+                                        /* return (
+                                        <Card key={key}>
+                                            <CardHeader
+                                                title={column["name"]}
+                                                subtitle={column["metadata_json"]["type"]}
+                                            />
+                                            <CardText>
+                                                {column["metadata_json"]["kind"]}
+                                            </CardText>
+                                        </Card>
+                                    ) */
+                                    }
+                                })}
+
+                                {/* <DatasetSearch geometry={layerGeometry} /> */}
                             </TabContainer>
                         </Tab>
                         {/* END DATA TAB */}
