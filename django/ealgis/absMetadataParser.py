@@ -80,7 +80,7 @@ tableMetadata = {
 }
 
 
-def parse2011ColumnSimple(json_metadata, table, profileTablePrefix):
+def parse2011ColumnSimple(json_metadata, table):
     # FIXME Just for Census
     if "type" in json_metadata:
         json_metadata["type"] = json_metadata["type"].strip(
