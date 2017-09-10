@@ -186,7 +186,6 @@ class GeometryLinkageSerializer(serializers.Serializer):
 class EALGISMetadataSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    version = serializers.FloatField()
     description = serializers.CharField()
     family = serializers.CharField()
-    date = serializers.DateTimeField()
+    date_created = serializers.DateTimeField()
