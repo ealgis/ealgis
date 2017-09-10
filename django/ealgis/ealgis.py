@@ -151,7 +151,7 @@ class EAlGIS(object):
         # def dump_linkage(linkage):
         #     name = linkage.attribute_table.name
         #     if linkage.attribute_table.metadata_json is not None:
-        #         obj = json.loads(linkage.attribute_table.metadata_json)
+        #         obj = jlinkage.attribute_table.metadata_json)
         #     else:
         #         obj = {}
         #     obj['_id'] = linkage.id
@@ -159,7 +159,7 @@ class EAlGIS(object):
 
         def dump_source(source):
             if source.table_info.metadata_json is not None:
-                source_info = json.loads(source.table_info.metadata_json)
+                source_info = source.table_info.metadata_json
             else:
                 source_info = {'description': source.table_info.name}
             source_info['_id'] = source.id
@@ -193,7 +193,7 @@ class EAlGIS(object):
 
         def dump_table_info(table):
             if table.metadata_json is not None:
-                table_info = json.loads(table.metadata_json)
+                table_info = table.metadata_json
             else:
                 table_info = {'description': table.name}
             table_info['_id'] = table.id

@@ -16,3 +16,4 @@ data-loader/tmp
 data/
 dev/*
 abs-datapack-parse/
+.gitattributes
