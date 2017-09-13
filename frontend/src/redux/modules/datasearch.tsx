@@ -86,7 +86,7 @@ export interface TableMetadataURL {
 export interface IColumn {
     id: number
     name: string
-    tableinfo_id: number
+    table_info_id: number
     metadata_json: ColumnMetadataJSON
     geomlinkage: {
         id: number
@@ -119,12 +119,7 @@ export enum eTableSearchMode {
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-export function fetchTables(
-    chips: Array<string>,
-    chipsExcluded: Array<string>,
-    schema_name: string,
-    mode: eTableSearchMode
-) {
+export function fetchTables(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string, mode: eTableSearchMode) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // dispatch(reset())
 
@@ -158,11 +153,11 @@ export function processTableInfoResponse(response: IHttpResponse, json: ITableIn
 
     // for (let key in json["columns"]) {
     //     const col = json["columns"][key]
-    //     const tableName = json[col["tableinfo_id"]].metadata_json["type"]
+    //     const tableName = json[col["table_info_id"]].metadata_json["type"]
 
     //     if (columnsByTable.has(tableName) === false) {
     //         let tableInfo: ITableAndCols = {
-    //             table: json[col["tableinfo_id"]],
+    //             table: json[col["table_info_id"]],
     //             columns: [],
     //         }
     //         columnsByTable.set(tableName, tableInfo)
@@ -270,11 +265,11 @@ export function processColumnInfoResponse(response: IHttpResponse, json: ColumnI
 
     for (let key in json["columns"]) {
         const col = json["columns"][key]
-        const tableName = json["tables"][col["tableinfo_id"]].metadata_json["type"]
+        const tableName = json["tables"][col["table_info_id"]].metadata_json["type"]
 
         if (columnsByTable.has(tableName) === false) {
             let tableInfo: ITableAndCols = {
-                table: json["tables"][col["tableinfo_id"]],
+                table: json["tables"][col["table_info_id"]],
                 columns: [],
             }
             columnsByTable.set(tableName, tableInfo)

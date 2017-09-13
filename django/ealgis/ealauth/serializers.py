@@ -154,7 +154,7 @@ class DataInfoSerializer(serializers.Serializer):
 class ColumnInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    tableinfo_id = serializers.IntegerField()
+    table_info_id = serializers.IntegerField()
     metadata_json = serializers.JSONField()
 
 

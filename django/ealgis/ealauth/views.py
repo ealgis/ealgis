@@ -924,9 +924,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 tableinfo_id = [qp["tableinfo_id"]]
 
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
-                .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
-                .filter(columninfo.tableinfo_id.in_(tableinfo_id))
+                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_info_id)\
+                .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
+                .filter(columninfo.table_info_id.in_(tableinfo_id))
 
         else:
             raise ValidationError(
@@ -948,15 +948,10 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         for (column, geomlinkage, tableinfo) in query.all():
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
-            table["metadata_json"] = absMetadata.parse2011Table(
-                table["metadata_json"])
             if table["id"] not in response["tables"]:
                 response["tables"][table["id"]] = table
 
-            # print(type(column.metadata_json), column.metadata_json)
             col = self.serializer_class(column).data
-            col["metadata_json"] = absMetadata.parse2011ColumnSimple(
-                col["metadata_json"], table)
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
             response["columns"].append(col)
 
