@@ -132,47 +132,30 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         return False
 
 
-class JSONMetadataField(serializers.Field):
-    """
-    JSON metadata objects are serialized into a JSON string,
-    and from a string to a JSON object.
-    """
-
-    def to_representation(self, metadata_json):
-        json_metadata = json.loads(metadata_json)
-        # FIXME Just for Census
-        if "type" in json_metadata:
-            json_metadata["type"] = json_metadata["type"].replace("_", " ")
-        return json_metadata
-
-    def to_internal_value(self, metadata_json):
-        return json.dumps(metadata_json)
-
-
 class TableInfoWithColumnsSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    metadata_json = JSONMetadataField()
+    metadata_json = serializers.JSONField()
     columns = serializers.JSONField()
 
 
 class TableInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    metadata_json = JSONMetadataField()
+    metadata_json = serializers.JSONField()
 
 
 class DataInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
-    metadata_json = JSONMetadataField()
+    metadata_json = serializers.JSONField()
 
 
 class ColumnInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     tableinfo_id = serializers.IntegerField()
-    metadata_json = JSONMetadataField()
+    metadata_json = serializers.JSONField()
 
 
 class GeometryLinkageSerializer(serializers.Serializer):
