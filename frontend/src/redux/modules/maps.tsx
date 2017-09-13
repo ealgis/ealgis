@@ -640,7 +640,7 @@ export function addLayer(mapId: number) {
         if (geominfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
             defaultGeometry = geominfo["aus_census_2011.sa4_2011_aust_pow"]
         } else {
-            defaultGeometry = geominfo(Object.keys(geominfo)[0])
+            defaultGeometry = geominfo[Object.keys(geominfo)[0]]
         }
 
         const payload = {
