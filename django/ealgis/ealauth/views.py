@@ -656,71 +656,6 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['get'])
     def search(self, request, format=None):
-        def byTable(query):
-            response = {}
-            for tableinfo in query.all():
-                table = TableInfoSerializer(tableinfo).data
-                table["schema_name"] = schema_name
-
-                key = "{}.{}".format(table["schema_name"], tableinfo.name)
-                if key not in response:
-                    table["metadata_json"] = absMetadata.parse2011Table(
-                        table["metadata_json"])
-                    response[key] = table
-            return response
-
-        def byTableKindAndType(query):
-            from sqlalchemy.sql import text
-            response = []
-            byKindAndType = {}
-            byProfileTable = {}
-
-            for tableinfo in query.all():
-                table = TableInfoSerializer(tableinfo).data
-
-                table["metadata_json"] = absMetadata.parse2011Table(
-                    table["metadata_json"])
-
-                # By Kind and Type
-                key = "{}.{}".format(
-                    table["metadata_json"]["kind"], table["metadata_json"]["type"]).lower()
-
-                if key not in byKindAndType:
-                    byKindAndType[key] = []
-                byKindAndType[key].append(table)
-
-                # By Table Name
-                # print(table["name"])
-                matches = re.search(r"([a-z]{1}[0-9]{1,2}).+", table["name"])
-                if matches is not None:
-                    # e.g. x24a and x24b's profile table is just x24
-                    profileTablePrefix = matches.groups()[0]
-                    table["profile_table"] = profileTablePrefix
-
-                    if profileTablePrefix not in byProfileTable:
-                        byProfileTable[profileTablePrefix] = []
-                    byProfileTable[profileTablePrefix].append(table)
-
-            for value in byProfileTable:
-                resp = {
-                    "metadata_json": byProfileTable[value][0]["metadata_json"], "is_series": False, "schema_name": schema_name,
-                    "profile_table": byProfileTable[value][0]["profile_table"],
-                }
-                tableIds = [table["id"] for table in byProfileTable[value]]
-
-                statement = text(
-                    """SELECT SUBSTRING(metadata_json::json->>'kind', POSITION('|' in metadata_json::json->>'kind') + 1) AS tablePopulation FROM "aus_census_2011"."column_info" AS ci WHERE "tableinfo_id" IN :tableIds AND POSITION('|' in metadata_json::json->>'kind') > 0 GROUP BY tablePopulation ORDER BY tablePopulation""")
-                rs = eal.session.execute(
-                    statement, {"tableIds": tuple(tableIds)})
-                foo = rs.fetchall()
-
-                if len(foo) > 0:
-                    resp["is_series"] = True
-                    # resp["series_name"] = seriesNamePrefix
-                    resp["series_tables"] = [r["tablepopulation"] for r in foo]
-                response.append(resp)
-            return response
-
         eal = apps.get_app_config('ealauth').eal
         schema_name = self.get_schema_from_request(request)
         qp = request.query_params
@@ -762,16 +697,20 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         for term in search_terms_excluded:
             query = query.filter(
                 not_(tableinfo.metadata_json.ilike("%{}%".format(term))))
-        # query = query.order_by(tableinfo.id)
-        query = query.order_by(tableinfo.metadata_json)
+
+        query = query.order_by(tableinfo.id)
         query = query.limit(200)
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
-        if "mode" in qp and qp["mode"] == "by_kind_and_type":
-            response = byTableKindAndType(query)
-        else:
-            response = byTable(query)
+        response = []
+        for tableinfo in query.all():
+            table = TableInfoSerializer(tableinfo).data
+            table["schema_name"] = schema_name
+            # @TODO Fix me
+            table["family"] = table["name"].split("_", 1)[0].split("s", 1)[0]
+            response.append(table)
+
         if len(response) == 0:
             raise NotFound()
         return Response(response)
