@@ -65,6 +65,7 @@ export interface ITableAndCols {
 export interface ITable {
     id: number
     name: string
+    family: string
     metadata_json: TableMetadataJSON
     schema_name: string
 }
@@ -72,6 +73,14 @@ export interface ITable {
 export interface TableMetadataJSON {
     kind: string
     type: string
+    series: string
+    notes: string
+    metadataUrls: Array<TableMetadataURL>
+}
+
+export interface TableMetadataURL {
+    name: string
+    url: string
 }
 
 export interface IColumn {
@@ -125,7 +134,9 @@ export function fetchTables(
             schema: schema_name,
             // geo_source_id: geometry["_id"],
             // geo_source_id: 4,
-            geo_source_id: mode == eTableSearchMode.BY_KIND_AND_TYPE ? "" : 4,
+            // @TOOD Fix hardcoding
+            geo_source_id: 1,
+            // geo_source_id: mode == eTableSearchMode.BY_KIND_AND_TYPE ? "" : 4,
             mode: mode == eTableSearchMode.BY_KIND_AND_TYPE ? "by_kind_and_type" : "by_table",
         })
         processTableInfoResponse(response, json, dispatch)

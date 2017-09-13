@@ -20,6 +20,7 @@ export {
     IModule as IDataSearchModule,
     ITableAndCols,
     ITable,
+    TableMetadataURL,
     IColumn,
     TableMetadataJSON,
     ColumnMetadataJSON,
