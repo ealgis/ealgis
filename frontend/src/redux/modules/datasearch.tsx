@@ -65,7 +65,6 @@ export interface ITableAndCols {
 export interface ITable {
     id: number
     name: string
-    family: string
     metadata_json: TableMetadataJSON
     schema_name: string
 }
@@ -74,6 +73,7 @@ export interface TableMetadataJSON {
     kind: string
     type: string
     series: string
+    family: string
     notes: string
     metadataUrls: Array<TableMetadataURL>
 }

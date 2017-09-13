@@ -107,9 +107,9 @@ export class MapUINav extends React.Component<IProps, {}> {
 
         const tablesByType: any = {}
         for (let table of selectedTables) {
-            const tableTypeKey = `${table.schema_name}.${table.family}.${table.metadata_json.type.toLowerCase()}`
+            const tableTypeKey = `${table.schema_name}.${table.metadata_json.family}.${table.metadata_json.type.toLowerCase()}`
             if (!(tableTypeKey in tablesByType)) {
-                tablesByType[tableTypeKey] = { type: table.metadata_json.type, family: table.family, tables: [] }
+                tablesByType[tableTypeKey] = { type: table.metadata_json.type, family: table.metadata_json.family, tables: [] }
             }
             tablesByType[tableTypeKey]["tables"].push(table)
         }
@@ -277,7 +277,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["family"].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["metadata_json"]["family"].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             primaryTogglesNestedList={true}
                                             nestedItems={tablesByType[tableTypeKey]["tables"].map((SeriesTable: ITable, idx: number) => {
@@ -296,7 +296,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["family"].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["metadata_json"]["family"].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             onTouchTap={() => handleClickTable(tablesByType[tableTypeKey])}
                                         />
