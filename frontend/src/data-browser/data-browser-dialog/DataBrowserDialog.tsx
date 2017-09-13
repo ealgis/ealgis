@@ -14,15 +14,7 @@ import SelectField from "material-ui/SelectField"
 import TextField from "material-ui/TextField"
 import MenuItem from "material-ui/MenuItem"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
-import {
-    Table,
-    TableBody,
-    TableFooter,
-    TableHeader,
-    TableHeaderColumn,
-    TableRow,
-    TableRowColumn,
-} from "material-ui/Table"
+import { Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
@@ -39,9 +31,7 @@ const HighlightedTableRowColumn = styled(TableRowColumn)`
     color: white !important;
 `
 
-const NonHighlightedTableRowColumn = styled(TableRowColumn)`
-    background-color: white !important;
-`
+const NonHighlightedTableRowColumn = styled(TableRowColumn)`background-color: white !important;`
 
 const FirstFlexboxColumn = styled.div`flex: 0 0 12em;`
 
@@ -56,7 +46,7 @@ export interface IProps {
     handleSchemaChange: Function
     handleClickSchema: Function
     tableinfo: ITableInfo
-    selectedTables: Array<string>
+    selectedTables: Array<ITable>
     selectedTable: any
     selectedTablePopulation: string
     handleClickTable: Function
@@ -113,17 +103,16 @@ export class MapUINav extends React.Component<IProps, {}> {
         } = this.props
 
         // console.log("selectedTables", selectedTables)
-        const tablesByType: any = selectedTables
+        // const tablesByType: any = selectedTables
 
-        // const tablesByType: any = {}
-        // for (let tableId of selectedTables) {
-        //     const table: ITable = tableinfo[tableId]
-        //     const tableTypeKey = table.metadata_json.type.toLowerCase()
-        //     if (!(tableTypeKey in tablesByType)) {
-        //         tablesByType[tableTypeKey] = { type: table.metadata_json.type, tables: [] }
-        //     }
-        //     tablesByType[tableTypeKey]["tables"].push(table)
-        // }
+        const tablesByType: any = {}
+        for (let table of selectedTables) {
+            const tableTypeKey = `${table.schema_name}.${table.family}.${table.metadata_json.type.toLowerCase()}`
+            if (!(tableTypeKey in tablesByType)) {
+                tablesByType[tableTypeKey] = { type: table.metadata_json.type, family: table.family, tables: [] }
+            }
+            tablesByType[tableTypeKey]["tables"].push(table)
+        }
         // console.log("tablesByType", tablesByType)
 
         const showTotalsOnly = true
@@ -199,14 +188,13 @@ export class MapUINav extends React.Component<IProps, {}> {
 
                 <Toolbar style={{ backgroundColor: "white", marginBottom: "10px" }}>
                     <ToolbarGroup firstChild={true}>
-                        {Object.keys(tablesByType).length > 0 &&
+                        {Object.keys(tablesByType).length > 0 && (
                             <div>
                                 <SelectField
                                     hintText="Select a schema"
                                     floatingLabelText="Floating Label Text"
                                     value={selectedSchemas}
-                                    onChange={(e: TouchTapEvent, index: number, menuItemValue: any) =>
-                                        handleSchemaChange(menuItemValue)}
+                                    onChange={(e: TouchTapEvent, index: number, menuItemValue: any) => handleSchemaChange(menuItemValue)}
                                 >
                                     {Object.keys(schemainfo).map((schemaId: string, key: number) => {
                                         const schema: ISchema = schemainfo[schemaId]
@@ -227,7 +215,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     style={{ marginLeft: "15px" }}
                                     onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
                                 />
-                            </div>}
+                            </div>
+                        )}
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
@@ -242,13 +231,14 @@ export class MapUINav extends React.Component<IProps, {}> {
                 </Toolbar>
 
                 {Object.keys(tablesByType).length == 0 &&
-                    columnsForTable["header"].length == 0 &&
+                columnsForTable["header"].length == 0 && (
                     <div>
                         <Subheader>Data Schemas</Subheader>
                         <DataSchemaGrid handleClickSchema={handleClickSchema} />
 
                         {/* <Subheader>Popular Datasets</Subheader> */}
-                    </div>}
+                    </div>
+                )}
 
                 {/* {Object.keys(tablesByType).length > 0 &&
                     columnsForTable["header"].length == 0 &&
@@ -278,6 +268,46 @@ export class MapUINav extends React.Component<IProps, {}> {
                     </div>} */}
 
                 {Object.keys(tablesByType).length > 0 &&
+                columnsForTable["header"].length == 0 && (
+                    <div>
+                        <Subheader>Data Tables</Subheader>
+                        <List>
+                            {Object.keys(tablesByType).map((tableTypeKey: string, idx: number) => {
+                                if (tablesByType[tableTypeKey]["tables"].length > 1) {
+                                    return (
+                                        <ListItem
+                                            key={idx}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["family"].toUpperCase()})`}
+                                            secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
+                                            primaryTogglesNestedList={true}
+                                            nestedItems={tablesByType[tableTypeKey]["tables"].map((SeriesTable: ITable, idx: number) => {
+                                                return (
+                                                    <ListItem
+                                                        key={idx}
+                                                        primaryText={SeriesTable.metadata_json.series}
+                                                        style={{ textTransform: "capitalize" }}
+                                                        onTouchTap={() => handleClickTable(SeriesTable)}
+                                                    />
+                                                )
+                                            })}
+                                        />
+                                    )
+                                } else {
+                                    return (
+                                        <ListItem
+                                            key={idx}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["family"].toUpperCase()})`}
+                                            secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
+                                            onTouchTap={() => handleClickTable(tablesByType[tableTypeKey])}
+                                        />
+                                    )
+                                }
+                            })}
+                        </List>
+                    </div>
+                )}
+
+                {/* {Object.keys(tablesByType).length > 0 &&
                     columnsForTable["header"].length == 0 &&
                     <div>
                         <Subheader>Data Tables</Subheader>
@@ -324,7 +354,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 }
                             })}
                         </List>
-                    </div>}
+                    </div>} */}
 
                 {/* {Object.keys(columnsBySomething).length > 0 &&
                                 <div>
@@ -355,12 +385,14 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     })}
                                 </div>} */}
 
-                {columnsForTable["header"].length > 0 &&
+                {columnsForTable["header"].length > 0 && (
                     <div>
                         <h2>
-                            {selectedTablePopulation == null
-                                ? `${selectedTable["metadata_json"]["type"]}`
-                                : `${selectedTable["metadata_json"]["type"]}: ${selectedTablePopulation}`}
+                            {selectedTablePopulation == null ? (
+                                `${selectedTable["metadata_json"]["type"]}`
+                            ) : (
+                                `${selectedTable["metadata_json"]["type"]}: ${selectedTablePopulation}`
+                            )}
                         </h2>
                         <Table
                             className="DataBrowser"
@@ -399,11 +431,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 {columnsForTable["rows"].map((valueRow: string, idxRow: string) => {
                                     return (
                                         <TableRow key={idxRow}>
-                                            <NonHighlightedTableRowColumn
-                                                style={{ width: "250px", whiteSpace: "normal" }}
-                                            >
-                                                {valueRow}
-                                            </NonHighlightedTableRowColumn>
+                                            <NonHighlightedTableRowColumn style={{ width: "250px", whiteSpace: "normal" }}>{valueRow}</NonHighlightedTableRowColumn>
                                             {columnsForTable["header"].map((valueCol: string, idxCol: string) => {
                                                 const columnKey: string = `${valueCol}.${valueRow}`
                                                 const cellProps: any = {
@@ -411,25 +439,15 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     "data-col": valueCol,
                                                     "data-row": valueRow,
                                                     "data-disabled": !(columnKey in columnLookup), // FIXME - Text parsing issue in the API
-                                                    "data-kind":
-                                                        columnKey in columnLookup
-                                                            ? columnLookup[columnKey]["metadata_json"]["kind"]
-                                                            : null,
-                                                    "data-type":
-                                                        columnKey in columnLookup
-                                                            ? columnLookup[columnKey]["metadata_json"]["type"]
-                                                            : null,
+                                                    "data-kind": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["kind"] : null,
+                                                    "data-type": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["type"] : null,
                                                     style: { borderLeft: "1px solid rgb(209, 196, 233)" },
                                                 }
 
                                                 if (this.shouldCellBeHighlighted(idxCol, idxRow)) {
                                                     return <HighlightedTableRowColumn {...cellProps} />
                                                 } else {
-                                                    return (
-                                                        <NonHighlightedTableRowColumn {...cellProps}>
-                                                            {!(columnKey in columnLookup) ? "N/A" : ""}
-                                                        </NonHighlightedTableRowColumn>
-                                                    )
+                                                    return <NonHighlightedTableRowColumn {...cellProps}>{!(columnKey in columnLookup) ? "N/A" : ""}</NonHighlightedTableRowColumn>
                                                 }
                                             })}
                                         </TableRow>
@@ -437,7 +455,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 })}
                             </TableBody>
                         </Table>
-                    </div>}
+                    </div>
+                )}
                 {}
                 {}
             </div>
