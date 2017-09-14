@@ -91,17 +91,12 @@ export class DatasetSearch extends React.Component<IProps, {}> {
         return (
             <div>
                 <List style={styles.datasetSearchHeader}>
-                    <ListItem
-                        primaryText="Search for datasets"
-                        leftIcon={<ActionSearch />}
-                        disabled={true}
-                        style={styles.datasetSearchTitle}
-                    />
+                    <ListItem primaryText="Search for datasets" leftIcon={<ActionSearch />} disabled={true} style={styles.datasetSearchTitle} />
                     <ListItem disabled={true} style={styles.datasetSearchHintTextListItem}>
                         <p style={styles.datasetSearchHintText}>
                             Enter one or more keywords for the data you want to find.<br />
-                            <span style={styles.datasetSearchHintHighlight}>Hint:</span> If you want to lookup a column
-                            or table simply prefix your keywords with "column:" or "table:" e.g. "column:B117".
+                            <span style={styles.datasetSearchHintHighlight}>Hint:</span> If you want to lookup a column or table simply prefix your keywords with "column:" or
+                            "table:" e.g. "column:B117".
                         </p>
                     </ListItem>
                 </List>
@@ -114,10 +109,7 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                     newChipKeyCodes={[13, 188]}
                     fullWidth={true}
                     floatingLabelText={"Search for datasets e.g. mortgage, repayment, total"}
-                    chipRenderer={(
-                        { value, text, isFocused, isDisabled, handleClick, handleRequestDelete, defaultStyle }: any,
-                        key: string
-                    ) => {
+                    chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete, defaultStyle }: any, key: string) => {
                         let backgroundColor = undefined
 
                         if (value.startsWith("column:")) {
@@ -135,13 +127,7 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                         }
 
                         return (
-                            <Chip
-                                key={key}
-                                backgroundColor={backgroundColor}
-                                onRequestDelete={handleRequestDelete}
-                                onTouchTap={handleClick}
-                                style={defaultStyle}
-                            >
+                            <Chip key={key} backgroundColor={backgroundColor} onRequestDelete={handleRequestDelete} onTouchTap={handleClick} style={defaultStyle}>
                                 {text}
                             </Chip>
                         )
@@ -149,7 +135,7 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                 />
 
                 {dataSearchResultLength > 0 &&
-                    Array.from(dataSearchResults.values()).map((table: ITableAndCols, key: number) =>
+                    Array.from(dataSearchResults.values()).map((table: ITableAndCols, key: number) => (
                         <Card key={key} style={styles.searchResultsCard}>
                             <CardHeader
                                 title={`${table["table"].metadata_json["type"]} (${table["columns"].length})`}
@@ -160,33 +146,24 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                             <CardText style={styles.searchResultsCardText} expandable={expandable}>
                                 <div style={styles.searchResultsReactList}>
                                     <ReactList
-                                        itemRenderer={(index: any, key: any) =>
+                                        itemRenderer={(index: any, key: any) => (
                                             <div key={key}>
                                                 <Card style={styles.searchResultItemCard}>
                                                     <CardHeader
-                                                        title={`${table["columns"][key].metadata_json["kind"]} (${table[
-                                                            "columns"
-                                                        ][key].name})`}
-                                                        subtitle={table["columns"][key].metadata_json["type"]}
+                                                        title={`${table["columns"][key].metadata["kind"]} (${table["columns"][key].name})`}
+                                                        subtitle={table["columns"][key].metadata["type"]}
                                                         textStyle={styles.searchResultItemTextStyle}
                                                         style={styles.searchResultItemStyle}
                                                     />
                                                     <CardActions>
-                                                        <CopyToClipboard
-                                                            text={table["columns"][key].name}
-                                                            onCopy={() => onCopyToClipboard(table["columns"][key].name)}
-                                                        >
-                                                            <RaisedButton
-                                                                label="Copy Column"
-                                                                secondary={true}
-                                                                style={styles.copyColumnButton}
-                                                                icon={<ContentCopy />}
-                                                            />
+                                                        <CopyToClipboard text={table["columns"][key].name} onCopy={() => onCopyToClipboard(table["columns"][key].name)}>
+                                                            <RaisedButton label="Copy Column" secondary={true} style={styles.copyColumnButton} icon={<ContentCopy />} />
                                                         </CopyToClipboard>
                                                     </CardActions>
                                                 </Card>
                                                 <Divider />
-                                            </div>}
+                                            </div>
+                                        )}
                                         length={table["columns"].length}
                                         type={"simple"}
                                     />
@@ -202,7 +179,7 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                                 />
                             </CardActions>
                         </Card>
-                    )}
+                    ))}
             </div>
         )
     }

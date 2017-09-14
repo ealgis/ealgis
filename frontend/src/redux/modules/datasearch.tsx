@@ -87,7 +87,7 @@ export interface IColumn {
     id: number
     name: string
     table_info_id: number
-    metadata_json: ColumnMetadataJSON
+    metadata: ColumnMetadataJSON
     geomlinkage: {
         id: number
         geo_source_id: number
