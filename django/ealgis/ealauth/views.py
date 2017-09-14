@@ -707,8 +707,6 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         for tableinfo in query.all():
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
-            # @TODO Fix me
-            table["family"] = table["name"].split("_", 1)[0].split("s", 1)[0]
             response.append(table)
 
         if len(response) == 0:

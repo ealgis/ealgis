@@ -277,7 +277,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["metadata_json"]["family"].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0]["metadata_json"][
+                                                "family"
+                                            ].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             primaryTogglesNestedList={true}
                                             nestedItems={tablesByType[tableTypeKey]["tables"].map((SeriesTable: ITable, idx: number) => {
@@ -296,7 +298,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["metadata_json"]["family"].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0]["metadata_json"][
+                                                "family"
+                                            ].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             onTouchTap={() => handleClickTable(tablesByType[tableTypeKey])}
                                         />
