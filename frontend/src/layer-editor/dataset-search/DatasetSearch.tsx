@@ -150,8 +150,8 @@ export class DatasetSearch extends React.Component<IProps, {}> {
                                             <div key={key}>
                                                 <Card style={styles.searchResultItemCard}>
                                                     <CardHeader
-                                                        title={`${table["columns"][key].metadata["kind"]} (${table["columns"][key].name})`}
-                                                        subtitle={table["columns"][key].metadata["type"]}
+                                                        title={`${table["columns"][key].metadata_json["kind"]} (${table["columns"][key].name})`}
+                                                        subtitle={table["columns"][key].metadata_json["type"]}
                                                         textStyle={styles.searchResultItemTextStyle}
                                                         style={styles.searchResultItemStyle}
                                                     />
