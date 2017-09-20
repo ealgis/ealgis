@@ -414,7 +414,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 console.log(evt.target, evt.target.dataset) */
                                 }
                                 if (evt.target.dataset.disabled !== "true") {
-                                    onChooseColumn(evt.target.dataset.kind, evt.target.dataset.type)
+                                    onChooseColumn(JSON.parse(evt.target.dataset.column))
                                 }
                             }}
                         >
@@ -445,9 +445,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     key: idxCol,
                                                     "data-col": valueCol,
                                                     "data-row": valueRow,
-                                                    "data-disabled": !(columnKey in columnLookup), // FIXME - Text parsing issue in the API
-                                                    "data-kind": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["kind"] : null,
-                                                    "data-type": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["type"] : null,
+                                                    "data-disabled": !(columnKey in columnLookup),
+                                                    "data-column": columnKey in columnLookup ? JSON.stringify(columnLookup[columnKey]) : null,
                                                     style: { borderLeft: "1px solid rgb(209, 196, 233)" },
                                                 }
 

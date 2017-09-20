@@ -12,17 +12,8 @@ import {
     fetchSingleColumnByKindAndType,
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
-import {
-    IStore,
-    ISchemaInfo,
-    ISchema,
-    ITableInfo,
-    ITable,
-    IGeomInfo,
-    IGeomTable,
-    IColumn,
-    ILayer,
-} from "../../redux/modules/interfaces"
+import { addColumnToLayerSelection, editDraftLayer } from "../../redux/modules/maps"
+import { IStore, ISchemaInfo, ISchema, ITableInfo, ITable, IGeomInfo, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
@@ -67,10 +58,7 @@ interface IState {
     selectedSchemas: Array<string>
 }
 
-export class DataBrowserDialogContainer extends React.Component<
-    IProps & IStoreProps & IDispatchProps & IRouteProps,
-    IState
-> {
+export class DataBrowserDialogContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, IState> {
     constructor(props: IStoreProps & IDispatchProps) {
         super(props)
         this.state = { selectedSchemas: [] }
@@ -144,9 +132,8 @@ export class DataBrowserDialogContainer extends React.Component<
                 onToggleDataBrowserModalState={() => onToggleDataBrowserModalState()}
                 backToTableView={() => showTableView()}
                 onTableSearchChange={(newValue: string) => this.onTableSearchChangeDebounced(newValue)}
-                onChooseColumn={(kind: string, type: string) => {
-                    const geometry: IGeomTable = geominfo[layer["schema"] + "." + layer["geometry"]]
-                    handleChooseColumn(mapId, layerId, layer, geometry, kind, type, this.state.selectedTable)
+                onChooseColumn={(column: IColumn) => {
+                    handleChooseColumn(column, layer["schema"], mapId, layerId, layer)
                 }}
             />
         )
@@ -195,26 +182,14 @@ const mapDispatchToProps = (dispatch: Function) => {
         showTableView: () => {
             dispatch(emptySelectedColumns())
         },
-        handleChooseColumn: (
-            mapId: number,
-            layerId: number,
-            layer: ILayer,
-            geometry: IGeomTable,
-            kind: string,
-            type: string,
-            table: ITable
-        ) => {
-            // console.log("handleChooseColumn")
-            // console.log("geometry", geometry)
-            // console.log("kind", kind)
-            // console.log("type", type)
-            dispatch(fetchSingleColumnByKindAndType(mapId, layerId, layer, geometry, kind, type, table))
+        handleChooseColumn: (column: IColumn, schema_name: string, mapId: number, layerId: number, layer: ILayer) => {
+            const columnPartial: any = { id: column.id, schema: schema_name }
+            dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
+            dispatch(editDraftLayer(mapId, layerId, { selectedColumns: [...layer.selectedColumns, columnPartial] }))
         },
     }
 }
 
-const DataBrowserDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
-    DataBrowserDialogContainer
-)
+const DataBrowserDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataBrowserDialogContainer)
 
 export default DataBrowserDialogContainerWrapped
