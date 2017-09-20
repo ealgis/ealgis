@@ -130,25 +130,25 @@ export class MapUINav extends React.Component<IProps, {}> {
         // }
         // console.log("columnsBySomething", columnsBySomething)
 
-        console.log("selectedColumns", selectedColumns)
+        // console.log("selectedColumns", selectedColumns)
 
         const columnsForTable: any = { header: [], rows: [] }
         const columnsForTable2: any = { header: [], rows: {} }
         const columnLookup: any = {}
         for (let column of selectedColumns) {
-            if (columnsForTable["header"].includes(column["metadata"]["kind"]) == false) {
-                columnsForTable["header"].push(column["metadata"]["kind"])
+            if (columnsForTable["header"].includes(column["metadata_json"]["kind"]) == false) {
+                columnsForTable["header"].push(column["metadata_json"]["kind"])
             }
 
-            if (columnsForTable["rows"].includes(column["metadata"]["type"]) == false) {
-                columnsForTable["rows"].push(column["metadata"]["type"])
+            if (columnsForTable["rows"].includes(column["metadata_json"]["type"]) == false) {
+                columnsForTable["rows"].push(column["metadata_json"]["type"])
             }
 
-            columnLookup[`${column["metadata"]["kind"]}.${column["metadata"]["type"]}`] = column
+            columnLookup[`${column["metadata_json"]["kind"]}.${column["metadata_json"]["type"]}`] = column
         }
 
-        columnsForTable["header"].reverse()
-        columnsForTable["rows"].reverse()
+        // columnsForTable["header"].reverse()
+        // columnsForTable["rows"].reverse()
 
         // var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" })
         // columnsForTable["header"].sort(collator.compare)
@@ -157,8 +157,8 @@ export class MapUINav extends React.Component<IProps, {}> {
         //     const ttlIndex: number = columnsForTable["rows"].findIndex((value: string) => value == "Total")
         //     columnsForTable["rows"].push(columnsForTable["rows"].splice(ttlIndex, 1))
         // }
-        // console.log("columnsForTable", columnsForTable)
-        // console.log("columnLookup", columnLookup)
+        console.log("columnsForTable", columnsForTable)
+        console.log("columnLookup", columnLookup)
 
         const dialogActions = [
             <FlatButton label="Close" secondary={true} onTouchTap={onToggleDataBrowserModalState} />,
@@ -446,8 +446,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     "data-col": valueCol,
                                                     "data-row": valueRow,
                                                     "data-disabled": !(columnKey in columnLookup), // FIXME - Text parsing issue in the API
-                                                    "data-kind": columnKey in columnLookup ? columnLookup[columnKey]["metadata"]["kind"] : null,
-                                                    "data-type": columnKey in columnLookup ? columnLookup[columnKey]["metadata"]["type"] : null,
+                                                    "data-kind": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["kind"] : null,
+                                                    "data-type": columnKey in columnLookup ? columnLookup[columnKey]["metadata_json"]["type"] : null,
                                                     style: { borderLeft: "1px solid rgb(209, 196, 233)" },
                                                 }
 
