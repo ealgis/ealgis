@@ -155,7 +155,7 @@ class ColumnInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     table_info_id = serializers.IntegerField()
-    metadata = serializers.JSONField()
+    metadata_json = serializers.JSONField()
 
 
 class GeometryLinkageSerializer(serializers.Serializer):

@@ -690,13 +690,11 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
         for term in search_terms:
-            query = query.filter(
-                tableinfo.metadata_json.ilike("%{}%".format(term)))
+            query = query.filter(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term)))
 
         # Further filter the resultset by one or more excluded search terms (e.g. "diploma,advaned,females")
         for term in search_terms_excluded:
-            query = query.filter(
-                not_(tableinfo.metadata_json.ilike("%{}%".format(term))))
+            query = query.filter(not_(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term))))
 
         query = query.order_by(tableinfo.id)
         query = query.limit(200)
@@ -932,10 +930,8 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
         for term in search_terms:
-            query = query.filter(
-                columninfo.metadata_json.ilike("%{}%".format(term)))
+            query = query.filter(columninfo.metadata_json["type"].astext.ilike("%{}%".format(term)))
         query = query.order_by(columninfo.id)
-        # print(query)
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
