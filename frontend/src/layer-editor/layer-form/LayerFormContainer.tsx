@@ -16,7 +16,18 @@ import {
     startLayerEditing,
     fitLayerScaleToData,
 } from "../../redux/modules/maps"
-import { IStore, IEALGISModule, ILayerQuerySummary, IGeomInfo, IGeomTable, IColourInfo, IMap, ILayer, IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
+import {
+    IStore,
+    IEALGISModule,
+    ILayerQuerySummary,
+    IGeomInfo,
+    IGeomTable,
+    IColourInfo,
+    IMap,
+    ILayer,
+    IMUITheme,
+    IMUIThemePalette,
+} from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface ILayerFormValues {
@@ -256,7 +267,16 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
     }
 
     shouldComponentUpdate(nextProps: IStoreProps) {
-        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen, layerFormSubmitting, isDirty } = this.props
+        const {
+            mapDefinition,
+            layerId,
+            layerFillColourScheme,
+            layerGeometry,
+            layerDefinition,
+            dirtyFormModalOpen,
+            layerFormSubmitting,
+            isDirty,
+        } = this.props
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
@@ -344,9 +364,12 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerFormSubmitting={layerFormSubmitting}
                 initialValues={this.initialValues}
                 onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues, layerDefinition)}
-                onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) => onSubmitFail(errors, submitError, props)}
-                onFieldBlur={(fieldName: string, newValue: any, previousValue: any) => onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
-                onFieldChange={(fieldName: string, newValue: any) => this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
+                onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) =>
+                    onSubmitFail(errors, submitError, props)}
+                onFieldBlur={(fieldName: string, newValue: any, previousValue: any) =>
+                    onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
+                onFieldChange={(fieldName: string, newValue: any) =>
+                    this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
                 onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
                 onSaveForm={() => onSaveForm(mapDefinition.id, layerId, isDirty)}
@@ -398,7 +421,12 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             let formValues: object = {}
             // The Fill Colour Scheme and Border fields are controlled by two <Fields> components
             // and submit their value as an object containing both fields.
-            if (fieldName === "fillColourScheme" || fieldName === "fillColourSchemeLevels" || fieldName === "borderColour" || fieldName === "borderSize") {
+            if (
+                fieldName === "fillColourScheme" ||
+                fieldName === "fillColourSchemeLevels" ||
+                fieldName === "borderColour" ||
+                fieldName === "borderSize"
+            ) {
                 formValues = newValue
             } else {
                 formValues = { [fieldName]: newValue }
