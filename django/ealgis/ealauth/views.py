@@ -373,6 +373,32 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return response
 
     @detail_route(methods=['get'])
+    def columns(self, request, pk=None, format=None):
+        qp = request.query_params
+        eal = apps.get_app_config('ealauth').eal
+
+        layerId = int(qp["layerId"]) if "layerId" in qp else None
+        if layerId is None:
+            raise NotFound()
+
+        response = []
+        for c in self.get_object().json["layers"][layerId]["selectedColumns"]:
+            column = eal.get_column_info(c["id"], c["schema"])
+            if column is None:
+                raise NotFound()
+
+            table = eal.get_table_info_by_id(column.table_info_id, c["schema"])
+            if table is None:
+                raise NotFound()
+
+            response.append({
+                "column": ColumnInfoSerializer(column).data,
+                "table": TableInfoSerializer(table).data,
+                "schema": c["schema"],
+            })
+        return Response(response)
+
+    @detail_route(methods=['get'])
     def tiles(self, request, pk=None, format=None):
         # Used to inject features for debugging vector tile performance
         def debug_features(features, x, y, z):
@@ -701,11 +727,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
-        response = []
+        response = {}
         for tableinfo in query.all():
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
-            response.append(table)
+
+            tableUID = "%s-%s" % (schema_name, table["id"])
+            response[tableUID] = table
 
         if len(response) == 0:
             raise NotFound()
@@ -739,12 +767,40 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # e.g. https://localhost:8443/api/0.1/columninfo/40353/?schema=aus_census_2011
         # Counted_at_home_on_Census_Night_Age_0_14_years
-        row = eal.get_column_info(pk, schema_name)
-        if row is None:
+        column = eal.get_column_info(pk, schema_name)
+        if column is None:
             raise NotFound()
 
-        serializer = self.serializer_class(row)
-        return Response(serializer.data)
+        table = eal.get_table_info_by_id(column.table_info_id, schema_name)
+        if table is None:
+            raise NotFound()
+
+        return Response({
+            "column": self.serializer_class(column).data,
+            "table": TableInfoSerializer(table).data,
+            "schema": schema_name,
+        })
+
+    @list_route(methods=['post'])
+    def by_schema(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+
+        columns = {}
+        tables = {}
+        for schema in request.data:
+            for columnId in request.data[schema]:
+                column = eal.get_column_info(columnId, schema)
+                if column is None:
+                    raise NotFound()
+
+                table = eal.get_table_info_by_id(column.table_info_id, schema)
+                if table is None:
+                    raise NotFound()
+
+                columns["%s-%s" % (schema, column.id)] = ColumnInfoSerializer(column).data
+                tables["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data
+
+        return Response({"columns": columns, "tables": tables})
 
     @list_route(methods=['get'])
     def by_name(self, request, format=None):
@@ -942,8 +998,10 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         for (column, geomlinkage, tableinfo) in query.all():
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
-            if table["id"] not in response["tables"]:
-                response["tables"][table["id"]] = table
+
+            tableUID = "%s-%s" % (schema_name, table["id"])
+            if tableUID not in response["tables"]:
+                response["tables"][tableUID] = table
 
             col = self.serializer_class(column).data
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data

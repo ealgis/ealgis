@@ -226,10 +226,15 @@ class EAlGIS(object):
             ["geometry_source", "table_info"], schema_name)
         return self.session.query(geometrysource).join(geometrysource.table_info).filter(tableinfo.name == table_name).first().table_info
 
+    def get_table_info_by_id(self, table_id, schema_name):
+        geometrysource, tableinfo = self.get_table_classes(
+            ["geometry_source", "table_info"], schema_name)
+        return self.session.query(tableinfo).filter(tableinfo.id == table_id).first()
+
     def get_table_info(self, table_name, schema_name):
         geometrysource, tableinfo = self.get_table_classes(
             ["geometry_source", "table_info"], schema_name)
-        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.tableinfo_id).filter(tableinfo.name == table_name).filter(geometrysource.tableinfo_id is None).first()
+        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.table_info_id).filter(tableinfo.name == table_name).filter(geometrysource.table_info_id is None).first()
 
     def get_geometry_source(self, table_name, schema_name):
         geometrysource, tableinfo = self.get_table_classes(
