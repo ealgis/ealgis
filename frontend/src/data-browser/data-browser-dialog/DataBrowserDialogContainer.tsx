@@ -1,11 +1,14 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import DataBrowserDialog from "./DataBrowserDialog"
+import { withRouter } from "react-router"
 import { debounce } from "lodash-es"
 import { toggleModalState } from "../../redux/modules/app"
 import { change } from "redux-form"
 // import { fetchColumnsForTableName } from "../../redux/modules/datasearch"
 import {
+    selectTables,
+    selectColumns,
     searchTables,
     searchTablesByKindAndType,
     searchColumns,
@@ -43,6 +46,12 @@ export interface IDispatchProps {
     onToggleDataBrowserModalState: Function
     showTableView: Function
     handleChooseColumn: Function
+    handleExitDataBrowser: Function
+}
+
+interface IRouterProps {
+    router: any
+    route: object
 }
 
 interface IRouteProps {
@@ -57,11 +66,16 @@ interface IOwnProps {
 }
 
 interface IState {
-    selectedSchemas: Array<string>
+    selectedSchemas?: Array<string>
+    selectedSchemaId?: string
+    selectedTable?: ITable
 }
 
-export class DataBrowserDialogContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, IState> {
-    constructor(props: IStoreProps & IDispatchProps) {
+export class DataBrowserDialogContainer extends React.Component<
+    IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
+    IState
+> {
+    constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
         this.state = { selectedSchemas: [] }
         const { handleChooseSchema } = props
@@ -71,6 +85,8 @@ export class DataBrowserDialogContainer extends React.Component<IProps & IStoreP
             const { selectedSchemaId } = this.state
             handleChooseSchema(selectedSchemaId, newValue)
         }, 500)
+
+        props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     handleSchemaChange(menuItemValue: Array<string>) {
@@ -79,6 +95,11 @@ export class DataBrowserDialogContainer extends React.Component<IProps & IStoreP
 
     async handleClickSchema(schemaId: string, schema: ISchema) {
         this.setState({ selectedSchemas: [...this.state.selectedSchemas, schema.name], selectedSchemaId: schemaId })
+    }
+
+    routerWillLeave(nextLocation: any) {
+        this.setState({ selectedSchemas: [], selectedSchemaId: null, selectedTable: null })
+        this.props.handleExitDataBrowser()
     }
 
     render() {
@@ -199,9 +220,13 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },
+        handleExitDataBrowser: () => {
+            dispatch(selectTables([]))
+            dispatch(selectColumns([]))
+        },
     }
 }
 
 const DataBrowserDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataBrowserDialogContainer)
 
-export default DataBrowserDialogContainerWrapped
+export default withRouter(DataBrowserDialogContainerWrapped)
