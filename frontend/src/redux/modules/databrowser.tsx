@@ -3,12 +3,7 @@ import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import {
-    fetchTables,
-    fetchColumnsForTableName,
-    fetchColumnsByKindAndType,
-    fetchColumnsForGeometryAndKindAndType,
-} from "./datasearch"
+import { fetchTables, fetchColumnsForTableName, fetchColumnsByKindAndType, fetchColumnsForGeometryAndKindAndType } from "./datasearch"
 import { editDraftLayer } from "../../redux/modules/maps"
 import { addColumnToLayerSelection } from "./maps"
 import { ITable, ILayer, IColumn, eTableSearchMode } from "./interfaces"
@@ -109,7 +104,8 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
 export function searchTablesByKindAndType(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const tables = await dispatch(fetchTables(chips, chipsExcluded, schema_name, eTableSearchMode.BY_KIND_AND_TYPE))
-        dispatch(selectTables(tables))
+        // dispatch(selectTables(tables))
+        dispatch(selectTables(Object.keys(tables)))
     }
 }
 
@@ -144,9 +140,7 @@ export function fetchSingleColumnByKindAndType(
             dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             dispatch(editDraftLayer(mapId, layerId, { selectedColumns: [...layer.selectedColumns, columnPartial] }))
         } else {
-            dispatch(
-                sendSnackbarNotification(`Oops! We found too many or too few columns (${columns["columns"].length})!`)
-            )
+            dispatch(sendSnackbarNotification(`Oops! We found too many or too few columns (${columns["columns"].length})!`))
         }
     }
 }

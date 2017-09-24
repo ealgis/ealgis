@@ -106,7 +106,8 @@ export class MapUINav extends React.Component<IProps, {}> {
         // const tablesByType: any = selectedTables
 
         const tablesByType: any = {}
-        for (let table of selectedTables) {
+        for (let tableUID of selectedTables) {
+            let table: ITable = tableinfo[tableUID]
             const tableTypeKey = `${table.schema_name}.${table.metadata_json.family}.${table.metadata_json.type.toLowerCase()}`
             if (!(tableTypeKey in tablesByType)) {
                 tablesByType[tableTypeKey] = { type: table.metadata_json.type, family: table.metadata_json.family, tables: [] }
@@ -157,8 +158,8 @@ export class MapUINav extends React.Component<IProps, {}> {
         //     const ttlIndex: number = columnsForTable["rows"].findIndex((value: string) => value == "Total")
         //     columnsForTable["rows"].push(columnsForTable["rows"].splice(ttlIndex, 1))
         // }
-        console.log("columnsForTable", columnsForTable)
-        console.log("columnLookup", columnLookup)
+        // console.log("columnsForTable", columnsForTable)
+        // console.log("columnLookup", columnLookup)
 
         const dialogActions = [
             <FlatButton label="Close" secondary={true} onTouchTap={onToggleDataBrowserModalState} />,
@@ -280,9 +281,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0]["metadata_json"][
-                                                "family"
-                                            ].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0][
+                                                "metadata_json"
+                                            ]["family"].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             primaryTogglesNestedList={true}
                                             nestedItems={tablesByType[tableTypeKey]["tables"].map((SeriesTable: ITable, idx: number) => {
@@ -301,9 +302,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     return (
                                         <ListItem
                                             key={idx}
-                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0]["metadata_json"][
-                                                "family"
-                                            ].toUpperCase()})`}
+                                            primaryText={`${tablesByType[tableTypeKey]["type"]} (${tablesByType[tableTypeKey]["tables"][0][
+                                                "metadata_json"
+                                            ]["family"].toUpperCase()})`}
                                             secondaryText={`${tablesByType[tableTypeKey]["tables"][0]["metadata_json"]["kind"]}`}
                                             onTouchTap={() => handleClickTable(tablesByType[tableTypeKey]["tables"][0])}
                                         />
@@ -438,7 +439,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 {columnsForTable["rows"].map((valueRow: string, idxRow: string) => {
                                     return (
                                         <TableRow key={idxRow}>
-                                            <NonHighlightedTableRowColumn style={{ width: "250px", whiteSpace: "normal" }}>{valueRow}</NonHighlightedTableRowColumn>
+                                            <NonHighlightedTableRowColumn style={{ width: "250px", whiteSpace: "normal" }}>
+                                                {valueRow}
+                                            </NonHighlightedTableRowColumn>
                                             {columnsForTable["header"].map((valueCol: string, idxCol: string) => {
                                                 const columnKey: string = `${valueCol}.${valueRow}`
                                                 const cellProps: any = {
@@ -446,14 +449,19 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     "data-col": valueCol,
                                                     "data-row": valueRow,
                                                     "data-disabled": !(columnKey in columnLookup),
-                                                    "data-column": columnKey in columnLookup ? JSON.stringify(columnLookup[columnKey]) : null,
+                                                    "data-column":
+                                                        columnKey in columnLookup ? JSON.stringify(columnLookup[columnKey]) : null,
                                                     style: { borderLeft: "1px solid rgb(209, 196, 233)" },
                                                 }
 
                                                 if (this.shouldCellBeHighlighted(idxCol, idxRow)) {
                                                     return <HighlightedTableRowColumn {...cellProps} />
                                                 } else {
-                                                    return <NonHighlightedTableRowColumn {...cellProps}>{!(columnKey in columnLookup) ? "N/A" : ""}</NonHighlightedTableRowColumn>
+                                                    return (
+                                                        <NonHighlightedTableRowColumn {...cellProps}>
+                                                            {!(columnKey in columnLookup) ? "N/A" : ""}
+                                                        </NonHighlightedTableRowColumn>
+                                                    )
                                                 }
                                             })}
                                         </TableRow>

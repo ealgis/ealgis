@@ -21,7 +21,7 @@ import EalUI from "./EalUI"
 import { connect } from "react-redux"
 import { proj } from "openlayers"
 import { toggleSidebarState, setLastPage, toggleUserMenu } from "./redux/modules/app"
-import { fetchUserMapsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
+import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
 import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
@@ -132,9 +132,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <div style={{ backgroundColor: muiTheme.palette!.primary1Color, width: "100%", height: "100%" }}>
                         <LinearProgress mode="indeterminate" color={muiTheme.palette!.accent3Color} />
-                        <EALGISLogo
-                            src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background.png")}
-                        />
+                        <EALGISLogo src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background.png")} />
                     </div>
                 </MuiThemeProvider>
             )
@@ -180,7 +178,7 @@ const mapStateToProps = (state: IStore): IStateProps => {
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchStuff: () => {
-            dispatch(fetchUserMapsDataColourAndSchemaInfo())
+            dispatch(fetchUserMapsColumnsDataColourAndSchemaInfo())
         },
         onTapAppBarLeft: () => {
             dispatch(toggleSidebarState())
@@ -211,11 +209,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 const viewport = result.geometry.viewport.toJSON()
                 dispatch(
                     moveToGooglePlacesResult(
-                        proj.transformExtent(
-                            [viewport.west, viewport.south, viewport.east, viewport.north],
-                            "EPSG:4326",
-                            "EPSG:900913"
-                        )
+                        proj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], "EPSG:4326", "EPSG:900913")
                     )
                 )
             }

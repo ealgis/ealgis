@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
-import { loadTables, ITableInfo, IGeomTable } from "../../redux/modules/ealgis"
+import { loadTables, ITableInfo, IGeomTable, IColumn, ColumnMetadataJSON } from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 
 // Actions
@@ -83,28 +83,9 @@ export interface TableMetadataURL {
     url: string
 }
 
-export interface IColumn {
+export interface ISelectedColumn {
     id: number
-    name: string
-    table_info_id: number
-    metadata_json: ColumnMetadataJSON
-    geomlinkage: {
-        id: number
-        geo_source_id: number
-        geo_column: string
-        attr_table_info_id: number
-        attr_column: string
-    }
-}
-
-export interface ColumnMetadataJSON {
-    kind: string
-    type: string
-    table_name: string
-    category: string
-    category_value: string
-    bucket: string
-    is_total?: boolean
+    schema: string
 }
 
 interface ColumnInfoSearchResponse {
@@ -177,7 +158,7 @@ export function fetchColumnsForTableName(schema_name: string, tableinfo_name: st
             schema: schema_name,
             tableinfo_name: tableinfo_name,
         })
-        processColumnInfoResponse(response, json, dispatch)
+        // processColumnInfoResponse(response, json, dispatch)
         return json
     }
 }
@@ -219,7 +200,7 @@ export function fetchColumnsForGeometryAndKindAndType(geometry: IGeomTable, kind
             type: type,
             profileTablePrefix: table["profile_table"],
         })
-        // processColumnInfoResponse(response, json, dispatch)
+        processColumnInfoResponse(response, json, dispatch)
         return json
     }
 }

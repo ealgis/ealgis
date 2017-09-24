@@ -14,6 +14,7 @@ import {
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
+import { loadTable, loadColumn } from "../../redux/modules/ealgis"
 import { IStore, ISchemaInfo, ISchema, ITableInfo, ITable, IGeomInfo, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
@@ -134,7 +135,7 @@ export class DataBrowserDialogContainer extends React.Component<IProps & IStoreP
                 backToTableView={() => showTableView()}
                 onTableSearchChange={(newValue: string) => this.onTableSearchChangeDebounced(newValue)}
                 onChooseColumn={(column: IColumn) => {
-                    handleChooseColumn(column, layer["schema"], mapId, layerId, layer)
+                    handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer)
                 }}
             />
         )
@@ -183,8 +184,18 @@ const mapDispatchToProps = (dispatch: Function) => {
         showTableView: () => {
             dispatch(emptySelectedColumns())
         },
-        handleChooseColumn: (column: IColumn, schema_name: string, mapId: number, layerId: number, layer: ILayer) => {
+        handleChooseColumn: (
+            column: IColumn,
+            schema_name: string,
+            selectedTable: ITable,
+            mapId: number,
+            layerId: number,
+            layer: ILayer
+        ) => {
             const columnPartial: any = { id: column.id, schema: schema_name }
+
+            dispatch(loadColumn(column, schema_name))
+            dispatch(loadTable(selectedTable, schema_name))
             dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },

@@ -7,7 +7,6 @@ import FlatButton from "material-ui/FlatButton"
 import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
 import Subheader from "material-ui/Subheader"
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from "material-ui/Card"
 import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
@@ -23,12 +22,14 @@ import {
     IColourInfo,
     IMap,
     ILayer,
+    ISelectedColumn,
     IColumn,
     IMUIThemePalette,
 } from "../../redux/modules/interfaces"
 
 import { Field, Fields, FieldArray, Config, reduxForm } from "redux-form"
 import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
+import ColumnCard from "../column-card/ColumnCardContainer"
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
 
@@ -195,13 +196,8 @@ const FillColourSchemeFields = (fields: any) => {
 const SelectedColumns = ({ fields, meta: { error } }): any => {
     return (
         <div>
-            {fields.getAll().map((column: IColumn, key: number) => {
-                return (
-                    <Card key={key}>
-                        <CardHeader title={column["id"]} />
-                        <CardText>{column["id"]}</CardText>
-                    </Card>
-                )
+            {fields.getAll().map((column: ISelectedColumn, key: number) => {
+                return <ColumnCard key={key} columnStub={column} />
             })}
         </div>
     )
