@@ -16,18 +16,7 @@ import {
     startLayerEditing,
     fitLayerScaleToData,
 } from "../../redux/modules/maps"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IMap,
-    ILayer,
-    IMUITheme,
-    IMUIThemePalette,
-} from "../../redux/modules/interfaces"
+import { IStore, IEALGISModule, ILayerQuerySummary, IGeomInfo, IGeomTable, IColourInfo, IMap, ILayer, IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface ILayerFormValues {
@@ -114,6 +103,7 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         scaleMax: layer["fill"]["scale_max"],
         scaleMin: layer["fill"]["scale_min"],
         valueExpression: layer["fill"]["expression"],
+        selectedColumns: layer["selectedColumns"],
     }
 }
 
@@ -141,6 +131,7 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
         visible: true,
         geometry: geometry["name"],
         description: formValues["description"],
+        selectedColumns: formValues["selectedColumns"],
     }
 }
 
@@ -166,6 +157,8 @@ const mapLayerFormFieldNameToLayerProp = (fieldName: string) => {
             return "width"
         case "borderColour":
             return "colour"
+        case "selectedColumns":
+            return "selectedColumns"
         default:
             return fieldName
     }
@@ -219,10 +212,7 @@ const getLayerFromLayerFormValuesPartial = (formValues: any) => {
     return layer
 }
 
-export class LayerFormContainer extends React.Component<
-    IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
-    {}
-> {
+export class LayerFormContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, {}> {
     onFieldChangeDebounced: Function
     initialValues: object
 
@@ -231,12 +221,7 @@ export class LayerFormContainer extends React.Component<
         const { onFieldUpdate } = props
 
         // http://stackoverflow.com/a/24679479/7368493
-        this.onFieldChangeDebounced = debounce(function(
-            fieldName: string,
-            newValue: any,
-            mapId: number,
-            layerId: number
-        ) {
+        this.onFieldChangeDebounced = debounce(function(fieldName: string, newValue: any, mapId: number, layerId: number) {
             onFieldUpdate(fieldName, newValue, mapId, layerId)
         }, 500)
 
@@ -259,11 +244,7 @@ export class LayerFormContainer extends React.Component<
         const { mapDefinition, layerId, isDirty, onToggleDirtyFormModalState } = this.props
 
         // Prompt the user to discard/save their changes if we're navigate away from the layer form
-        if (
-            !nextLocation.pathname.startsWith(
-                `/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}/layer/${layerId}`
-            )
-        ) {
+        if (!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}/layer/${layerId}`)) {
             // return false to prevent a transition w/o prompting the user,
             // or return a string to allow the user to decide:
             if (isDirty) {
@@ -275,16 +256,7 @@ export class LayerFormContainer extends React.Component<
     }
 
     shouldComponentUpdate(nextProps: IStoreProps) {
-        const {
-            mapDefinition,
-            layerId,
-            layerFillColourScheme,
-            layerGeometry,
-            layerDefinition,
-            dirtyFormModalOpen,
-            layerFormSubmitting,
-            isDirty,
-        } = this.props
+        const { mapDefinition, layerId, layerFillColourScheme, layerGeometry, layerDefinition, dirtyFormModalOpen, layerFormSubmitting, isDirty } = this.props
         // Re-render LayerForm if...
 
         // We've changed the map or layer we're looking at
@@ -365,7 +337,6 @@ export class LayerFormContainer extends React.Component<
                 layerHash={layerDefinition.hash || ""}
                 layerFillColourScheme={layerFillColourScheme}
                 layerGeometry={layerGeometry ? JSON.parse(layerGeometry) : undefined}
-                layerSelectedColumns={layerDefinition.selectedColumns || []}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
                 geominfo={geominfo}
@@ -373,14 +344,10 @@ export class LayerFormContainer extends React.Component<
                 layerFormSubmitting={layerFormSubmitting}
                 initialValues={this.initialValues}
                 onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues, layerDefinition)}
-                onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) =>
-                    onSubmitFail(errors, submitError, props)}
-                onFieldBlur={(fieldName: string, newValue: any, previousValue: any) =>
-                    onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
-                onFieldChange={(fieldName: string, newValue: any) =>
-                    this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
-                onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) =>
-                    onFormChange(values, dispatch, props)}
+                onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) => onSubmitFail(errors, submitError, props)}
+                onFieldBlur={(fieldName: string, newValue: any, previousValue: any) => onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
+                onFieldChange={(fieldName: string, newValue: any) => this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
+                onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
                 onSaveForm={() => onSaveForm(mapDefinition.id, layerId, isDirty)}
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
@@ -431,12 +398,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             let formValues: object = {}
             // The Fill Colour Scheme and Border fields are controlled by two <Fields> components
             // and submit their value as an object containing both fields.
-            if (
-                fieldName === "fillColourScheme" ||
-                fieldName === "fillColourSchemeLevels" ||
-                fieldName === "borderColour" ||
-                fieldName === "borderSize"
-            ) {
+            if (fieldName === "fillColourScheme" || fieldName === "fillColourSchemeLevels" || fieldName === "borderColour" || fieldName === "borderSize") {
                 formValues = newValue
             } else {
                 formValues = { [fieldName]: newValue }
@@ -446,9 +408,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
         onFormChange: (values: ILayerFormValues, dispatch: Function, props: any) => {
-            const colourSchemeLevels = props.colourinfo[values["fillColourScheme"]]
-                ? props.colourinfo[values["fillColourScheme"]]
-                : []
+            const colourSchemeLevels = props.colourinfo[values["fillColourScheme"]] ? props.colourinfo[values["fillColourScheme"]] : []
             const firstColourSchemeLevel = colourSchemeLevels[0]
             const lastColourSchemeLevel = colourSchemeLevels.slice(-1)[0]
 

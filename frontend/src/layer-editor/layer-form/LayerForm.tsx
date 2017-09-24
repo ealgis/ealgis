@@ -14,20 +14,9 @@ import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import DatasetSearch from "../dataset-search/DatasetSearchContainer"
 import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IMap,
-    ILayer,
-    IColumn,
-    IMUIThemePalette,
-} from "../../redux/modules/interfaces"
+import { IStore, IEALGISModule, ILayerQuerySummary, IGeomInfo, IGeomTable, IColourInfo, IMap, ILayer, IColumn, IMUIThemePalette } from "../../redux/modules/interfaces"
 
-import { Field, Fields, Config, reduxForm } from "redux-form"
+import { Field, Fields, FieldArray, Config, reduxForm } from "redux-form"
 import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
@@ -125,9 +114,7 @@ const BorderSizeAndColourFields = (fields: any) => {
 }
 
 const FillColourSchemeFields = (fields: any) => {
-    const colourSchemeLevels = fields.colourinfo[fields["fillColourScheme"].input.value]
-        ? fields.colourinfo[fields["fillColourScheme"].input.value]
-        : []
+    const colourSchemeLevels = fields.colourinfo[fields["fillColourScheme"].input.value] ? fields.colourinfo[fields["fillColourScheme"].input.value] : []
 
     return (
         <FlexboxContainer>
@@ -162,9 +149,7 @@ const FillColourSchemeFields = (fields: any) => {
                         })
                     }}
                 >
-                    {Object.keys(fields.colourinfo).map((colourLevel: any, key: any) =>
-                        <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
-                    )}
+                    {Object.keys(fields.colourinfo).map((colourLevel: any, key: any) => <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />)}
                 </Field>
             </FirstFlexboxColumn>
 
@@ -183,12 +168,25 @@ const FillColourSchemeFields = (fields: any) => {
                         })
                     }}
                 >
-                    {colourSchemeLevels.map((colourLevel: any, key: any) =>
-                        <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
-                    )}
+                    {colourSchemeLevels.map((colourLevel: any, key: any) => <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />)}
                 </Field>
             </SecondFlexboxColumn>
         </FlexboxContainer>
+    )
+}
+
+const SelectedColumns = ({ fields, meta: { error } }): any => {
+    return (
+        <div>
+            {fields.getAll().map((column: IColumn, key: number) => {
+                return (
+                    <Card key={key}>
+                        <CardHeader title={column["id"]} />
+                        <CardText>{column["id"]}</CardText>
+                    </Card>
+                )
+            })}
+        </div>
     )
 }
 
@@ -201,7 +199,6 @@ export interface IProps {
     layerHash: string
     layerFillColourScheme: string
     layerGeometry: IGeomTable
-    layerSelectedColumns: Array<IColumn>
     dirtyFormModalOpen: boolean
     isDirty: boolean
     geominfo: IGeomInfo
@@ -229,13 +226,7 @@ class LayerForm extends React.Component<IProps, {}> {
 
         this.geometryTables = []
         for (let geomtable_name in geominfo) {
-            this.geometryTables.push(
-                <MenuItem
-                    key={geomtable_name}
-                    value={JSON.stringify(geominfo[geomtable_name])}
-                    primaryText={geominfo[geomtable_name].description}
-                />
-            )
+            this.geometryTables.push(<MenuItem key={geomtable_name} value={JSON.stringify(geominfo[geomtable_name])} primaryText={geominfo[geomtable_name].description} />)
         }
 
         this.colourSchemes = []
@@ -265,7 +256,6 @@ class LayerForm extends React.Component<IProps, {}> {
             dirtyFormModalOpen,
             onFitScaleToData,
             layerGeometry,
-            layerSelectedColumns,
             layerFormSubmitting,
             isDirty,
         } = this.props
@@ -284,18 +274,8 @@ class LayerForm extends React.Component<IProps, {}> {
             <div>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
-                        <RaisedButton
-                            label={"Save"}
-                            disabled={layerFormSubmitting || !isDirty}
-                            primary={true}
-                            onTouchTap={onSaveForm}
-                        />
-                        <RaisedButton
-                            label={"Undo"}
-                            disabled={layerFormSubmitting || !isDirty}
-                            primary={true}
-                            onTouchTap={onResetForm}
-                        />
+                        <RaisedButton label={"Save"} disabled={layerFormSubmitting || !isDirty} primary={true} onTouchTap={onSaveForm} />
+                        <RaisedButton label={"Undo"} disabled={layerFormSubmitting || !isDirty} primary={true} onTouchTap={onResetForm} />
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
@@ -310,16 +290,9 @@ class LayerForm extends React.Component<IProps, {}> {
                 </Toolbar>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Tabs
-                        initialSelectedIndex={tabId}
-                        tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}
-                    >
+                    <Tabs initialSelectedIndex={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                         {/* START DESCRIBE TAB */}
-                        <Tab
-                            icon={<ContentCreate />}
-                            label="DESCRIBE"
-                            containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}
-                        >
+                        <Tab icon={<ContentCreate />} label="DESCRIBE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}>
                             <TabContainer>
                                 <Field
                                     name="name"
@@ -330,8 +303,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     validate={[required]}
                                     fullWidth={true}
                                     autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
+                                    onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
                                 <Field
@@ -345,8 +317,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     validate={[required]}
                                     fullWidth={true}
                                     autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
+                                    onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
                                 <Field
@@ -357,8 +328,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     floatingLabelFixed={true}
                                     validate={[required]}
                                     fullWidth={true}
-                                    onChange={(junk: object, newValue: object, previousValue: object) =>
-                                        onFieldChange("geometry", newValue)}
+                                    onChange={(junk: object, newValue: object, previousValue: object) => onFieldChange("geometry", newValue)}
                                 >
                                     {this.geometryTables}
                                 </Field>
@@ -367,11 +337,7 @@ class LayerForm extends React.Component<IProps, {}> {
                         {/* END DESCRIBE TAB */}
 
                         {/* START DATA TAB */}
-                        <Tab
-                            icon={<EditorInsertChart />}
-                            label="DATA"
-                            containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                        >
+                        <Tab icon={<EditorInsertChart />} label="DATA" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}>
                             <TabContainer>
                                 <Field
                                     name="valueExpression"
@@ -383,8 +349,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     floatingLabelFixed={true}
                                     fullWidth={true}
                                     autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
+                                    onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
                                 <Field
@@ -397,58 +362,20 @@ class LayerForm extends React.Component<IProps, {}> {
                                     floatingLabelFixed={true}
                                     fullWidth={true}
                                     autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
+                                    onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
                                 <Subheader>Selected Columns</Subheader>
-                                <RaisedButton
-                                    containerElement={
-                                        <Link
-                                            to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`}
-                                        />
-                                    }
-                                >
-                                    Add Column
-                                </RaisedButton>
-                                {layerSelectedColumns.map((column: IColumn, key: number) => {
-                                    return (
-                                        <Card key={key}>
-                                            <CardHeader title={column["id"]} subtitle={column["schema_name"]} />
-                                            <CardText>
-                                                {column["id"]}
-                                            </CardText>
-                                        </Card>
-                                    )
+                                <RaisedButton containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />}>Add Column</RaisedButton>
 
-                                    {
-                                        /* return (
-                                        <Card key={key}>
-                                            <CardHeader
-                                                title={column["name"]}
-                                                subtitle={column["metadata_json"]["type"]}
-                                            />
-                                            <CardText>
-                                                {column["metadata_json"]["kind"]}
-                                            </CardText>
-                                        </Card>
-                                    ) */
-                                    }
-                                })}
-
+                                <FieldArray name="selectedColumns" component={SelectedColumns} />
                                 {/* <DatasetSearch geometry={layerGeometry} /> */}
                             </TabContainer>
                         </Tab>
                         {/* END DATA TAB */}
 
                         {/* START VISUALISE TAB */}
-                        <Tab
-                            icon={<ImagePalette />}
-                            label="VISUALISE"
-                            containerElement={
-                                <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />
-                            }
-                        >
+                        <Tab icon={<ImagePalette />} label="VISUALISE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}>
                             <TabContainer>
                                 <Fields
                                     names={["borderColour", "borderSize"]}
@@ -472,8 +399,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                             label={"Flip colours"}
                                             labelPosition={"left"}
                                             labelStyle={styles.fauxFiedlLabel}
-                                            onChange={(event: any, newValue: string, previousValue: string) =>
-                                                onFieldChange("fillColourScaleFlip", newValue)}
+                                            onChange={(event: any, newValue: string, previousValue: string) => onFieldChange("fillColourScaleFlip", newValue)}
                                         />
                                     </FirstFlexboxColumn>
 
@@ -484,8 +410,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                                 name="fillOpacity"
                                                 component={AlphaPicker}
                                                 rgb={{ r: 0, g: 0, b: 0, a: initialValues["fillOpacity"] }}
-                                                onChange={(event: any, newValue: object, previousValue: object) =>
-                                                    onFieldChange("fillOpacity", newValue)}
+                                                onChange={(event: any, newValue: object, previousValue: object) => onFieldChange("fillOpacity", newValue)}
                                             />
                                         </FillOpacityPickerContainer>
                                     </SecondFlexboxColumn>
@@ -504,8 +429,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                             type="number"
                                             min="0"
                                             autoComplete="off"
-                                            onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                onFieldBlur(event.target.name, newValue, previousValue)}
+                                            onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                         />
                                     </FirstFlexboxColumn>
 
@@ -521,17 +445,12 @@ class LayerForm extends React.Component<IProps, {}> {
                                             type="number"
                                             min="0"
                                             autoComplete="off"
-                                            onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                onFieldBlur(event.target.name, newValue, previousValue)}
+                                            onBlur={(event: any, newValue: string, previousValue: string) => onFieldBlur(event.target.name, newValue, previousValue)}
                                         />
                                     </SecondFlexboxColumn>
                                 </FlexboxContainer>
 
-                                <LayerQuerySummary
-                                    mapId={mapId}
-                                    layerHash={layerHash}
-                                    onFitScaleToData={onFitScaleToData}
-                                />
+                                <LayerQuerySummary mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
                             </TabContainer>
                         </Tab>
                         {/* END VISUALISE TAB */}
@@ -555,14 +474,12 @@ class LayerForm extends React.Component<IProps, {}> {
 }
 
 // Decorate the form component
-let LayerFormReduxForm = reduxForm(
-    {
-        form: "layerForm", // a unique name for this form
-        enableReinitialize: true,
-        onChange: (values: object, dispatch: Function, props: any) => {
-            props.onFormChange(values, dispatch, props)
-        },
-    } as Config<any, any, any>
-)(LayerForm)
+let LayerFormReduxForm = reduxForm({
+    form: "layerForm", // a unique name for this form
+    enableReinitialize: true,
+    onChange: (values: object, dispatch: Function, props: any) => {
+        props.onFormChange(values, dispatch, props)
+    },
+} as Config<any, any, any>)(LayerForm)
 
 export default LayerFormReduxForm

@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import DataBrowserDialog from "./DataBrowserDialog"
 import { debounce } from "lodash-es"
 import { toggleModalState } from "../../redux/modules/app"
+import { change } from "redux-form"
 // import { fetchColumnsForTableName } from "../../redux/modules/datasearch"
 import {
     searchTables,
@@ -12,7 +13,7 @@ import {
     fetchSingleColumnByKindAndType,
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
-import { addColumnToLayerSelection, editDraftLayer } from "../../redux/modules/maps"
+import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { IStore, ISchemaInfo, ISchema, ITableInfo, ITable, IGeomInfo, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
@@ -185,7 +186,7 @@ const mapDispatchToProps = (dispatch: Function) => {
         handleChooseColumn: (column: IColumn, schema_name: string, mapId: number, layerId: number, layer: ILayer) => {
             const columnPartial: any = { id: column.id, schema: schema_name }
             dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
-            dispatch(editDraftLayer(mapId, layerId, { selectedColumns: [...layer.selectedColumns, columnPartial] }))
+            dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },
     }
 }
