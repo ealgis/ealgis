@@ -116,9 +116,9 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
     }
 }
 
-export function searchColumns(schema_name: string, tableinfo_name: string) {
+export function fetchColumns(schema_name: string, tableinfo_name: string) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/columninfo/search/", dispatch, {
+        const { response, json } = await ealapi.get("/api/0.1/columninfo/fetch_for_table/", dispatch, {
             schema: schema_name,
             tableinfo_name: tableinfo_name,
         })

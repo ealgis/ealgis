@@ -6,7 +6,7 @@ import { debounce } from "lodash-es"
 import { change } from "redux-form"
 import {
     searchTables,
-    searchColumns,
+    fetchColumns,
     emptySelectedTables,
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
@@ -167,7 +167,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
         },
         handleChooseTable: (table: ITable) => {
-            dispatch(searchColumns(table.schema_name, table.name))
+            dispatch(fetchColumns(table.schema_name, table.name))
         },
         showSchemaView: () => {
             dispatch(emptySelectedTables())

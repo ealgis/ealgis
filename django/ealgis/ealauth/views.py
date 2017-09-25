@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, TableInfoWithColumnsSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
+from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
@@ -23,8 +23,6 @@ import copy
 import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
-import ealgis.absMetadataParser as absMetadata
-import re
 
 
 def api_not_found(request):
@@ -723,10 +721,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             query = query.filter(not_(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term))))
 
         query = query.order_by(tableinfo.id)
-        # query = query.limit(200)
 
-        # Split the response into an array of columns and an object of tables.
-        # Often columns will refer to the same table, so this reduces payload size.
         response = {}
         for tableinfo in query.all():
             table = TableInfoSerializer(tableinfo).data
@@ -801,140 +796,13 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response({"columns": columnsByUID, "tables": tablesByUID})
 
     @list_route(methods=['get'])
-    def by_name(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
-        qp = request.query_params
-
-        if "name" not in qp:
-            raise ValidationError(detail="Name parameter not supplied.")
-
-        if "geo_source_id" in qp:
-            # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011
-            # All "Indigenous: Males" (i13) columns in the whole 2011 Census schema
-            query = eal.get_column_info_by_names(
-                qp["name"].split(","), schema_name, qp["geo_source_id"])
-        else:
-            # e.g. https://localhost:8443/api/0.1/columninfo/by_name/?name=i13&schema=aus_census_2011&geo_source_id=4
-            # Find the "Indigenous: Males" (i13) column for the SA3 geometry source in the 2011 Census schema
-            query = eal.get_column_info_by_names(
-                qp["name"].split(","), schema_name)
-
-        # Split the response into an array of columns and an object of tables.
-        # Often columns will refer to the same table, so this reduces payload size.
-        response = {
-            "columns": [],
-            "tables": {},
-        }
-        for (column, geomlinkage, tableinfo) in query:
-            table = TableInfoSerializer(tableinfo).data
-            table["schema_name"] = schema_name
-            if table["id"] not in response["tables"]:
-                response["tables"][table["id"]] = table
-
-            col = self.serializer_class(column).data
-            col["metadata_json"] = absMetadata.parse2011ColumnSimple(
-                col["metadata_json"], table)
-            col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
-            response["columns"].append(col)
-
-        if len(response["columns"]) == 0:
-            raise NotFound()
-        return Response(response)
-
-    @list_route(methods=['get'])
-    def by_table_kind_and_type(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
-        qp = request.query_params
-        # print(qp)
-        print(qp["kind"])
-        print(qp["type"])
-        # kind = qp["kind"].replace(" ", "_")
-        # print(kind)
-
-        columninfo, geometrylinkage, tableinfo = eal.get_table_classes(
-            ["column_info", "geometry_linkage", "table_info"], schema_name)
-
-        if "kind" not in qp or "type" not in qp or "profileTablePrefix" not in qp:
-            raise ValidationError(
-                detail="Kind and/or type parameters not supplied.")
-
-        # A list of all tables that have a geometry_linkage row
-        # (i.e. they're data tables, not geom tables)
-
-        # .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
-        datatable_ids_subq = eal.session.query(tableinfo.id)\
-            .filter(tableinfo.metadata_json.ilike("%{}%".format(qp["kind"])))\
-            .filter(tableinfo.metadata_json.ilike("%{}%".format(qp["type"])))\
-            .filter(tableinfo.name.like("{}%".format(qp["profileTablePrefix"])))\
-            .subquery()
-
-        datatable_ids_subq2 = eal.session.query(tableinfo.id)\
-            .filter(tableinfo.metadata_json.ilike("%{}%".format(qp["kind"])))\
-            .filter(tableinfo.metadata_json.ilike("%{}%".format(qp["type"])))\
-            .filter(tableinfo.name.like("{}%".format(qp["profileTablePrefix"])))\
-            .limit(1)\
-            .subquery()
-
-        # Fetch info about our table - primary and secondary concepts
-        table_query = eal.session.query(tableinfo)\
-            .filter(tableinfo.id == datatable_ids_subq2)
-
-        table = TableInfoSerializer(table_query.one()).data
-        table["metadata_json"] = absMetadata.parse2011Table(
-            table["metadata_json"])
-        # print(table)
-
-        query = eal.session.query(columninfo.metadata_json)\
-            .filter(columninfo.tableinfo_id.in_(datatable_ids_subq))\
-
-        if "tablePopulationName" in qp and qp["tablePopulationName"] != "":
-            query = query.filter(columninfo.metadata_json.ilike(
-                "%|{}\"%".format(qp["tablePopulationName"])))
-
-        query = query.group_by(columninfo.metadata_json)
-        # print(query)
-
-        # Split the response into an array of columns and an object of tables.
-        # Often columns will refer to the same table, so this reduces payload size.
-        response = {
-            "columns": []
-        }
-        for column in query.all():
-            fakecol = {
-                "id": 0,
-                "name": "foobar",
-                "tableinfo_id": 0,
-                "metadata_json": column.metadata_json,
-            }
-
-            col = self.serializer_class(fakecol).data
-            try:
-                col["metadata_json"] = absMetadata.parse2011ColumnSimple(
-                    col["metadata_json"], table)
-            except Exception as e:
-                raise ValidationError(e)
-            del col["id"]
-            del col["name"]
-            del col["tableinfo_id"]
-
-            response["columns"].append(col)
-
-        if len(response["columns"]) == 0:
-            raise NotFound()
-        return Response(response)
-
-    @list_route(methods=['get'])
-    def search(self, request, format=None):
+    def fetch_for_table(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
         schema_name = self.get_schema_from_request(request)
         qp = request.query_params
 
         columninfo, geometrylinkage, tableinfo = eal.get_table_classes(
             ["column_info", "geometry_linkage", "table_info"], schema_name)
-        search_terms = qp["search"].split(
-            ",") if "search" in qp and qp["search"] != "" else []
 
         # Constrain our search window to a given geometry source (e.g. All columns relating to SA3s)
         # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced&schema=aus_census_2011&geo_source_id=4
@@ -946,16 +814,6 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
                 .filter(geometrylinkage.geo_source_id == datainfo_id)\
                 .filter(tableinfo.name.ilike("{}%".format(qp["profileTablePrefix"])))
-
-            if "kind" in qp and qp["kind"] != "" and "type" in qp and qp["type"] != "":
-                # \\ replacement handles columns like x11695
-                # "Dwelling structure: Flat\\ unit or apartment: In a 3 storey block"
-                query = query.filter(columninfo.metadata_json.ilike("%{}%".format(qp["kind"].replace("\\", "\\\\"))))\
-                    .filter(columninfo.metadata_json.ilike("%{}%".format(qp["type"].replace(" ", "_").replace("\\", "\\\\"))))
-
-            elif len(search_terms) == 0:
-                raise ValidationError(
-                    detail="At least one search term is required when searching by geometry.")
 
         elif "tableinfo_id" in qp or "tableinfo_name" in qp:
             # Constrain our search window to a given table (e.g. All columns relating to a specific table)
@@ -982,12 +840,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             raise ValidationError(
                 detail="No geo_source_id or tableinfo_id provided.")
 
-        # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
-        for term in search_terms:
-            query = query.filter(columninfo.metadata_json["type"].astext.ilike("%{}%".format(term)))
         query = query.order_by(columninfo.id)
 
-        # Split the response into an array of columns and an object of tables.
+        # Split the response into an object of columns tables indexed by ther uid.
         # Often columns will refer to the same table, so this reduces payload size.
         response = {
             "columns": {},
