@@ -3,10 +3,10 @@ import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { fetchTables, fetchColumnsForTableName, fetchColumnsByKindAndType, fetchColumnsForGeometryAndKindAndType } from "./datasearch"
+import { loadTables } from "../../redux/modules/ealgis"
 import { editDraftLayer } from "../../redux/modules/maps"
 import { addColumnToLayerSelection } from "./maps"
-import { ITable, ILayer, IColumn, ISelectedColumn, eTableSearchMode } from "./interfaces"
+import { ITable, ILayer, IColumn, ISelectedColumn } from "./interfaces"
 
 // Actions
 const SELECT_TABLES = "ealgis/databrowser/SELECT_TABLES"
@@ -85,54 +85,34 @@ export interface IAction {
 // e.g. thunks, epics, et cetera
 export function searchTables(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const tables = await dispatch(fetchTables(chips, chipsExcluded, schema_name, eTableSearchMode.BY_TABLE))
-        dispatch(selectTables(Object.keys(tables)))
-    }
-}
+        const { response, json } = await ealapi.get("/api/0.1/tableinfo/search/", dispatch, {
+            search: chips.join(","),
+            search_excluded: chipsExcluded.join(","),
+            schema: schema_name,
+            // geo_source_id: geometry["_id"],
+            // geo_source_id: 4,
+            // @TOOD Fix hardcoding
+            geo_source_id: 1,
+            // geo_source_id: mode == eTableSearchMode.BY_KIND_AND_TYPE ? "" : 4,
+            // mode: mode == eTableSearchMode.BY_KIND_AND_TYPE ? "by_kind_and_type" : "by_table",
+        })
 
-export function searchTablesByKindAndType(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string) {
-    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const tables = await dispatch(fetchTables(chips, chipsExcluded, schema_name, eTableSearchMode.BY_KIND_AND_TYPE))
-        // dispatch(selectTables(tables))
-        if (tables !== undefined) {
-            dispatch(selectTables(Object.keys(tables)))
+        if (response.status === 404) {
+            dispatch(sendSnackbarNotification("No tables found matching your search criteria."))
+        } else if (response.status === 200) {
+            dispatch(loadTables(json))
+            dispatch(selectTables(Object.keys(json)))
         }
     }
 }
 
 export function searchColumns(schema_name: string, tableinfo_name: string) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const columns = await dispatch(fetchColumnsForTableName(schema_name, tableinfo_name))
-        dispatch(selectColumns(columns["columns"]))
-    }
-}
-
-export function searchColumnsByKindAndType(table: any, tablePopulationName: string) {
-    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const columns = await dispatch(fetchColumnsByKindAndType(table, tablePopulationName))
-        dispatch(selectColumns(columns["columns"]))
-    }
-}
-
-export function fetchSingleColumnByKindAndType(
-    mapId: number,
-    layerId: number,
-    layer: ILayer,
-    geometry: any,
-    kind: string,
-    type: string,
-    table: ITable
-) {
-    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const columns = await dispatch(fetchColumnsForGeometryAndKindAndType(geometry, kind, type, table))
-
-        if (columns["columns"].length === 1) {
-            const columnPartial: ISelectedColumn = { id: columns["columns"][0]["id"], schema: geometry["schema_name"] }
-            dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
-            dispatch(editDraftLayer(mapId, layerId, { selectedColumns: [...layer.selectedColumns, columnPartial] }))
-        } else {
-            dispatch(sendSnackbarNotification(`Oops! We found too many or too few columns (${columns["columns"].length})!`))
-        }
+        const { response, json } = await ealapi.get("/api/0.1/columninfo/search/", dispatch, {
+            schema: schema_name,
+            tableinfo_name: tableinfo_name,
+        })
+        dispatch(selectColumns(json["columns"]))
     }
 }
 

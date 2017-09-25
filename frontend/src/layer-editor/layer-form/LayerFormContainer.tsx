@@ -293,7 +293,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
 
         // Some sub-components require the form to re-render.
         // Fill Colour Scheme: Controls the values of Fill Colour Scheme Levels
-        // Geometry: Controls the values for the DatasetSearch component
+        // Geometry: Controls the values for the DatasetSearch/DataBrowser component
         if (layerFillColourScheme !== nextProps.layerFillColourScheme || layerGeometry !== nextProps.layerGeometry) {
             return true
         }

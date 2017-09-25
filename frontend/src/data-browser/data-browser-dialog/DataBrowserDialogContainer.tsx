@@ -5,15 +5,9 @@ import { withRouter } from "react-router"
 import { debounce } from "lodash-es"
 import { toggleModalState } from "../../redux/modules/app"
 import { change } from "redux-form"
-// import { fetchColumnsForTableName } from "../../redux/modules/datasearch"
 import {
-    selectTables,
-    selectColumns,
     searchTables,
-    searchTablesByKindAndType,
     searchColumns,
-    searchColumnsByKindAndType,
-    fetchSingleColumnByKindAndType,
     emptySelectedTables,
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
@@ -54,7 +48,6 @@ export interface IStoreProps {
 export interface IDispatchProps {
     handleChooseSchema: Function
     handleChooseTable: Function
-    handleChooseTableWithPopulation: Function
     onToggleDataBrowserModalState: Function
     showSchemaView: Function
     showTableView: Function
@@ -128,7 +121,6 @@ export class DataBrowserDialogContainer extends React.Component<
             geominfo,
             selectedTables,
             handleChooseTable,
-            handleChooseTableWithPopulation,
             selectedColumns,
             dataBrowserModalOpen,
             onToggleDataBrowserModalState,
@@ -157,14 +149,9 @@ export class DataBrowserDialogContainer extends React.Component<
                 dataTableSearchKeywords={this.state.dataTableSearchKeywords}
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
-                selectedTablePopulation={this.state.selectedTablePopulationName}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
                     this.setState({ selectedTable: table })
-                }}
-                handleClickTableWithPopulation={(table: ITable, tablePopulationName: string) => {
-                    handleChooseTableWithPopulation(table, tablePopulationName)
-                    this.setState({ selectedTable: table, selectedTablePopulationName: tablePopulationName })
                 }}
                 selectedColumns={selectedColumns}
                 dataBrowserModalOpen={dataBrowserModalOpen}
@@ -201,20 +188,10 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 const mapDispatchToProps = (dispatch: Function) => {
     return {
         handleChooseSchema: (schemaId: string, searchString: string) => {
-            // dispatch(searchTables(["level of education by industry of employment by sex"], [], schemaId))
-            dispatch(searchTablesByKindAndType(searchString.split(" "), [], schemaId))
-            // dispatch(searchTablesByKindAndType([""], [], schemaId))
+            dispatch(searchTables(searchString.split(" "), [], schemaId))
         },
         handleChooseTable: (table: ITable) => {
-            // FIXME
-            if ("is_series" in table) {
-                dispatch(searchColumnsByKindAndType(table, ""))
-            } else {
-                dispatch(searchColumns(table.schema_name, table.name))
-            }
-        },
-        handleChooseTableWithPopulation: (table: ITable, tablePopulationName: string) => {
-            dispatch(searchColumnsByKindAndType(table, tablePopulationName))
+            dispatch(searchColumns(table.schema_name, table.name))
         },
         onToggleDataBrowserModalState: () => {
             dispatch(toggleModalState("dataBrowser"))
@@ -241,8 +218,8 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },
         handleExitDataBrowser: () => {
-            dispatch(selectTables([]))
-            dispatch(selectColumns([]))
+            dispatch(emptySelectedTables())
+            dispatch(emptySelectedColumns())
         },
     }
 }

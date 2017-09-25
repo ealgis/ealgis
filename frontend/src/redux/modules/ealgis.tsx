@@ -1,7 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-
-import { ITable, ISelectedColumn } from "../../redux/modules/datasearch"
 import { loading as appLoading, loaded as appLoaded } from "./app"
 import { fetchMaps } from "./maps"
 
@@ -160,6 +158,27 @@ export interface IGeomInfo {
     [key: string]: IGeomTable
 }
 
+export interface ITable {
+    id: number
+    name: string
+    metadata_json: TableMetadataJSON
+    schema_name: string
+}
+
+export interface TableMetadataJSON {
+    kind: string
+    type: string
+    series: string
+    family: string
+    notes: string
+    metadataUrls: Array<TableMetadataURL>
+}
+
+export interface TableMetadataURL {
+    name: string
+    url: string
+}
+
 export interface ITableInfo {
     [key: string]: ITable
 }
@@ -234,6 +253,11 @@ export interface ColumnMetadataJSON {
 
 export interface IColumnInfo {
     [key: string]: IColumn
+}
+
+export interface ISelectedColumn {
+    id: number
+    schema: string
 }
 
 // Side effects, only as applicable

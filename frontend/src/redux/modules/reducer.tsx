@@ -8,7 +8,6 @@ import { default as map, IModule as IMapModule } from "./map"
 import { default as legends, IModule as ILegendsModule } from "./legends"
 import { default as maps, IModule as IMapsModule } from "./maps"
 import { default as datainspector, IModule as IDataInspectorpModule } from "./datainspector"
-import { default as datasearch, IModule as IDataSearchModule } from "./datasearch"
 import { default as databrowser, IModule as IDataBrowserModule } from "./databrowser"
 import { default as layerform, IModule as ILayerFormModule } from "./layerform"
 import { default as layerquerysummary, IModule as ILayerQuerySummaryModule } from "./layerquerysummary"
@@ -24,7 +23,6 @@ export interface IStore {
     legends: ILegendsModule
     maps: IMapsModule
     datainspector: IDataInspectorpModule
-    datasearch: IDataSearchModule
     databrowser: IDataBrowserModule
     layerform: ILayerFormModule
     layerquerysummary: ILayerQuerySummaryModule
@@ -38,7 +36,6 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     legends,
     maps,
     datainspector,
-    datasearch,
     databrowser,
     layerform,
     layerquerysummary,

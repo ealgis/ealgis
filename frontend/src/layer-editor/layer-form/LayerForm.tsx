@@ -11,7 +11,6 @@ import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
-import DatasetSearch from "../dataset-search/DatasetSearchContainer"
 import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
 import {
     IStore,
@@ -439,7 +438,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                 />
 
                                 <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
-                                {/* <DatasetSearch geometry={layerGeometry} /> */}
                             </TabContainer>
                         </Tab>
                         {/* END DATA TAB */}

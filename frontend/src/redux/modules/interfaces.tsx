@@ -8,6 +8,9 @@ export {
     IGeomTable,
     IColourInfo,
     ITableInfo,
+    ITable,
+    ISelectedColumn,
+    IColumn,
     ISchema,
     ISchemaInfo,
 } from "./ealgis"
@@ -16,17 +19,6 @@ export { IModule as IMapModule, IPosition } from "./map"
 export { IModule as ILegendsModule } from "./legends"
 export { IModule as IMapsModule, IMap, ILayer, IOLStyleDef, IMapPositionDefaults } from "./maps"
 export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, IOLFeatureProps } from "./datainspector"
-export {
-    IModule as IDataSearchModule,
-    ITableAndCols,
-    ITable,
-    TableMetadataURL,
-    ISelectedColumn,
-    IColumn,
-    TableMetadataJSON,
-    ColumnMetadataJSON,
-    eTableSearchMode,
-} from "./datasearch"
 export { IModule as IDataBrowserModule } from "./databrowser"
 export { IModule as ILayerFormModule } from "./layerform"
 export { IModule as ILayerQuerySummaryModule, ILayerQuerySummary } from "./layerquerysummary"

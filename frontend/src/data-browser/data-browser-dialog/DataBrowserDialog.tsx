@@ -49,9 +49,7 @@ export interface IProps {
     dataTableSearchKeywords: string
     selectedTables: Array<ITable>
     selectedTable: any
-    selectedTablePopulation: string
     handleClickTable: Function
-    handleClickTableWithPopulation: Function
     selectedColumns: Array<IColumn>
     onToggleDataBrowserModalState: any
     backToSchemaView: any
@@ -94,9 +92,7 @@ export class MapUINav extends React.Component<IProps, {}> {
             dataTableSearchKeywords,
             selectedTables,
             selectedTable,
-            selectedTablePopulation,
             handleClickTable,
-            handleClickTableWithPopulation,
             selectedColumns,
             onToggleDataBrowserModalState,
             backToSchemaView,
@@ -399,7 +395,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                         <Table
                             className="DataBrowser"
                             fixedHeader={true}
-                            height={window.innerHeight - 200}
+                            height={`${window.innerHeight - 200}px`}
                             onCellHover={(rowNumber: any, columnId: any) => {
                                 this.setState({ hoverRow: rowNumber, hoverCol: columnId })
                             }}
