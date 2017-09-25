@@ -6,7 +6,7 @@ import { sendNotification as sendSnackbarNotification } from "../../redux/module
 import { fetchTables, fetchColumnsForTableName, fetchColumnsByKindAndType, fetchColumnsForGeometryAndKindAndType } from "./datasearch"
 import { editDraftLayer } from "../../redux/modules/maps"
 import { addColumnToLayerSelection } from "./maps"
-import { ITable, ILayer, IColumn, eTableSearchMode } from "./interfaces"
+import { ITable, ILayer, IColumn, ISelectedColumn, eTableSearchMode } from "./interfaces"
 
 // Actions
 const SELECT_TABLES = "ealgis/databrowser/SELECT_TABLES"
@@ -136,7 +136,7 @@ export function fetchSingleColumnByKindAndType(
         const columns = await dispatch(fetchColumnsForGeometryAndKindAndType(geometry, kind, type, table))
 
         if (columns["columns"].length === 1) {
-            const columnPartial: any = { id: columns["columns"][0]["id"], schema: geometry["schema_name"] }
+            const columnPartial: ISelectedColumn = { id: columns["columns"][0]["id"], schema: geometry["schema_name"] }
             dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             dispatch(editDraftLayer(mapId, layerId, { selectedColumns: [...layer.selectedColumns, columnPartial] }))
         } else {

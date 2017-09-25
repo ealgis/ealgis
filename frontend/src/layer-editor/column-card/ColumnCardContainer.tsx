@@ -6,6 +6,7 @@ import { fetchColumnInfo } from "../../redux/modules/ealgis"
 
 export interface IProps {
     columnStub: ISelectedColumn
+    onRemoveColumn: Function
 }
 
 export interface IStoreProps {
@@ -17,9 +18,9 @@ export interface IDispachProps {}
 
 export class ColumnCardContainer extends React.PureComponent<IProps & IStoreProps & IDispachProps, {}> {
     render() {
-        const { column, table } = this.props
+        const { columnStub, column, table, onRemoveColumn } = this.props
 
-        return <ColumnCard column={column} table={table} />
+        return <ColumnCard column={column} table={table} onRemoveColumn={() => onRemoveColumn(columnStub)} />
     }
 }
 

@@ -25,6 +25,7 @@ import {
     IColourInfo,
     IMap,
     ILayer,
+    ISelectedColumn,
     IMUITheme,
     IMUIThemePalette,
 } from "../../redux/modules/interfaces"
@@ -80,6 +81,7 @@ export interface IDispatchProps {
     onModalSaveForm: Function
     onModalDiscardForm: Function
     onToggleDirtyFormModalState: Function
+    handleRemoveColumn: Function
 }
 
 interface IRouterProps {
@@ -337,6 +339,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             onResetForm,
             onModalSaveForm,
             onModalDiscardForm,
+            handleRemoveColumn,
             dirtyFormModalOpen,
             isDirty,
             onFitScaleToData,
@@ -376,6 +379,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
                 onModalSaveForm={() => onModalSaveForm(mapDefinition.id, layerId)}
                 onModalDiscardForm={() => onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)}
+                onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
             />
         )
     }
@@ -476,6 +480,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onToggleDirtyFormModalState: () => {
             dispatch(toggleModalState("dirtyLayerForm"))
+        },
+        handleRemoveColumn: (layer: ILayer, selectedColumn: ISelectedColumn) => {
+            layer.selectedColumns.splice(layer.selectedColumns.findIndex(columnStub => columnStub === selectedColumn), 1)
+            dispatch(change("layerForm", "selectedColumns", layer.selectedColumns))
         },
     }
 }

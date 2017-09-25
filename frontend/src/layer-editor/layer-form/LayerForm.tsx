@@ -193,11 +193,11 @@ const FillColourSchemeFields = (fields: any) => {
     )
 }
 
-const SelectedColumns = ({ fields, meta: { error } }): any => {
+const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }): any => {
     return (
         <div>
             {fields.getAll().map((column: ISelectedColumn, key: number) => {
-                return <ColumnCard key={key} columnStub={column} />
+                return <ColumnCard key={key} columnStub={column} onRemoveColumn={onRemoveColumn} />
             })}
         </div>
     )
@@ -214,6 +214,7 @@ export interface IProps {
     layerGeometry: IGeomTable
     dirtyFormModalOpen: boolean
     isDirty: boolean
+    onRemoveColumn: Function
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
@@ -277,6 +278,7 @@ class LayerForm extends React.Component<IProps, {}> {
             layerGeometry,
             layerFormSubmitting,
             isDirty,
+            onRemoveColumn,
         } = this.props
 
         let tabId = 0
@@ -404,7 +406,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     Add Column
                                 </RaisedButton>
 
-                                <FieldArray name="selectedColumns" component={SelectedColumns} />
+                                <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
                                 {/* <DatasetSearch geometry={layerGeometry} /> */}
                             </TabContainer>
                         </Tab>

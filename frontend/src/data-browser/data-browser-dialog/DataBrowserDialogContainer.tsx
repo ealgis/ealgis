@@ -18,7 +18,18 @@ import {
 } from "../../redux/modules/databrowser"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn } from "../../redux/modules/ealgis"
-import { IStore, ISchemaInfo, ISchema, ITableInfo, ITable, IGeomInfo, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
+import {
+    IStore,
+    ISchemaInfo,
+    ISchema,
+    ITableInfo,
+    ITable,
+    ISelectedColumn,
+    IGeomInfo,
+    IGeomTable,
+    IColumn,
+    ILayer,
+} from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
@@ -213,7 +224,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             layerId: number,
             layer: ILayer
         ) => {
-            const columnPartial: any = { id: column.id, schema: schema_name }
+            const columnPartial: ISelectedColumn = { id: column.id, schema: schema_name }
 
             dispatch(loadColumn(column, schema_name))
             dispatch(loadTable(selectedTable, schema_name))
