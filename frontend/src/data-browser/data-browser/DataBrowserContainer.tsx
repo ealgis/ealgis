@@ -50,39 +50,30 @@ interface IOwnProps {
 }
 
 interface IState {
-    selectedSchemas: Array<string>
     selectedSchemaId?: string
     dataTableSearchKeywords?: string
     selectedTable?: ITable
 }
 
 export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
+    self: DataBrowserContainer = this
     onTableSearchChangeDebounced: Function
 
     constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
-        this.state = { selectedSchemas: [] }
-        const { handleChooseSchema } = props
+        this.state = {}
+        const { handleChooseSchema, geometry } = props
 
         // http://stackoverflow.com/a/24679479/7368493
-        this.onTableSearchChangeDebounced = debounce(function(newValue: string) {
-            const { selectedSchemaId } = this.state
-            handleChooseSchema(selectedSchemaId, newValue)
+        this.onTableSearchChangeDebounced = debounce(function(newValue: string, selectedSchemaId: string) {
+            handleChooseSchema(selectedSchemaId, newValue, geometry)
         }, 500)
 
         props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
-    handleSchemaChange(menuItemValue: Array<string>) {
-        this.setState({ selectedSchemas: menuItemValue })
-    }
-
-    async handleClickSchema(schemaId: string, schema: ISchema) {
-        this.setState({ selectedSchemas: [...this.state.selectedSchemas, schema.name], selectedSchemaId: schemaId })
-    }
-
     routerWillLeave(nextLocation: any) {
-        this.setState({ selectedSchemas: [], selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
+        this.setState({ selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
         this.props.handleExitDataBrowser()
     }
 
@@ -101,7 +92,6 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             showSchemaView,
             handleChooseColumn,
         } = this.props
-        const { selectedSchemas } = this.state
 
         return (
             <DataBrowser
@@ -113,12 +103,11 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
                 handleClickSchema={(schemaId: string, schema: ISchema) => {
-                    this.handleClickSchema(schemaId, schema)
                     handleChooseSchema(schemaId, "", geometry)
                 }}
                 onTableSearchChange={(newValue: string) => {
                     this.setState({ dataTableSearchKeywords: newValue })
-                    this.onTableSearchChangeDebounced(newValue)
+                    this.onTableSearchChangeDebounced(newValue, this.state.selectedSchemaId)
                 }}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)

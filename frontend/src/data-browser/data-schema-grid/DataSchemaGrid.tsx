@@ -3,7 +3,14 @@ import styled from "styled-components"
 import { GridList, GridTile } from "material-ui/GridList"
 import { ISchema, ISchemaInfo, IMUIThemePalette } from "../../redux/modules/interfaces"
 
-const DataSchemaGridTile = styled(GridTile)`
+// Silence "TS2339: Property 'onClick' does not exist'" warnings
+class ClickableGridTile extends React.Component<any, any> {
+    render() {
+        return <GridTile {...this.props} />
+    }
+}
+
+const DataSchemaGridTile = styled(ClickableGridTile)`
     background-color: rgba(204, 204, 204, 0.65);
     cursor: pointer;
 `
