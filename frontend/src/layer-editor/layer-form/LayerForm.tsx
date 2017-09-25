@@ -210,7 +210,6 @@ export interface IProps {
     layerId: number
     layerHash: string
     layerFillColourScheme: string
-    layerGeometry: IGeomTable
     dirtyFormModalOpen: boolean
     isDirty: boolean
     onRemoveColumn: Function
@@ -273,8 +272,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onModalSaveForm,
             onModalDiscardForm,
             dirtyFormModalOpen,
-            onFitScaleToData,
-            layerGeometry,
+            onFitScaleToData
             layerFormSubmitting,
             isDirty,
             onRemoveColumn,

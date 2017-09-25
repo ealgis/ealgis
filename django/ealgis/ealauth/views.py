@@ -990,7 +990,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
         response = {
-            "columns": [],
+            "columns": {},
             "tables": {},
         }
         for (column, geomlinkage, tableinfo) in query.all():
@@ -1003,7 +1003,8 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
             col = self.serializer_class(column).data
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
-            response["columns"].append(col)
+            columnUID = "%s-%s" % (schema_name, column.id)
+            response["columns"][columnUID] = col
 
         if len(response["columns"]) == 0:
             raise NotFound()

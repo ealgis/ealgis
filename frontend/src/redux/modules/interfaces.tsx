@@ -10,6 +10,7 @@ export {
     ITableInfo,
     ITable,
     ISelectedColumn,
+    IColumnInfo,
     IColumn,
     ISchema,
     ISchemaInfo,
@@ -19,7 +20,7 @@ export { IModule as IMapModule, IPosition } from "./map"
 export { IModule as ILegendsModule } from "./legends"
 export { IModule as IMapsModule, IMap, ILayer, IOLStyleDef, IMapPositionDefaults } from "./maps"
 export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, IOLFeatureProps } from "./datainspector"
-export { IModule as IDataBrowserModule } from "./databrowser"
+export { IModule as IDataBrowserModule, ITablesBySchemaAndFamily, ITableFamily, ITableColumns } from "./databrowser"
 export { IModule as ILayerFormModule } from "./layerform"
 export { IModule as ILayerQuerySummaryModule, ILayerQuerySummary } from "./layerquerysummary"
 export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"

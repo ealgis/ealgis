@@ -31,6 +31,7 @@ module.exports = {
             "core-js/fn/object/values",
             "core-js/fn/object/entries",
             "core-js/fn/array/filter",
+            "core-js/fn/array/includes",
             "core-js/fn/string/starts-with",
             "core-js/es7/map",
         ],

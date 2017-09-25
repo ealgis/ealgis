@@ -1,9 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import DataBrowserDialog from "./DataBrowserDialog"
+import DataBrowser from "./DataBrowser"
 import { withRouter } from "react-router"
 import { debounce } from "lodash-es"
-import { toggleModalState } from "../../redux/modules/app"
 import { change } from "redux-form"
 import {
     searchTables,
@@ -15,12 +14,9 @@ import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn } from "../../redux/modules/ealgis"
 import {
     IStore,
-    ISchemaInfo,
     ISchema,
-    ITableInfo,
     ITable,
     ISelectedColumn,
-    IGeomInfo,
     IGeomTable,
     IColumn,
     ILayer,
@@ -35,20 +31,15 @@ export interface IStoreProps {
     layerId: number
     mapNameURLSafe: string
     layer: ILayer
-    schemainfo: ISchemaInfo
-    tableinfo: ITableInfo
-    geominfo: IGeomInfo
+    geometry: IGeomTable
     selectedTables: Array<string>
-    selectedColumns: Array<IColumn>
+    selectedColumns: Array<string>
     selectedColumn: IColumn
-    dataBrowserModalOpen: boolean
-    previousPath: string
 }
 
 export interface IDispatchProps {
     handleChooseSchema: Function
     handleChooseTable: Function
-    onToggleDataBrowserModalState: Function
     showSchemaView: Function
     showTableView: Function
     handleChooseColumn: Function
@@ -78,7 +69,7 @@ interface IState {
     selectedTable?: ITable
 }
 
-export class DataBrowserDialogContainer extends React.Component<
+export class DataBrowserContainer extends React.Component<
     IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
     IState
 > {
@@ -115,86 +106,68 @@ export class DataBrowserDialogContainer extends React.Component<
             layerId,
             mapNameURLSafe,
             layer,
-            schemainfo,
+            geometry,
             handleChooseSchema,
-            tableinfo,
-            geominfo,
             selectedTables,
             handleChooseTable,
             selectedColumns,
-            dataBrowserModalOpen,
-            onToggleDataBrowserModalState,
             showTableView,
             showSchemaView,
             handleChooseColumn,
-            previousPath,
         } = this.props
         const { selectedSchemas } = this.state
 
         return (
-            <DataBrowserDialog
+            <DataBrowser
                 mapId={mapId}
                 layerId={layerId}
                 mapNameURLSafe={mapNameURLSafe}
-                schemainfo={schemainfo}
-                selectedSchemas={selectedSchemas}
-                handleSchemaChange={(menuItemValue: Array<string>) => {
-                    this.handleSchemaChange(menuItemValue)
-                }}
-                handleClickSchema={(schemaId: string, schema: ISchema) => {
-                    this.handleClickSchema(schemaId, schema)
-                    handleChooseSchema(schemaId, "")
-                }}
-                tableinfo={tableinfo}
                 dataTableSearchKeywords={this.state.dataTableSearchKeywords}
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
+                selectedColumns={selectedColumns}
+                handleClickSchema={(schemaId: string, schema: ISchema) => {
+                    this.handleClickSchema(schemaId, schema)
+                    handleChooseSchema(schemaId, "", geometry)
+                }}
+                onTableSearchChange={(newValue: string) => {this.setState({ dataTableSearchKeywords: newValue }) this.onTableSearchChangeDebounced(newValue)}}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
                     this.setState({ selectedTable: table })
                 }}
-                selectedColumns={selectedColumns}
-                dataBrowserModalOpen={dataBrowserModalOpen}
-                onToggleDataBrowserModalState={() => onToggleDataBrowserModalState()}
-                backToSchemaView={() => showSchemaView()}
-                backToTableView={() => showTableView()}
-                onTableSearchChange={(newValue: string) => {this.setState({ dataTableSearchKeywords: newValue }) this.onTableSearchChangeDebounced(newValue)}}
                 onChooseColumn={(column: IColumn) => {
                     handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer)
                 }}
+                backToSchemaView={() => showSchemaView()}
+                backToTableView={() => showTableView()}
             />
         )
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { ealgis, databrowser, app, maps } = state
+    const { ealgis, databrowser, maps } = state
+    const layer: ILayer = maps[ownProps.params.mapId].json.layers[ownProps.params.layerId]
+
     return {
         mapId: ownProps.params.mapId,
         layerId: ownProps.params.layerId,
         mapNameURLSafe: maps[ownProps.params.mapId]["name-url-safe"],
-        layer: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
-        schemainfo: ealgis.schemainfo,
-        tableinfo: ealgis.tableinfo,
-        geominfo: ealgis.geominfo,
+        layer: layer,
+        geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
         selectedTables: databrowser.selectedTables,
         selectedColumns: databrowser.selectedColumns,
         selectedColumn: databrowser.selectedColumn,
-        dataBrowserModalOpen: true,
-        previousPath: app.previousPath,
     }
 }
 
 const mapDispatchToProps = (dispatch: Function) => {
     return {
-        handleChooseSchema: (schemaId: string, searchString: string) => {
-            dispatch(searchTables(searchString.split(" "), [], schemaId))
+        handleChooseSchema: (schemaId: string, searchString: string, geometry: IGeomTable) => {
+            dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
         },
         handleChooseTable: (table: ITable) => {
             dispatch(searchColumns(table.schema_name, table.name))
-        },
-        onToggleDataBrowserModalState: () => {
-            dispatch(toggleModalState("dataBrowser"))
         },
         showSchemaView: () => {
             dispatch(emptySelectedTables())
@@ -224,6 +197,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const DataBrowserDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataBrowserDialogContainer)
+const DataBrowserContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataBrowserContainer)
 
-export default withRouter(DataBrowserDialogContainerWrapped)
+export default withRouter(DataBrowserContainerWrapped)

@@ -195,14 +195,6 @@ export interface IGeomTable {
     schema_name: string
 }
 
-export interface IGeomTable {
-    _id: number
-    description: string
-    geometry_type: string
-    name: string
-    schema_name: string
-}
-
 export interface ISchema {
     _id: number
     name: string

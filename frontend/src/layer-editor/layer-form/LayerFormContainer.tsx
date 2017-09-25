@@ -60,7 +60,6 @@ export interface IStoreProps {
     layerId: number
     layerDefinition: ILayer
     layerFillColourScheme: string
-    layerGeometry: string // JSON IGeomTable
     dirtyFormModalOpen: boolean
     isDirty: boolean
     geominfo: IGeomInfo
@@ -273,7 +272,6 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             mapDefinition,
             layerId,
             layerFillColourScheme,
-            layerGeometry,
             layerDefinition,
             dirtyFormModalOpen,
             layerFormSubmitting,
@@ -293,8 +291,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
 
         // Some sub-components require the form to re-render.
         // Fill Colour Scheme: Controls the values of Fill Colour Scheme Levels
-        // Geometry: Controls the values for the DatasetSearch/DataBrowser component
-        if (layerFillColourScheme !== nextProps.layerFillColourScheme || layerGeometry !== nextProps.layerGeometry) {
+        if (layerFillColourScheme !== nextProps.layerFillColourScheme) {
             return true
         }
 
@@ -344,7 +341,6 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             isDirty,
             onFitScaleToData,
             layerFillColourScheme,
-            layerGeometry,
             onFormChange,
             layerFormSubmitting,
             muiThemePalette,
@@ -359,7 +355,6 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerId={layerId}
                 layerHash={layerDefinition.hash || ""}
                 layerFillColourScheme={layerFillColourScheme}
-                layerGeometry={layerGeometry ? JSON.parse(layerGeometry) : undefined}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
                 geominfo={geominfo}
@@ -404,7 +399,6 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme") as string,
-        layerGeometry: layerFormValues(state, "geometry") as string,
         dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
         geominfo: ealgis.geominfo,
