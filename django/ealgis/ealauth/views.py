@@ -785,22 +785,20 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def by_schema(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
 
-        columns = {}
-        tables = {}
+        columnsByUID = {}
+        tablesByUID = {}
         for schema in request.data:
-            for columnId in request.data[schema]:
-                column = eal.get_column_info(columnId, schema)
-                if column is None:
-                    raise NotFound()
+            columns = eal.get_column_info_by_ids(request.data[schema], schema)
+            tableIds = list(set([col.table_info_id for col in columns]))
+            tables = eal.get_table_info_by_ids(tableIds, schema)
 
-                table = eal.get_table_info_by_id(column.table_info_id, schema)
-                if table is None:
-                    raise NotFound()
+            for column in columns:
+                columnsByUID["%s-%s" % (schema, column.id)] = ColumnInfoSerializer(column).data
 
-                columns["%s-%s" % (schema, column.id)] = ColumnInfoSerializer(column).data
-                tables["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data
+            for table in tables:
+                tablesByUID["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data
 
-        return Response({"columns": columns, "tables": tables})
+        return Response({"columns": columnsByUID, "tables": tablesByUID})
 
     @list_route(methods=['get'])
     def by_name(self, request, format=None):
