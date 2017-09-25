@@ -52,17 +52,6 @@ export function selectColumns(selectedColumns: Array<IColumn>): IAction {
         },
     }
 }
-export function unselectColumns(selectedColumns: Array<any>): IAction {
-    return {
-        type: SELECT_COLUMNS,
-        selectedColumns,
-        meta: {
-            analytics: {
-                category: "DataBrowser",
-            },
-        },
-    }
-}
 export function selectColumn(selectedColumn: IColumn): IAction {
     return {
         type: SELECT_COLUMN,
@@ -145,8 +134,13 @@ export function fetchSingleColumnByKindAndType(
     }
 }
 
+export function emptySelectedTables() {
+    return (dispatch: Function) => {
+        dispatch(selectTables([]))
+    }
+}
 export function emptySelectedColumns() {
     return (dispatch: Function) => {
-        dispatch(unselectColumns([]))
+        dispatch(selectColumns([]))
     }
 }

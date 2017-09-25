@@ -14,6 +14,7 @@ import {
     searchColumns,
     searchColumnsByKindAndType,
     fetchSingleColumnByKindAndType,
+    emptySelectedTables,
     emptySelectedColumns,
 } from "../../redux/modules/databrowser"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
@@ -55,6 +56,7 @@ export interface IDispatchProps {
     handleChooseTable: Function
     handleChooseTableWithPopulation: Function
     onToggleDataBrowserModalState: Function
+    showSchemaView: Function
     showTableView: Function
     handleChooseColumn: Function
     handleExitDataBrowser: Function
@@ -130,6 +132,7 @@ export class DataBrowserDialogContainer extends React.Component<
             dataBrowserModalOpen,
             onToggleDataBrowserModalState,
             showTableView,
+            showSchemaView,
             handleChooseColumn,
             previousPath,
         } = this.props
@@ -164,6 +167,7 @@ export class DataBrowserDialogContainer extends React.Component<
                 selectedColumns={selectedColumns}
                 dataBrowserModalOpen={dataBrowserModalOpen}
                 onToggleDataBrowserModalState={() => onToggleDataBrowserModalState()}
+                backToSchemaView={() => showSchemaView()}
                 backToTableView={() => showTableView()}
                 onTableSearchChange={(newValue: string) => this.onTableSearchChangeDebounced(newValue)}
                 onChooseColumn={(column: IColumn) => {
@@ -212,6 +216,9 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         onToggleDataBrowserModalState: () => {
             dispatch(toggleModalState("dataBrowser"))
+        },
+        showSchemaView: () => {
+            dispatch(emptySelectedTables())
         },
         showTableView: () => {
             dispatch(emptySelectedColumns())

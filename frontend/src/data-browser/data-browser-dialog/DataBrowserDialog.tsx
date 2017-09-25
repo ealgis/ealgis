@@ -53,6 +53,7 @@ export interface IProps {
     handleClickTableWithPopulation: Function
     selectedColumns: Array<IColumn>
     onToggleDataBrowserModalState: any
+    backToSchemaView: any
     backToTableView: any
     onTableSearchChange: Function
     onChooseColumn: Function
@@ -96,6 +97,7 @@ export class MapUINav extends React.Component<IProps, {}> {
             handleClickTableWithPopulation,
             selectedColumns,
             onToggleDataBrowserModalState,
+            backToSchemaView,
             backToTableView,
             onTableSearchChange,
             onChooseColumn,
@@ -194,7 +196,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                     <ToolbarGroup firstChild={true}>
                         {Object.keys(tablesByType).length > 0 && (
                             <div>
-                                <SelectField
+                                {/* <SelectField
                                     hintText="Select a schema"
                                     floatingLabelText="Floating Label Text"
                                     value={selectedSchemas}
@@ -212,7 +214,10 @@ export class MapUINav extends React.Component<IProps, {}> {
                                             />
                                         )
                                     })}
-                                </SelectField>
+                                </SelectField> */}
+                                <RaisedButton primary={true} onTouchTap={() => backToSchemaView()}>
+                                    Back
+                                </RaisedButton>
                                 <TextField
                                     hintText="Hint Text"
                                     floatingLabelText="Floating Label Text"
