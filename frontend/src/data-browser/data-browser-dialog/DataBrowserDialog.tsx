@@ -46,6 +46,7 @@ export interface IProps {
     handleSchemaChange: Function
     handleClickSchema: Function
     tableinfo: ITableInfo
+    dataTableSearchKeywords: string
     selectedTables: Array<ITable>
     selectedTable: any
     selectedTablePopulation: string
@@ -90,6 +91,7 @@ export class MapUINav extends React.Component<IProps, {}> {
             handleSchemaChange,
             handleClickSchema,
             tableinfo,
+            dataTableSearchKeywords,
             selectedTables,
             selectedTable,
             selectedTablePopulation,
@@ -169,7 +171,7 @@ export class MapUINav extends React.Component<IProps, {}> {
         ]
 
         return (
-            <div style={{ padding: "15px", overflow: "auto" }}>
+            <div style={{ padding: "8px", overflow: "auto" }}>
                 {/* <Dialog
                     title="Data Browser"
                     actions={dialogActions}
@@ -223,6 +225,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     hintText="e.g. Industry, Family"
                                     floatingLabelText="Search for data tables"
                                     style={{ marginLeft: "15px" }}
+                                    value={dataTableSearchKeywords}
                                     onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
                                 />
                             </div>
@@ -403,15 +406,17 @@ export class MapUINav extends React.Component<IProps, {}> {
                     <div>
                         <h2>
                             {selectedTablePopulation == null ? (
-                                `${selectedTable["metadata_json"]["type"]}`
+                                `${selectedTable["metadata_json"]["type"]} (${selectedTable["metadata_json"]["family"].toUpperCase()})`
                             ) : (
-                                `${selectedTable["metadata_json"]["type"]}: ${selectedTablePopulation}`
+                                `${selectedTable["metadata_json"]["type"]}: ${selectedTablePopulation} (${selectedTable["metadata_json"][
+                                    "family"
+                                ].toUpperCase()})`
                             )}
                         </h2>
                         <Table
                             className="DataBrowser"
                             fixedHeader={true}
-                            height={"500px"}
+                            height={window.innerHeight - 200}
                             onCellHover={(rowNumber: any, columnId: any) => {
                                 this.setState({ hoverRow: rowNumber, hoverCol: columnId })
                             }}

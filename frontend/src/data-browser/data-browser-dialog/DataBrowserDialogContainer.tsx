@@ -81,6 +81,7 @@ interface IOwnProps {
 interface IState {
     selectedSchemas?: Array<string>
     selectedSchemaId?: string
+    dataTableSearchKeywords?: string
     selectedTable?: ITable
 }
 
@@ -111,7 +112,7 @@ export class DataBrowserDialogContainer extends React.Component<
     }
 
     routerWillLeave(nextLocation: any) {
-        this.setState({ selectedSchemas: [], selectedSchemaId: null, selectedTable: null })
+        this.setState({ selectedSchemas: [], selectedSchemaId: null, dataTableSearchKeywords: null, selectedTable: null })
         this.props.handleExitDataBrowser()
     }
 
@@ -153,6 +154,7 @@ export class DataBrowserDialogContainer extends React.Component<
                     handleChooseSchema(schemaId, "")
                 }}
                 tableinfo={tableinfo}
+                dataTableSearchKeywords={this.state.dataTableSearchKeywords}
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
                 selectedTablePopulation={this.state.selectedTablePopulationName}
@@ -169,7 +171,7 @@ export class DataBrowserDialogContainer extends React.Component<
                 onToggleDataBrowserModalState={() => onToggleDataBrowserModalState()}
                 backToSchemaView={() => showSchemaView()}
                 backToTableView={() => showTableView()}
-                onTableSearchChange={(newValue: string) => this.onTableSearchChangeDebounced(newValue)}
+                onTableSearchChange={(newValue: string) => {this.setState({ dataTableSearchKeywords: newValue }) this.onTableSearchChangeDebounced(newValue)}}
                 onChooseColumn={(column: IColumn) => {
                     handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer)
                 }}
