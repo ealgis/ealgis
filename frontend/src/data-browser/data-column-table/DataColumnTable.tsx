@@ -8,12 +8,17 @@ const RowLabelTableHeaderColumn = styled(TableHeaderColumn)`
     white-space: normal;
 `
 
+const ColumnCellTableHeaderColumn = styled(TableHeaderColumn)`white-space: normal !important;`
+
 const RowLabelTableRowColumn = styled(TableRowColumn)`
     width: 250px;
-    white-space: normal;
+    white-space: normal !important;
 `
 
-const ColumnCellTableRowColumn = styled(TableRowColumn)`cursor: pointer;`
+const ColumnCellTableRowColumn = styled(TableRowColumn)`
+    cursor: pointer;
+    border-left: 1px solid rgb(209, 196, 233);
+`
 
 export interface IProps {
     table: ITable
@@ -45,8 +50,9 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                         this.setState({ hoverRow: rowNumber, hoverCol: columnId })
                     }}
                     onCellClick={(rowNumber: number, columnId: number, evt?: any) => {
-                        if (evt.target.dataset.disabled !== "true") {
-                            onClickColumn(JSON.parse(evt.target.dataset.column))
+                        const columnUID: string = `${evt.target.dataset.col}.${evt.target.dataset.row}`
+                        if (columnUID in columns) {
+                            onClickColumn(columns[columnUID])
                         }
                     }}
                 >
@@ -54,7 +60,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                         <TableRow>
                             <RowLabelTableHeaderColumn />
                             {header.map((value: string, idx: number) => {
-                                return <RowLabelTableHeaderColumn key={`${idx}`}>{value}</RowLabelTableHeaderColumn>
+                                return <ColumnCellTableHeaderColumn key={`${idx}`}>{value}</ColumnCellTableHeaderColumn>
                             })}
                         </TableRow>
                     </TableHeader>
@@ -65,16 +71,12 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                     <RowLabelTableRowColumn>{valueRow}</RowLabelTableRowColumn>
                                     {header.map((valueCol: string, idxCol: number) => {
                                         const columnUID: string = `${valueCol}.${valueRow}`
-                                        const cellProps: any = {
-                                            key: idxCol,
-                                            "data-col": valueCol,
-                                            "data-row": valueRow,
-                                            "data-disabled": !(columnUID in columns),
-                                            "data-column": columnUID in columns ? JSON.stringify(columns[columnUID]) : null,
-                                            style: { borderLeft: "1px solid rgb(209, 196, 233)" },
-                                        }
 
-                                        return <ColumnCellTableRowColumn {...cellProps} />
+                                        return (
+                                            <ColumnCellTableRowColumn key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
+                                                {!(columnUID in columns) ? "N/A" : ""}
+                                            </ColumnCellTableRowColumn>
+                                        )
                                     })}
                                 </TableRow>
                             )

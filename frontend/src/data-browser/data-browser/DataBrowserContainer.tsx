@@ -72,6 +72,10 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
         props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
+    async handleClickSchema(schemaId: string, schema: ISchema) {
+        this.setState({ selectedSchemaId: schemaId })
+    }
+
     routerWillLeave(nextLocation: any) {
         this.setState({ selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
         this.props.handleExitDataBrowser()
@@ -103,6 +107,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
                 handleClickSchema={(schemaId: string, schema: ISchema) => {
+                    this.handleClickSchema(schemaId, schema)
                     handleChooseSchema(schemaId, "", geometry)
                 }}
                 onTableSearchChange={(newValue: string) => {
