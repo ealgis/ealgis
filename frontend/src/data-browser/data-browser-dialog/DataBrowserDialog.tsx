@@ -220,8 +220,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     Back
                                 </RaisedButton>
                                 <TextField
-                                    hintText="Hint Text"
-                                    floatingLabelText="Floating Label Text"
+                                    hintText="e.g. Industry, Family"
+                                    floatingLabelText="Search for data tables"
                                     style={{ marginLeft: "15px" }}
                                     onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
                                 />

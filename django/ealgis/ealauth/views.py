@@ -723,7 +723,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             query = query.filter(not_(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term))))
 
         query = query.order_by(tableinfo.id)
-        query = query.limit(200)
+        # query = query.limit(200)
 
         # Split the response into an array of columns and an object of tables.
         # Often columns will refer to the same table, so this reduces payload size.
