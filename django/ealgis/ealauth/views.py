@@ -865,6 +865,23 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             raise NotFound()
         return Response(response)
 
+    @detail_route(methods=['get'])
+    def summary_stats(self, request, pk=None, format=None):
+        eal = apps.get_app_config('ealauth').eal
+        schema_name = self.get_schema_from_request(request)
+
+        # e.g. https://localhost:8443/api/0.1/columninfo/1052/summary_stats/?format=json&schema=aus_census_2011_v2
+        column = eal.get_column_info(pk, schema_name)
+        if column is None:
+            raise NotFound()
+
+        table = eal.get_table_info_by_id(column.table_info_id, schema_name)
+        if table is None:
+            raise NotFound()
+
+        summary = eal.def_get_summary_stats_for_column(column, table, schema_name)
+        return Response(summary)
+
     def get_schema_from_request(self, request):
         eal = apps.get_app_config('ealauth').eal
 

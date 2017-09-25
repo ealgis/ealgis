@@ -328,6 +328,23 @@ class EAlGIS(object):
             "stddev": stddev,
         }
 
+    def def_get_summary_stats_for_column(self, column, table, schema_name):
+        SQL_TEMPLATE = """
+            SELECT
+                MIN(sq.q),
+                MAX(sq.q),
+                STDDEV(sq.q)
+            FROM (SELECT {col_name} AS q FROM {schema_name}.{table_name}) AS sq"""
+
+        (min, max, stddev) = self.session.execute(
+            SQL_TEMPLATE.format(col_name=column.name, schema_name=schema_name, table_name=table.name)).first()
+
+        return {
+            "min": min,
+            "max": max,
+            "stddev": stddev,
+        }
+
     def get_tile(self, query, x, y, z):
         def create_vectortile_sql(query, bounds):
             # Sets the number of decimal places per GeoJSON coordinate to reduce response size
