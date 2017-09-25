@@ -20,18 +20,37 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import { ISchemaInfo, ISchema, ITableInfo, ITable, IColumn } from "../../redux/modules/interfaces"
 
+const DataBrowserContainer = styled.div`
+    padding: 12px;
+    overflow: auto;
+`
+
+const DataBrowserToolbar = styled(Toolbar)`
+    background-color: white !important;
+`
+
+const TableSearchTextField = styled(TextField)`
+    margin-left: 15px !important;
+    top: -10px !important;
+`
+
 const FlexboxContainer = styled.div`
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
 `
 
-const HighlightedTableRowColumn = styled(TableRowColumn)`
-    background-color: rgb(103, 58, 183) !important;
-    color: white !important;
+const RowLabelTableHeaderColumn = styled(TableHeaderColumn)`
+    width: 250px;
+    white-space: normal;
 `
 
-const NonHighlightedTableRowColumn = styled(TableRowColumn)`background-color: white !important;`
+const RowLabelTableRowColumn = styled(TableRowColumn)`
+    width: 250px;
+    white-space: normal;
+`
+
+const ColumnCellTableRowColumn = styled(TableRowColumn)`cursor: pointer;`
 
 const FirstFlexboxColumn = styled.div`flex: 0 0 12em;`
 
@@ -60,25 +79,6 @@ export interface IProps {
 }
 
 export class MapUINav extends React.Component<IProps, {}> {
-    shouldCellBeHighlighted(idxCol: string, idxRow: string) {
-        if (this.state === null) {
-            return false
-        }
-
-        const { hoverCol, hoverRow }: any = this.state
-
-        // Yes, it's in the same column as us
-        if (hoverCol == idxCol + 2 && idxRow <= hoverRow) {
-            return true
-        }
-
-        // Yes, it's in the same row as us
-        if (hoverRow == idxRow && idxCol + 2 <= hoverCol) {
-            return true
-        }
-        return false
-    }
-
     render() {
         const {
             mapId,
@@ -148,49 +148,14 @@ export class MapUINav extends React.Component<IProps, {}> {
             columnLookup[`${column["metadata_json"]["kind"]}.${column["metadata_json"]["type"]}`] = column
         }
 
-        // columnsForTable["header"].reverse()
-        // columnsForTable["rows"].reverse()
-
-        // var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" })
-        // columnsForTable["header"].sort(collator.compare)
-        // columnsForTable["rows"].sort(collator.compare)
-        // if (columnsForTable["rows"].includes("Total")) {
-        //     const ttlIndex: number = columnsForTable["rows"].findIndex((value: string) => value == "Total")
-        //     columnsForTable["rows"].push(columnsForTable["rows"].splice(ttlIndex, 1))
-        // }
-        // console.log("columnsForTable", columnsForTable)
-        // console.log("columnLookup", columnLookup)
-
         const dialogActions = [
             <FlatButton label="Close" secondary={true} onTouchTap={onToggleDataBrowserModalState} />,
             <FlatButton label="Add" primary={true} onTouchTap={() => alert("@TODO Add dataset")} />,
         ]
 
         return (
-            <div style={{ padding: "12px", overflow: "auto" }}>
-                {/* <Dialog
-                    title="Data Browser"
-                    actions={dialogActions}
-                    modal={true}
-                    open={dataBrowserModalOpen}
-                    autoScrollBodyContent={true}
-                    contentStyle={{
-                        width: "65%",
-                        maxWidth: "none",
-                        marginLeft: "25%",
-                    }}
-                > */}
-                {/* <FlexboxContainer>
-                    <FirstFlexboxColumn>
-                        <List>
-                            <ListItem primaryText="Discoverz" />
-                            <ListItem primaryText="Popular" />
-                        </List>
-                    </FirstFlexboxColumn>
-
-                    <SecondFlexboxColumn> */}
-
-                <Toolbar style={{ backgroundColor: "white", marginBottom: "10px" }}>
+            <DataBrowserContainer>
+                <DataBrowserToolbar>
                     <ToolbarGroup firstChild={true}>
                         {Object.keys(tablesByType).length > 0 &&
                         columnsForTable["header"].length == 0 && (
@@ -198,10 +163,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                         )}
                         {Object.keys(tablesByType).length > 0 &&
                         columnsForTable["header"].length == 0 && (
-                            <TextField
+                            <TableSearchTextField
                                 hintText="e.g. Industry, Family"
                                 floatingLabelText="Search for data tables"
-                                style={{ marginLeft: "15px", top: "-10px" }}
                                 value={dataTableSearchKeywords}
                                 onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
                             />
@@ -220,49 +184,19 @@ export class MapUINav extends React.Component<IProps, {}> {
                             <NavigationClose />
                         </IconButton>
                     </ToolbarGroup>
-                </Toolbar>
+                </DataBrowserToolbar>
 
                 {Object.keys(tablesByType).length == 0 &&
                 columnsForTable["header"].length == 0 && (
                     <div>
                         <Subheader>Data Schemas</Subheader>
                         <DataSchemaGrid handleClickSchema={handleClickSchema} />
-
-                        {/* <Subheader>Popular Datasets</Subheader> */}
                     </div>
                 )}
-
-                {/* {Object.keys(tablesByType).length > 0 &&
-                    columnsForTable["header"].length == 0 &&
-                    <div>
-                        <Subheader>Data Tables</Subheader>
-                        {Object.keys(tablesByType).map((tableTypeKey: string) => {
-                            return (
-                                <div key={tableTypeKey}>
-                                    <Subheader>
-                                        {tablesByType[tableTypeKey]["type"]}
-                                    </Subheader>
-                                    <GridList cols={3} cellHeight={180} padding={10}>
-                                        {tablesByType[tableTypeKey]["tables"].map((table: ITable, index: number) => {
-                                            return (
-                                                <GridTile
-                                                    key={index}
-                                                    title={`${table.table_name_from_col} (${table.name})`}
-                                                    subtitle={table.metadata_json["kind"]}
-                                                    onTouchTap={() => handleClickTable(table)}
-                                                />
-                                            )
-                                        })}
-                                    </GridList>
-                                </div>
-                            )
-                        })}
-                    </div>} */}
 
                 {Object.keys(tablesByType).length > 0 &&
                 columnsForTable["header"].length == 0 && (
                     <div>
-                        {/* <Subheader>Data Tables</Subheader> */}
                         <List>
                             {Object.keys(tablesByType).map((tableTypeKey: string, idx: number) => {
                                 if (tablesByType[tableTypeKey]["tables"].length > 1) {
@@ -278,8 +212,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                 return (
                                                     <ListItem
                                                         key={idx}
-                                                        primaryText={SeriesTable.metadata_json.series}
-                                                        style={{ textTransform: "capitalize" }}
+                                                        primaryText={SeriesTable.metadata_json.series.toUpperCase()}
                                                         onTouchTap={() => handleClickTable(SeriesTable)}
                                                     />
                                                 )
@@ -303,84 +236,6 @@ export class MapUINav extends React.Component<IProps, {}> {
                     </div>
                 )}
 
-                {/* {Object.keys(tablesByType).length > 0 &&
-                    columnsForTable["header"].length == 0 &&
-                    <div>
-                        <Subheader>Data Tables</Subheader>
-                        <List>
-                            {selectedTables.map((TableType: any, idx: number) => {
-                                if ("series_tables" in TableType) {
-                                    return (
-                                        <ListItem
-                                            key={idx}
-                                            primaryText={TableType["metadata_json"]["type"]}
-                                            secondaryText={`${TableType["metadata_json"]["kind"]} (${TableType[
-                                                "profile_table"
-                                            ]})`}
-                                            primaryTogglesNestedList={true}
-                                            nestedItems={TableType[
-                                                "series_tables"
-                                            ].map((tablePopulationName: string, idx: number) => {
-                                                return (
-                                                    <ListItem
-                                                        key={idx}
-                                                        primaryText={tablePopulationName.toLowerCase()}
-                                                        style={{ textTransform: "capitalize" }}
-                                                        onTouchTap={() =>
-                                                            handleClickTableWithPopulation(
-                                                                TableType,
-                                                                tablePopulationName
-                                                            )}
-                                                    />
-                                                )
-                                            })}
-                                        />
-                                    )
-                                } else {
-                                    return (
-                                        <ListItem
-                                            key={idx}
-                                            primaryText={TableType["metadata_json"]["type"]}
-                                            secondaryText={`${TableType["metadata_json"]["kind"]} (${TableType[
-                                                "profile_table"
-                                            ]})`}
-                                            onTouchTap={() => handleClickTable(TableType)}
-                                        />
-                                    )
-                                }
-                            })}
-                        </List>
-                    </div>} */}
-
-                {/* {Object.keys(columnsBySomething).length > 0 &&
-                                <div>
-                                    <Subheader>Data Columns</Subheader>
-                                    {Object.keys(columnsBySomething).map((columnSomethingKey: string) => {
-                                        return (
-                                            <div key={columnSomethingKey}>
-                                                <Subheader>
-                                                    {columnSomethingKey}
-                                                </Subheader>
-                                                <GridList cols={3} cellHeight={180} padding={10}>
-                                                    {columnsBySomething[columnSomethingKey][
-                                                        "columns"
-                                                    ].map((column: IColumn, index: number) => {
-                                                        return (
-                                                            <GridTile
-                                                                key={index}
-                                                                title={column.metadata_json.concepts.primary.value}
-                                                                subtitle={`${column.metadata_json.concepts.secondary
-                                                                    .label} ${column.metadata_json.concepts.secondary
-                                                                    .value}`}
-                                                            />
-                                                        )
-                                                    })}
-                                                </GridList>
-                                            </div>
-                                        )
-                                    })}
-                                </div>} */}
-
                 {columnsForTable["header"].length > 0 && (
                     <div>
                         <h2>
@@ -400,10 +255,6 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 this.setState({ hoverRow: rowNumber, hoverCol: columnId })
                             }}
                             onCellClick={(rowNumber: number, columnId: number, evt: any) => {
-                                {
-                                    /* console.log(rowNumber, columnId)
-                                console.log(evt.target, evt.target.dataset) */
-                                }
                                 if (evt.target.dataset.disabled !== "true") {
                                     onChooseColumn(JSON.parse(evt.target.dataset.column))
                                 }
@@ -411,23 +262,23 @@ export class MapUINav extends React.Component<IProps, {}> {
                         >
                             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                                 <TableRow>
-                                    <TableHeaderColumn style={{ width: "250px" }} />
+                                    <RowLabelTableHeaderColumn />
                                     {columnsForTable["header"].map((value: string, idx: string) => {
                                         return (
-                                            <TableHeaderColumn key={idx} style={{ whiteSpace: "normal" }}>
+                                            <RowLabelTableHeaderColumn key={idx}>
                                                 {value}
-                                            </TableHeaderColumn>
+                                            </RowLabelTableHeaderColumn>
                                         )
                                     })}
                                 </TableRow>
                             </TableHeader>
-                            <TableBody displayRowCheckbox={false} showRowHover={true}>
+                            <TableBody displayRowCheckbox={false}>
                                 {columnsForTable["rows"].map((valueRow: string, idxRow: string) => {
                                     return (
                                         <TableRow key={idxRow}>
-                                            <NonHighlightedTableRowColumn style={{ width: "250px", whiteSpace: "normal" }}>
+                                            <RowLabelTableRowColumn>
                                                 {valueRow}
-                                            </NonHighlightedTableRowColumn>
+                                            </RowLabelTableRowColumn>
                                             {columnsForTable["header"].map((valueCol: string, idxCol: string) => {
                                                 const columnKey: string = `${valueCol}.${valueRow}`
                                                 const cellProps: any = {
@@ -440,14 +291,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     style: { borderLeft: "1px solid rgb(209, 196, 233)" },
                                                 }
 
-                                                if (this.shouldCellBeHighlighted(idxCol, idxRow)) {
-                                                    return <HighlightedTableRowColumn {...cellProps} />
-                                                } else {
-                                                    return (
-                                                        <NonHighlightedTableRowColumn {...cellProps}>
-                                                            {!(columnKey in columnLookup) ? "N/A" : ""}
-                                                        </NonHighlightedTableRowColumn>
-                                                    )
+                                                return <ColumnCellTableRowColumn {...cellProps} />
                                                 }
                                             })}
                                         </TableRow>
@@ -459,7 +303,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                 )}
                 {}
                 {}
-            </div>
+            </DataBrowserContainer>
         )
     }
 }
