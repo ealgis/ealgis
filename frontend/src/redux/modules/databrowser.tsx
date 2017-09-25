@@ -94,7 +94,9 @@ export function searchTablesByKindAndType(chips: Array<string>, chipsExcluded: A
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const tables = await dispatch(fetchTables(chips, chipsExcluded, schema_name, eTableSearchMode.BY_KIND_AND_TYPE))
         // dispatch(selectTables(tables))
-        dispatch(selectTables(Object.keys(tables)))
+        if (tables !== undefined) {
+            dispatch(selectTables(Object.keys(tables)))
+        }
     }
 }
 

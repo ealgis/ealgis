@@ -194,7 +194,8 @@ export class MapUINav extends React.Component<IProps, {}> {
 
                 <Toolbar style={{ backgroundColor: "white", marginBottom: "10px" }}>
                     <ToolbarGroup firstChild={true}>
-                        {Object.keys(tablesByType).length > 0 && (
+                        {Object.keys(tablesByType).length > 0 &&
+                        columnsForTable["header"].length == 0 && (
                             <div>
                                 {/* <SelectField
                                     hintText="Select a schema"
