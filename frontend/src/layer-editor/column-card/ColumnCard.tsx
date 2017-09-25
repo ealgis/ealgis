@@ -6,6 +6,12 @@ import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 
+const StyledCard = styled(Card)`margin-bottom: 10px;`
+
+const TableNotes = styled.div`padding-bottom: 10px;`
+
+const MetadataURL = styled.div`line-height: 20px;`
+
 export interface IProps {
     column: IColumn
     table: ITable
@@ -17,13 +23,28 @@ export class ColumnCard extends React.Component<IProps, {}> {
         const { column, table, onRemoveColumn } = this.props
 
         return (
-            <Card>
-                <CardHeader title={column["id"]} subtitle={`${column["metadata_json"]["type"]} // ${column["metadata_json"]["kind"]}`} />
-                <CardText>{table["metadata_json"]["type"]}</CardText>
+            <StyledCard>
+                <CardHeader
+                    title={column["name"].toUpperCase()}
+                    subtitle={`${column["metadata_json"]["type"]} // ${column["metadata_json"]["kind"]}`}
+                    actAsExpander={true}
+                    showExpandableButton={true}
+                />
+                <CardTitle title={table["metadata_json"]["family"].toUpperCase()} subtitle={table["metadata_json"]["type"]} />
+                <CardText expandable={true}>
+                    <TableNotes dangerouslySetInnerHTML={{ __html: table["metadata_json"]["notes"] }} />
+                    {table["metadata_json"]["metadataUrls"].map((obj: any, key: any) => (
+                        <MetadataURL key={key}>
+                            <a href={obj["url"]} target="_blank">
+                                {obj["name"]}
+                            </a>
+                        </MetadataURL>
+                    ))}
+                </CardText>
                 <CardActions>
                     <FlatButton label="Remove" onClick={onRemoveColumn} />
                 </CardActions>
-            </Card>
+            </StyledCard>
         )
     }
 }
