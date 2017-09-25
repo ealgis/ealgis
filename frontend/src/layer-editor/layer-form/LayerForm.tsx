@@ -291,6 +291,23 @@ class LayerForm extends React.Component<IProps, {}> {
                 break
         }
 
+        // For chip input-based expression editors (if needed)
+        // const selectedColumnChipValues = selectedColumns.map((column: IColumn) => {
+        //     return {
+        //       text: column["name"],
+        //       value: (
+        //         <MenuItem key={column["name"]}
+        //           primaryText={
+        //             <StyledMenuItemPrimaryText>
+        //               {`${column["metadata_json"]["type"]} // ${column["metadata_json"]["kind"]}`.substr(0, 30)}
+        //             </StyledMenuItemPrimaryText>
+        //           }
+        //           secondaryText={column["name"].toUpperCase()}
+        //         />
+        //       )
+        //     }
+        //   })
+
         return (
             <div>
                 <Toolbar>
@@ -371,6 +388,21 @@ class LayerForm extends React.Component<IProps, {}> {
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                         >
                             <TabContainer>
+                                {/* // For chip input-based expression editors (if needed) */}
+                                {/* <Field
+                                    name="valueExpression"
+                                    component={ChipInput}
+                                    hintText="Write an expression..."
+                                    floatingLabelText="Value expression"
+                                    floatingLabelFixed={true}
+                                    fullWidth={true}
+                                    dataSource={selectedColumns}
+                                    dataSourceConfig={{ text: 'name', value: 'name' }}
+                                    openOnFocus={true}
+                                    onBlur={(event: any, newValue: string, previousValue: string) =>
+                                        onFieldBlur(event.target.name, newValue, previousValue)}
+                                /> */}
+
                                 <Field
                                     name="valueExpression"
                                     component={TextField}

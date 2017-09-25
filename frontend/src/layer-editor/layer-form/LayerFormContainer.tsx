@@ -389,6 +389,15 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { app, maps, ealgis, layerform } = state
     const layerFormValues = formValueSelector("layerForm")
 
+    // For chip input-based expression editors (if needed)
+    // const selectedColumnStubs: Array<ISelectedColumn> = layerFormValues(state, "selectedColumns")
+    // if (selectedColumnStubs !== undefined) {
+    //     let selectedColumns: Array<IColumn> = selectedColumnStubs.map((columnStub: ISelectedColumn) => {
+    //         const columnUID = `${columnStub["schema"]}-${columnStub["id"]}`
+    //         return ealgis.columninfo[columnUID]
+    //     })
+    // }
+
     return {
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
