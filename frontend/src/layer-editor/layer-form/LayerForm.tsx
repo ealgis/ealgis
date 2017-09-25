@@ -399,12 +399,12 @@ class LayerForm extends React.Component<IProps, {}> {
                                         onFieldBlur(event.target.name, newValue, previousValue)}
                                 />
 
-                                <Subheader>Selected Columns</Subheader>
                                 <RaisedButton
                                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />}
-                                >
-                                    Add Column
-                                </RaisedButton>
+                                    label={"Search For Data"}
+                                    primary={true}
+                                    style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+                                />
 
                                 <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
                                 {/* <DatasetSearch geometry={layerGeometry} /> */}

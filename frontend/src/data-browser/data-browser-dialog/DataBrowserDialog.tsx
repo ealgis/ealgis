@@ -171,7 +171,7 @@ export class MapUINav extends React.Component<IProps, {}> {
         ]
 
         return (
-            <div style={{ padding: "8px", overflow: "auto" }}>
+            <div style={{ padding: "12px", overflow: "auto" }}>
                 {/* <Dialog
                     title="Data Browser"
                     actions={dialogActions}
@@ -198,37 +198,20 @@ export class MapUINav extends React.Component<IProps, {}> {
                     <ToolbarGroup firstChild={true}>
                         {Object.keys(tablesByType).length > 0 &&
                         columnsForTable["header"].length == 0 && (
-                            <div>
-                                {/* <SelectField
-                                    hintText="Select a schema"
-                                    floatingLabelText="Floating Label Text"
-                                    value={selectedSchemas}
-                                    onChange={(e: TouchTapEvent, index: number, menuItemValue: any) => handleSchemaChange(menuItemValue)}
-                                >
-                                    {Object.keys(schemainfo).map((schemaId: string, key: number) => {
-                                        const schema: ISchema = schemainfo[schemaId]
-                                        return (
-                                            <MenuItem
-                                                key={schemaId}
-                                                insetChildren={true}
-                                                checked={selectedSchemas && selectedSchemas.indexOf(schema.name) > -1}
-                                                value={schema.name}
-                                                primaryText={schema.name}
-                                            />
-                                        )
-                                    })}
-                                </SelectField> */}
-                                <RaisedButton primary={true} onTouchTap={() => backToSchemaView()}>
-                                    Back
-                                </RaisedButton>
-                                <TextField
-                                    hintText="e.g. Industry, Family"
-                                    floatingLabelText="Search for data tables"
-                                    style={{ marginLeft: "15px" }}
-                                    value={dataTableSearchKeywords}
-                                    onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
-                                />
-                            </div>
+                            <RaisedButton primary={true} label={"Back"} onTouchTap={() => backToSchemaView()} />
+                        )}
+                        {Object.keys(tablesByType).length > 0 &&
+                        columnsForTable["header"].length == 0 && (
+                            <TextField
+                                hintText="e.g. Industry, Family"
+                                floatingLabelText="Search for data tables"
+                                style={{ marginLeft: "15px", top: "-10px" }}
+                                value={dataTableSearchKeywords}
+                                onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
+                            />
+                        )}
+                        {columnsForTable["header"].length > 0 && (
+                            <RaisedButton primary={true} label={"Back"} onTouchTap={() => backToTableView()} />
                         )}
                     </ToolbarGroup>
 
@@ -283,7 +266,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                 {Object.keys(tablesByType).length > 0 &&
                 columnsForTable["header"].length == 0 && (
                     <div>
-                        <Subheader>Data Tables</Subheader>
+                        {/* <Subheader>Data Tables</Subheader> */}
                         <List>
                             {Object.keys(tablesByType).map((tableTypeKey: string, idx: number) => {
                                 if (tablesByType[tableTypeKey]["tables"].length > 1) {
@@ -405,12 +388,12 @@ export class MapUINav extends React.Component<IProps, {}> {
                 {columnsForTable["header"].length > 0 && (
                     <div>
                         <h2>
-                            {selectedTablePopulation == null ? (
+                            {selectedTable["metadata_json"]["series"] === null ? (
                                 `${selectedTable["metadata_json"]["type"]} (${selectedTable["metadata_json"]["family"].toUpperCase()})`
                             ) : (
-                                `${selectedTable["metadata_json"]["type"]}: ${selectedTablePopulation} (${selectedTable["metadata_json"][
-                                    "family"
-                                ].toUpperCase()})`
+                                `${selectedTable["metadata_json"]["type"]}: ${selectedTable["metadata_json"]["series"]} (${selectedTable[
+                                    "metadata_json"
+                                ]["family"].toUpperCase()})`
                             )}
                         </h2>
                         <Table
@@ -432,11 +415,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                         >
                             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
                                 <TableRow>
-                                    <TableHeaderColumn style={{ width: "250px" }}>
-                                        <RaisedButton secondary={true} onTouchTap={() => backToTableView()}>
-                                            Back
-                                        </RaisedButton>
-                                    </TableHeaderColumn>
+                                    <TableHeaderColumn style={{ width: "250px" }} />
                                     {columnsForTable["header"].map((value: string, idx: string) => {
                                         return (
                                             <TableHeaderColumn key={idx} style={{ whiteSpace: "normal" }}>
