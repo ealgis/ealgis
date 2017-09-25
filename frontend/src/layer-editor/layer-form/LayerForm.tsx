@@ -192,7 +192,7 @@ const FillColourSchemeFields = (fields: any) => {
     )
 }
 
-const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }): any => {
+const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }: any) => {
     return (
         <div>
             {fields.getAll().map((column: ISelectedColumn, key: number) => {
@@ -272,7 +272,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onModalSaveForm,
             onModalDiscardForm,
             dirtyFormModalOpen,
-            onFitScaleToData
+            onFitScaleToData,
             layerFormSubmitting,
             isDirty,
             onRemoveColumn,

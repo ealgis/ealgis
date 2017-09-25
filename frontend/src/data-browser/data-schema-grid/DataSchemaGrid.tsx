@@ -4,8 +4,8 @@ import { GridList, GridTile } from "material-ui/GridList"
 import { ISchema, ISchemaInfo, IMUIThemePalette } from "../../redux/modules/interfaces"
 
 const DataSchemaGridTile = styled(GridTile)`
-  background-color: rgba(204, 204, 204, 0.65);
-  cursor: pointer;
+    background-color: rgba(204, 204, 204, 0.65);
+    cursor: pointer;
 `
 
 const EALGISLogo = styled.img`
@@ -34,7 +34,7 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
                             title={schema.name}
                             subtitle={schema.family}
                             titleBackground={muiThemePalette.accent1Color}
-                            onTouchTap={() => handleClickSchema(schemaId, schema)}
+                            onClick={() => handleClickSchema(schemaId, schema)}
                         >
                             <EALGISLogo
                                 src={require("base64-inline-loader!../../assets/brand/ealgis_white_logo_only_transparent_background.png")}

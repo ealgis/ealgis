@@ -15,7 +15,7 @@ const MetadataURL = styled.div`line-height: 20px;`
 export interface IProps {
     column: IColumn
     table: ITable
-    onRemoveColumn: Function
+    onRemoveColumn: any
 }
 
 export class ColumnCard extends React.Component<IProps, {}> {

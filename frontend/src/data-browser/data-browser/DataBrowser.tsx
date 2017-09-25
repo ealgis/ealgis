@@ -115,9 +115,8 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                     <DataTableList selectedTables={selectedTables} onClickTable={handleClickTable} />
                 )}
 
-                {this.showColumns(selectedColumns) && (
-                    <DataColumnTable table={selectedTable} selectedColumns={selectedColumns} onClickColumn={onChooseColumn} />
-                )}
+                {this.showColumns(selectedColumns) &&
+                selectedTable && <DataColumnTable table={selectedTable} selectedColumns={selectedColumns} onClickColumn={onChooseColumn} />}
             </DataBrowserContainer>
         )
     }

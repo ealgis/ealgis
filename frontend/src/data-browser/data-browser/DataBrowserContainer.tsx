@@ -4,23 +4,10 @@ import DataBrowser from "./DataBrowser"
 import { withRouter } from "react-router"
 import { debounce } from "lodash-es"
 import { change } from "redux-form"
-import {
-    searchTables,
-    fetchColumns,
-    emptySelectedTables,
-    emptySelectedColumns,
-} from "../../redux/modules/databrowser"
+import { searchTables, fetchColumns, emptySelectedTables, emptySelectedColumns } from "../../redux/modules/databrowser"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn } from "../../redux/modules/ealgis"
-import {
-    IStore,
-    ISchema,
-    ITable,
-    ISelectedColumn,
-    IGeomTable,
-    IColumn,
-    ILayer,
-} from "../../redux/modules/interfaces"
+import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
@@ -63,16 +50,15 @@ interface IOwnProps {
 }
 
 interface IState {
-    selectedSchemas?: Array<string>
+    selectedSchemas: Array<string>
     selectedSchemaId?: string
     dataTableSearchKeywords?: string
     selectedTable?: ITable
 }
 
-export class DataBrowserContainer extends React.Component<
-    IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
-    IState
-> {
+export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
+    onTableSearchChangeDebounced: Function
+
     constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
         this.state = { selectedSchemas: [] }
@@ -96,7 +82,7 @@ export class DataBrowserContainer extends React.Component<
     }
 
     routerWillLeave(nextLocation: any) {
-        this.setState({ selectedSchemas: [], selectedSchemaId: null, dataTableSearchKeywords: null, selectedTable: null })
+        this.setState({ selectedSchemas: [], selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
         this.props.handleExitDataBrowser()
     }
 
@@ -130,7 +116,10 @@ export class DataBrowserContainer extends React.Component<
                     this.handleClickSchema(schemaId, schema)
                     handleChooseSchema(schemaId, "", geometry)
                 }}
-                onTableSearchChange={(newValue: string) => {this.setState({ dataTableSearchKeywords: newValue }) this.onTableSearchChangeDebounced(newValue)}}
+                onTableSearchChange={(newValue: string) => {
+                    this.setState({ dataTableSearchKeywords: newValue })
+                    this.onTableSearchChangeDebounced(newValue)
+                }}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
                     this.setState({ selectedTable: table })

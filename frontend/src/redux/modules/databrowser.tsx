@@ -5,7 +5,6 @@ import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClien
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loadTables, loadColumns } from "../../redux/modules/ealgis"
 import { editDraftLayer } from "../../redux/modules/maps"
-import { addColumnToLayerSelection } from "./maps"
 import { IGeomTable, ITable, ILayer, IColumn, ISelectedColumn } from "./interfaces"
 
 // Actions
@@ -13,7 +12,7 @@ const SELECT_TABLES = "ealgis/databrowser/SELECT_TABLES"
 const SELECT_COLUMNS = "ealgis/databrowser/SELECT_COLUMNS"
 const SELECT_COLUMN = "ealgidatabrowser/SELECT_COLUMN"
 
-const initialState: IModule = { selectedTables: [], selectedColumns: [], selectedColumn: null }
+const initialState: Partial<IModule> = { selectedTables: [], selectedColumns: [] }
 
 // Reducer
 export default function reducer(state = initialState, action: IAction) {

@@ -1,5 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
+import { includes as arrayIncludes } from "core-js/library/fn/array"
 import DataColumnTable from "./DataColumnTable"
 import { IStore, IColumn, ITable, IColumnInfo, ITableColumns } from "../../redux/modules/interfaces"
 
@@ -27,11 +28,11 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
         for (let columnUID of selectedColumns) {
             let column: IColumn = columninfo[columnUID]
 
-            if (header.includes(column["metadata_json"]["kind"]) == false) {
+            if (arrayIncludes(header, column["metadata_json"]["kind"]) == false) {
                 header.push(column["metadata_json"]["kind"])
             }
 
-            if (rows.includes(column["metadata_json"]["type"]) == false) {
+            if (arrayIncludes(rows, column["metadata_json"]["type"]) == false) {
                 rows.push(column["metadata_json"]["type"])
             }
 

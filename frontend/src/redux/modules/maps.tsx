@@ -3,11 +3,12 @@ import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
 import { merge } from "lodash-es"
+import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { browserHistory } from "react-router"
 import { getMapURL } from "../../shared/utils"
 import { SubmissionError } from "redux-form"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { getUserIdFromState, getGeomInfoFromState, IUserPartial, IGeomTable } from "../../redux/modules/ealgis"
+import { getUserIdFromState, getGeomInfoFromState, IUserPartial, IGeomTable, ISelectedColumn } from "../../redux/modules/ealgis"
 import { IPosition } from "../../redux/modules/map"
 
 import * as layerFormModule from "../../redux/modules/layerform"
@@ -81,16 +82,13 @@ export default function reducer(state = initialState, action: IAction) {
                 action.layerPropertyValue
             )
         case MERGE_LAYER_PROPERTIES:
-            const newLayer = merge(
-                dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`),
-                action.layerPartial
-            )
+            const newLayer = merge(dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`), action.layerPartial)
             return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
         case ADD_COLUMN_TO_SELECTION:
-            const selectedColumns: Array<IColumn> =
+            const selectedColumns: Array<ISelectedColumn> =
                 dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`) || []
 
-            if (selectedColumns.includes(action.selectedColumn) == false) {
+            if (arrayIncludes(selectedColumns, action.selectedColumn) == false) {
                 return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`, [
                     ...selectedColumns,
                     action.selectedColumn,
@@ -268,12 +266,7 @@ export function receiveDeleteMapLayer(mapId: number, layerId: number): IAction {
     }
 }
 
-export function receiveChangeLayerProperty(
-    mapId: number,
-    layerId: number,
-    layerPropertyPath: string,
-    layerPropertyValue: any
-): IAction {
+export function receiveChangeLayerProperty(mapId: number, layerId: number, layerPropertyPath: string, layerPropertyValue: any): IAction {
     return {
         type: CHANGE_LAYER_PROPERTY,
         mapId,
@@ -328,7 +321,7 @@ export function copyShareableLink(): IAction {
     }
 }
 
-export function addColumnToLayerSelection(mapId: number, layerId: number, selectedColumn: IColumn): IAction {
+export function addColumnToLayerSelection(mapId: number, layerId: number, selectedColumn: ISelectedColumn): IAction {
     return {
         type: ADD_COLUMN_TO_SELECTION,
         mapId,
@@ -362,7 +355,7 @@ export interface IAction {
     shared?: eMapShared
     layerPropertyPath?: string
     layerPropertyValue?: any
-    selectedColumn?: IColumn
+    selectedColumn?: ISelectedColumn
 }
 
 export interface IMap {
@@ -417,7 +410,7 @@ export interface ILayer {
         minx: number
         miny: number
     }
-    selectedColumns: Array<IColumn>
+    selectedColumns: Array<ISelectedColumn>
     _postgis_query?: string
 }
 
@@ -458,10 +451,7 @@ export function fetchMaps() {
 
         if (response.status === 200 && json.length > 0) {
             // Map maps from an array of objects to a dict keyed by mapId
-            const maps = Object.assign(
-                {},
-                ...json.map((map: IMap, index: number, array: Array<IMap>) => ({ [map.id]: map }))
-            )
+            const maps = Object.assign({}, ...json.map((map: IMap, index: number, array: Array<IMap>) => ({ [map.id]: map })))
             dispatch(loadMaps(maps))
         }
     }
@@ -498,9 +488,7 @@ export function createMap(map: IMap) {
                 } else {
                     // We're not sure what happened, but handle it:
                     // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
+                    throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
                 }
             })
             .catch((error: any) => {
@@ -531,9 +519,7 @@ export function updateMap(map: IMap) {
             } else {
                 // We're not sure what happened, but handle it:
                 // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
+                throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
             }
         })
     }
@@ -566,9 +552,7 @@ export function mapUpsert(map: IMap) {
             } else {
                 // We're not sure what happened, but handle it:
                 // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error updating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
+                throw new Error("Unhandled error updating map. Please report. (" + response.status + ") " + JSON.stringify(json))
             }
         })
     }
@@ -606,9 +590,7 @@ export function duplicateMap(mapId: number) {
                 } else {
                     // We're not sure what happened, but handle it:
                     // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error cloning map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
+                    throw new Error("Unhandled error cloning map. Please report. (" + response.status + ") " + JSON.stringify(json))
                 }
             })
     }
@@ -616,17 +598,15 @@ export function duplicateMap(mapId: number) {
 
 export function removeMap(mapId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        return ealapi
-            .delete("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/", dispatch)
-            .then((response: any) => {
-                if (response.status == 204) {
-                    dispatch(deleteMap(mapId))
-                    dispatch(sendSnackbarNotification("Map deleted successfully"))
-                    browserHistory.push("/maps")
-                } else {
-                    throw new Error(response.statusText)
-                }
-            })
+        return ealapi.delete("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/", dispatch).then((response: any) => {
+            if (response.status == 204) {
+                dispatch(deleteMap(mapId))
+                dispatch(sendSnackbarNotification("Map deleted successfully"))
+                browserHistory.push("/maps")
+            } else {
+                throw new Error(response.statusText)
+            }
+        })
     }
 }
 
@@ -727,9 +707,7 @@ export function deleteMapLayer(map: IMap, layerId: number) {
             } else {
                 // We're not sure what happened, but handle it:
                 // our Error will get passed straight to `.catch()`
-                throw new Error(
-                    "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                )
+                throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
             }
         })
     }
@@ -754,19 +732,9 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
             willCompileServerSide = true
         }
         if (!willCompileServerSide && "fill" in layerPartial) {
-            willCompileServerSide = Object.keys(
-                layerPartial["fill"]
-            ).some((value: string, index: number, array: Array<string>) => {
+            willCompileServerSide = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
                 return (
-                    [
-                        "scale_min",
-                        "scale_max",
-                        "expression",
-                        "conditional",
-                        "scale_flip",
-                        "scale_name",
-                        "scale_nlevels",
-                    ].indexOf(value) >= 0
+                    ["scale_min", "scale_max", "expression", "conditional", "scale_flip", "scale_name", "scale_nlevels"].indexOf(value) >= 0
                 )
             })
         }
@@ -836,17 +804,15 @@ export function restoreMasterLayer(mapId: number, layerId: number) {
             layerId: layerId,
         }
 
-        return ealapi
-            .put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch)
-            .then(({ response, json }: any) => {
-                if (response.status === 200) {
-                    dispatch(layerFormModule.finishedSubmitting())
-                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                    // dispatch(sendSnackbarNotification(`Layer restored successfully`))
-                    // browserHistory.push(`/map/${mapId}`)
-                    return json
-                }
-            })
+        return ealapi.put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch).then(({ response, json }: any) => {
+            if (response.status === 200) {
+                dispatch(layerFormModule.finishedSubmitting())
+                dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                // dispatch(sendSnackbarNotification(`Layer restored successfully`))
+                // browserHistory.push(`/map/${mapId}`)
+                return json
+            }
+        })
     }
 }
 
@@ -865,22 +831,18 @@ export function editDraftLayer(mapId: number, layerId: number, layerPartial: obj
             layer: layerPartial,
         }
 
-        return ealapi
-            .put(`/api/0.1/maps/${mapId}/editDraftLayer/`, payload, dispatch)
-            .then(({ response, json }: any) => {
-                if (response.status === 200) {
-                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                    return json
-                } else if (response.status === 400) {
-                    dispatch(layerFormModule.loadValidationErrors(json))
-                } else {
-                    // We're not sure what happened, but handle it:
-                    // our Error will get passed straight to `.catch()`
-                    throw new Error(
-                        "Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json)
-                    )
-                }
-            })
+        return ealapi.put(`/api/0.1/maps/${mapId}/editDraftLayer/`, payload, dispatch).then(({ response, json }: any) => {
+            if (response.status === 200) {
+                dispatch(receieveUpdatedLayer(mapId, layerId, json))
+                return json
+            } else if (response.status === 400) {
+                dispatch(layerFormModule.loadValidationErrors(json))
+            } else {
+                // We're not sure what happened, but handle it:
+                // our Error will get passed straight to `.catch()`
+                throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
+            }
+        })
     }
 }
 

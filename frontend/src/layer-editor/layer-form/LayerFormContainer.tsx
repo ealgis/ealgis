@@ -50,6 +50,7 @@ export interface ILayerFormValues {
     scaleMax: number
     scaleMin: number
     valueExpression: string
+    selectedColumns: Array<ISelectedColumn>
 }
 
 export interface IProps {}
