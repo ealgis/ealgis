@@ -8,6 +8,7 @@ import MapFormContainerWrapped from "./map-editor/map-form/MapFormContainer"
 import MapListContainerWrapped from "./maps-browser/map-list/MapListContainer"
 import CreateMapSidebar from "./maps-browser/create-map/CreateMapSidebarContainer"
 import DataBrowserWrapped from "./data-browser/data-browser/DataBrowserContainer"
+import ValueExpressionontainerWrapped from "./expression-editor/value-expression-editor/ValueExpressionEditorContainer"
 import About from "./static-pages/About"
 import Welcome from "./static-pages/Welcome"
 import { IStore } from "./redux/modules/interfaces"
@@ -33,6 +34,10 @@ export default (store: IStore) => {
             <Route
                 path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)/databrowser"
                 components={{ content: DataBrowserWrapped, sidebar: LayerFormContainerWrapped }}
+            />
+            <Route
+                path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)/value-expression"
+                components={{ content: MapUIContainerWrapped, sidebar: ValueExpressionontainerWrapped }}
             />
             <Route
                 path="map/:mapId/:mapName/layer(/:layerId)(/:tabName)"
