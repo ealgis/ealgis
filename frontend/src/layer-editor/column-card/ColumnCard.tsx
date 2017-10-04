@@ -23,7 +23,11 @@ export class ColumnCard extends React.Component<IProps, {}> {
         const { column, table, onRemoveColumn } = this.props
 
         return (
-            <StyledCard>
+            <StyledCard
+                onExpandChange={(newExpandedState: boolean) => {
+                    console.log("onExpandChange", newExpandedState)
+                }}
+            >
                 <CardHeader
                     title={column["name"].toUpperCase()}
                     subtitle={`${column["metadata_json"]["type"]} // ${column["metadata_json"]["kind"]}`}
