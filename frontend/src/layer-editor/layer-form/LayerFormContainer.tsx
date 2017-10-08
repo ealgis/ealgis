@@ -61,6 +61,7 @@ export interface IStoreProps {
     layerId: number
     layerDefinition: ILayer
     layerFillColourScheme: string
+    visibleComponent: string
     dirtyFormModalOpen: boolean
     isDirty: boolean
     geominfo: IGeomInfo
@@ -82,6 +83,7 @@ export interface IDispatchProps {
     onModalDiscardForm: Function
     onToggleDirtyFormModalState: Function
     handleRemoveColumn: Function
+    onApplyValueExpression: Function
 }
 
 interface IRouterProps {
@@ -94,6 +96,7 @@ interface IRouteProps {
     mapName: string
     layerId: number
     tabName: string
+    component: string
 }
 
 interface IOwnProps {
@@ -273,6 +276,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             mapDefinition,
             layerId,
             layerFillColourScheme,
+            visibleComponent,
             layerDefinition,
             dirtyFormModalOpen,
             layerFormSubmitting,
@@ -282,6 +286,11 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
 
         // We've changed the map or layer we're looking at
         if (mapDefinition.id != nextProps.mapDefinition.id || layerId != nextProps.layerId) {
+            return true
+        }
+
+        // We need to display a different visible component
+        if (visibleComponent !== nextProps.visibleComponent) {
             return true
         }
 
@@ -328,6 +337,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             tabName,
             mapDefinition,
             layerDefinition,
+            visibleComponent,
             onSubmit,
             onSubmitFail,
             onFieldUpdate,
@@ -338,6 +348,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             onModalSaveForm,
             onModalDiscardForm,
             handleRemoveColumn,
+            onApplyValueExpression,
             dirtyFormModalOpen,
             isDirty,
             onFitScaleToData,
@@ -356,6 +367,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerId={layerId}
                 layerHash={layerDefinition.hash || ""}
                 layerFillColourScheme={layerFillColourScheme}
+                visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
                 geominfo={geominfo}
@@ -376,6 +388,9 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 onModalSaveForm={() => onModalSaveForm(mapDefinition.id, layerId)}
                 onModalDiscardForm={() => onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)}
                 onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
+                onApplyValueExpression={(expression: string) => {
+                    onApplyValueExpression(expression, mapDefinition.id, layerId)
+                }}
             />
         )
     }
@@ -400,6 +415,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme") as string,
+        visibleComponent: ownProps.params.component,
         dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
         geominfo: ealgis.geominfo,
@@ -488,6 +504,14 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         handleRemoveColumn: (layer: ILayer, selectedColumn: ISelectedColumn) => {
             layer.selectedColumns.splice(layer.selectedColumns.findIndex(columnStub => columnStub === selectedColumn), 1)
             dispatch(change("layerForm", "selectedColumns", layer.selectedColumns))
+        },
+        onApplyValueExpression: (expression: string, mapId: number, layerId: number) => {
+            dispatch(change("layerForm", "valueExpression", expression))
+
+            const layerPartial = getLayerFromLayerFormValuesPartial({
+                valueExpression: expression,
+            })
+            dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
     }
 }

@@ -12,6 +12,7 @@ import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
 import {
     IStore,
     IEALGISModule,
@@ -210,9 +211,11 @@ export interface IProps {
     layerId: number
     layerHash: string
     layerFillColourScheme: string
+    visibleComponent: string
     dirtyFormModalOpen: boolean
     isDirty: boolean
     onRemoveColumn: Function
+    onApplyValueExpression: Function
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
@@ -267,6 +270,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onFieldChange,
             colourinfo,
             layerFillColourScheme,
+            visibleComponent,
             onSaveForm,
             onResetForm,
             onModalSaveForm,
@@ -276,6 +280,7 @@ class LayerForm extends React.Component<IProps, {}> {
             layerFormSubmitting,
             isDirty,
             onRemoveColumn,
+            onApplyValueExpression,
         } = this.props
 
         let tabId = 0
@@ -400,42 +405,63 @@ class LayerForm extends React.Component<IProps, {}> {
                                         onFieldBlur(event.target.name, newValue, previousValue)}
                                 /> */}
 
-                                <Field
-                                    name="valueExpression"
-                                    component={TextField}
-                                    multiLine={true}
-                                    rows={2}
-                                    hintText="Write an expression..."
-                                    floatingLabelText="Value expression"
-                                    floatingLabelFixed={true}
-                                    fullWidth={true}
-                                    autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
-                                />
+                                {visibleComponent === undefined && (
+                                    <div>
+                                        <Field
+                                            name="valueExpression"
+                                            component={TextField}
+                                            multiLine={true}
+                                            rows={2}
+                                            hintText="Write an expression..."
+                                            floatingLabelText="Value expression"
+                                            floatingLabelFixed={true}
+                                            fullWidth={true}
+                                            autoComplete="off"
+                                            onBlur={(event: any, newValue: string, previousValue: string) =>
+                                                onFieldBlur(event.target.name, newValue, previousValue)}
+                                        />
 
-                                <Field
-                                    name="filterExpression"
-                                    component={TextField}
-                                    multiLine={true}
-                                    rows={2}
-                                    hintText="Write a filter expression..."
-                                    floatingLabelText="Filter expression"
-                                    floatingLabelFixed={true}
-                                    fullWidth={true}
-                                    autoComplete="off"
-                                    onBlur={(event: any, newValue: string, previousValue: string) =>
-                                        onFieldBlur(event.target.name, newValue, previousValue)}
-                                />
+                                        <RaisedButton
+                                            containerElement={
+                                                <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/value-expression`} />
+                                            }
+                                            label={"Edit Value Expression"}
+                                            primary={true}
+                                            style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+                                        />
 
-                                <RaisedButton
-                                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />}
-                                    label={"Search For Data"}
-                                    primary={true}
-                                    style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
-                                />
+                                        <Field
+                                            name="filterExpression"
+                                            component={TextField}
+                                            multiLine={true}
+                                            rows={2}
+                                            hintText="Write a filter expression..."
+                                            floatingLabelText="Filter expression"
+                                            floatingLabelFixed={true}
+                                            fullWidth={true}
+                                            autoComplete="off"
+                                            onBlur={(event: any, newValue: string, previousValue: string) =>
+                                                onFieldBlur(event.target.name, newValue, previousValue)}
+                                        />
 
-                                <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
+                                        <RaisedButton
+                                            containerElement={
+                                                <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />
+                                            }
+                                            label={"Search For Data"}
+                                            primary={true}
+                                            style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+                                        />
+
+                                        <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
+                                    </div>
+                                )}
+
+                                {visibleComponent === "value-expression" && (
+                                    <div>
+                                        <ValueExpressionContainer onApply={onApplyValueExpression} />
+                                    </div>
+                                )}
                             </TabContainer>
                         </Tab>
                         {/* END DATA TAB */}

@@ -8,15 +8,6 @@ import ValueExpressionEditor from "./ValueExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
-    initDraftLayer,
-    publishLayer,
-    restoreMasterLayer,
-    restoreMasterLayerAndDiscardForm,
-    handleLayerFormChange,
-    startLayerEditing,
-    fitLayerScaleToData,
-} from "../../redux/modules/maps"
-import {
     IStore,
     IEALGISModule,
     ILayerQuerySummary,
@@ -33,15 +24,17 @@ import {
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
-export interface IProps {}
+export interface IProps {
+    onApply: Function
+}
 
 export interface IStoreProps {
     muiThemePalette: IMUIThemePalette
     mapDefinition: IMap
     layerId: number
     layerDefinition: ILayer
-    tabName: string
     columninfo: IColumnInfo
+    valueExpression: string
 }
 
 export interface IDispatchProps {}
@@ -64,7 +57,7 @@ interface IOwnProps {
 }
 
 interface IState {
-    fields: Array<{ field: string; value: any }>
+    expression: { [key: string]: any }
 }
 
 export class ValueExpressionEditorContainer extends React.Component<
@@ -75,28 +68,25 @@ export class ValueExpressionEditorContainer extends React.Component<
 
     constructor(props: IDispatchProps & IRouterProps) {
         super(props)
-        this.state = { fields: [] }
-        // const { onFieldUpdate } = props
+        this.state = { expression: {} }
 
-        // // http://stackoverflow.com/a/24679479/7368493
-        // this.onFieldChangeDebounced = debounce(function(fieldName: string, newValue: any, mapId: number, layerId: number) {
-        //     onFieldUpdate(fieldName, newValue, mapId, layerId)
-        // }, 500)
-
-        props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
+        // @TODO Do we need this?
+        // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, /*startLayerEditSession,*/ layerDefinition } = this.props
+        const { mapDefinition, layerId, layerDefinition, valueExpression } = this.props
 
-        // Start a new layer edit session whenever the form is initialised.
-        // (This happens for each layer we load the form for.)
-        // startLayerEditSession(mapDefinition.id, layerId)
+        const parsed: any = this.parseExpression(valueExpression)
+        if (parsed !== undefined) {
+            this.setState({ expression: parsed })
+        }
     }
 
     routerWillLeave(nextLocation: any) {
         return true
 
+        // @TODO Do we need this?
         // const { mapDefinition, layerId /*, isDirty, onToggleDirtyFormModalState*/ } = this.props
 
         // Prompt the user to discard/save their changes if we're navigate away from the layer form
@@ -111,14 +101,71 @@ export class ValueExpressionEditorContainer extends React.Component<
         }*/
     }
 
-    // shouldComponentUpdate(nextProps: IStoreProps) {
+    compileExpression() {
+        const { expression } = this.state
+        let expr: string = ""
 
-    // }
+        if ("col1" in expression) {
+            expr = expression["col1"].name
+
+            if ("map_multiple" in expression && expression["map_multiple"] === true) {
+                if ("col2" in expression) {
+                    expr = `${expression["col1"].name}/${expression["col2"].name}`
+                }
+
+                if ("as_percentage" in expression) {
+                    expr = `(${expr})*100`
+                }
+            }
+        }
+        return expr
+    }
+
+    getColumnByName(column_name: string) {
+        const { columninfo } = this.props
+
+        for (let key in columninfo) {
+            const col: IColumn = columninfo[key]
+            if (col.name === column_name) {
+                return col
+            }
+        }
+        return null
+    }
+
+    parseExpression(expression: string) {
+        const { columninfo } = this.props
+
+        // FIXME Hacky for proof of concept component
+        if (expression.includes("/")) {
+            let matches = expression.match(/[a-z0-9]+\/[a-z0-9]+/)
+            if (matches !== null) {
+                let column_names = matches[0].split("/")
+                if (expression.includes("*100")) {
+                    return {
+                        col1: this.getColumnByName(column_names[0]),
+                        map_multiple: true,
+                        col2: this.getColumnByName(column_names[1]),
+                        as_percentage: true,
+                    }
+                }
+
+                return {
+                    col1: this.getColumnByName(column_names[0]),
+                    map_multiple: true,
+                    col2: this.getColumnByName(column_names[1]),
+                }
+            }
+        }
+
+        return {
+            col1: this.getColumnByName(expression),
+        }
+    }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, tabName, columninfo } = this.props
-        const { fields } = this.state
-        // console.log("fields", fields)
+        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, valueExpression, onApply } = this.props
+        const { expression } = this.state
 
         return (
             <ValueExpressionEditor
@@ -128,20 +175,14 @@ export class ValueExpressionEditorContainer extends React.Component<
                 layerDefinition={layerDefinition}
                 layerId={layerId}
                 layerHash={layerDefinition.hash || ""}
-                tabName={tabName}
                 columninfo={columninfo}
+                expression={expression}
                 onFieldChange={(payload: { field: string; value: any }) => {
-                    const idx: any = this.state.fields.findIndex((value: { field: string; value: any }) => value.field == payload.field)
-                    if (idx === -1) {
-                        fields.push(payload)
-                    } else {
-                        fields[idx] = payload
-                    }
-                    this.setState({ fields: fields })
+                    expression[payload.field] = payload.value
+                    this.setState({ expression: expression })
                 }}
-                fields={fields}
                 onApply={() => {
-                    console.log("onApply", this.state.fields)
+                    onApply(this.compileExpression())
                 }}
             />
         )
@@ -149,15 +190,16 @@ export class ValueExpressionEditorContainer extends React.Component<
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { app, maps, ealgis } = state
+    const { maps, ealgis } = state
+    const layerFormValues = formValueSelector("layerForm")
 
     return {
         muiThemePalette: ownProps.muiTheme.palette,
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
-        tabName: ownProps.params.tabName,
         columninfo: ealgis.columninfo,
+        valueExpression: layerFormValues(state, "valueExpression") as string,
     }
 }
 
