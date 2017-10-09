@@ -13,6 +13,7 @@ import ImagePalette from "material-ui/svg-icons/image/palette"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
 import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
 import {
     IStore,
     IEALGISModule,
@@ -216,6 +217,7 @@ export interface IProps {
     isDirty: boolean
     onRemoveColumn: Function
     onApplyValueExpression: Function
+    onApplyFilterExpression: Function
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
@@ -281,6 +283,7 @@ class LayerForm extends React.Component<IProps, {}> {
             isDirty,
             onRemoveColumn,
             onApplyValueExpression,
+            onApplyFilterExpression,
         } = this.props
 
         let tabId = 0
@@ -446,6 +449,15 @@ class LayerForm extends React.Component<IProps, {}> {
 
                                         <RaisedButton
                                             containerElement={
+                                                <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/filter-expression`} />
+                                            }
+                                            label={"Edit Filter Expression"}
+                                            primary={true}
+                                            style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+                                        />
+
+                                        <RaisedButton
+                                            containerElement={
                                                 <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />
                                             }
                                             label={"Search For Data"}
@@ -460,6 +472,12 @@ class LayerForm extends React.Component<IProps, {}> {
                                 {visibleComponent === "value-expression" && (
                                     <div>
                                         <ValueExpressionContainer onApply={onApplyValueExpression} />
+                                    </div>
+                                )}
+
+                                {visibleComponent === "filter-expression" && (
+                                    <div>
+                                        <FilterExpressionContainer onApply={onApplyFilterExpression} />
                                     </div>
                                 )}
                             </TabContainer>

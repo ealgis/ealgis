@@ -84,6 +84,7 @@ export interface IDispatchProps {
     onToggleDirtyFormModalState: Function
     handleRemoveColumn: Function
     onApplyValueExpression: Function
+    onApplyFilterExpression: Function
 }
 
 interface IRouterProps {
@@ -349,6 +350,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             onModalDiscardForm,
             handleRemoveColumn,
             onApplyValueExpression,
+            onApplyFilterExpression,
             dirtyFormModalOpen,
             isDirty,
             onFitScaleToData,
@@ -390,6 +392,9 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
                 onApplyValueExpression={(expression: string) => {
                     onApplyValueExpression(expression, mapDefinition.id, layerId)
+                }}
+                onApplyFilterExpression={(expression: string) => {
+                    onApplyFilterExpression(expression, mapDefinition.id, layerId)
                 }}
             />
         )
@@ -510,6 +515,14 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
             const layerPartial = getLayerFromLayerFormValuesPartial({
                 valueExpression: expression,
+            })
+            dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
+        },
+        onApplyFilterExpression: (expression: string, mapId: number, layerId: number) => {
+            dispatch(change("layerForm", "filterExpression", expression))
+
+            const layerPartial = getLayerFromLayerFormValuesPartial({
+                filterExpression: expression,
             })
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
