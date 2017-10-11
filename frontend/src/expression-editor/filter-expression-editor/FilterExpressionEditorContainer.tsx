@@ -133,7 +133,7 @@ export class FilterExpressionEditorContainer extends React.Component<
                 return {
                     col1: this.getColumnByName(matches[1]),
                     operator: matches[2],
-                    col2: this.getColumnByName(matches[3]),
+                    col2: this.getColumnByName(matches[3]) || matches[3],
                 }
             }
         }
