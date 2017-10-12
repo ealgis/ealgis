@@ -8,7 +8,9 @@ import { IStore, IMap, IPosition, IOLFeature, IOLFeatureProps } from "../../redu
 
 import "openlayers/css/ol.css"
 
-export interface IProps {}
+export interface IProps {
+    params: IRouteProps
+}
 
 export interface IStateProps {
     // From State

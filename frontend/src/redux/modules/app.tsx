@@ -10,6 +10,12 @@ const SET_LAST_PAGE = "ealgis/app/SET_LAST_PAGE"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
 const TOGGLE_MODAL = "ealgis/app/TOGGLE_MODAL"
 const TOGGLE_USER_MENU = "ealgis/app/TOGGLE_USER_MENU"
+const SET_ACTIVE_COMPONENT = "ealgis/app/SET_ACTIVE_COMPONENT"
+
+export enum eEalUIComponent {
+    MAP_UI = 1,
+    DATA_BROWSER = 2,
+}
 
 const initialState: IModule = {
     loading: true,
@@ -18,6 +24,7 @@ const initialState: IModule = {
     previousPath: "",
     modals: new Map(),
     userMenuState: false,
+    activeContentComponent: eEalUIComponent.MAP_UI,
 }
 
 // Reducer
@@ -43,6 +50,8 @@ export default function reducer(state = initialState, action: IAction) {
             return dotProp.set(state, "modals", modals)
         case TOGGLE_USER_MENU:
             return dotProp.set(state, "userMenuState", action.open)
+        case SET_ACTIVE_COMPONENT:
+            return dotProp.set(state, "activeContentComponent", action.contentComponent)
         default:
             return state
     }
@@ -110,6 +119,13 @@ export function toggleUserMenu(open: boolean): IAction {
     }
 }
 
+export function setActiveContentComponent(contentComponent: eEalUIComponent) {
+    return {
+        type: SET_ACTIVE_COMPONENT,
+        contentComponent,
+    }
+}
+
 // Models
 export interface IModule {
     loading: boolean
@@ -118,6 +134,7 @@ export interface IModule {
     previousPath: string
     modals: Map<string, boolean>
     userMenuState: boolean
+    activeContentComponent: eEalUIComponent
 }
 
 export interface IAction {
@@ -125,6 +142,7 @@ export interface IAction {
     previousPath?: string
     modalId?: string
     open?: boolean
+    contentComponent?: eEalUIComponent
     meta?: {
         analytics: IAnalyticsMeta
     }

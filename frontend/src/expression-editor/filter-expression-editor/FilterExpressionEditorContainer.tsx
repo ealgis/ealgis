@@ -6,6 +6,7 @@ import { isEqual, debounce, reduce } from "lodash-es"
 import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
+import { setActiveContentComponent } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
     IStore,
@@ -21,6 +22,7 @@ import {
     ISelectedColumn,
     IMUITheme,
     IMUIThemePalette,
+    eEalUIComponent,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
@@ -37,7 +39,9 @@ export interface IStoreProps {
     filterExpression: string
 }
 
-export interface IDispatchProps {}
+export interface IDispatchProps {
+    foobar: Function
+}
 
 interface IRouterProps {
     router: any
@@ -140,7 +144,7 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply } = this.props
+        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply, foobar } = this.props
         const { expression } = this.state
 
         return (
@@ -158,7 +162,8 @@ export class FilterExpressionEditorContainer extends React.Component<
                     this.setState({ expression: expression })
                 }}
                 onApply={() => {
-                    onApply(this.compileExpression())
+                    // onApply(this.compileExpression())
+                    foobar()
                 }}
             />
         )
@@ -180,7 +185,11 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {}
+    return {
+        foobar: () => {
+            dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
+        },
+    }
 }
 
 const FilterExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(FilterExpressionEditorContainer)

@@ -15,7 +15,7 @@ export {
     ISchema,
     ISchemaInfo,
 } from "./ealgis"
-export { IModule as IAppModule } from "./app"
+export { IModule as IAppModule, eEalUIComponent } from "./app"
 export { IModule as IMapModule, IPosition } from "./map"
 export { IModule as ILegendsModule } from "./legends"
 export { IModule as IMapsModule, IMap, ILayer, IOLStyleDef, IMapPositionDefaults } from "./maps"

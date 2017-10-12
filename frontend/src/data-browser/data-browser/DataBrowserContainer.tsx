@@ -11,7 +11,9 @@ import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer }
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
-interface IProps {}
+interface IProps {
+    params: IRouteProps
+}
 
 export interface IStoreProps {
     mapId: number
@@ -69,17 +71,17 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             handleChooseSchema(selectedSchemaId, newValue, geometry)
         }, 500)
 
-        props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
+        // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     async handleClickSchema(schemaId: string, schema: ISchema) {
         this.setState({ selectedSchemaId: schemaId })
     }
 
-    routerWillLeave(nextLocation: any) {
-        this.setState({ selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
-        this.props.handleExitDataBrowser()
-    }
+    // routerWillLeave(nextLocation: any) {
+    //     this.setState({ selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
+    //     this.props.handleExitDataBrowser()
+    // }
 
     render() {
         const {
