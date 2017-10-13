@@ -7,6 +7,7 @@ import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { setActiveContentComponent } from "../../redux/modules/app"
+import { setInitiatingComponent } from "../../redux/modules/databrowser"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
     IStore,
@@ -37,10 +38,11 @@ export interface IStoreProps {
     layerDefinition: ILayer
     columninfo: IColumnInfo
     filterExpression: string
+    databrowserPackage: any
 }
 
 export interface IDispatchProps {
-    foobar: Function
+    activateDataBrowser: Function
 }
 
 interface IRouterProps {
@@ -84,6 +86,18 @@ export class FilterExpressionEditorContainer extends React.Component<
         const parsed: any = this.parseExpression(filterExpression)
         if (parsed !== undefined) {
             this.setState({ expression: parsed })
+        }
+    }
+
+    componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
+        console.log("componentDidUpdate", this.props.databrowserPackage, prevProps.databrowserPackage)
+        const { databrowserPackage } = this.props
+        const { expression } = this.state
+        if (databrowserPackage && databrowserPackage !== prevProps.databrowserPackage) {
+            if (databrowserPackage.initiatingComponent === "filter_col_1") {
+                expression["col1"] = databrowserPackage.column
+            }
+            this.setState({ expression: expression })
         }
     }
 
@@ -144,7 +158,7 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply, foobar } = this.props
+        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply, activateDataBrowser } = this.props
         const { expression } = this.state
 
         return (
@@ -162,8 +176,10 @@ export class FilterExpressionEditorContainer extends React.Component<
                     this.setState({ expression: expression })
                 }}
                 onApply={() => {
-                    // onApply(this.compileExpression())
-                    foobar()
+                    onApply(this.compileExpression())
+                }}
+                onOpenDataBrowser={(component: string) => {
+                    activateDataBrowser(component)
                 }}
             />
         )
@@ -171,8 +187,17 @@ export class FilterExpressionEditorContainer extends React.Component<
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { maps, ealgis } = state
+    const { maps, ealgis, databrowser } = state
     const layerFormValues = formValueSelector("layerForm")
+
+    var databrowserPackage
+    if (databrowser.initiatingComponent === "filter_col_1" && "selectedColumn" in databrowser) {
+        const column: IColumn = databrowser.selectedColumn
+        var databrowserPackage: any = {
+            initiatingComponent: databrowser.initiatingComponent,
+            column: databrowser.selectedColumn,
+        }
+    }
 
     return {
         muiThemePalette: ownProps.muiTheme.palette,
@@ -181,13 +206,15 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         columninfo: ealgis.columninfo,
         filterExpression: layerFormValues(state, "filterExpression") as string,
+        databrowserPackage: databrowserPackage || null,
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        foobar: () => {
+        activateDataBrowser: (component: string) => {
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
+            dispatch(setInitiatingComponent(component))
         },
     }
 }

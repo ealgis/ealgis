@@ -8,6 +8,7 @@ import { editDraftLayer } from "../../redux/modules/maps"
 import { IGeomTable, ITable, ILayer, IColumn, ISelectedColumn } from "./interfaces"
 
 // Actions
+const SET_INITIATING_COMPONENT = "ealgis/databrowser/SET_INITIATING_COMPONENT"
 const SELECT_TABLES = "ealgis/databrowser/SELECT_TABLES"
 const SELECT_COLUMNS = "ealgis/databrowser/SELECT_COLUMNS"
 const SELECT_COLUMN = "ealgidatabrowser/SELECT_COLUMN"
@@ -17,6 +18,8 @@ const initialState: Partial<IModule> = { selectedTables: [], selectedColumns: []
 // Reducer
 export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
+        case SET_INITIATING_COMPONENT:
+            return dotProp.set(state, "initiatingComponent", action.initiatingComponent)
         case SELECT_TABLES:
             return dotProp.set(state, "selectedTables", action.selectedTables)
         case SELECT_COLUMNS:
@@ -29,6 +32,17 @@ export default function reducer(state = initialState, action: IAction) {
 }
 
 // Action Creators
+export function setInitiatingComponent(initiatingComponent: string): IAction {
+    return {
+        type: SET_INITIATING_COMPONENT,
+        initiatingComponent,
+        meta: {
+            analytics: {
+                category: "DataBrowser",
+            },
+        },
+    }
+}
 export function selectTables(selectedTables: Array<string>): IAction {
     return {
         type: SELECT_TABLES,
@@ -65,6 +79,8 @@ export function selectColumn(selectedColumn: IColumn): IAction {
 
 // Models
 export interface IModule {
+    // FIXME Enum?
+    initiatingComponent: string
     selectedTables: Array<string>
     selectedColumns: Array<string>
     selectedColumn: IColumn
@@ -72,6 +88,7 @@ export interface IModule {
 
 export interface IAction {
     type: string
+    initiatingComponent?: string
     selectedTables?: Array<string>
     selectedColumns?: Array<string>
     selectedColumn?: IColumn

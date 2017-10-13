@@ -57,6 +57,7 @@ export interface IProps {
     expression: { [key: string]: any }
     onFieldChange: Function
     onApply: any
+    onOpenDataBrowser: Function
 }
 
 export interface IState {
@@ -101,6 +102,7 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
             expression,
             onFieldChange,
             onApply,
+            onOpenDataBrowser,
         } = this.props
 
         console.log("expression", expression)
@@ -309,10 +311,12 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                         />
                         <ListItem disabled={true}>
                             <RaisedButton
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />}
                                 label={"Search For Data"}
                                 primary={true}
                                 fullWidth={true}
+                                onClick={(evt: object) => {
+                                    onOpenDataBrowser("filter_col_1")
+                                }}
                             />
                         </ListItem>
                     </List>
