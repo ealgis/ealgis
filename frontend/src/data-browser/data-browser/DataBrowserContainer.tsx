@@ -96,7 +96,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             mapId,
             layerId,
             mapNameURLSafe,
-            layer,
+            // layer,
             geometry,
             handleChooseSchema,
             selectedTables,
@@ -131,7 +131,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 }}
                 onChooseColumn={(column: IColumn) => {
                     handleFinishBrowsing()
-                    handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer)
+                    handleChooseColumn(column /*, layer["schema"], this.state.selectedTable, mapId, layerId, layer*/)
                 }}
                 onFinishBrowsing={() => {
                     handleFinishBrowsing()
@@ -173,14 +173,14 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(emptySelectedColumns())
         },
         handleChooseColumn: (
-            column: IColumn,
-            schema_name: string,
-            selectedTable: ITable,
-            mapId: number,
-            layerId: number,
-            layer: ILayer
+            column: IColumn
+            // schema_name: string,
+            // selectedTable: ITable,
+            // mapId: number,
+            // layerId: number,
+            // layer: ILayer
         ) => {
-            const columnPartial: ISelectedColumn = { id: column.id, schema: schema_name }
+            // const columnPartial: ISelectedColumn = { id: column.id, schema: schema_name }
 
             // dispatch(loadColumn(column, schema_name))
             // dispatch(loadTable(selectedTable, schema_name))
