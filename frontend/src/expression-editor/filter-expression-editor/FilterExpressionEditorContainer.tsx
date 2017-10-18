@@ -7,7 +7,7 @@ import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { setActiveContentComponent } from "../../redux/modules/app"
-import { setInitiatingComponent } from "../../redux/modules/databrowser"
+import { startBrowsing, fetchResultForComponent } from "../../redux/modules/databrowser"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
     IStore,
@@ -24,6 +24,7 @@ import {
     IMUITheme,
     IMUIThemePalette,
     eEalUIComponent,
+    IDataBrowserResult,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
@@ -38,7 +39,7 @@ export interface IStoreProps {
     layerDefinition: ILayer
     columninfo: IColumnInfo
     filterExpression: string
-    databrowserPackage: any
+    dataBrowserResult: IDataBrowserResult
 }
 
 export interface IDispatchProps {
@@ -90,12 +91,14 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
-        console.log("componentDidUpdate", this.props.databrowserPackage, prevProps.databrowserPackage)
-        const { databrowserPackage } = this.props
+        console.log("componentDidUpdate", this.props.dataBrowserResult, prevProps.dataBrowserResult)
+
+        const { dataBrowserResult } = this.props
         const { expression } = this.state
-        if (databrowserPackage && databrowserPackage !== prevProps.databrowserPackage) {
-            if (databrowserPackage.initiatingComponent === "filter_col_1") {
-                expression["col1"] = databrowserPackage.column
+
+        if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
+            if (dataBrowserResult.message === "filter_col_1") {
+                expression["col1"] = dataBrowserResult.columns![0]
             }
             this.setState({ expression: expression })
         }
@@ -178,8 +181,8 @@ export class FilterExpressionEditorContainer extends React.Component<
                 onApply={() => {
                     onApply(this.compileExpression())
                 }}
-                onOpenDataBrowser={(component: string) => {
-                    activateDataBrowser(component)
+                onOpenDataBrowser={(message: string) => {
+                    activateDataBrowser(message)
                 }}
             />
         )
@@ -190,15 +193,6 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { maps, ealgis, databrowser } = state
     const layerFormValues = formValueSelector("layerForm")
 
-    var databrowserPackage
-    if (databrowser.initiatingComponent === "filter_col_1" && "selectedColumn" in databrowser) {
-        const column: IColumn = databrowser.selectedColumn
-        var databrowserPackage: any = {
-            initiatingComponent: databrowser.initiatingComponent,
-            column: databrowser.selectedColumn,
-        }
-    }
-
     return {
         muiThemePalette: ownProps.muiTheme.palette,
         mapDefinition: maps[ownProps.params.mapId],
@@ -206,15 +200,15 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         columninfo: ealgis.columninfo,
         filterExpression: layerFormValues(state, "filterExpression") as string,
-        databrowserPackage: databrowserPackage || null,
+        dataBrowserResult: fetchResultForComponent(eEalUIComponent.FILTER_EXPRESSION_EDITOR, state),
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        activateDataBrowser: (component: string) => {
+        activateDataBrowser: (message: string) => {
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
-            dispatch(setInitiatingComponent(component))
+            dispatch(startBrowsing(eEalUIComponent.FILTER_EXPRESSION_EDITOR, message))
         },
     }
 }

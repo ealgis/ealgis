@@ -3,39 +3,48 @@ import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { loadTables, loadColumns } from "../../redux/modules/ealgis"
+import { loadTables as loadTablesToAppCache, loadColumns as loadColumnsToAppCache } from "../../redux/modules/ealgis"
 import { editDraftLayer } from "../../redux/modules/maps"
-import { IGeomTable, ITable, ILayer, IColumn, ISelectedColumn } from "./interfaces"
+import { IStore, IGeomTable, ITable, ILayer, IColumn, ISelectedColumn, eEalUIComponent } from "./interfaces"
 
 // Actions
-const SET_INITIATING_COMPONENT = "ealgis/databrowser/SET_INITIATING_COMPONENT"
-const SELECT_TABLES = "ealgis/databrowser/SELECT_TABLES"
-const SELECT_COLUMNS = "ealgis/databrowser/SELECT_COLUMNS"
+const START = "ealgis/databrowser/START"
+const FINISH = "ealgis/databrowser/FINISH"
+const ADD_TABLES = "ealgis/databrowser/ADD_TABLES"
+const ADD_COLUMNS = "ealgis/databrowser/ADD_COLUMNS"
 const SELECT_COLUMN = "ealgidatabrowser/SELECT_COLUMN"
 
-const initialState: Partial<IModule> = { selectedTables: [], selectedColumns: [] }
+const initialState: Partial<IModule> = { active: false, tables: [], columns: [], selectedColumns: [] }
 
 // Reducer
 export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
-        case SET_INITIATING_COMPONENT:
-            return dotProp.set(state, "initiatingComponent", action.initiatingComponent)
-        case SELECT_TABLES:
-            return dotProp.set(state, "selectedTables", action.selectedTables)
-        case SELECT_COLUMNS:
-            return dotProp.set(state, "selectedColumns", action.selectedColumns)
+        case START:
+            state = dotProp.set(state, "active", true)
+            state = dotProp.set(state, "tables", [])
+            state = dotProp.set(state, "columns", [])
+            state = dotProp.set(state, "selectedColumns", [])
+            state = dotProp.set(state, "component", action.component)
+            return dotProp.set(state, "message", action.message)
+        case FINISH:
+            return dotProp.set(state, "active", false)
+        case ADD_TABLES:
+            return dotProp.set(state, "tables", action.tables)
+        case ADD_COLUMNS:
+            return dotProp.set(state, "columns", action.columns)
         case SELECT_COLUMN:
-            return dotProp.set(state, "selectedColumn", action.selectedColumn)
+            return dotProp.set(state, "selectedColumns", [...state.selectedColumns!, action.column])
         default:
             return state
     }
 }
 
 // Action Creators
-export function setInitiatingComponent(initiatingComponent: string): IAction {
+export function startBrowsing(component: eEalUIComponent, message: string): IAction {
     return {
-        type: SET_INITIATING_COMPONENT,
-        initiatingComponent,
+        type: START,
+        component,
+        message,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -43,10 +52,9 @@ export function setInitiatingComponent(initiatingComponent: string): IAction {
         },
     }
 }
-export function selectTables(selectedTables: Array<string>): IAction {
+export function finishBrowsing(): IAction {
     return {
-        type: SELECT_TABLES,
-        selectedTables,
+        type: FINISH,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -54,10 +62,10 @@ export function selectTables(selectedTables: Array<string>): IAction {
         },
     }
 }
-export function selectColumns(selectedColumns: Array<string>): IAction {
+export function addTables(tables: Array<string>): IAction {
     return {
-        type: SELECT_COLUMNS,
-        selectedColumns,
+        type: ADD_TABLES,
+        tables,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -65,10 +73,21 @@ export function selectColumns(selectedColumns: Array<string>): IAction {
         },
     }
 }
-export function selectColumn(selectedColumn: IColumn): IAction {
+export function addColumns(columns: Array<string>): IAction {
+    return {
+        type: ADD_COLUMNS,
+        columns,
+        meta: {
+            analytics: {
+                category: "DataBrowser",
+            },
+        },
+    }
+}
+export function selectColumn(column: IColumn): IAction {
     return {
         type: SELECT_COLUMN,
-        selectedColumn,
+        column,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -79,19 +98,21 @@ export function selectColumn(selectedColumn: IColumn): IAction {
 
 // Models
 export interface IModule {
-    // FIXME Enum?
-    initiatingComponent: string
-    selectedTables: Array<string>
-    selectedColumns: Array<string>
-    selectedColumn: IColumn
+    active: boolean
+    component: eEalUIComponent
+    message: string
+    tables: Array<string>
+    columns: Array<string>
+    selectedColumns: Array<IColumn>
 }
 
 export interface IAction {
     type: string
-    initiatingComponent?: string
-    selectedTables?: Array<string>
-    selectedColumns?: Array<string>
-    selectedColumn?: IColumn
+    component?: eEalUIComponent
+    message?: string
+    tables?: Array<string>
+    columns?: Array<string>
+    column?: IColumn
     meta?: {
         analytics: IAnalyticsMeta
     }
@@ -112,6 +133,12 @@ export interface ITableColumns {
     [key: string]: IColumn
 }
 
+export interface IDataBrowserResult {
+    valid: boolean
+    message?: string
+    columns?: Array<IColumn>
+}
+
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 export function searchTables(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string, geometry: IGeomTable) {
@@ -126,8 +153,8 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
         if (response.status === 404) {
             dispatch(sendSnackbarNotification("No tables found matching your search criteria."))
         } else if (response.status === 200) {
-            dispatch(loadTables(json))
-            dispatch(selectTables(Object.keys(json)))
+            dispatch(loadTablesToAppCache(json))
+            dispatch(addTables(Object.keys(json)))
         }
     }
 }
@@ -139,18 +166,32 @@ export function fetchColumns(schema_name: string, tableinfo_name: string) {
             tableinfo_name: tableinfo_name,
         })
 
-        dispatch(loadColumns(json["columns"]))
-        dispatch(selectColumns(Object.keys(json["columns"])))
+        dispatch(loadColumnsToAppCache(json["columns"]))
+        dispatch(addColumns(Object.keys(json["columns"])))
     }
 }
 
 export function emptySelectedTables() {
     return (dispatch: Function) => {
-        dispatch(selectTables([]))
+        dispatch(addTables([]))
     }
 }
 export function emptySelectedColumns() {
     return (dispatch: Function) => {
-        dispatch(selectColumns([]))
+        dispatch(addColumns([]))
     }
+}
+
+// @FIXME Lazy person's redux selectors
+export function fetchResultForComponent(component: eEalUIComponent, state: IStore): IDataBrowserResult {
+    const { databrowser } = state
+
+    if (databrowser.active === false && databrowser.component === component && databrowser.selectedColumns.length > 0) {
+        return {
+            valid: true,
+            message: databrowser.message,
+            columns: databrowser.selectedColumns,
+        }
+    }
+    return { valid: false }
 }

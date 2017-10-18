@@ -39,6 +39,7 @@ export interface IProps {
     onTableSearchChange: Function
     handleClickTable: Function
     onChooseColumn: Function
+    onFinishBrowsing: Function
     backToSchemaView: any
     backToTableView: any
 }
@@ -116,7 +117,9 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                 )}
 
                 {this.showColumns(selectedColumns) &&
-                selectedTable && <DataColumnTable table={selectedTable} selectedColumns={selectedColumns} onClickColumn={onChooseColumn} />}
+                    selectedTable && (
+                        <DataColumnTable table={selectedTable} selectedColumns={selectedColumns} onClickColumn={onChooseColumn} />
+                    )}
             </DataBrowserContainer>
         )
     }

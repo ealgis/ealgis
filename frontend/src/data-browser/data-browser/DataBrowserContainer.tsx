@@ -4,10 +4,18 @@ import DataBrowser from "./DataBrowser"
 import { withRouter } from "react-router"
 import { debounce } from "lodash-es"
 import { change } from "redux-form"
-import { selectColumn, searchTables, fetchColumns, emptySelectedTables, emptySelectedColumns } from "../../redux/modules/databrowser"
+import {
+    selectColumn,
+    searchTables,
+    fetchColumns,
+    emptySelectedTables,
+    emptySelectedColumns,
+    finishBrowsing,
+} from "../../redux/modules/databrowser"
+import { setActiveContentComponent } from "../../redux/modules/app"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn } from "../../redux/modules/ealgis"
-import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer } from "../../redux/modules/interfaces"
+import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer, eEalUIComponent } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
@@ -21,10 +29,8 @@ export interface IStoreProps {
     mapNameURLSafe: string
     layer: ILayer
     geometry: IGeomTable
-    initiatingComponent: string
     selectedTables: Array<string>
     selectedColumns: Array<string>
-    selectedColumn: IColumn
 }
 
 export interface IDispatchProps {
@@ -33,6 +39,7 @@ export interface IDispatchProps {
     showSchemaView: Function
     showTableView: Function
     handleChooseColumn: Function
+    handleFinishBrowsing: Function
     handleExitDataBrowser: Function
 }
 
@@ -91,7 +98,6 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             mapNameURLSafe,
             layer,
             geometry,
-            initiatingComponent,
             handleChooseSchema,
             selectedTables,
             handleChooseTable,
@@ -99,6 +105,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             showTableView,
             showSchemaView,
             handleChooseColumn,
+            handleFinishBrowsing,
         } = this.props
 
         return (
@@ -123,7 +130,11 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                     this.setState({ selectedTable: table })
                 }}
                 onChooseColumn={(column: IColumn) => {
-                    handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer, initiatingComponent)
+                    handleFinishBrowsing()
+                    handleChooseColumn(column, layer["schema"], this.state.selectedTable, mapId, layerId, layer)
+                }}
+                onFinishBrowsing={() => {
+                    handleFinishBrowsing()
                 }}
                 backToSchemaView={() => showSchemaView()}
                 backToTableView={() => showTableView()}
@@ -142,10 +153,8 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         mapNameURLSafe: maps[ownProps.params.mapId]["name-url-safe"],
         layer: layer,
         geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
-        initiatingComponent: databrowser.initiatingComponent,
-        selectedTables: databrowser.selectedTables,
-        selectedColumns: databrowser.selectedColumns,
-        selectedColumn: databrowser.selectedColumn,
+        selectedTables: databrowser.tables,
+        selectedColumns: databrowser.columns,
     }
 }
 
@@ -169,8 +178,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             selectedTable: ITable,
             mapId: number,
             layerId: number,
-            layer: ILayer,
-            initiatingComponent: string
+            layer: ILayer
         ) => {
             const columnPartial: ISelectedColumn = { id: column.id, schema: schema_name }
 
@@ -179,6 +187,10 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(selectColumn(column))
             // dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             // dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
+        },
+        handleFinishBrowsing: () => {
+            dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))
+            dispatch(finishBrowsing())
         },
         handleExitDataBrowser: () => {
             dispatch(emptySelectedTables())
