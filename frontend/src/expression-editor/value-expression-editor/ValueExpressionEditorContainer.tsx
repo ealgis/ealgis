@@ -32,7 +32,6 @@ export interface IStoreProps {
     muiThemePalette: IMUIThemePalette
     mapDefinition: IMap
     layerId: number
-    layerDefinition: ILayer
     columninfo: IColumnInfo
     valueExpression: string
 }
@@ -75,7 +74,7 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, layerDefinition, valueExpression } = this.props
+        const { mapDefinition, layerId, valueExpression } = this.props
 
         const parsed: any = this.parseExpression(valueExpression)
         if (parsed !== undefined) {
@@ -164,7 +163,7 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, valueExpression, onApply } = this.props
+        const { muiThemePalette, mapDefinition, layerId, valueExpression, onApply } = this.props
         const { expression } = this.state
 
         return (
@@ -172,10 +171,7 @@ export class ValueExpressionEditorContainer extends React.Component<
                 muiThemePalette={muiThemePalette}
                 mapId={mapDefinition.id}
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
-                layerDefinition={layerDefinition}
                 layerId={layerId}
-                layerHash={layerDefinition.hash || ""}
-                columninfo={columninfo}
                 expression={expression}
                 onFieldChange={(payload: { field: string; value: any }) => {
                     expression[payload.field] = payload.value
@@ -197,7 +193,6 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         muiThemePalette: ownProps.muiTheme.palette,
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
-        layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         columninfo: ealgis.columninfo,
         valueExpression: layerFormValues(state, "valueExpression") as string,
     }

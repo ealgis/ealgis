@@ -5,10 +5,7 @@ import { withRouter } from "react-router"
 import { isEqual, debounce, reduce } from "lodash-es"
 import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
-import { toggleModalState } from "../../redux/modules/app"
-import { setActiveContentComponent } from "../../redux/modules/app"
-import { startBrowsing, fetchResultForComponent } from "../../redux/modules/databrowser"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { fetchResultForComponent } from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -42,9 +39,7 @@ export interface IStoreProps {
     dataBrowserResult: IDataBrowserResult
 }
 
-export interface IDispatchProps {
-    activateDataBrowser: Function
-}
+export interface IDispatchProps {}
 
 interface IRouterProps {
     router: any
@@ -71,14 +66,9 @@ export class FilterExpressionEditorContainer extends React.Component<
     IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
     IState
 > {
-    onFieldChangeDebounced: Function
-
     constructor(props: IDispatchProps & IRouterProps) {
         super(props)
         this.state = { expression: {} }
-
-        // @TODO Do we need this?
-        // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     componentWillMount() {
@@ -161,7 +151,7 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply, activateDataBrowser } = this.props
+        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply } = this.props
         const { expression } = this.state
 
         return (
@@ -180,9 +170,6 @@ export class FilterExpressionEditorContainer extends React.Component<
                 }}
                 onApply={() => {
                     onApply(this.compileExpression())
-                }}
-                onOpenDataBrowser={(message: string) => {
-                    activateDataBrowser(message)
                 }}
             />
         )
@@ -205,12 +192,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {
-        activateDataBrowser: (message: string) => {
-            dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
-            dispatch(startBrowsing(eEalUIComponent.FILTER_EXPRESSION_EDITOR, message))
-        },
-    }
+    return {}
 }
 
 const FilterExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(FilterExpressionEditorContainer)

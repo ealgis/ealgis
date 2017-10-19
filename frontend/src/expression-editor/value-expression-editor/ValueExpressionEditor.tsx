@@ -2,7 +2,7 @@ import * as React from "react"
 import styled from "styled-components"
 import { Link } from "react-router"
 import { connect } from "react-redux"
-import { IStore, IMUIThemePalette, ILayer, IColumnInfo, ISelectedColumn, IColumn } from "../../redux/modules/interfaces"
+import { IStore, IMUIThemePalette, ISelectedColumn, IColumn } from "../../redux/modules/interfaces"
 
 import Divider from "material-ui/Divider"
 import { Tabs, Tab } from "material-ui/Tabs"
@@ -21,6 +21,9 @@ import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 
+import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
+import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
+
 const TabContainer = styled.div`margin: 10px;`
 
 const HiddenButton = styled.button`display: none;`
@@ -36,57 +39,66 @@ export interface IProps {
     muiThemePalette: IMUIThemePalette
     mapId: number
     mapNameURLSafe: string
-    layerDefinition: ILayer
     layerId: number
-    layerHash: string
-    columninfo: IColumnInfo
     expression: { [key: string]: any }
     onFieldChange: Function
     onApply: any
 }
 
-class ValueExpressionEditor extends React.Component<IProps, {}> {
-    render() {
-        const {
-            muiThemePalette,
-            mapId,
-            mapNameURLSafe,
-            layerDefinition,
-            layerId,
-            layerHash,
-            columninfo,
-            expression,
-            onFieldChange,
-            onApply,
-        } = this.props
+export interface IState {
+    open: boolean
+    anchorEl?: any
+    field?: string
+}
 
-        // console.log("expression", expression)
+class ValueExpressionEditor extends React.Component<IProps, IState> {
+    constructor(props: any) {
+        super(props)
+        this.state = { open: false }
+    }
+
+    handleTouchTap = (event: any, field: string) => {
+        // This prevents ghost click.
+        event.preventDefault()
+
+        this.setState({
+            open: true,
+            anchorEl: event.currentTarget,
+            field: field,
+        })
+    }
+
+    handleRequestClose = () => {
+        this.setState({
+            open: false,
+        })
+    }
+    render() {
+        const { muiThemePalette, mapId, mapNameURLSafe, layerId, expression, onFieldChange, onApply } = this.props
 
         const col1: any = expression["col1"]
         const mapMultiple: any = expression["map_multiple"]
-        // const operator: any = expression["operator"]
         const col2: any = expression["col2"]
         const asPercentage: any = expression["as_percentage"]
 
         return (
             <div>
-                <SelectField
-                    floatingLabelText="Select a column"
-                    value={col1 ? col1 : null}
-                    onChange={(evt: object, key: number, payload: IColumn) => {
-                        onFieldChange({ field: "col1", value: payload })
+                <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+
+                <ExpressionPartSelectorContainer
+                    field={this.state.field!}
+                    open={this.state.open}
+                    anchorEl={this.state.anchorEl}
+                    handleRequestClose={this.handleRequestClose}
+                    onFieldChange={(evt: object, key: number, payload: IColumn) => {
+                        console.log("onFieldChange", payload)
+                        onFieldChange({ field: this.state.field, value: payload })
                     }}
-                    autoWidth={true}
-                    fullWidth={true}
-                >
-                    {layerDefinition.selectedColumns.map((columnStub: ISelectedColumn, key: number) => {
-                        const columnUID = `${columnStub.schema}-${columnStub.id}`
-                        const column: IColumn = columninfo[columnUID]
-                        return (
-                            <MenuItem key={key} value={column} primaryText={`${column.metadata_json.type}, ${column.metadata_json.kind}`} />
-                        )
-                    })}
-                </SelectField>
+                    showCreateGroup={col1 !== undefined}
+                    showValueSpecial={false}
+                    showNumericalInput={false}
+                    showRelatedColumns={false}
+                />
 
                 <PaddedDivider />
 
@@ -98,40 +110,11 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     }}
                 />
 
-                {/* <SelectField
-                        floatingLabelText="Select an operator"
-                        value={operator ? operator : null}
-                        onChange={(evt: object, key: number, payload: string) => {
-                            onFieldChange({ field: "operator", value: payload })
-                        }}
-                        disabled={mapMultiple === undefined || mapMultiple === false ? true : false}
-                    >
-                        <MenuItem value={">"} primaryText="greater than" />
-                        <MenuItem value={">="} primaryText="greater than or equal to" />
-                        <MenuItem value={"<"} primaryText="less than" />
-                        <MenuItem value={"<="} primaryText="less than or equal to" />
-                        <MenuItem value={"="} primaryText="equals" />
-                        <MenuItem value={"!="} primaryText="is not" />
-                    </SelectField> */}
-
-                <SelectField
-                    floatingLabelText="Select another column"
-                    value={col2 ? col2 : null}
-                    onChange={(evt: object, key: number, payload: IColumn) => {
-                        onFieldChange({ field: "col2", value: payload })
-                    }}
+                <ExpressionPartItem
+                    value={col2}
                     disabled={mapMultiple === undefined || mapMultiple === false ? true : false}
-                    autoWidth={true}
-                    fullWidth={true}
-                >
-                    {layerDefinition.selectedColumns.map((columnStub: ISelectedColumn, key: number) => {
-                        const columnUID = `${columnStub.schema}-${columnStub.id}`
-                        const column: IColumn = columninfo[columnUID]
-                        return (
-                            <MenuItem key={key} value={column} primaryText={`${column.metadata_json.type}, ${column.metadata_json.kind}`} />
-                        )
-                    })}
-                </SelectField>
+                    onClick={(event: any) => this.handleTouchTap(event, "col2")}
+                />
 
                 <PaddedCheckbox
                     label="As a percentage?"
