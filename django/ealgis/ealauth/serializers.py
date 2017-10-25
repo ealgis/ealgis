@@ -13,11 +13,15 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Profile
         fields = (
-            'is_approved')
+            'is_approved',
+            'recent_tables',
+            'favourite_tables')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     is_approved = serializers.BooleanField(source='profile.is_approved')
+    recent_tables = serializers.JSONField(source='profile.recent_tables')
+    favourite_tables = serializers.JSONField(source='profile.favourite_tables')
 
     class Meta:
         model = User
@@ -32,7 +36,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'is_active',
             'date_joined',
             'groups',
-            'is_approved')
+            'is_approved',
+            'recent_tables',
+            'favourite_tables')
 
 
 class UserPublicDetailsSerializer(serializers.ModelSerializer):

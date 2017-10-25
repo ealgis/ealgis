@@ -20,6 +20,8 @@ class CompilationError(Exception):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
+    recent_tables = JSONField(default=list)
+    favourite_tables = JSONField(default=list)
 
 
 class MapDefinition(models.Model):

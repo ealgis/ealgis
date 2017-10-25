@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
-from .models import MapDefinition
+from .models import Profile, MapDefinition
 from sqlalchemy import not_
 
 from rest_framework import viewsets, mixins, status
@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
-from .serializers import UserSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
+from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 from django.apps import apps
 
@@ -62,6 +62,41 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows user profiles to be viewed or edited.
+    """
+    permission_classes = (IsAuthenticatedAndApproved,)
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        return self.request.user.profile
+
+    @list_route(methods=['get'])
+    def recent_tables(self, request, format=None):
+        profile = self.get_queryset()
+        # request.data
+        serializer = ProfileSerializer(profile, data={"recent_tables": [{"foo": "bar"}]}, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.validated_data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def favourite_tables(self, request, format=None):
+        profile = self.get_queryset()
+        # request.data
+        serializer = ProfileSerializer(profile, data={"favourite_tables": [{"foo": "bar"}]}, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.validated_data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MapDefinitionViewSet(viewsets.ModelViewSet):
