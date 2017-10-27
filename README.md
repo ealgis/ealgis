@@ -58,9 +58,9 @@ Now you're up and running!
 
 Making yourself an admin:
 
-Hop into your running `django_web` Docker container:
+Hop into your running `ealgis_web` Docker container:
 
-`docker exec -i -t django_web_1 /bin/bash`
+`docker exec -i -t ealgis_web_1 /bin/bash`
 
 And enter the Django Admin shell:
 
@@ -72,6 +72,8 @@ user=_[0]
 user.is_staff = True
 user.is_superuser = True
 user.save()
+user.profile.is_approved = True
+user.profile.save()
 ```
 
 Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
