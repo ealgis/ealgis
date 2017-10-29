@@ -62,7 +62,7 @@ export function finishBrowsing(): IAction {
         },
     }
 }
-export function addTables(tables: Array<string>): IAction {
+export function addTables(tables: Array<Partial<ITable>>): IAction {
     return {
         type: ADD_TABLES,
         tables,
@@ -101,7 +101,7 @@ export interface IModule {
     active: boolean
     component: eEalUIComponent
     message: string
-    tables: Array<string>
+    tables: Array<Partial<ITable>>
     columns: Array<string>
     selectedColumns: Array<IColumn>
 }
@@ -110,7 +110,7 @@ export interface IAction {
     type: string
     component?: eEalUIComponent
     message?: string
-    tables?: Array<string>
+    tables?: Array<Partial<ITable>>
     columns?: Array<string>
     column?: IColumn
     meta?: {
@@ -138,6 +138,10 @@ export interface IDataBrowserResult {
     message?: string
     columns?: Array<IColumn>
 }
+export enum eTableChooserLayout {
+    LIST_LAYOUT = 1,
+    GRID_LAYOUT = 2,
+}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
@@ -154,7 +158,11 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
             dispatch(sendSnackbarNotification("No tables found matching your search criteria."))
         } else if (response.status === 200) {
             dispatch(loadTablesToAppCache(json))
-            dispatch(addTables(Object.keys(json)))
+
+            const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
+                return { id: json[tableUID]["id"], schema_name: json[tableUID]["schema_name"] }
+            })
+            dispatch(addTables(tablePartials))
         }
     }
 }

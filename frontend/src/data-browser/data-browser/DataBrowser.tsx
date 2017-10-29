@@ -13,7 +13,7 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import { ITable } from "../../redux/modules/interfaces"
+import { ITable, eTableChooserLayout } from "../../redux/modules/interfaces"
 
 const DataBrowserContainer = styled.div`
     padding: 12px;
@@ -32,7 +32,9 @@ export interface IProps {
     layerId: number
     mapNameURLSafe: string
     dataTableSearchKeywords?: string
-    selectedTables: Array<string>
+    recentTables: Array<Partial<ITable>>
+    favouriteTables: Array<Partial<ITable>>
+    selectedTables: Array<Partial<ITable>>
     selectedTable?: ITable
     selectedColumns: Array<string>
     handleClickSchema: Function
@@ -63,6 +65,8 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             layerId,
             mapNameURLSafe,
             dataTableSearchKeywords,
+            recentTables,
+            favouriteTables,
             selectedTables,
             selectedTable,
             selectedColumns,
@@ -107,13 +111,19 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
 
                 {this.showSchemas(selectedTables, selectedColumns) && (
                     <div>
+                        <Subheader>Recent Tables</Subheader>
+                        <DataTableList tables={recentTables} layout={eTableChooserLayout.GRID_LAYOUT} onClickTable={handleClickTable} />
+
+                        <Subheader>Favourite Tables</Subheader>
+                        <DataTableList tables={favouriteTables} layout={eTableChooserLayout.GRID_LAYOUT} onClickTable={handleClickTable} />
+
                         <Subheader>Data Schemas</Subheader>
                         <DataSchemaGrid handleClickSchema={handleClickSchema} />
                     </div>
                 )}
 
                 {this.showTables(selectedTables, selectedColumns) && (
-                    <DataTableList selectedTables={selectedTables} onClickTable={handleClickTable} />
+                    <DataTableList tables={selectedTables} layout={eTableChooserLayout.LIST_LAYOUT} onClickTable={handleClickTable} />
                 )}
 
                 {this.showColumns(selectedColumns) &&

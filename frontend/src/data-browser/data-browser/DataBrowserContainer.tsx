@@ -14,7 +14,7 @@ import {
 } from "../../redux/modules/databrowser"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
-import { loadTable, loadColumn } from "../../redux/modules/ealgis"
+import { loadTable, loadColumn, addToRecentTables } from "../../redux/modules/ealgis"
 import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer, eEalUIComponent } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
@@ -29,8 +29,10 @@ export interface IStoreProps {
     mapNameURLSafe: string
     layer: ILayer
     geometry: IGeomTable
-    selectedTables: Array<string>
+    selectedTables: Array<Partial<ITable>>
     selectedColumns: Array<string>
+    recentTables: Array<Partial<ITable>>
+    favouriteTables: Array<Partial<ITable>>
 }
 
 export interface IDispatchProps {
@@ -99,6 +101,8 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             // layer,
             geometry,
             handleChooseSchema,
+            recentTables,
+            favouriteTables,
             selectedTables,
             handleChooseTable,
             selectedColumns,
@@ -114,6 +118,8 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 layerId={layerId}
                 mapNameURLSafe={mapNameURLSafe}
                 dataTableSearchKeywords={this.state.dataTableSearchKeywords}
+                recentTables={recentTables}
+                favouriteTables={favouriteTables}
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
@@ -153,6 +159,8 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         mapNameURLSafe: maps[ownProps.params.mapId]["name-url-safe"],
         layer: layer,
         geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
+        recentTables: ealgis.user.recent_tables,
+        favouriteTables: ealgis.user.favourite_tables,
         selectedTables: databrowser.tables,
         selectedColumns: databrowser.columns,
     }
@@ -185,6 +193,9 @@ const mapDispatchToProps = (dispatch: Function) => {
             // dispatch(loadColumn(column, schema_name))
             // dispatch(loadTable(selectedTable, schema_name))
             dispatch(selectColumn(column))
+
+            const tables: Array<Partial<ITable>> = [{ id: column.table_info_id, schema_name: column.schema_name }]
+            dispatch(addToRecentTables(tables))
             // dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             // dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },

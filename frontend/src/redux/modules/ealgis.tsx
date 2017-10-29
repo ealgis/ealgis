@@ -5,6 +5,8 @@ import { fetchMaps } from "./maps"
 
 // Actions
 const LOAD_USER = "ealgis/ealgis/LOAD_USER"
+const LOAD_RECENT_TABLES = "ealgis/ealgis/LOAD_RECENT_TABLES"
+const LOAD_FAVOURITE_TABLES = "ealgis/ealgis/LOAD_FAVOURITE_TABLES"
 const LOAD_GEOM = "ealgis/ealgis/LOAD_GEOM"
 const LOAD_COLOURS = "ealgis/ealgis/LOAD_COLOURS"
 const LOAD_TABLES = "ealgis/ealgis/LOAD_TABLES"
@@ -27,6 +29,10 @@ export default function reducer(state = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_USER:
             return dotProp.set(state, "user", action.user)
+        case LOAD_RECENT_TABLES:
+            return dotProp.set(state, "user.recent_tables", action.recent_tables)
+        case LOAD_FAVOURITE_TABLES:
+            return dotProp.set(state, "user.favourite_tables", action.favourite_tables)
         case LOAD_GEOM:
             return dotProp.set(state, "geominfo", action.geominfo)
         case LOAD_COLOURS:
@@ -51,6 +57,20 @@ export function loadUser(self: ISelf) {
     return {
         type: LOAD_USER,
         user: self.user,
+    }
+}
+
+export function loadRecentTables(tables: Array<Partial<ITable>>) {
+    return {
+        type: LOAD_RECENT_TABLES,
+        recent_tables: tables,
+    }
+}
+
+export function loadFavouriteTables(tables: Array<Partial<ITable>>) {
+    return {
+        type: LOAD_FAVOURITE_TABLES,
+        favourite_tables: tables,
     }
 }
 
@@ -126,6 +146,8 @@ export interface IAction {
     columninfo: IColumnInfo
     column: IColumn
     schema: string
+    recent_tables: Array<Partial<ITable>>
+    favourite_tables: Array<Partial<ITable>>
 }
 
 export interface ISelf {
@@ -145,6 +167,8 @@ export interface IUser {
     date_joined: string
     groups: Array<string>
     is_approved: boolean
+    recent_tables: Array<Partial<ITable>>
+    favourite_tables: Array<Partial<ITable>>
 }
 
 export interface IUserPartial {
@@ -281,6 +305,38 @@ export function logoutUser() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         await ealapi.get("/api/0.1/logout", dispatch)
         window.location.reload()
+    }
+}
+
+export function addToRecentTables(tables: Array<Partial<ITable>>) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        return ealapi.put("/api/0.1/profile/recent_tables/", { tables: tables }, dispatch).then(({ response, json }: any) => {
+            if (response.status === 200) {
+                dispatch(loadRecentTables(json["recent_tables"]))
+            } else {
+                // We're not sure what happened, but handle it:
+                // our Error will get passed straight to `.catch()`
+                throw new Error("Unhandled error adding recent tables. Please report. (" + response.status + ") " + JSON.stringify(json))
+            }
+        })
+    }
+}
+
+export function fetchUncachedTables(tables: Array<Partial<ITable>>) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        const missingTables: Array<Partial<ITable>> = []
+        const tableinfo: ITableInfo = getState()["ealgis"]["tableinfo"]
+        const tableinfoUIDs: Array<string> = Object.keys(tables)
+        for (var key in tables) {
+            const table = tables[key]
+            const tableUID: string = `${table.schema_name}-${table.id}`
+            if (!(tableUID in tableinfo)) {
+                missingTables.push(table)
+            }
+        }
+
+        const { response, json } = await ealapi.post("/api/0.1/tableinfo/fetch/", missingTables, dispatch)
+        dispatch(loadTables(json["tables"]))
     }
 }
 
