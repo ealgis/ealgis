@@ -74,19 +74,41 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.profile
 
-    @list_route(methods=['get'])
+    @list_route(methods=['put'])
     def recent_tables(self, request, format=None):
-        profile = self.get_queryset()
-        # request.data
-        serializer = ProfileSerializer(profile, data={"recent_tables": [{"foo": "bar"}]}, partial=True)
+        eal = apps.get_app_config('ealauth').eal
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.validated_data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Add our new tables to the start of the list of recent
+        # tables that the user has interacted with.
+        if "tables" in request.data and isinstance(request.data["tables"], list):
 
-    @list_route(methods=['get'])
+            # If they're valid tables
+            tmp_recent_tables = []
+            for table in request.data["tables"]:
+                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
+                if tbl is not None:
+                    tmp_recent_tables.append({"id": tbl.id, "schema_name": table["schema_name"]})
+
+            # With no duplicates
+            profile = self.get_queryset()
+            tmp_recent_tables += profile.recent_tables
+            recent_tables = []
+            [recent_tables.append(t) for t in tmp_recent_tables if t not in recent_tables]
+
+            # Discard any older recent tables
+            if len(recent_tables) > 10:
+                recent_tables = recent_tables[10:]
+
+            serializer = ProfileSerializer(profile, data={"recent_tables": recent_tables}, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.validated_data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['put'])
     def favourite_tables(self, request, format=None):
         profile = self.get_queryset()
         # request.data
@@ -712,6 +734,23 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def list(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
         return Response(eal.get_tableinfo())
+
+    @list_route(methods=['post'])
+    def fetch(self, request, format=None):
+        eal = apps.get_app_config('ealauth').eal
+
+        tables = {}
+        if isinstance(request.data, list) and len(request.data) > 0:
+            for table in request.data:
+                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
+                if tbl is not None:
+                    tmp = TableInfoSerializer(tbl).data
+                    tmp["schema_name"] = table["schema_name"]
+
+                    tableUID = "%s-%s" % (tmp["schema_name"], tmp["id"])
+                    tables[tableUID] = tmp
+
+        return Response({"tables": tables})
 
     @list_route(methods=['get'])
     def search(self, request, format=None):
