@@ -805,8 +805,11 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if table is None:
             raise NotFound()
 
+        col = self.serializer_class(column).data
+        col["schema_name"] = schema_name
+
         return Response({
-            "column": self.serializer_class(column).data,
+            "column": col,
             "table": TableInfoSerializer(table).data,
             "schema": schema_name,
         })
@@ -823,7 +826,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             tables = eal.get_table_info_by_ids(tableIds, schema)
 
             for column in columns:
-                columnsByUID["%s-%s" % (schema, column.id)] = ColumnInfoSerializer(column).data
+                col = ColumnInfoSerializer(column).data
+                col["schema_name"] = schema
+                columnsByUID["%s-%s" % (schema, column.id)] = col
 
             for table in tables:
                 tablesByUID["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data
@@ -892,6 +897,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 response["tables"][tableUID] = table
 
             col = self.serializer_class(column).data
+            col["schema_name"] = schema_name
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
             columnUID = "%s-%s" % (schema_name, column.id)
             response["columns"][columnUID] = col

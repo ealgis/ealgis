@@ -224,6 +224,7 @@ export interface IColumn {
     name: string
     table_info_id: number
     metadata_json: ColumnMetadataJSON
+    schema_name: string
     geomlinkage: {
         id: number
         geo_source_id: number
