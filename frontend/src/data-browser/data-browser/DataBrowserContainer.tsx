@@ -14,7 +14,7 @@ import {
 } from "../../redux/modules/databrowser"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
-import { loadTable, loadColumn, addToRecentTables } from "../../redux/modules/ealgis"
+import { loadTable, loadColumn, addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
 import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer, eEalUIComponent } from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
@@ -38,6 +38,7 @@ export interface IStoreProps {
 export interface IDispatchProps {
     handleChooseSchema: Function
     handleChooseTable: Function
+    favouriteTable: Function
     showSchemaView: Function
     showTableView: Function
     handleChooseColumn: Function
@@ -105,6 +106,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             favouriteTables,
             selectedTables,
             handleChooseTable,
+            favouriteTable,
             selectedColumns,
             showTableView,
             showSchemaView,
@@ -134,6 +136,9 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
                     this.setState({ selectedTable: table })
+                }}
+                handleFavouriteTable={(table: ITable) => {
+                    favouriteTable(table)
                 }}
                 onChooseColumn={(column: IColumn) => {
                     handleFinishBrowsing()
@@ -173,6 +178,9 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         handleChooseTable: (table: ITable) => {
             dispatch(fetchColumns(table.schema_name, table.name))
+        },
+        favouriteTable: (table: ITable) => {
+            dispatch(toggleFavouriteTables([table]))
         },
         showSchemaView: () => {
             dispatch(emptySelectedTables())

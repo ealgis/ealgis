@@ -40,6 +40,7 @@ export interface IProps {
     handleClickSchema: Function
     onTableSearchChange: Function
     handleClickTable: Function
+    handleFavouriteTable: Function
     onChooseColumn: Function
     onFinishBrowsing: Function
     backToSchemaView: any
@@ -73,6 +74,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             handleClickSchema,
             onTableSearchChange,
             handleClickTable,
+            handleFavouriteTable,
             onChooseColumn,
             backToSchemaView,
             backToTableView,
@@ -111,24 +113,50 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
 
                 {this.showSchemas(selectedTables, selectedColumns) && (
                     <div>
-                        <Subheader>Recent Tables</Subheader>
-                        <DataTableList tables={recentTables} layout={eTableChooserLayout.GRID_LAYOUT} onClickTable={handleClickTable} />
-
-                        <Subheader>Favourite Tables</Subheader>
-                        <DataTableList tables={favouriteTables} layout={eTableChooserLayout.GRID_LAYOUT} onClickTable={handleClickTable} />
-
                         <Subheader>Data Schemas</Subheader>
                         <DataSchemaGrid handleClickSchema={handleClickSchema} />
+
+                        {recentTables.length > 0 && (
+                            <div>
+                                <Subheader>Recent Tables</Subheader>
+                                <DataTableList
+                                    tables={recentTables}
+                                    layout={eTableChooserLayout.GRID_LAYOUT}
+                                    onClickTable={handleClickTable}
+                                />
+                            </div>
+                        )}
+
+                        {favouriteTables.length > 0 && (
+                            <div>
+                                <Subheader>Favourite Tables</Subheader>
+                                <DataTableList
+                                    tables={favouriteTables}
+                                    layout={eTableChooserLayout.GRID_LAYOUT}
+                                    onClickTable={handleClickTable}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {this.showTables(selectedTables, selectedColumns) && (
-                    <DataTableList tables={selectedTables} layout={eTableChooserLayout.LIST_LAYOUT} onClickTable={handleClickTable} />
+                    <DataTableList
+                        tables={selectedTables}
+                        layout={eTableChooserLayout.LIST_LAYOUT}
+                        onClickTable={handleClickTable}
+                        onFavouriteTable={handleFavouriteTable}
+                    />
                 )}
 
                 {this.showColumns(selectedColumns) &&
                     selectedTable && (
-                        <DataColumnTable table={selectedTable} selectedColumns={selectedColumns} onClickColumn={onChooseColumn} />
+                        <DataColumnTable
+                            table={selectedTable}
+                            selectedColumns={selectedColumns}
+                            onClickColumn={onChooseColumn}
+                            onFavouriteTable={handleFavouriteTable}
+                        />
                     )}
             </DataBrowserContainer>
         )

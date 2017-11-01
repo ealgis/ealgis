@@ -110,15 +110,35 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'])
     def favourite_tables(self, request, format=None):
-        profile = self.get_queryset()
-        # request.data
-        serializer = ProfileSerializer(profile, data={"favourite_tables": [{"foo": "bar"}]}, partial=True)
+        eal = apps.get_app_config('ealauth').eal
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.validated_data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if "tables" in request.data and isinstance(request.data["tables"], list):
+            profile = self.get_queryset()
+            favourite_tables = copy.deepcopy(profile.favourite_tables)
+            removed_tables = []
+
+            for table in request.data["tables"]:
+                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
+                if tbl is not None:
+                    tbl_partial = {"id": tbl.id, "schema_name": table["schema_name"]}
+
+                    if tbl_partial in profile.favourite_tables:
+                        removed_tables.append(tbl_partial)
+                        favourite_tables.remove(tbl_partial)
+                    else:
+                        favourite_tables.append(tbl_partial)
+
+            serializer = ProfileSerializer(profile, data={"favourite_tables": favourite_tables}, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "favourite_tables": serializer.validated_data["favourite_tables"],
+                    "removed": removed_tables
+                })
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MapDefinitionViewSet(viewsets.ModelViewSet):

@@ -1,7 +1,22 @@
 import * as React from "react"
 import styled from "styled-components"
+import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import IconButton from "material-ui/IconButton"
+import ToggleStar from "material-ui/svg-icons/toggle/star"
+import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
+import { yellow500 } from "material-ui/styles/colors"
 import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable, ITableColumns } from "../../redux/modules/interfaces"
+
+// Silence "TS2339: Property 'onClick' does not exist'" warnings
+class ClickableIconButton extends React.Component<any, any> {
+    render() {
+        return <IconButton {...this.props} />
+    }
+}
+
+const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
 
 const RowLabelTableHeaderColumn = styled(TableHeaderColumn)`
     width: 250px;
@@ -25,24 +40,40 @@ export interface IProps {
     columns: ITableColumns
     header: Array<string>
     rows: Array<string>
+    favouriteTables: Array<Partial<ITable>>
     onClickColumn: Function
+    onFavouriteTable: Function
 }
 
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
-        const { table, columns, header, rows, onClickColumn } = this.props
+        const { table, columns, header, rows, favouriteTables, onClickColumn, onFavouriteTable } = this.props
+        const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
 
         return (
             <div>
-                <h2>
-                    {table["metadata_json"]["series"] === null ? (
-                        `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
-                    ) : (
-                        `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
-                            "family"
-                        ].toUpperCase()})`
-                    )}
-                </h2>
+                <DataBrowserToolbar>
+                    <ToolbarGroup firstChild={true}>
+                        <h2>
+                            {table["metadata_json"]["series"] === null
+                                ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
+                                : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
+                                      "family"
+                                  ].toUpperCase()})`}
+                        </h2>
+                    </ToolbarGroup>
+
+                    <ToolbarGroup lastChild={true}>
+                        <ClickableIconButton onClick={() => onFavouriteTable(table)}>
+                            {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
+                                <ToggleStar color={yellow500} />
+                            ) : (
+                                <ToggleStarBorder />
+                            )}
+                        </ClickableIconButton>
+                    </ToolbarGroup>
+                </DataBrowserToolbar>
+
                 <Table
                     fixedHeader={true}
                     height={`${window.innerHeight - 200}px`}

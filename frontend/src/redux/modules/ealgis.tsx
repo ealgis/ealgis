@@ -1,5 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loading as appLoading, loaded as appLoaded } from "./app"
 import { fetchMaps } from "./maps"
 
@@ -285,7 +286,13 @@ export function fetchUserMapsColumnsDataColourAndSchemaInfo() {
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in && self.user.is_approved) {
-            await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo()), dispatch(fetchColourInfo()), dispatch(fetchSchemaInfo())])
+            await Promise.all([
+                dispatch(fetchMaps()),
+                dispatch(fetchGeomInfo()),
+                dispatch(fetchColourInfo()),
+                dispatch(fetchSchemaInfo()),
+                dispatch(fetchTablesIfUncached([...self.user.favourite_tables, ...self.user.recent_tables])),
+            ])
             await dispatch(fetchColumnsForMaps())
         }
 
@@ -322,7 +329,28 @@ export function addToRecentTables(tables: Array<Partial<ITable>>) {
     }
 }
 
-export function fetchUncachedTables(tables: Array<Partial<ITable>>) {
+export function toggleFavouriteTables(tables: Array<Partial<ITable>>) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        return ealapi.put("/api/0.1/profile/favourite_tables/", { tables: tables }, dispatch).then(({ response, json }: any) => {
+            if (response.status === 200) {
+                dispatch(loadFavouriteTables(json["favourite_tables"]))
+                if (json["removed"].length === 0) {
+                    dispatch(sendSnackbarNotification("Table added to favourites"))
+                } else {
+                    dispatch(sendSnackbarNotification("Table removed from favourites"))
+                }
+            } else {
+                // We're not sure what happened, but handle it:
+                // our Error will get passed straight to `.catch()`
+                throw new Error(
+                    "Unhandled error adding table to favourites. Please report. (" + response.status + ") " + JSON.stringify(json)
+                )
+            }
+        })
+    }
+}
+
+export function fetchTablesIfUncached(tables: Array<Partial<ITable>>) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const missingTables: Array<Partial<ITable>> = []
         const tableinfo: ITableInfo = getState()["ealgis"]["tableinfo"]
@@ -335,8 +363,10 @@ export function fetchUncachedTables(tables: Array<Partial<ITable>>) {
             }
         }
 
-        const { response, json } = await ealapi.post("/api/0.1/tableinfo/fetch/", missingTables, dispatch)
-        dispatch(loadTables(json["tables"]))
+        if (missingTables.length > 0) {
+            const { response, json } = await ealapi.post("/api/0.1/tableinfo/fetch/", missingTables, dispatch)
+            dispatch(loadTables(json["tables"]))
+        }
     }
 }
 

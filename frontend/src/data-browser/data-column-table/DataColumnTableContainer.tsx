@@ -8,18 +8,20 @@ interface IProps {
     table: ITable
     selectedColumns: Array<string>
     onClickColumn: Function
+    onFavouriteTable: Function
 }
 
 export interface IStoreProps {
     // From Props
     columninfo: IColumnInfo
+    favourite_tables: Array<Partial<ITable>>
 }
 
 export interface IDispatchProps {}
 
 export class DataColumnTableContainer extends React.PureComponent<IProps & IStoreProps & IDispatchProps, {}> {
     render() {
-        const { table, selectedColumns, onClickColumn, columninfo } = this.props
+        const { table, selectedColumns, onClickColumn, onFavouriteTable, columninfo, favourite_tables } = this.props
 
         const columns: ITableColumns = {}
         const header: Array<string> = []
@@ -39,7 +41,17 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
             columns[`${column["metadata_json"]["kind"]}.${column["metadata_json"]["type"]}`] = column
         }
 
-        return <DataColumnTable table={table} columns={columns} header={header} rows={rows} onClickColumn={onClickColumn} />
+        return (
+            <DataColumnTable
+                table={table}
+                columns={columns}
+                header={header}
+                rows={rows}
+                favouriteTables={favourite_tables}
+                onClickColumn={onClickColumn}
+                onFavouriteTable={onFavouriteTable}
+            />
+        )
     }
 }
 
@@ -47,6 +59,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
     const { ealgis } = state
     return {
         columninfo: ealgis.columninfo,
+        favourite_tables: ealgis.user.favourite_tables,
     }
 }
 
