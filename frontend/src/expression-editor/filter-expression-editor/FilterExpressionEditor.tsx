@@ -2,7 +2,7 @@ import * as React from "react"
 import styled from "styled-components"
 import { Link } from "react-router"
 import { connect } from "react-redux"
-import { IStore, IMUIThemePalette, ILayer, IColumnInfo, ISelectedColumn, IColumn } from "../../redux/modules/interfaces"
+import { IStore, IMUIThemePalette, ILayer, IColumnInfo, ISelectedColumn, IColumn, eEalUIComponent } from "../../redux/modules/interfaces"
 
 import Divider from "material-ui/Divider"
 import Checkbox from "material-ui/Checkbox"
@@ -103,6 +103,7 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                 <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
 
                 <ExpressionPartSelectorContainer
+                    componentId={eEalUIComponent.FILTER_EXPRESSION_EDITOR}
                     field={this.state.field!}
                     open={this.state.open}
                     anchorEl={this.state.anchorEl}

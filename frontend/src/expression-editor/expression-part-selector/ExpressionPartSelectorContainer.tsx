@@ -6,6 +6,7 @@ import { startBrowsing } from "../../redux/modules/databrowser"
 import { IStore, eEalUIComponent } from "../../redux/modules/interfaces"
 
 export interface IProps {
+    componentId: eEalUIComponent
     field: string
     open: any
     anchorEl: any
@@ -24,6 +25,7 @@ export interface IDispatchProps {
 export class ExpressionPartSelectorContainer extends React.Component<IProps & IDispatchProps, {}> {
     render() {
         const {
+            componentId,
             field,
             open,
             anchorEl,
@@ -53,7 +55,7 @@ export class ExpressionPartSelectorContainer extends React.Component<IProps & ID
                     handleRequestClose={handleRequestClose}
                     onFieldChange={onFieldChange}
                     onOpenDataBrowser={() => {
-                        activateDataBrowser(field)
+                        activateDataBrowser(field, componentId)
                     }}
                     showCreateGroup={showCreateGroup === undefined ? true : showCreateGroup}
                     showValueSpecial={showValueSpecial === undefined ? true : showValueSpecial}
@@ -73,9 +75,9 @@ const mapStateToProps = (state: IStore): {} => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        activateDataBrowser: (message: string) => {
+        activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
-            dispatch(startBrowsing(eEalUIComponent.FILTER_EXPRESSION_EDITOR, message))
+            dispatch(startBrowsing(componentId, message))
         },
     }
 }

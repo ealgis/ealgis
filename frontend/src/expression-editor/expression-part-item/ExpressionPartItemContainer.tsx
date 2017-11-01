@@ -9,7 +9,6 @@ import { values as objectValues } from "core-js/library/fn/object"
 import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
 import { toggleModalState } from "../../redux/modules/app"
 import { setActiveContentComponent } from "../../redux/modules/app"
-import { startBrowsing, fetchResultForComponent } from "../../redux/modules/databrowser"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import {
     IStore,

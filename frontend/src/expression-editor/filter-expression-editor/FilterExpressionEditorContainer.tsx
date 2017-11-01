@@ -81,14 +81,14 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
-        console.log("componentDidUpdate", this.props.dataBrowserResult, prevProps.dataBrowserResult)
-
         const { dataBrowserResult } = this.props
         const { expression } = this.state
 
         if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
-            if (dataBrowserResult.message === "filter_col_1") {
+            if (dataBrowserResult.message === "col1") {
                 expression["col1"] = dataBrowserResult.columns![0]
+            } else if (dataBrowserResult.message === "col2") {
+                expression["col2"] = dataBrowserResult.columns![0]
             }
             this.setState({ expression: expression })
         }

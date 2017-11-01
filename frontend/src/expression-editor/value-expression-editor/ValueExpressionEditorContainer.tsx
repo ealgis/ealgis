@@ -7,6 +7,7 @@ import { values as objectValues } from "core-js/library/fn/object"
 import ValueExpressionEditor from "./ValueExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { fetchResultForComponent } from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -21,6 +22,8 @@ import {
     ISelectedColumn,
     IMUITheme,
     IMUIThemePalette,
+    eEalUIComponent,
+    IDataBrowserResult,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
@@ -34,6 +37,7 @@ export interface IStoreProps {
     layerId: number
     columninfo: IColumnInfo
     valueExpression: string
+    dataBrowserResult: IDataBrowserResult
 }
 
 export interface IDispatchProps {}
@@ -77,8 +81,24 @@ export class ValueExpressionEditorContainer extends React.Component<
         const { mapDefinition, layerId, valueExpression } = this.props
 
         const parsed: any = this.parseExpression(valueExpression)
+        console.log("valueExpression", valueExpression)
+        console.log("parsed", parsed)
         if (parsed !== undefined) {
             this.setState({ expression: parsed })
+        }
+    }
+
+    componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
+        const { dataBrowserResult } = this.props
+        const { expression } = this.state
+
+        if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
+            if (dataBrowserResult.message === "col1") {
+                expression["col1"] = dataBrowserResult.columns![0]
+            } else if (dataBrowserResult.message === "col2") {
+                expression["col2"] = dataBrowserResult.columns![0]
+            }
+            this.setState({ expression: expression })
         }
     }
 
@@ -195,6 +215,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerId: ownProps.params.layerId,
         columninfo: ealgis.columninfo,
         valueExpression: layerFormValues(state, "valueExpression") as string,
+        dataBrowserResult: fetchResultForComponent(eEalUIComponent.VALUE_EXPRESSION_EDITOR, state),
     }
 }
 
