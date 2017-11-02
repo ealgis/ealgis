@@ -880,14 +880,14 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         columnsByUID = {}
         tablesByUID = {}
         for schema in request.data:
-            columns = eal.get_column_info_by_ids(request.data[schema], schema)
-            tableIds = list(set([col.table_info_id for col in columns]))
+            columns = eal.get_column_info_by_names(request.data[schema], schema)
+            tableIds = list(set([col.column_info.table_info_id for col in columns]))
             tables = eal.get_table_info_by_ids(tableIds, schema)
 
             for column in columns:
-                col = ColumnInfoSerializer(column).data
+                col = ColumnInfoSerializer(column.column_info).data
                 col["schema_name"] = schema
-                columnsByUID["%s-%s" % (schema, column.id)] = col
+                columnsByUID["%s-%s" % (schema, column.column_info.id)] = col
 
             for table in tables:
                 tablesByUID["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data

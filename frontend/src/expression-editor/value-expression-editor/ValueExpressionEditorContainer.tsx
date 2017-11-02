@@ -7,7 +7,7 @@ import { values as objectValues } from "core-js/library/fn/object"
 import ValueExpressionEditor from "./ValueExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { fetchResultForComponent } from "../../redux/modules/databrowser"
+import { fetchResultForComponent, parseValueExpression, getValueExpressionWithColumns } from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -84,13 +84,12 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, valueExpression } = this.props
+        const { mapDefinition, layerId, valueExpression, valueExpressionMode, columninfo } = this.props
 
-        const parsed: any = this.parseExpression(valueExpression)
-        console.log("valueExpression", valueExpression)
-        console.log("parsed", parsed)
-        if (parsed !== undefined) {
-            this.setState({ expression: parsed })
+        const parsed1: any = parseValueExpression(valueExpression, valueExpressionMode)
+        const parsed2: any = getValueExpressionWithColumns(parsed1, valueExpressionMode, columninfo)
+        if (parsed2 !== undefined) {
+            this.setState({ expression: parsed2 })
         }
     }
 
@@ -144,48 +143,6 @@ export class ValueExpressionEditorContainer extends React.Component<
             }
         }
         return expr
-    }
-
-    getColumnByName(column_name: string) {
-        const { columninfo } = this.props
-
-        for (let key in columninfo) {
-            const col: IColumn = columninfo[key]
-            if (col.name === column_name) {
-                return col
-            }
-        }
-        return null
-    }
-
-    parseExpression(expression: string) {
-        const { columninfo } = this.props
-
-        // FIXME Hacky for proof of concept component
-        if (expression.includes("/")) {
-            let matches = expression.match(/[a-z0-9]+\/[a-z0-9]+/)
-            if (matches !== null) {
-                let column_names = matches[0].split("/")
-                if (expression.includes("*100")) {
-                    return {
-                        col1: this.getColumnByName(column_names[0]),
-                        map_multiple: true,
-                        col2: this.getColumnByName(column_names[1]),
-                        as_percentage: true,
-                    }
-                }
-
-                return {
-                    col1: this.getColumnByName(column_names[0]),
-                    map_multiple: true,
-                    col2: this.getColumnByName(column_names[1]),
-                }
-            }
-        }
-
-        return {
-            col1: this.getColumnByName(expression),
-        }
     }
 
     render() {

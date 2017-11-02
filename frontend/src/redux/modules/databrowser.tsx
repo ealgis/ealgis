@@ -5,7 +5,18 @@ import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClien
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loadTables as loadTablesToAppCache, loadColumns as loadColumnsToAppCache } from "../../redux/modules/ealgis"
 import { editDraftLayer } from "../../redux/modules/maps"
-import { IStore, IGeomTable, ITable, ILayer, IColumn, ISelectedColumn, eEalUIComponent } from "./interfaces"
+import {
+    IStore,
+    IGeomTable,
+    ITable,
+    ILayer,
+    IColumn,
+    IColumnInfo,
+    ISelectedColumn,
+    eEalUIComponent,
+    eLayerValueExpressionMode,
+    eLayerFilterExpressionMode,
+} from "./interfaces"
 
 // Actions
 const START = "ealgis/databrowser/START"
@@ -202,4 +213,82 @@ export function fetchResultForComponent(component: eEalUIComponent, state: IStor
         }
     }
     return { valid: false }
+}
+
+export function parseValueExpression(expression: string, expression_mode: eLayerValueExpressionMode) {
+    // FIXME Hacky for proof of concept component
+    if (expression_mode === eLayerValueExpressionMode.SINGLE) {
+        return {
+            col1: expression,
+        }
+    } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
+        let matches = expression.match(/[a-z0-9]+\/[a-z0-9]+/)
+        let column_names = matches![0].split("/")
+        return {
+            col1: column_names[0],
+            map_multiple: true,
+            col2: column_names[1],
+        }
+    } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
+        throw Error("Umm, we can't do that yet.")
+    }
+    return {}
+}
+
+export function getValueExpressionWithColumns(expression: any, expression_mode: eLayerValueExpressionMode, columninfo: IColumnInfo) {
+    // FIXME Hacky for proof of concept component
+    if (expression_mode === eLayerValueExpressionMode.SINGLE) {
+        return {
+            col1: getColumnByName(expression.col1, columninfo),
+        }
+    } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
+        return {
+            col1: getColumnByName(expression.col1, columninfo),
+            map_multiple: true,
+            col2: getColumnByName(expression.col2, columninfo),
+        }
+    } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
+        throw Error("Umm, we can't do that yet.")
+    }
+    return {}
+}
+
+export function parseFilterExpression(expression: string, expression_mode: eLayerFilterExpressionMode) {
+    // FIXME Hacky for proof of concept component
+    if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
+        let matches = expression.match(/([a-z0-9]+)([>=<!]{1,2})([a-z0-9]+)/)
+        return {
+            col1: matches![1],
+            operator: matches![2],
+            col2: matches![3],
+        }
+    } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
+        throw Error("Umm, we can't do that yet.")
+    }
+    return {}
+}
+
+export function getFilterExpressionWithColumns(expression: any, expression_mode: eLayerFilterExpressionMode, columninfo: IColumnInfo) {
+    // FIXME Hacky for proof of concept component
+    if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
+        return {
+            col1: getColumnByName(expression.col1, columninfo),
+            operator: expression.operator,
+            col2: getColumnByName(expression.col2, columninfo),
+        }
+    } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
+        throw Error("Umm, we can't do that yet.")
+    }
+    return {}
+}
+
+// @FIXME Assumes Census
+function getColumnByName(column_name: string, columninfo: IColumnInfo) {
+    for (let key in columninfo) {
+        const col: IColumn = columninfo[key]
+        if (col.name === column_name) {
+            return col
+        }
+    }
+    return null
 }

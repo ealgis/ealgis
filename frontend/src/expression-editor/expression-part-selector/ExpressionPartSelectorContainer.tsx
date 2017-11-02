@@ -38,32 +38,32 @@ export class ExpressionPartSelectorContainer extends React.Component<IProps & ID
             showRelatedColumns,
         } = this.props
 
-        if (
-            open === true &&
-            showCreateGroup === false &&
-            showValueSpecial === false &&
-            showNumericalInput === false &&
-            showRelatedColumns === false
-        ) {
-            activateDataBrowser(field)
-            return null
-        } else {
-            return (
-                <ExpressionPartSelector
-                    open={open}
-                    anchorEl={anchorEl}
-                    handleRequestClose={handleRequestClose}
-                    onFieldChange={onFieldChange}
-                    onOpenDataBrowser={() => {
-                        activateDataBrowser(field, componentId)
-                    }}
-                    showCreateGroup={showCreateGroup === undefined ? true : showCreateGroup}
-                    showValueSpecial={showValueSpecial === undefined ? true : showValueSpecial}
-                    showNumericalInput={showNumericalInput === undefined ? true : showNumericalInput}
-                    showRelatedColumns={showRelatedColumns === undefined ? true : showRelatedColumns}
-                />
-            )
-        }
+        // if (
+        //     open === true &&
+        //     showCreateGroup === false &&
+        //     showValueSpecial === false &&
+        //     showNumericalInput === false &&
+        //     showRelatedColumns === false
+        // ) {
+        //     activateDataBrowser(field)
+        //     return null
+        // } else {
+        return (
+            <ExpressionPartSelector
+                open={open}
+                anchorEl={anchorEl}
+                handleRequestClose={handleRequestClose}
+                onFieldChange={onFieldChange}
+                onOpenDataBrowser={() => {
+                    activateDataBrowser(field, componentId)
+                }}
+                showCreateGroup={showCreateGroup === undefined ? true : showCreateGroup}
+                showValueSpecial={showValueSpecial === undefined ? true : showValueSpecial}
+                showNumericalInput={showNumericalInput === undefined ? true : showNumericalInput}
+                showRelatedColumns={showRelatedColumns === undefined ? true : showRelatedColumns}
+            />
+        )
+        // }
     }
 }
 

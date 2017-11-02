@@ -5,7 +5,8 @@ import { withRouter } from "react-router"
 import { isEqual, debounce, reduce } from "lodash-es"
 import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
-import { fetchResultForComponent } from "../../redux/modules/databrowser"
+import { toggleModalState } from "../../redux/modules/app"
+import { fetchResultForComponent, parseFilterExpression, getFilterExpressionWithColumns } from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -21,6 +22,7 @@ import {
     IMUITheme,
     IMUIThemePalette,
     eEalUIComponent,
+    eLayerFilterExpressionMode,
     IDataBrowserResult,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
@@ -36,10 +38,15 @@ export interface IStoreProps {
     layerDefinition: ILayer
     columninfo: IColumnInfo
     filterExpression: string
+    filterExpressionMode: eLayerFilterExpressionMode
+    advancedModeModalOpen: boolean
     dataBrowserResult: IDataBrowserResult
 }
 
-export interface IDispatchProps {}
+export interface IDispatchProps {
+    handleChangeExpressionMode: Function
+    onToggleAdvancedModeWarnModalState: Function
+}
 
 interface IRouterProps {
     router: any
@@ -72,11 +79,12 @@ export class FilterExpressionEditorContainer extends React.Component<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, layerDefinition, filterExpression } = this.props
+        const { mapDefinition, layerId, layerDefinition, filterExpression, filterExpressionMode, columninfo } = this.props
 
-        const parsed: any = this.parseExpression(filterExpression)
-        if (parsed !== undefined) {
-            this.setState({ expression: parsed })
+        const parsed1: any = parseFilterExpression(filterExpression, filterExpressionMode)
+        const parsed2: any = getFilterExpressionWithColumns(parsed1, filterExpressionMode, columninfo)
+        if (parsed2 !== undefined) {
+            this.setState({ expression: parsed2 })
         }
     }
 
@@ -122,36 +130,19 @@ export class FilterExpressionEditorContainer extends React.Component<
         return expr
     }
 
-    getColumnByName(column_name: string) {
-        const { columninfo } = this.props
-
-        for (let key in columninfo) {
-            const col: IColumn = columninfo[key]
-            if (col.name === column_name) {
-                return col
-            }
-        }
-        return null
-    }
-
-    parseExpression(expression: string) {
-        const { columninfo } = this.props
-
-        // FIXME Hacky for proof of concept component
-        if (expression != "") {
-            let matches = expression.match(/([a-z0-9]+)([>=<!]{1,2})([a-z0-9]+)/)
-            if (matches !== null) {
-                return {
-                    col1: this.getColumnByName(matches[1]),
-                    operator: matches[2],
-                    col2: this.getColumnByName(matches[3]) || matches[3],
-                }
-            }
-        }
-    }
-
     render() {
-        const { muiThemePalette, mapDefinition, layerId, layerDefinition, columninfo, onApply } = this.props
+        const {
+            muiThemePalette,
+            mapDefinition,
+            layerId,
+            layerDefinition,
+            columninfo,
+            filterExpressionMode,
+            advancedModeModalOpen,
+            onApply,
+            handleChangeExpressionMode,
+            onToggleAdvancedModeWarnModalState,
+        } = this.props
         const { expression } = this.state
 
         return (
@@ -164,6 +155,8 @@ export class FilterExpressionEditorContainer extends React.Component<
                 layerHash={layerDefinition.hash || ""}
                 columninfo={columninfo}
                 expression={expression}
+                expressionMode={filterExpressionMode}
+                advancedModeModalOpen={advancedModeModalOpen}
                 onFieldChange={(payload: { field: string; value: any }) => {
                     expression[payload.field] = payload.value
                     this.setState({ expression: expression })
@@ -171,13 +164,17 @@ export class FilterExpressionEditorContainer extends React.Component<
                 onApply={() => {
                     onApply(this.compileExpression())
                 }}
+                onChangeExpressionMode={(mode: eLayerFilterExpressionMode) => {
+                    handleChangeExpressionMode(mode)
+                }}
+                onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
             />
         )
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { maps, ealgis, databrowser } = state
+    const { app, maps, ealgis, databrowser } = state
     const layerFormValues = formValueSelector("layerForm")
 
     return {
@@ -187,12 +184,21 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         columninfo: ealgis.columninfo,
         filterExpression: layerFormValues(state, "filterExpression") as string,
+        filterExpressionMode: layerFormValues(state, "filterExpressionMode") as eLayerFilterExpressionMode,
+        advancedModeModalOpen: app.modals.get("filterExpressionAdvancedModeWarning") || false,
         dataBrowserResult: fetchResultForComponent(eEalUIComponent.FILTER_EXPRESSION_EDITOR, state),
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {}
+    return {
+        handleChangeExpressionMode(mode: eLayerFilterExpressionMode) {
+            dispatch(change("layerForm", "filterExpressionMode", mode))
+        },
+        onToggleAdvancedModeWarnModalState: () => {
+            dispatch(toggleModalState("filterExpressionAdvancedModeWarning"))
+        },
+    }
 }
 
 const FilterExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(FilterExpressionEditorContainer)

@@ -51,8 +51,8 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
             }
         } else {
             listItemProps = {
-                primaryText: "Warning!",
-                secondaryText: "Your status is visible to everyone you use with",
+                primaryText: "No data selected",
+                secondaryText: "Click here to choose a data point",
                 leftIcon: <AlertWarning />,
                 onClick: onClick,
             }

@@ -2,6 +2,8 @@ import * as dotProp from "dot-prop-immutable"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loading as appLoading, loaded as appLoaded } from "./app"
+import { parseValueExpression } from "./databrowser"
+import { ILayer, eLayerValueExpressionMode, eLayerFilterExpressionMode } from "./interfaces"
 import { fetchMaps } from "./maps"
 
 // Actions
@@ -372,23 +374,45 @@ export function fetchTablesIfUncached(tables: Array<Partial<ITable>>) {
 
 export function fetchColumnsForMaps() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        let columnsBySchema: any = {}
+        let columnNamesBySchema: any = {}
 
         const maps = getState()["maps"]
         for (let mapId in maps) {
             for (let layer of maps[mapId]["json"]["layers"]) {
-                if (layer["selectedColumns"]) {
-                    for (let selectedColumn of layer["selectedColumns"]) {
-                        if (!(selectedColumn["schema"] in columnsBySchema)) {
-                            columnsBySchema[selectedColumn["schema"]] = []
-                        }
-                        columnsBySchema[selectedColumn["schema"]].push(selectedColumn["id"])
+                if (
+                    layer.fill.expression_mode === eLayerValueExpressionMode.SINGLE ||
+                    layer.fill.expression_mode === eLayerValueExpressionMode.PROPORTIONAL
+                ) {
+                    if (!(layer["schema"] in columnNamesBySchema)) {
+                        columnNamesBySchema[layer["schema"]] = []
+                    }
+
+                    const parsed: any = parseValueExpression(layer.fill.expression, layer.fill.expression_mode)
+                    if ("col1" in parsed) {
+                        columnNamesBySchema[layer["schema"]].push(parsed.col1)
+                    }
+                    if ("col2" in parsed) {
+                        columnNamesBySchema[layer["schema"]].push(parsed.col2)
+                    }
+                }
+
+                if (layer.fill.conditional_mode !== eLayerFilterExpressionMode.SIMPLE) {
+                    if (!(layer["schema"] in columnNamesBySchema)) {
+                        columnNamesBySchema[layer["schema"]] = []
+                    }
+
+                    const parsed: any = parseValueExpression(layer.fill.conditional, layer.fill.conditional_mode)
+                    if ("col1" in parsed) {
+                        columnNamesBySchema[layer["schema"]].push(parsed.col1)
+                    }
+                    if ("col2" in parsed) {
+                        columnNamesBySchema[layer["schema"]].push(parsed.col2)
                     }
                 }
             }
         }
 
-        const { response, json } = await ealapi.post("/api/0.1/columninfo/by_schema/", columnsBySchema, dispatch)
+        const { response, json } = await ealapi.post("/api/0.1/columninfo/by_schema/", columnNamesBySchema, dispatch)
 
         dispatch(loadColumns(json["columns"]))
         dispatch(loadTables(json["tables"]))

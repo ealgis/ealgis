@@ -52,6 +52,11 @@ const TabContainer = styled.div`margin: 10px;`
 
 const HiddenButton = styled.button`display: none;`
 
+const ExpressionContainer = styled.div`
+    margin-top: 10px;
+    margin-bottom: 25px;
+`
+
 const PaddedDivider = styled(Divider)`
     margin-top: 15px !important;
     margin-bottom: 15px !important;
@@ -191,14 +196,16 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
                 )}
 
                 {expressionMode === eLayerValueExpressionMode.SINGLE && (
-                    <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                    <ExpressionContainer>
+                        <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                    </ExpressionContainer>
                 )}
 
                 {expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
-                    <div>
+                    <ExpressionContainer>
                         <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
                         <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
-                    </div>
+                    </ExpressionContainer>
                 )}
 
                 {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
@@ -212,14 +219,14 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
                             console.log("onFieldChange", payload)
                             onFieldChange({ field: this.state.field, value: payload })
                         }}
-                        showCreateGroup={col1 !== undefined}
+                        showCreateGroup={false}
                         showValueSpecial={false}
                         showNumericalInput={false}
                         showRelatedColumns={false}
                     />
                 )}
 
-                {expressionMode === eLayerValueExpressionMode.ADVANCED && <div>Advanced Mode!</div>}
+                {expressionMode === eLayerValueExpressionMode.ADVANCED && <ExpressionContainer>Advanced Mode!</ExpressionContainer>}
 
                 {expressionMode !== eLayerValueExpressionMode.NOT_SET && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
