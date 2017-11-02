@@ -26,6 +26,8 @@ import {
     IMap,
     ILayer,
     ISelectedColumn,
+    eLayerValueExpressionMode,
+    eLayerFilterExpressionMode,
     IMUITheme,
     IMUIThemePalette,
 } from "../../redux/modules/interfaces"
@@ -45,11 +47,13 @@ export interface ILayerFormValues {
     fillColourSchemeLevels: number
     fillOpacity: number
     filterExpression: string
+    filterExpressionMode: eLayerFilterExpressionMode
     geometry: string // JSON IGeomTable
     name: string
     scaleMax: number
     scaleMin: number
     valueExpression: string
+    valueExpressionMode: eLayerValueExpressionMode
     selectedColumns: Array<ISelectedColumn>
 }
 
@@ -115,11 +119,13 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         fillColourSchemeLevels: layer["fill"]["scale_nlevels"],
         fillOpacity: layer["fill"]["opacity"],
         filterExpression: layer["fill"]["conditional"],
+        filterExpressionMode: layer["fill"]["conditional_mode"] || eLayerFilterExpressionMode.NOT_SET,
         geometry: JSON.stringify(geominfo[layer["schema"] + "." + layer["geometry"]]),
         name: layer["name"],
         scaleMax: layer["fill"]["scale_max"],
         scaleMin: layer["fill"]["scale_min"],
         valueExpression: layer["fill"]["expression"],
+        valueExpressionMode: layer["fill"]["expression_mode"] || eLayerValueExpressionMode.NOT_SET,
         selectedColumns: layer["selectedColumns"],
     }
 }
@@ -133,9 +139,11 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
             scale_max: formValues["scaleMax"],
             scale_min: formValues["scaleMin"],
             expression: formValues["valueExpression"] ? formValues["valueExpression"] : "",
+            expression_mode: formValues["valueExpressionMode"] ? formValues["valueExpressionMode"] : eLayerValueExpressionMode.NOT_SET,
             scale_flip: formValues["fillColourScaleFlip"] ? formValues["fillColourScaleFlip"] : false,
             scale_name: formValues["fillColourScheme"],
             conditional: formValues["filterExpression"] ? formValues["filterExpression"] : "",
+            conditional_mode: formValues["filterExpressionMode"] ? formValues["filterExpressionMode"] : eLayerFilterExpressionMode.NOT_SET,
             scale_nlevels: formValues["fillColourSchemeLevels"],
         },
         line: {
@@ -162,12 +170,16 @@ const mapLayerFormFieldNameToLayerProp = (fieldName: string) => {
             return "scale_min"
         case "valueExpression":
             return "expression"
+        case "valueExpressionMode":
+            return "expression_mode"
         case "fillColourScaleFlip":
             return "scale_flip"
         case "fillColourScheme":
             return "scale_name"
         case "filterExpression":
             return "conditional"
+        case "filterExpressionMode":
+            return "conditional_mode"
         case "fillColourSchemeLevels":
             return "scale_nlevels"
         case "borderSize":
@@ -189,9 +201,11 @@ const mapLayerFormValuesToLayer = (layer: any, fieldName: string, fieldValue: an
         case "scaleMax":
         case "scaleMin":
         case "valueExpression":
+        case "valueExpressionMode":
         case "fillColourScaleFlip":
         case "fillColourScheme":
         case "filterExpression":
+        case "filterExpressionMode":
         case "fillColourSchemeLevels":
             if (layer["fill"] === undefined) {
                 layer["fill"] = {}

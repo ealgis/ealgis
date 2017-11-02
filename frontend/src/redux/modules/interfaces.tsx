@@ -18,7 +18,15 @@ export {
 export { IModule as IAppModule, eEalUIComponent } from "./app"
 export { IModule as IMapModule, IPosition } from "./map"
 export { IModule as ILegendsModule } from "./legends"
-export { IModule as IMapsModule, IMap, ILayer, IOLStyleDef, IMapPositionDefaults } from "./maps"
+export {
+    IModule as IMapsModule,
+    IMap,
+    ILayer,
+    IOLStyleDef,
+    IMapPositionDefaults,
+    eLayerValueExpressionMode,
+    eLayerFilterExpressionMode,
+} from "./maps"
 export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, IOLFeatureProps } from "./datainspector"
 export {
     IModule as IDataBrowserModule,

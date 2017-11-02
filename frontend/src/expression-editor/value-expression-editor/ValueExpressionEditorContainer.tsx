@@ -24,6 +24,7 @@ import {
     IMUIThemePalette,
     eEalUIComponent,
     IDataBrowserResult,
+    eLayerValueExpressionMode,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
@@ -37,10 +38,15 @@ export interface IStoreProps {
     layerId: number
     columninfo: IColumnInfo
     valueExpression: string
+    valueExpressionMode: eLayerValueExpressionMode
+    advancedModeModalOpen: boolean
     dataBrowserResult: IDataBrowserResult
 }
 
-export interface IDispatchProps {}
+export interface IDispatchProps {
+    handleChangeExpressionMode: Function
+    onToggleAdvancedModeWarnModalState: Function
+}
 
 interface IRouterProps {
     router: any
@@ -183,7 +189,17 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     render() {
-        const { muiThemePalette, mapDefinition, layerId, valueExpression, onApply } = this.props
+        const {
+            muiThemePalette,
+            mapDefinition,
+            layerId,
+            valueExpression,
+            valueExpressionMode,
+            advancedModeModalOpen,
+            onApply,
+            handleChangeExpressionMode,
+            onToggleAdvancedModeWarnModalState,
+        } = this.props
         const { expression } = this.state
 
         return (
@@ -193,6 +209,8 @@ export class ValueExpressionEditorContainer extends React.Component<
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
                 layerId={layerId}
                 expression={expression}
+                expressionMode={valueExpressionMode}
+                advancedModeModalOpen={advancedModeModalOpen}
                 onFieldChange={(payload: { field: string; value: any }) => {
                     expression[payload.field] = payload.value
                     this.setState({ expression: expression })
@@ -200,13 +218,17 @@ export class ValueExpressionEditorContainer extends React.Component<
                 onApply={() => {
                     onApply(this.compileExpression())
                 }}
+                onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
+                    handleChangeExpressionMode(mode)
+                }}
+                onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
             />
         )
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { maps, ealgis } = state
+    const { app, maps, ealgis } = state
     const layerFormValues = formValueSelector("layerForm")
 
     return {
@@ -215,12 +237,21 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerId: ownProps.params.layerId,
         columninfo: ealgis.columninfo,
         valueExpression: layerFormValues(state, "valueExpression") as string,
+        valueExpressionMode: layerFormValues(state, "valueExpressionMode") as eLayerValueExpressionMode,
+        advancedModeModalOpen: app.modals.get("valueExpressionAdvancedModeWarning") || false,
         dataBrowserResult: fetchResultForComponent(eEalUIComponent.VALUE_EXPRESSION_EDITOR, state),
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {}
+    return {
+        handleChangeExpressionMode(mode: eLayerValueExpressionMode) {
+            dispatch(change("layerForm", "valueExpressionMode", mode))
+        },
+        onToggleAdvancedModeWarnModalState: () => {
+            dispatch(toggleModalState("valueExpressionAdvancedModeWarning"))
+        },
+    }
 }
 
 const ValueExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(ValueExpressionEditorContainer)

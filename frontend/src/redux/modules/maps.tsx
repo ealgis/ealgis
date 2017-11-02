@@ -373,7 +373,17 @@ export interface IMap {
     owner: IUserPartial
     "name-url-safe": string
 }
-
+export enum eLayerValueExpressionMode {
+    NOT_SET = 0,
+    SINGLE = 1,
+    PROPORTIONAL = 2,
+    ADVANCED = 3,
+}
+export enum eLayerFilterExpressionMode {
+    NOT_SET = 0,
+    SIMPLE = 1,
+    ADVANCED = 2,
+}
 export interface ILayer {
     [key: string]: any
     fill: {
@@ -381,9 +391,11 @@ export interface ILayer {
         scale_max: number
         scale_min: number
         expression: string
+        expression_mode: eLayerValueExpressionMode
         scale_flip: boolean
         scale_name: string
         conditional: string
+        conditional_mode: eLayerFilterExpressionMode
         scale_nlevels: number
     }
     hash?: string

@@ -2,8 +2,22 @@ import * as React from "react"
 import styled from "styled-components"
 import { Link } from "react-router"
 import { connect } from "react-redux"
-import { IStore, IMUIThemePalette, ISelectedColumn, IColumn, eEalUIComponent } from "../../redux/modules/interfaces"
+import {
+    IStore,
+    IMUIThemePalette,
+    ISelectedColumn,
+    IColumn,
+    eEalUIComponent,
+    eLayerValueExpressionMode,
+} from "../../redux/modules/interfaces"
 
+import { List, ListItem } from "material-ui/List"
+import Avatar from "material-ui/Avatar"
+import FileFolder from "material-ui/svg-icons/file/folder"
+import ActionAssignment from "material-ui/svg-icons/action/assignment"
+import ActionSettings from "material-ui/svg-icons/action/settings"
+import { blue500, yellow600 } from "material-ui/styles/colors"
+import DropDownMenu from "material-ui/DropDownMenu"
 import Divider from "material-ui/Divider"
 import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
@@ -24,6 +38,16 @@ import ImagePalette from "material-ui/svg-icons/image/palette"
 import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
 import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
 
+const ExpressionEditorToolbar = styled(Toolbar)`background-color: white !important;`
+const ExpressionModeDropDownMenu = styled(DropDownMenu)`
+    top: -5px;
+    margin-left: 15px;
+`
+const ExpressionRaisedButton = styled(RaisedButton)`
+    margin-left: 10px;
+    margin-right: 10px;
+`
+
 const TabContainer = styled.div`margin: 10px;`
 
 const HiddenButton = styled.button`display: none;`
@@ -41,8 +65,12 @@ export interface IProps {
     mapNameURLSafe: string
     layerId: number
     expression: { [key: string]: any }
+    expressionMode: eLayerValueExpressionMode
+    advancedModeModalOpen: boolean
     onFieldChange: Function
     onApply: any
+    onChangeExpressionMode: Function
+    onToggleAdvModeModalState: any
 }
 
 export interface IState {
@@ -74,76 +102,135 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
         })
     }
     render() {
-        const { muiThemePalette, mapId, mapNameURLSafe, layerId, expression, onFieldChange, onApply } = this.props
+        const {
+            muiThemePalette,
+            mapId,
+            mapNameURLSafe,
+            layerId,
+            expression,
+            expressionMode,
+            advancedModeModalOpen,
+            onFieldChange,
+            onApply,
+            onChangeExpressionMode,
+            onToggleAdvModeModalState,
+        } = this.props
 
         const col1: any = expression["col1"]
         const mapMultiple: any = expression["map_multiple"]
         const col2: any = expression["col2"]
         const asPercentage: any = expression["as_percentage"]
 
+        const advancedModeDialogActions = [
+            <FlatButton label="No" primary={true} onTouchTap={onToggleAdvModeModalState} />,
+            <FlatButton
+                label="Yes"
+                primary={true}
+                onTouchTap={() => {
+                    onChangeExpressionMode(eLayerValueExpressionMode.ADVANCED)
+                    onToggleAdvModeModalState()
+                }}
+            />,
+        ]
+
         return (
             <div>
-                <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                <ExpressionEditorToolbar>
+                    <ToolbarGroup>
+                        <ActionSettings style={{ marginRight: "10px" }} />
+                        <ToolbarTitle text={expressionMode === eLayerValueExpressionMode.NOT_SET ? "Choose a mode" : "Mode"} />
+                        {expressionMode !== eLayerValueExpressionMode.NOT_SET && <ToolbarSeparator />}
+                        {expressionMode !== eLayerValueExpressionMode.NOT_SET && (
+                            <ExpressionModeDropDownMenu
+                                value={expressionMode}
+                                onChange={(event: any, key: number, mode: eLayerValueExpressionMode) => {
+                                    if (mode === eLayerValueExpressionMode.ADVANCED) {
+                                        onToggleAdvModeModalState()
+                                    } else {
+                                        onChangeExpressionMode(mode)
+                                    }
+                                }}
+                            >
+                                {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
+                                    <MenuItem value={eLayerValueExpressionMode.SINGLE} primaryText="Simple" />
+                                )}
+                                {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
+                                    <MenuItem value={eLayerValueExpressionMode.PROPORTIONAL} primaryText="Proportional" />
+                                )}
+                                <MenuItem value={eLayerValueExpressionMode.ADVANCED} primaryText="Advanced" />
+                            </ExpressionModeDropDownMenu>
+                        )}
+                    </ToolbarGroup>
+                </ExpressionEditorToolbar>
 
-                <ExpressionPartSelectorContainer
-                    componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
-                    field={this.state.field!}
-                    open={this.state.open}
-                    anchorEl={this.state.anchorEl}
-                    handleRequestClose={this.handleRequestClose}
-                    onFieldChange={(evt: object, key: number, payload: IColumn) => {
-                        console.log("onFieldChange", payload)
-                        onFieldChange({ field: this.state.field, value: payload })
-                    }}
-                    showCreateGroup={col1 !== undefined}
-                    showValueSpecial={false}
-                    showNumericalInput={false}
-                    showRelatedColumns={false}
-                />
+                <Dialog title="Change Mode" actions={advancedModeDialogActions} modal={true} open={advancedModeModalOpen}>
+                    Once you change to advanced mode you won't be able to change back. Would you like to continue?
+                </Dialog>
 
-                <PaddedDivider />
+                {expressionMode === eLayerValueExpressionMode.NOT_SET && (
+                    <List>
+                        <ListItem
+                            primaryText="Simple"
+                            secondaryText="Map a single data point (e.g. The number of migrants from the UK in each suburb.)"
+                            secondaryTextLines={2}
+                            onClick={() => onChangeExpressionMode(eLayerValueExpressionMode.SINGLE)}
+                        />
+                        <ListItem
+                            primaryText="Proportional"
+                            secondaryText="Map two data points against each other (e.g. The percentage of migrants from the UK per suburb.)"
+                            secondaryTextLines={2}
+                            onClick={() => onChangeExpressionMode(eLayerValueExpressionMode.PROPORTIONAL)}
+                        />
+                        <ListItem
+                            primaryText="Advanced"
+                            secondaryText="Get as complex as you like with the ability to write your own Excel-like expressions."
+                            secondaryTextLines={2}
+                            onClick={() => onChangeExpressionMode(eLayerValueExpressionMode.ADVANCED)}
+                        />
+                    </List>
+                )}
 
-                <Checkbox
-                    label="Map multiple things"
-                    checked={mapMultiple ? mapMultiple : false}
-                    onCheck={(evt: object, isInputChecked: boolean) => {
-                        onFieldChange({ field: "map_multiple", value: isInputChecked })
-                    }}
-                />
+                {expressionMode === eLayerValueExpressionMode.SINGLE && (
+                    <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                )}
 
-                <ExpressionPartItem
-                    value={col2}
-                    disabled={mapMultiple === undefined || mapMultiple === false ? true : false}
-                    onClick={(event: any) => this.handleTouchTap(event, "col2")}
-                />
+                {expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
+                    <div>
+                        <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                        <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
+                    </div>
+                )}
 
-                <PaddedCheckbox
-                    label="As a percentage?"
-                    checked={asPercentage ? asPercentage : false}
-                    onCheck={(evt: object, isInputChecked: boolean) => {
-                        onFieldChange({ field: "as_percentage", value: isInputChecked })
-                    }}
-                    disabled={mapMultiple === undefined || mapMultiple === false ? true : false}
-                />
+                {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
+                    <ExpressionPartSelectorContainer
+                        componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
+                        field={this.state.field!}
+                        open={this.state.open}
+                        anchorEl={this.state.anchorEl}
+                        handleRequestClose={this.handleRequestClose}
+                        onFieldChange={(evt: object, key: number, payload: IColumn) => {
+                            console.log("onFieldChange", payload)
+                            onFieldChange({ field: this.state.field, value: payload })
+                        }}
+                        showCreateGroup={col1 !== undefined}
+                        showValueSpecial={false}
+                        showNumericalInput={false}
+                        showRelatedColumns={false}
+                    />
+                )}
 
-                <br />
-                <RaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
-                <RaisedButton
+                {expressionMode === eLayerValueExpressionMode.ADVANCED && <div>Advanced Mode!</div>}
+
+                {expressionMode !== eLayerValueExpressionMode.NOT_SET && (
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                )}
+
+                <ExpressionRaisedButton
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                     label={"Close"}
                     primary={true}
                     onTouchTap={() => {}}
                 />
-
-                {/* <Dialog
-                    title="You have unsaved changes - what would you like to do?"
-                    actions={[
-                        <FlatButton label="Discard Changes" secondary={true} onTouchTap={onModalDiscardForm} />,
-                        <FlatButton label="Save Changes" primary={true} onTouchTap={onModalSaveForm} />,
-                    ]}
-                    modal={true}
-                    open={dirtyFormModalOpen}
-                /> */}
             </div>
         )
     }
