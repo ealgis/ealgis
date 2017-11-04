@@ -38,6 +38,7 @@ export interface IStoreProps {
     columninfo: IColumnInfo
     filterExpression: string
     filterExpressionMode: eLayerFilterExpressionMode
+    valueExpression: string
     advancedModeModalOpen: boolean
     dataBrowserResult: IDataBrowserResult
 }
@@ -85,6 +86,7 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
 
         const parsed1: any = parseFilterExpression(filterExpression, expressionMode)
         const parsed2: any = getFilterExpressionWithColumns(parsed1, expressionMode, columninfo)
+        console.log("parsed2", parsed2)
         if (parsed2 !== undefined) {
             this.setState({ ...this.state, expression: parsed2 })
         }
@@ -123,12 +125,29 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
     }
 
     compileExpression() {
+        const { valueExpression } = this.props
         const { expression } = this.state
+        console.log("compileExpression", expression)
         let expr: string = ""
 
         if ("col1" in expression && "operator" in expression && "col2" in expression) {
-            expr = `${expression["col1"].name}${expression["operator"].name}${expression["col2"].name}`
+            let col1 = undefined
+            if (expression["col1"] === "$value") {
+                col1 = "$value" // Replaced server-side
+            } else {
+                col1 = expression["col1"].name
+            }
+
+            let col2 = undefined
+            if (isNaN(expression["col2"]) === false) {
+                col2 = expression["col2"]
+            } else {
+                col2 = expression["col2"].name
+            }
+
+            expr = `${col1}${expression["operator"]}${col2}`
         }
+        console.log("expr", expr)
         return expr
     }
 
@@ -191,6 +210,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         columninfo: ealgis.columninfo,
         filterExpression: layerFormValues(state, "filterExpression") as string,
         filterExpressionMode: layerFormValues(state, "filterExpressionMode") as eLayerFilterExpressionMode,
+        valueExpression: layerFormValues(state, "valueExpression") as string,
         advancedModeModalOpen: app.modals.get("filterExpressionAdvancedModeWarning") || false,
         dataBrowserResult: fetchResultForComponent(eEalUIComponent.FILTER_EXPRESSION_EDITOR, state),
     }

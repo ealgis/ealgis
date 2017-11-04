@@ -1,62 +1,98 @@
-// NOT USED
-
 import * as React from "react"
 import { connect } from "react-redux"
-import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from "redux-form"
-import { withRouter } from "react-router"
-import { isEqual, debounce, reduce } from "lodash-es"
-import { values as objectValues } from "core-js/library/fn/object"
-import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
-import { toggleModalState } from "../../redux/modules/app"
+import ExpressionPartItem from "./ExpressionPartItem"
 import { setActiveContentComponent } from "../../redux/modules/app"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IColumnInfo,
-    IMap,
-    ILayer,
-    IColumn,
-    ISelectedColumn,
-    IMUITheme,
-    IMUIThemePalette,
-    eEalUIComponent,
-    IDataBrowserResult,
-} from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import { startBrowsing } from "../../redux/modules/databrowser"
+import { IStore, eEalUIComponent } from "../../redux/modules/interfaces"
 
 export interface IProps {
-    onClick: Function
+    componentId: eEalUIComponent
+    value: any
+    field: string
+    showCreateGroup: boolean
+    showValueSpecial: boolean
+    showNumericalInput: boolean
+    showRelatedColumns: boolean
+    onFieldChange: Function
 }
 
-export interface IStoreProps {}
+export interface IDispatchProps {
+    activateDataBrowser: Function
+}
 
-export interface IDispatchProps {}
+export interface IState {
+    open: boolean
+}
 
-interface IOwnProps {}
-
-interface IState {}
-
-export class ExpressionPartItemContainer extends React.Component<IProps & IStoreProps & IDispatchProps, IState> {
+export class ExpressionPartItemContainer extends React.Component<IProps & IDispatchProps, IState> {
+    constructor(props: IProps & IDispatchProps) {
+        super(props)
+        this.state = { open: false }
+    }
+    toggleNestedListOpen() {
+        this.setState({ open: !this.state.open })
+    }
     render() {
-        const { onClick } = this.props
+        const {
+            componentId,
+            value,
+            field,
+            activateDataBrowser,
+            showCreateGroup,
+            showValueSpecial,
+            showNumericalInput,
+            showRelatedColumns,
+            onFieldChange,
+        } = this.props
 
-        return <ExpressionPartItem value={""} onClick={onClick} />
+        return (
+            <ExpressionPartItem
+                value={value}
+                open={this.state.open}
+                field={field}
+                showCreateGroup={showCreateGroup === undefined ? true : showCreateGroup}
+                showValueSpecial={showValueSpecial === undefined ? true : showValueSpecial}
+                showNumericalInput={showNumericalInput === undefined ? true : showNumericalInput}
+                showRelatedColumns={showRelatedColumns === undefined ? true : showRelatedColumns}
+                onClick={() => {
+                    this.toggleNestedListOpen()
+                    if (
+                        showCreateGroup === false &&
+                        showValueSpecial === false &&
+                        showNumericalInput === false &&
+                        showRelatedColumns === false
+                    ) {
+                        activateDataBrowser(field, componentId)
+                    }
+                }}
+                onFieldChange={(payload: any) => {
+                    this.toggleNestedListOpen()
+                    onFieldChange(payload)
+                }}
+                onOpenDataBrowser={() => {
+                    this.toggleNestedListOpen()
+                    activateDataBrowser(field, componentId)
+                }}
+            />
+        )
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
+const mapStateToProps = (state: IStore): {} => {
+    const { maps, ealgis, databrowser } = state
+
     return {}
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {}
+    return {
+        activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
+            dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
+            dispatch(startBrowsing(componentId, message))
+        },
+    }
 }
 
 const ExpressionPartItemContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(ExpressionPartItemContainer)
 
-export default muiThemeable()(withRouter(ExpressionPartItemContainerWrapped))
+export default ExpressionPartItemContainerWrapped

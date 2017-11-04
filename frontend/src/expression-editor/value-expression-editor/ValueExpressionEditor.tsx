@@ -228,7 +228,6 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
                         anchorEl={this.state.anchorEl}
                         handleRequestClose={this.handleRequestClose}
                         onFieldChange={(evt: object, key: number, payload: IColumn) => {
-                            console.log("onFieldChange", payload)
                             onFieldChange({ field: this.state.field, value: payload })
                         }}
                         showCreateGroup={false}

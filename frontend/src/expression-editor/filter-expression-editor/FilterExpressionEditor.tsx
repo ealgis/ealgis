@@ -32,7 +32,7 @@ import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
 import ActionCode from "material-ui/svg-icons/action/code"
 
-import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
+import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
 import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
@@ -187,10 +187,19 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
 
                 {expressionMode === eLayerFilterExpressionMode.SIMPLE && (
                     <ExpressionContainer>
-                        <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                        <ExpressionPartItemContainer
+                            componentId={eEalUIComponent.FILTER_EXPRESSION_EDITOR}
+                            value={col1}
+                            field={"col1"}
+                            showCreateGroup={false}
+                            showValueSpecial={true}
+                            showNumericalInput={false}
+                            showRelatedColumns={false}
+                            onFieldChange={onFieldChange}
+                        />
 
                         <ListItem
-                            style={{ marginBottom: "10px" }}
+                            style={{ marginBottom: "40px" }}
                             leftIcon={<ActionCode style={{ marginTop: "36px" }} />}
                             innerDivStyle={{ paddingTop: "0px" }}
                         >
@@ -206,20 +215,33 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                                 <MenuItem value={"<"} primaryText="less than" />
                                 <MenuItem value={"<="} primaryText="less than or equal to" />
                                 <MenuItem value={"="} primaryText="equals" />
-                                <MenuItem value={"!`="} primaryText="is not" />
+                                <MenuItem value={"!="} primaryText="is not" />
                             </SelectField>
                         </ListItem>
 
-                        <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
+                        <ExpressionPartItemContainer
+                            componentId={eEalUIComponent.FILTER_EXPRESSION_EDITOR}
+                            value={col2}
+                            field={"col2"}
+                            showCreateGroup={false}
+                            showValueSpecial={false}
+                            showNumericalInput={true}
+                            showRelatedColumns={false}
+                            onFieldChange={onFieldChange}
+                        />
 
-                        <ExpressionPartSelectorContainer
+                        {/* <ExpressionPartSelectorContainer
                             componentId={eEalUIComponent.FILTER_EXPRESSION_EDITOR}
                             field={this.state.field!}
                             open={this.state.open}
                             anchorEl={this.state.anchorEl}
                             handleRequestClose={this.handleRequestClose}
                             onFieldChange={onFieldChange}
-                        />
+                            showCreateGroup={false}
+                            showValueSpecial={true}
+                            showNumericalInput={true}
+                            showRelatedColumns={false}
+                        /> */}
                     </ExpressionContainer>
                 )}
 

@@ -254,7 +254,7 @@ export function getValueExpressionWithColumns(expression: any, expression_mode: 
 export function parseFilterExpression(expression: string, expression_mode: eLayerFilterExpressionMode) {
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
-        let matches = expression.match(/([a-z0-9]+)([>=<!]{1,2})([a-z0-9]+)/)
+        let matches = /([a-z0-9$()<>*/]+)([>=<!]{1,2})([a-z0-9]+)/g.exec(expression)
         return {
             col1: matches![1],
             operator: matches![2],
@@ -270,9 +270,9 @@ export function getFilterExpressionWithColumns(expression: any, expression_mode:
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
         return {
-            col1: getColumnByName(expression.col1, columninfo),
+            col1: getColumnByName(expression.col1, columninfo) || expression.col1,
             operator: expression.operator,
-            col2: getColumnByName(expression.col2, columninfo),
+            col2: getColumnByName(expression.col2, columninfo) || expression.col2,
         }
     } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
         throw Error("Umm, we can't do that yet.")
