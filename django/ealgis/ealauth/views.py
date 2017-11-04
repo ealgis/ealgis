@@ -890,7 +890,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 columnsByUID["%s-%s" % (schema, column.column_info.id)] = col
 
             for table in tables:
-                tablesByUID["%s-%s" % (schema, table.id)] = TableInfoSerializer(table).data
+                tmp = TableInfoSerializer(table).data
+                tmp["schema_name"] = schema
+                tablesByUID["%s-%s" % (schema, table.id)] = tmp
 
         return Response({"columns": columnsByUID, "tables": tablesByUID})
 
