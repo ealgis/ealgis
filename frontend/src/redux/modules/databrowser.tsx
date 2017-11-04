@@ -226,7 +226,6 @@ export function parseValueExpression(expression: string, expression_mode: eLayer
         let column_names = matches![0].split("/")
         return {
             col1: column_names[0],
-            map_multiple: true,
             col2: column_names[1],
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
@@ -244,7 +243,6 @@ export function getValueExpressionWithColumns(expression: any, expression_mode: 
     } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
         return {
             col1: getColumnByName(expression.col1, columninfo),
-            map_multiple: true,
             col2: getColumnByName(expression.col2, columninfo),
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {

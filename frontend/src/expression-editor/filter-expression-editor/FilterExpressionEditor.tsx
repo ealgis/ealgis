@@ -6,7 +6,6 @@ import {
     IStore,
     IMUIThemePalette,
     ILayer,
-    IColumnInfo,
     ISelectedColumn,
     IColumn,
     eEalUIComponent,
@@ -14,6 +13,7 @@ import {
 } from "../../redux/modules/interfaces"
 
 import { List, ListItem } from "material-ui/List"
+import TextField from "material-ui/TextField"
 import Avatar from "material-ui/Avatar"
 import FileFolder from "material-ui/svg-icons/file/folder"
 import ActionAssignment from "material-ui/svg-icons/action/assignment"
@@ -30,9 +30,17 @@ import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
+import ActionCode from "material-ui/svg-icons/action/code"
 
 import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
 import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
+
+// Silence "TS2339: Property 'onBlur' does not exist'" warnings
+class BlurableTextField extends React.Component<any, any> {
+    render() {
+        return <TextField {...this.props} />
+    }
+}
 
 const ExpressionEditorToolbar = styled(Toolbar)`background-color: white !important;`
 const ExpressionModeDropDownMenu = styled(DropDownMenu)`
@@ -53,15 +61,15 @@ export interface IProps {
     muiThemePalette: IMUIThemePalette
     mapId: number
     mapNameURLSafe: string
-    layerDefinition: ILayer
     layerId: number
-    layerHash: string
-    columninfo: IColumnInfo
     expression: { [key: string]: any }
+    expressionCompiled: string
     expressionMode: eLayerFilterExpressionMode
     advancedModeModalOpen: boolean
     onFieldChange: Function
+    onExpressionChange: any
     onApply: any
+    onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
 }
@@ -100,15 +108,15 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
             muiThemePalette,
             mapId,
             mapNameURLSafe,
-            layerDefinition,
             layerId,
-            layerHash,
-            columninfo,
             expression,
+            expressionCompiled,
             expressionMode,
             advancedModeModalOpen,
             onFieldChange,
+            onExpressionChange,
             onApply,
+            onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
         } = this.props
@@ -181,23 +189,26 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                     <ExpressionContainer>
                         <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
 
-                        <SelectField
-                            floatingLabelText="Choose an operator"
-                            value={operator ? operator : null}
-                            onChange={(evt: object, key: number, payload: string) => {
-                                onFieldChange({ field: "operator", value: payload })
-                            }}
+                        <ListItem
+                            style={{ marginBottom: "10px" }}
+                            leftIcon={<ActionCode style={{ marginTop: "36px" }} />}
+                            innerDivStyle={{ paddingTop: "0px" }}
                         >
-                            <MenuItem value={">"} primaryText="greater than" />
-                            <MenuItem value={">="} primaryText="greater than or equal to" />
-                            <MenuItem value={"<"} primaryText="less than" />
-                            <MenuItem value={"<="} primaryText="less than or equal to" />
-                            <MenuItem value={"="} primaryText="equals" />
-                            <MenuItem value={"!`="} primaryText="is not" />
-                        </SelectField>
-
-                        <br />
-                        <br />
+                            <SelectField
+                                floatingLabelText="Choose an operator"
+                                value={operator ? operator : null}
+                                onChange={(evt: object, key: number, payload: string) => {
+                                    onFieldChange({ field: "operator", value: payload })
+                                }}
+                            >
+                                <MenuItem value={">"} primaryText="greater than" />
+                                <MenuItem value={">="} primaryText="greater than or equal to" />
+                                <MenuItem value={"<"} primaryText="less than" />
+                                <MenuItem value={"<="} primaryText="less than or equal to" />
+                                <MenuItem value={"="} primaryText="equals" />
+                                <MenuItem value={"!`="} primaryText="is not" />
+                            </SelectField>
+                        </ListItem>
 
                         <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
 
@@ -212,10 +223,27 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                     </ExpressionContainer>
                 )}
 
-                {expressionMode === eLayerFilterExpressionMode.ADVANCED && <ExpressionContainer>Advanced Mode!</ExpressionContainer>}
+                {expressionMode === eLayerFilterExpressionMode.ADVANCED && (
+                    <ExpressionContainer>
+                        <BlurableTextField
+                            defaultValue={expressionCompiled}
+                            name="filterExpression"
+                            multiLine={true}
+                            rows={2}
+                            hintText="e.g. ..."
+                            floatingLabelText="Enter an Excel-like expression"
+                            floatingLabelFixed={true}
+                            fullWidth={true}
+                            onBlur={(event: any, newValue: string) => onExpressionChange(event.target.value)}
+                        />
+                    </ExpressionContainer>
+                )}
 
-                {expressionMode !== eLayerFilterExpressionMode.NOT_SET && (
+                {expressionMode === eLayerFilterExpressionMode.SIMPLE && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                )}
+                {expressionMode === eLayerFilterExpressionMode.ADVANCED && (
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
                 )}
 
                 <ExpressionRaisedButton

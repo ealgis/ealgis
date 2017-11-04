@@ -39,6 +39,13 @@ import ImagePalette from "material-ui/svg-icons/image/palette"
 import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
 import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
 
+// Silence "TS2339: Property 'onBlur' does not exist'" warnings
+class BlurableTextField extends React.Component<any, any> {
+    render() {
+        return <TextField {...this.props} />
+    }
+}
+
 const ExpressionEditorToolbar = styled(Toolbar)`background-color: white !important;`
 const ExpressionModeDropDownMenu = styled(DropDownMenu)`
     top: -5px;
@@ -75,6 +82,7 @@ export interface IProps {
     expressionMode: eLayerValueExpressionMode
     advancedModeModalOpen: boolean
     onFieldChange: Function
+    onExpressionChange: Function
     onApply: any
     onApplyAdvanced: any
     onChangeExpressionMode: Function
@@ -120,6 +128,7 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
             expressionMode,
             advancedModeModalOpen,
             onFieldChange,
+            onExpressionChange,
             onApply,
             onApplyAdvanced,
             onChangeExpressionMode,
@@ -127,9 +136,7 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
         } = this.props
 
         const col1: any = expression["col1"]
-        const mapMultiple: any = expression["map_multiple"]
         const col2: any = expression["col2"]
-        const asPercentage: any = expression["as_percentage"]
 
         const advancedModeDialogActions = [
             <FlatButton label="No" primary={true} onTouchTap={onToggleAdvModeModalState} />,
@@ -233,7 +240,7 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
 
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
                     <ExpressionContainer>
-                        <TextField
+                        <BlurableTextField
                             defaultValue={expressionCompiled}
                             name="valueExpression"
                             multiLine={true}
@@ -242,17 +249,18 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
                             floatingLabelText="Enter an Excel-like expression"
                             floatingLabelFixed={true}
                             fullWidth={true}
+                            onBlur={(event: any, newValue: string) => onExpressionChange(event.target.value)}
                         />
                     </ExpressionContainer>
                 )}
 
-                {() => {
-                    if (expressionMode === eLayerValueExpressionMode.ADVANCED) {
-                        return <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
-                    } else if (expressionMode !== eLayerValueExpressionMode.NOT_SET) {
-                        return <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
-                    }
-                }}
+                {expressionMode === eLayerValueExpressionMode.SINGLE ||
+                    (expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
+                        <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                    ))}
+                {expressionMode === eLayerValueExpressionMode.ADVANCED && (
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
+                )}
 
                 <ExpressionRaisedButton
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}

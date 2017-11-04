@@ -67,6 +67,8 @@ interface IOwnProps {
 
 interface IState {
     expression: { [key: string]: any }
+    expressionCompiled?: string
+    expressionMode: eLayerValueExpressionMode
 }
 
 export class ValueExpressionEditorContainer extends React.PureComponent<
@@ -75,21 +77,22 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
 > {
     onFieldChangeDebounced: Function
 
-    constructor(props: IDispatchProps & IRouterProps) {
+    constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
         super(props)
-        this.state = { expression: {} }
+        this.state = { expression: {}, expressionMode: props.valueExpressionMode }
 
         // @TODO Do we need this?
         // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, valueExpression, valueExpressionMode, columninfo } = this.props
+        const { mapDefinition, layerId, valueExpression, columninfo } = this.props
+        const { expressionMode } = this.state
 
-        const parsed1: any = parseValueExpression(valueExpression, valueExpressionMode)
-        const parsed2: any = getValueExpressionWithColumns(parsed1, valueExpressionMode, columninfo)
+        const parsed1: any = parseValueExpression(valueExpression, expressionMode)
+        const parsed2: any = getValueExpressionWithColumns(parsed1, expressionMode, columninfo)
         if (parsed2 !== undefined) {
-            this.setState({ expression: parsed2 })
+            this.setState({ ...this.state, expression: parsed2 })
         }
     }
 
@@ -103,7 +106,7 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
             } else if (dataBrowserResult.message === "col2") {
                 expression["col2"] = dataBrowserResult.columns![0]
             }
-            this.setState({ expression: expression })
+            this.setState({ ...this.state, expression: expression })
         }
     }
 
@@ -126,19 +129,15 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     }
 
     compileExpression() {
-        const { expression } = this.state
+        const { expression, expressionMode } = this.state
         let expr: string = ""
 
         if ("col1" in expression) {
             expr = expression["col1"].name
 
-            if ("map_multiple" in expression && expression["map_multiple"] === true) {
+            if ("col2" in expression && expressionMode === eLayerValueExpressionMode.PROPORTIONAL) {
                 if ("col2" in expression) {
-                    expr = `${expression["col1"].name}/${expression["col2"].name}`
-                }
-
-                if ("as_percentage" in expression) {
-                    expr = `(${expr})*100`
+                    expr = `(${expression["col1"].name}/${expression["col2"].name})*100`
                 }
             }
         }
@@ -151,7 +150,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
             mapDefinition,
             layerId,
             valueExpression,
-            valueExpressionMode,
             advancedModeModalOpen,
             onApply,
             handleChangeExpressionMode,
@@ -167,20 +165,26 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 layerId={layerId}
                 expression={expression}
                 expressionCompiled={valueExpression}
-                expressionMode={valueExpressionMode}
+                expressionMode={this.state.expressionMode}
                 advancedModeModalOpen={advancedModeModalOpen}
                 onFieldChange={(payload: { field: string; value: any }) => {
-                    expression[payload.field] = payload.value
-                    this.setState({ expression: expression })
+                    let expr: any = { ...expression }
+                    expr[payload.field] = payload.value
+                    this.setState({ ...this.state, expression: expr })
+                }}
+                onExpressionChange={(expressionCompiled: string) => {
+                    this.setState({ ...this.state, expressionCompiled: expressionCompiled })
                 }}
                 onApply={() => {
                     onApply(this.compileExpression())
+                    handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onApplyAdvanced={(expression: string) => {
                     onApply(expression)
+                    handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
-                    handleChangeExpressionMode(mode)
+                    this.setState({ ...this.state, expressionMode: mode })
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
             />
