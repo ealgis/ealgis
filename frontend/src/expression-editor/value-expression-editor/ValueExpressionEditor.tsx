@@ -12,6 +12,7 @@ import {
 } from "../../redux/modules/interfaces"
 
 import { List, ListItem } from "material-ui/List"
+import TextField from "material-ui/TextField"
 import Avatar from "material-ui/Avatar"
 import FileFolder from "material-ui/svg-icons/file/folder"
 import ActionAssignment from "material-ui/svg-icons/action/assignment"
@@ -70,10 +71,12 @@ export interface IProps {
     mapNameURLSafe: string
     layerId: number
     expression: { [key: string]: any }
+    expressionCompiled: string
     expressionMode: eLayerValueExpressionMode
     advancedModeModalOpen: boolean
     onFieldChange: Function
     onApply: any
+    onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
 }
@@ -113,10 +116,12 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
             mapNameURLSafe,
             layerId,
             expression,
+            expressionCompiled,
             expressionMode,
             advancedModeModalOpen,
             onFieldChange,
             onApply,
+            onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
         } = this.props
@@ -226,11 +231,28 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
                     />
                 )}
 
-                {expressionMode === eLayerValueExpressionMode.ADVANCED && <ExpressionContainer>Advanced Mode!</ExpressionContainer>}
-
-                {expressionMode !== eLayerValueExpressionMode.NOT_SET && (
-                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                {expressionMode === eLayerValueExpressionMode.ADVANCED && (
+                    <ExpressionContainer>
+                        <TextField
+                            defaultValue={expressionCompiled}
+                            name="valueExpression"
+                            multiLine={true}
+                            rows={2}
+                            hintText="e.g. ..."
+                            floatingLabelText="Enter an Excel-like expression"
+                            floatingLabelFixed={true}
+                            fullWidth={true}
+                        />
+                    </ExpressionContainer>
                 )}
+
+                {() => {
+                    if (expressionMode === eLayerValueExpressionMode.ADVANCED) {
+                        return <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
+                    } else if (expressionMode !== eLayerValueExpressionMode.NOT_SET) {
+                        return <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                    }
+                }}
 
                 <ExpressionRaisedButton
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}

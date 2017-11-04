@@ -2,7 +2,8 @@ import * as React from "react"
 import { connect } from "react-redux"
 import DataTableListBySchemaAndFamily from "./DataTableListBySchemaAndFamily"
 import DataTableList from "./DataTableList"
-import { IStore, ITable, ITableInfo, ITablesBySchemaAndFamily, eTableChooserLayout } from "../../redux/modules/interfaces"
+import { IStore, ITable, ITableInfo, ITablesBySchemaAndFamily } from "../../redux/modules/interfaces"
+import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
 interface IProps {
     tables: Array<Partial<ITable>>

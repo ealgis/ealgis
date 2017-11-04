@@ -69,7 +69,7 @@ interface IState {
     expression: { [key: string]: any }
 }
 
-export class ValueExpressionEditorContainer extends React.Component<
+export class ValueExpressionEditorContainer extends React.PureComponent<
     IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
     IState
 > {
@@ -166,6 +166,7 @@ export class ValueExpressionEditorContainer extends React.Component<
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
                 layerId={layerId}
                 expression={expression}
+                expressionCompiled={valueExpression}
                 expressionMode={valueExpressionMode}
                 advancedModeModalOpen={advancedModeModalOpen}
                 onFieldChange={(payload: { field: string; value: any }) => {
@@ -174,6 +175,9 @@ export class ValueExpressionEditorContainer extends React.Component<
                 }}
                 onApply={() => {
                     onApply(this.compileExpression())
+                }}
+                onApplyAdvanced={(expression: string) => {
+                    onApply(expression)
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
                     handleChangeExpressionMode(mode)

@@ -13,7 +13,8 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import { ITable, eTableChooserLayout } from "../../redux/modules/interfaces"
+import { ITable } from "../../redux/modules/interfaces"
+import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
 const DataBrowserContainer = styled.div`
     padding: 12px;
