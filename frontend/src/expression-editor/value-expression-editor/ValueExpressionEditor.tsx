@@ -225,10 +225,9 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     </ExpressionContainer>
                 )}
 
-                {expressionMode === eLayerValueExpressionMode.SINGLE ||
-                    (expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
-                        <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
-                    ))}
+                {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                )}
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
                 )}
