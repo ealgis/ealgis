@@ -25,7 +25,13 @@ const ADD_TABLES = "ealgis/databrowser/ADD_TABLES"
 const ADD_COLUMNS = "ealgis/databrowser/ADD_COLUMNS"
 const SELECT_COLUMN = "ealgidatabrowser/SELECT_COLUMN"
 
-const initialState: Partial<IModule> = { active: false, tables: [], columns: [], selectedColumns: [] }
+const initialState: Partial<IModule> = {
+    active: false,
+    config: { showColumnNames: false, closeOnFinish: true },
+    tables: [],
+    columns: [],
+    selectedColumns: [],
+}
 
 // Reducer
 export default function reducer(state = initialState, action: IAction) {
@@ -36,6 +42,7 @@ export default function reducer(state = initialState, action: IAction) {
             state = dotProp.set(state, "columns", [])
             state = dotProp.set(state, "selectedColumns", [])
             state = dotProp.set(state, "component", action.component)
+            state = dotProp.set(state, "config", { ...state.config, ...action.config })
             return dotProp.set(state, "message", action.message)
         case FINISH:
             return dotProp.set(state, "active", false)
@@ -51,11 +58,12 @@ export default function reducer(state = initialState, action: IAction) {
 }
 
 // Action Creators
-export function startBrowsing(component: eEalUIComponent, message: string): IAction {
+export function startBrowsing(component: eEalUIComponent, message: string, config: Partial<IDataBrowserConfig> = {}): IAction {
     return {
         type: START,
         component,
         message,
+        config,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -112,6 +120,7 @@ export interface IModule {
     active: boolean
     component: eEalUIComponent
     message: string
+    config: IDataBrowserConfig
     tables: Array<Partial<ITable>>
     columns: Array<string>
     selectedColumns: Array<IColumn>
@@ -121,12 +130,18 @@ export interface IAction {
     type: string
     component?: eEalUIComponent
     message?: string
+    config?: Partial<IDataBrowserConfig>
     tables?: Array<Partial<ITable>>
     columns?: Array<string>
     column?: IColumn
     meta?: {
         analytics: IAnalyticsMeta
     }
+}
+
+export interface IDataBrowserConfig {
+    showColumnNames: boolean
+    closeOnFinish: boolean
 }
 
 export interface ITablesBySchemaAndFamily {

@@ -5,8 +5,14 @@ import { withRouter } from "react-router"
 import { isEqual, debounce, reduce } from "lodash-es"
 import { values as objectValues } from "core-js/library/fn/object"
 import FilterExpressionEditor from "./FilterExpressionEditor"
-import { toggleModalState } from "../../redux/modules/app"
-import { fetchResultForComponent, parseFilterExpression, getFilterExpressionWithColumns } from "../../redux/modules/databrowser"
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
+import {
+    startBrowsing,
+    finishBrowsing,
+    fetchResultForComponent,
+    parseFilterExpression,
+    getFilterExpressionWithColumns,
+} from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -23,6 +29,7 @@ import {
     IMUIThemePalette,
     eEalUIComponent,
     eLayerFilterExpressionMode,
+    IDataBrowserConfig,
     IDataBrowserResult,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
@@ -46,6 +53,8 @@ export interface IStoreProps {
 export interface IDispatchProps {
     handleChangeExpressionMode: Function
     onToggleAdvancedModeWarnModalState: Function
+    activateDataBrowser: Function
+    deactivateDataBrowser: Function
 }
 
 interface IRouterProps {
@@ -158,6 +167,8 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
             onApply,
             handleChangeExpressionMode,
             onToggleAdvancedModeWarnModalState,
+            activateDataBrowser,
+            deactivateDataBrowser,
         } = this.props
         const { expression } = this.state
 
@@ -189,8 +200,14 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
                 }}
                 onChangeExpressionMode={(mode: eLayerFilterExpressionMode) => {
                     this.setState({ ...this.state, expressionMode: mode })
+                    if (mode === eLayerFilterExpressionMode.ADVANCED) {
+                        activateDataBrowser("advanced", eEalUIComponent.FILTER_EXPRESSION_EDITOR)
+                    }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
+                onClose={() => {
+                    deactivateDataBrowser()
+                }}
             />
         )
     }
@@ -220,6 +237,15 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onToggleAdvancedModeWarnModalState: () => {
             dispatch(toggleModalState("filterExpressionAdvancedModeWarning"))
+        },
+        activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
+            dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
+            const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
+            dispatch(startBrowsing(componentId, message, config))
+        },
+        deactivateDataBrowser: () => {
+            dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))
+            dispatch(finishBrowsing())
         },
     }
 }

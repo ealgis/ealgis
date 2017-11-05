@@ -30,6 +30,7 @@ export {
 export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, IOLFeatureProps } from "./datainspector"
 export {
     IModule as IDataBrowserModule,
+    IDataBrowserConfig,
     ITablesBySchemaAndFamily,
     ITableFamily,
     ITableColumns,

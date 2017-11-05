@@ -15,7 +15,7 @@ import ToggleStar from "material-ui/svg-icons/toggle/star"
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import { ITable } from "../../redux/modules/interfaces"
+import { IDataBrowserConfig, ITable } from "../../redux/modules/interfaces"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
@@ -39,9 +39,11 @@ const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
 const TableSearchTextField = styled(TextField)`
     margin-left: 15px !important;
     top: -10px !important;
+    color: white !important;
 `
 
 export interface IProps {
+    config: IDataBrowserConfig
     mapId: number
     layerId: number
     mapNameURLSafe: string
@@ -76,6 +78,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
 
     render() {
         const {
+            config,
             mapId,
             layerId,
             mapNameURLSafe,
@@ -109,7 +112,14 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                 hintText="e.g. Industry, Family"
                                 floatingLabelText="Search for data tables"
                                 defaultValue={dataTableSearchKeywords}
-                                onChange={(event: object, newValue: string) => onTableSearchChange(newValue)}
+                                inputStyle={{ color: "white" }}
+                                floatingLabelStyle={{ color: "white" }}
+                                hintStyle={{ color: "white" }}
+                                onKeyPress={(ev: any) => {
+                                    if (ev.key === "Enter") {
+                                        onTableSearchChange(ev.target.value)
+                                    }
+                                }}
                             />
                         )}
                         {this.showColumns(selectedColumns) && (
@@ -184,6 +194,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                     {this.showColumns(selectedColumns) &&
                         selectedTable && (
                             <DataColumnTable
+                                showColumnNames={config.showColumnNames}
                                 table={selectedTable}
                                 selectedColumns={selectedColumns}
                                 onClickColumn={onChooseColumn}

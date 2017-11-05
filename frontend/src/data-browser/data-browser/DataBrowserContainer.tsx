@@ -2,7 +2,6 @@ import * as React from "react"
 import { connect } from "react-redux"
 import DataBrowser from "./DataBrowser"
 import { withRouter } from "react-router"
-import { debounce } from "lodash-es"
 import { change } from "redux-form"
 import {
     selectColumn,
@@ -15,7 +14,17 @@ import {
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn, addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
-import { IStore, ISchema, ITable, ISelectedColumn, IGeomTable, IColumn, ILayer, eEalUIComponent } from "../../redux/modules/interfaces"
+import {
+    IStore,
+    ISchema,
+    ITable,
+    ISelectedColumn,
+    IGeomTable,
+    IColumn,
+    ILayer,
+    IDataBrowserConfig,
+    eEalUIComponent,
+} from "../../redux/modules/interfaces"
 
 import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
@@ -33,6 +42,7 @@ export interface IStoreProps {
     selectedColumns: Array<string>
     recentTables: Array<Partial<ITable>>
     favouriteTables: Array<Partial<ITable>>
+    config: IDataBrowserConfig
 }
 
 export interface IDispatchProps {
@@ -70,17 +80,11 @@ interface IState {
 
 export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
     self: DataBrowserContainer = this
-    onTableSearchChangeDebounced: Function
 
     constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
         this.state = {}
         const { handleChooseSchema, geometry } = props
-
-        // http://stackoverflow.com/a/24679479/7368493
-        this.onTableSearchChangeDebounced = debounce(function(newValue: string, selectedSchemaId: string) {
-            handleChooseSchema(selectedSchemaId, newValue, geometry)
-        }, 500)
 
         // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
@@ -104,6 +108,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             handleChooseSchema,
             recentTables,
             favouriteTables,
+            config,
             selectedTables,
             handleChooseTable,
             favouriteTable,
@@ -116,6 +121,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
 
         return (
             <DataBrowser
+                config={config}
                 mapId={mapId}
                 layerId={layerId}
                 mapNameURLSafe={mapNameURLSafe}
@@ -131,7 +137,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 }}
                 onTableSearchChange={(newValue: string) => {
                     this.setState({ dataTableSearchKeywords: newValue })
-                    this.onTableSearchChangeDebounced(newValue, this.state.selectedSchemaId)
+                    handleChooseSchema(this.state.selectedSchemaId, newValue, geometry)
                 }}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
@@ -141,7 +147,9 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                     favouriteTable(table)
                 }}
                 onChooseColumn={(column: IColumn) => {
-                    handleFinishBrowsing()
+                    if (config.closeOnFinish) {
+                        handleFinishBrowsing()
+                    }
                     handleChooseColumn(column /*, layer["schema"], this.state.selectedTable, mapId, layerId, layer*/)
                 }}
                 onFinishBrowsing={() => {
@@ -166,6 +174,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
         recentTables: ealgis.user.recent_tables,
         favouriteTables: ealgis.user.favourite_tables,
+        config: databrowser.config,
         selectedTables: databrowser.tables,
         selectedColumns: databrowser.columns,
     }

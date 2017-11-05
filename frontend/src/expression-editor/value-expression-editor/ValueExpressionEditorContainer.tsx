@@ -7,7 +7,14 @@ import { values as objectValues } from "core-js/library/fn/object"
 import ValueExpressionEditor from "./ValueExpressionEditor"
 import { toggleModalState } from "../../redux/modules/app"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { fetchResultForComponent, parseValueExpression, getValueExpressionWithColumns } from "../../redux/modules/databrowser"
+import { setActiveContentComponent } from "../../redux/modules/app"
+import {
+    startBrowsing,
+    finishBrowsing,
+    fetchResultForComponent,
+    parseValueExpression,
+    getValueExpressionWithColumns,
+} from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -23,6 +30,7 @@ import {
     IMUITheme,
     IMUIThemePalette,
     eEalUIComponent,
+    IDataBrowserConfig,
     IDataBrowserResult,
     eLayerValueExpressionMode,
 } from "../../redux/modules/interfaces"
@@ -46,6 +54,8 @@ export interface IStoreProps {
 export interface IDispatchProps {
     handleChangeExpressionMode: Function
     onToggleAdvancedModeWarnModalState: Function
+    activateDataBrowser: Function
+    deactivateDataBrowser: Function
 }
 
 interface IRouterProps {
@@ -103,10 +113,11 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
         if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
             if (dataBrowserResult.message === "col1") {
                 expression["col1"] = dataBrowserResult.columns![0]
+                this.setState({ ...this.state, expression: expression })
             } else if (dataBrowserResult.message === "col2") {
                 expression["col2"] = dataBrowserResult.columns![0]
+                this.setState({ ...this.state, expression: expression })
             }
-            this.setState({ ...this.state, expression: expression })
         }
     }
 
@@ -154,6 +165,8 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
             onApply,
             handleChangeExpressionMode,
             onToggleAdvancedModeWarnModalState,
+            activateDataBrowser,
+            deactivateDataBrowser,
         } = this.props
         const { expression } = this.state
 
@@ -185,8 +198,14 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
                     this.setState({ ...this.state, expressionMode: mode })
+                    if (mode === eLayerValueExpressionMode.ADVANCED) {
+                        activateDataBrowser("advanced", eEalUIComponent.VALUE_EXPRESSION_EDITOR)
+                    }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
+                onClose={() => {
+                    deactivateDataBrowser()
+                }}
             />
         )
     }
@@ -215,6 +234,15 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onToggleAdvancedModeWarnModalState: () => {
             dispatch(toggleModalState("valueExpressionAdvancedModeWarning"))
+        },
+        activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
+            dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
+            const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
+            dispatch(startBrowsing(componentId, message, config))
+        },
+        deactivateDataBrowser: () => {
+            dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))
+            dispatch(finishBrowsing())
         },
     }
 }

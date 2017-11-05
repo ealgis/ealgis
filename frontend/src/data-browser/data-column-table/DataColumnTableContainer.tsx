@@ -5,6 +5,7 @@ import DataColumnTable from "./DataColumnTable"
 import { IStore, IColumn, ITable, IColumnInfo, ITableColumns } from "../../redux/modules/interfaces"
 
 interface IProps {
+    showColumnNames: boolean
     table: ITable
     selectedColumns: Array<string>
     onClickColumn: Function
@@ -29,7 +30,7 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
         this.state = { showTableInfo: false }
     }
     render() {
-        const { table, selectedColumns, onClickColumn, onFavouriteTable, columninfo, favourite_tables } = this.props
+        const { showColumnNames, table, selectedColumns, onClickColumn, onFavouriteTable, columninfo, favourite_tables } = this.props
 
         const columns: ITableColumns = {}
         const header: Array<string> = []
@@ -51,6 +52,7 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
 
         return (
             <DataColumnTable
+                showColumnNames={showColumnNames}
                 table={table}
                 columns={columns}
                 header={header}

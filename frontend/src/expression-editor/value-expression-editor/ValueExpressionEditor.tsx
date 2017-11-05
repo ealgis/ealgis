@@ -44,13 +44,18 @@ class BlurableTextField extends React.Component<any, any> {
         return <TextField {...this.props} />
     }
 }
+class ClickableRaisedButton extends React.Component<any, any> {
+    render() {
+        return <RaisedButton {...this.props} />
+    }
+}
 
 const ExpressionEditorToolbar = styled(Toolbar)`background-color: white !important;`
 const ExpressionModeDropDownMenu = styled(DropDownMenu)`
     top: -5px;
     margin-left: 15px;
 `
-const ExpressionRaisedButton = styled(RaisedButton)`
+const ExpressionRaisedButton = styled(ClickableRaisedButton)`
     margin-left: 10px;
     margin-right: 10px;
 `
@@ -75,6 +80,7 @@ export interface IProps {
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
+    onClose: Function
 }
 
 class ValueExpressionEditor extends React.Component<IProps, {}> {
@@ -94,6 +100,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
             onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
+            onClose,
         } = this.props
 
         const col1: any = expression["col1"]
@@ -236,7 +243,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                     label={"Close"}
                     primary={true}
-                    onTouchTap={() => {}}
+                    onClick={onClose}
                 />
             </div>
         )

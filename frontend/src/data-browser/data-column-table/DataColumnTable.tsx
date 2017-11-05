@@ -38,12 +38,15 @@ const RowLabelTableRowColumn = styled(TableRowColumn)`
     white-space: normal !important;
 `
 
-const ColumnCellTableRowColumn = styled(TableRowColumn)`
+const ColumnCellTableRowColumnClickable = styled(TableRowColumn)`
     cursor: pointer;
     border-left: 1px solid rgb(209, 196, 233);
 `
 
+const ColumnCellTableRowColumn = styled(TableRowColumn)`border-left: 1px solid rgb(209, 196, 233);`
+
 export interface IProps {
+    showColumnNames: boolean
     table: ITable
     columns: ITableColumns
     header: Array<string>
@@ -58,6 +61,7 @@ export interface IProps {
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
         const {
+            showColumnNames,
             table,
             columns,
             header,
@@ -140,15 +144,19 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     <TableBody displayRowCheckbox={false}>
                         {rows.map((valueRow: string, idxRow: number) => {
                             return (
-                                <TableRow key={idxRow}>
+                                <TableRow key={idxRow} selectable={false}>
                                     <RowLabelTableRowColumn>{valueRow}</RowLabelTableRowColumn>
                                     {header.map((valueCol: string, idxCol: number) => {
                                         const columnUID: string = `${valueCol}.${valueRow}`
 
-                                        return (
+                                        return showColumnNames ? (
                                             <ColumnCellTableRowColumn key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
-                                                {!(columnUID in columns) ? "N/A" : ""}
+                                                {!(columnUID in columns) ? "N/A" : columns[columnUID].name}
                                             </ColumnCellTableRowColumn>
+                                        ) : (
+                                            <ColumnCellTableRowColumnClickable key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
+                                                {!(columnUID in columns) ? "N/A" : ""}
+                                            </ColumnCellTableRowColumnClickable>
                                         )
                                     })}
                                 </TableRow>
