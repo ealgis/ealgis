@@ -169,10 +169,12 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 }}
                 onApply={() => {
                     onApply(this.compileExpression())
+                    deactivateDataBrowser()
                     handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onApplyAdvanced={() => {
                     onApply(this.state.expressionCompiled)
+                    deactivateDataBrowser()
                     handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
