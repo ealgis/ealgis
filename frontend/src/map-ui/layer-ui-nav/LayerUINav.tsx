@@ -25,9 +25,7 @@ import ActionBookmark from "material-ui/svg-icons/action/bookmark"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 
-const PaperListItem = styled(Paper)`
-    margin: 7px !important;
-`
+const PaperListItem = styled(Paper)`margin: 7px !important;`
 
 const LegendPeekBarListItem = styled(ListItem)`
     padding-left: 0px !important;
@@ -36,9 +34,7 @@ const LegendPeekBarListItem = styled(ListItem)`
     margin-left: 17px !important;
 `
 
-const LayerToggle = styled(Toggle)`
-    margin-right: 35px !important;
-`
+const LayerToggle = styled(Toggle)`margin-right: 35px !important;`
 
 const styles: React.CSSProperties = {
     layerListItemWithLegend: {
@@ -124,17 +120,18 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     }
                     secondaryTextLines={2}
                     {...mapOwnerProps}
-                    rightToggle={<LayerToggle toggled={defn.visible} onToggle={onToggleVisibility} />}
+                    rightToggle={
+                        <LayerToggle
+                            toggled={defn.visible}
+                            onToggle={onToggleVisibility}
+                            thumbStyle={{ backgroundColor: muiThemePalette.borderColor }}
+                        />
+                    }
                     {...legendPeekProps}
                 />
                 <Divider />
 
-                <LayerDeleteConfirmDialog
-                    modalId={deleteConfirmModalId}
-                    mapId={mapId}
-                    layerId={layerId}
-                    layerDefinition={defn}
-                />
+                <LayerDeleteConfirmDialog modalId={deleteConfirmModalId} mapId={mapId} layerId={layerId} layerDefinition={defn} />
             </div>
         )
     }
