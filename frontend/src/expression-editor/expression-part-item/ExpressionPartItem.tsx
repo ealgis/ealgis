@@ -56,15 +56,15 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
         if (/^\d+$/.test(value)) {
             listItemProps = {
                 primaryText: value,
-                secondaryText: "Your status is visible to everyone you use with",
+                secondaryText: "A number to filter by",
                 secondaryTextLines: 2,
                 leftIcon: <ActionInput />,
                 onClick: onClick,
             }
         } else if (value === "$value") {
             listItemProps = {
-                primaryText: "Value Special",
-                secondaryText: "Your status is visible to everyone you use with",
+                primaryText: "Value expression",
+                secondaryText: "Use the result of your layer's value expression",
                 secondaryTextLines: 2,
                 leftIcon: <ActionStars />,
                 onClick: onClick,
@@ -159,10 +159,17 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
                 <ListItem key={"numeric"} leftIcon={<ActionInput style={{ marginTop: "24px" }} />} innerDivStyle={{ paddingTop: "0px" }}>
                     <BlurableTextField
                         defaultValue={value}
+                        type={"number"}
                         name="filterExpressionNumericInput"
                         floatingLabelText="Enter a number to filter by"
                         floatingLabelFixed={true}
                         fullWidth={true}
+                        autoComplete={"off"}
+                        onKeyPress={(ev: any) => {
+                            if (ev.key === "Enter") {
+                                ev.preventDefault()
+                            }
+                        }}
                         onBlur={(event: any, newValue: string) => onFieldChange({ field: field, value: event.target.value })}
                     />
                 </ListItem>
