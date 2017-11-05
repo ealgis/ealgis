@@ -144,7 +144,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     <TableBody displayRowCheckbox={false}>
                         {rows.map((valueRow: string, idxRow: number) => {
                             return (
-                                <TableRow key={idxRow} selectable={false}>
+                                <TableRow key={idxRow}>
                                     <RowLabelTableRowColumn>{valueRow}</RowLabelTableRowColumn>
                                     {header.map((valueCol: string, idxCol: number) => {
                                         const columnUID: string = `${valueCol}.${valueRow}`
