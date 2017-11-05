@@ -18,6 +18,7 @@ import {
     IStore,
     ISchema,
     ITable,
+    ITableInfo,
     ISelectedColumn,
     IGeomTable,
     IColumn,
@@ -36,13 +37,13 @@ export interface IStoreProps {
     mapId: number
     layerId: number
     mapNameURLSafe: string
-    layer: ILayer
     geometry: IGeomTable
     selectedTables: Array<Partial<ITable>>
     selectedColumns: Array<string>
     recentTables: Array<Partial<ITable>>
     favouriteTables: Array<Partial<ITable>>
     config: IDataBrowserConfig
+    tableinfo: ITableInfo
 }
 
 export interface IDispatchProps {
@@ -85,17 +86,22 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
         super(props)
         this.state = {}
         const { handleChooseSchema, geometry } = props
-
-        // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     async handleClickSchema(schemaId: string, schema: ISchema) {
         this.setState({ selectedSchemaId: schemaId })
     }
 
-    // routerWillLeave(nextLocation: any) {
-    //     this.setState({ selectedSchemaId: undefined, dataTableSearchKeywords: undefined, selectedTable: undefined })
-    //     this.props.handleExitDataBrowser()
+    // componentWillReceiveProps(nextProps: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
+    //     // If only one table is returned, automatically open it
+    //     if (nextProps.selectedColumns.length === 0 && nextProps.selectedTables.length === 1) {
+    //         console.log("componentWillReceiveProps")
+    //         const tableUID = `${nextProps.selectedTables[0].schema_name}-${nextProps.selectedTables[0].id}`
+    //         const table = nextProps.tableinfo[tableUID]
+
+    //         nextProps.handleChooseTable(table)
+    //         this.setState({ selectedTable: table })
+    //     }
     // }
 
     render() {
@@ -103,7 +109,6 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             mapId,
             layerId,
             mapNameURLSafe,
-            // layer,
             geometry,
             handleChooseSchema,
             recentTables,
@@ -170,13 +175,13 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         mapId: ownProps.params.mapId,
         layerId: ownProps.params.layerId,
         mapNameURLSafe: maps[ownProps.params.mapId]["name-url-safe"],
-        layer: layer,
         geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
         recentTables: ealgis.user.recent_tables,
         favouriteTables: ealgis.user.favourite_tables,
         config: databrowser.config,
         selectedTables: databrowser.tables,
         selectedColumns: databrowser.columns,
+        tableinfo: ealgis.tableinfo,
     }
 }
 

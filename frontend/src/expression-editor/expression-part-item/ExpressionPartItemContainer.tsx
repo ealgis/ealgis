@@ -33,9 +33,11 @@ export class ExpressionPartItemContainer extends React.Component<IProps & IDispa
         super(props)
         this.state = { open: false }
     }
+
     toggleNestedListOpen() {
         this.setState({ open: !this.state.open })
     }
+
     render() {
         const {
             componentId,

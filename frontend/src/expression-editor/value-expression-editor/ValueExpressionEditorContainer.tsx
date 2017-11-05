@@ -90,9 +90,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
         super(props)
         this.state = { expression: {}, expressionMode: props.valueExpressionMode }
-
-        // @TODO Do we need this?
-        // props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     componentWillMount() {
@@ -119,24 +116,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 this.setState({ ...this.state, expression: expression })
             }
         }
-    }
-
-    routerWillLeave(nextLocation: any) {
-        return true
-
-        // @TODO Do we need this?
-        // const { mapDefinition, layerId /*, isDirty, onToggleDirtyFormModalState*/ } = this.props
-
-        // Prompt the user to discard/save their changes if we're navigate away from the layer form
-        /*if (!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}/layer/${layerId}`)) {
-            // return false to prevent a transition w/o prompting the user,
-            // or return a string to allow the user to decide:
-            if (isDirty) {
-                onToggleDirtyFormModalState()
-                // return 'Your layer is not saved! Are you sure you want to leave?'
-                return false
-            }
-        }*/
     }
 
     compileExpression() {

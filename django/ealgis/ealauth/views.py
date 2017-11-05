@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
 from .models import MapDefinition
-from sqlalchemy import not_
+from sqlalchemy import not_, func
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
@@ -791,6 +791,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         datatable_ids_subq = eal.session.query(tableinfo.id)\
             .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
             .subquery()
+
+        # Hacky approach to searching by column name
+        # Let's just override the regular tableinfo subquery
+        if(len(search_terms) == 1):
+            if(eal.session.query(columninfo).filter(columninfo.name == search_terms[0].strip()).count() > 0):
+                datatable_ids_subq = eal.session.query(columninfo.table_info_id).filter(func.lower(columninfo.name) == search_terms[0].strip().lower()).subquery()
+                search_terms = []
 
         # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
         # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
