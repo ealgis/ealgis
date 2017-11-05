@@ -244,7 +244,7 @@ export function parseValueExpression(expression: string, expression_mode: eLayer
             col2: column_names[1],
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
-        throw Error("Umm, we can't do that yet.")
+        // throw Error("Umm, we can't do that yet.")
     }
     return {}
 }
@@ -261,7 +261,7 @@ export function getValueExpressionWithColumns(expression: any, expression_mode: 
             col2: getColumnByName(expression.col2, columninfo),
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
-        throw Error("Umm, we can't do that yet.")
+        // throw Error("Umm, we can't do that yet.")
     }
     return {}
 }
