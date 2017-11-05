@@ -144,7 +144,7 @@ class EvalLogicalOp():
 class DataExpression(object):
     integer = Word(nums)
     real = (Combine(Word(nums) + Optional("." + Word(nums)) +
-            oneOf("E e") + Optional(oneOf('+ -')) + Word(nums)) |
+                    oneOf("E e") + Optional(oneOf('+ -')) + Word(nums)) |
             Combine(Word(nums) + "." + Word(nums)))
 
     variable = Word(alphanums + '._')
@@ -197,6 +197,7 @@ class DataExpression(object):
         gid_attr = getattr(self.tbl, geometry_source.gid)
         query_attrs.append(gid_attr)
         # special case for empty expression
+        expr_raw = expr
         if expr == '':
             # bodge bodge bodge, keep 'q' working
             expr = sqlalchemy.func.abs(0)
@@ -220,7 +221,8 @@ class DataExpression(object):
 
         filter_expr = None
         if cond != '':
-            parsed = DataExpression.cond_expr.parseString(cond, parseAll=True)[0]
+            cond_processed = cond.replace("$value", expr_raw)
+            parsed = DataExpression.cond_expr.parseString(cond_processed, parseAll=True)[0]
             filter_expr = parsed.eval(self)
         self.query = eal.session.query(*query_attrs)
         if filter_expr is not None:
