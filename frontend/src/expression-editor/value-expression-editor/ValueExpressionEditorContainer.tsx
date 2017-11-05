@@ -171,8 +171,8 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                     onApply(this.compileExpression())
                     handleChangeExpressionMode(this.state.expressionMode)
                 }}
-                onApplyAdvanced={(expression: string) => {
-                    onApply(expression)
+                onApplyAdvanced={() => {
+                    onApply(this.state.expressionCompiled)
                     handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
