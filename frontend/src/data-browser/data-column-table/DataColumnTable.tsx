@@ -6,6 +6,8 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import IconButton from "material-ui/IconButton"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
+import ActionViewColumn from "material-ui/svg-icons/action/view-column"
+import ActionInfo from "material-ui/svg-icons/action/info"
 import { yellow500 } from "material-ui/styles/colors"
 import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable, ITableColumns } from "../../redux/modules/interfaces"
 
@@ -17,6 +19,12 @@ class ClickableIconButton extends React.Component<any, any> {
 }
 
 const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
+
+const DataBrowserToolbarTitle = styled(ToolbarTitle)`color: black;`
+
+const TableNotes = styled.div`padding-bottom: 10px;`
+
+const MetadataURL = styled.div`line-height: 20px;`
 
 const RowLabelTableHeaderColumn = styled(TableHeaderColumn)`
     width: 250px;
@@ -40,27 +48,42 @@ export interface IProps {
     columns: ITableColumns
     header: Array<string>
     rows: Array<string>
+    showTableInfo: boolean
     favouriteTables: Array<Partial<ITable>>
     onClickColumn: Function
     onFavouriteTable: Function
+    onToggleShowInfo: Function
 }
 
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
-        const { table, columns, header, rows, favouriteTables, onClickColumn, onFavouriteTable } = this.props
+        const {
+            table,
+            columns,
+            header,
+            rows,
+            showTableInfo,
+            favouriteTables,
+            onClickColumn,
+            onFavouriteTable,
+            onToggleShowInfo,
+        } = this.props
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
 
         return (
             <div>
                 <DataBrowserToolbar>
                     <ToolbarGroup firstChild={true}>
-                        <h2>
-                            {table["metadata_json"]["series"] === null
-                                ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
-                                : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
-                                      "family"
-                                  ].toUpperCase()})`}
-                        </h2>
+                        <ActionViewColumn style={{ marginRight: "10px" }} />
+                        <DataBrowserToolbarTitle
+                            text={
+                                table["metadata_json"]["series"] === null
+                                    ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
+                                    : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
+                                          "family"
+                                      ].toUpperCase()})`
+                            }
+                        />
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
@@ -71,8 +94,27 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                 <ToggleStarBorder />
                             )}
                         </ClickableIconButton>
+                        <ClickableIconButton onClick={onToggleShowInfo}>
+                            <ActionInfo />
+                        </ClickableIconButton>
                     </ToolbarGroup>
                 </DataBrowserToolbar>
+
+                {showTableInfo && (
+                    <div>
+                        {table["metadata_json"]["kind"]}
+                        <br />
+                        <br />
+                        <TableNotes dangerouslySetInnerHTML={{ __html: table["metadata_json"]["notes"] }} />
+                        {table["metadata_json"]["metadataUrls"].map((obj: any, key: any) => (
+                            <MetadataURL key={key}>
+                                <a href={obj["url"]} target="_blank">
+                                    {obj["name"]}
+                                </a>
+                            </MetadataURL>
+                        ))}
+                    </div>
+                )}
 
                 <Table
                     fixedHeader={true}

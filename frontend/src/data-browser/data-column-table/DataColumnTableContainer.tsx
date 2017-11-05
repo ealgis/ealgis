@@ -19,7 +19,15 @@ export interface IStoreProps {
 
 export interface IDispatchProps {}
 
-export class DataColumnTableContainer extends React.PureComponent<IProps & IStoreProps & IDispatchProps, {}> {
+export interface IState {
+    showTableInfo: boolean
+}
+
+export class DataColumnTableContainer extends React.PureComponent<IProps & IStoreProps & IDispatchProps, IState> {
+    constructor(props: IProps & IStoreProps & IDispatchProps) {
+        super(props)
+        this.state = { showTableInfo: false }
+    }
     render() {
         const { table, selectedColumns, onClickColumn, onFavouriteTable, columninfo, favourite_tables } = this.props
 
@@ -47,9 +55,13 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
                 columns={columns}
                 header={header}
                 rows={rows}
+                showTableInfo={this.state.showTableInfo}
                 favouriteTables={favourite_tables}
                 onClickColumn={onClickColumn}
                 onFavouriteTable={onFavouriteTable}
+                onToggleShowInfo={() => {
+                    this.setState({ showTableInfo: !this.state.showTableInfo })
+                }}
             />
         )
     }
