@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { loading as appLoading, loaded as appLoaded } from "./app"
-import { parseValueExpression } from "./databrowser"
+import { parseValueExpression, parseFilterExpression } from "./databrowser"
 import { ILayer, eLayerValueExpressionMode, eLayerFilterExpressionMode } from "./interfaces"
 import { fetchMaps } from "./maps"
 
@@ -401,7 +401,7 @@ export function fetchColumnsForMaps() {
                         columnNamesBySchema[layer["schema"]] = []
                     }
 
-                    const parsed: any = parseValueExpression(layer.fill.conditional, layer.fill.conditional_mode)
+                    const parsed: any = parseFilterExpression(layer.fill.conditional, layer.fill.conditional_mode)
                     if ("col1" in parsed) {
                         columnNamesBySchema[layer["schema"]].push(parsed.col1)
                     }

@@ -1,14 +1,16 @@
 import * as React from "react"
 import styled from "styled-components"
-import { Link } from "react-router"
 
 import { TouchTapEvent } from "material-ui"
 import IconButton from "material-ui/IconButton"
 import RaisedButton from "material-ui/RaisedButton"
-import Subheader from "material-ui/Subheader"
 import TextField from "material-ui/TextField"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import ActionSearch from "material-ui/svg-icons/action/search"
+import ActionViewColumn from "material-ui/svg-icons/action/view-column"
+import DeviceAccessTime from "material-ui/svg-icons/device/access-time"
+import ToggleStar from "material-ui/svg-icons/toggle/star"
 
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
@@ -16,10 +18,21 @@ import DataColumnTable from "../data-column-table/DataColumnTableContainer"
 import { ITable } from "../../redux/modules/interfaces"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
-const DataBrowserContainer = styled.div`
-    padding: 12px;
-    overflow: auto;
+// Silence "TS2339: Property 'onClick' does not exist'" warnings
+class ClickableIconButton extends React.Component<any, any> {
+    render() {
+        return <IconButton {...this.props} />
+    }
+}
+
+const DataBrowserContainer = styled.div`overflow: auto;`
+const DataBrowserInnerContainer = styled.div`
+    padding-left: 12px;
+    padding-right: 12px;
 `
+const DataBrowserSectionContainer = styled.div`margin-bottom: 25px;`
+
+const DataBrowserTitle = styled(ToolbarTitle)`color: white;`
 
 const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
 
@@ -77,14 +90,17 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             handleClickTable,
             handleFavouriteTable,
             onChooseColumn,
+            onFinishBrowsing,
             backToSchemaView,
             backToTableView,
         } = this.props
 
         return (
             <DataBrowserContainer>
-                <DataBrowserToolbar>
+                <Toolbar>
                     <ToolbarGroup firstChild={true}>
+                        <ActionSearch style={{ marginRight: "10px" }} color={"white"} />
+                        <DataBrowserTitle text={"Data Browser"} />
                         {this.showTables(selectedTables, selectedColumns) && (
                             <RaisedButton primary={true} label={"Back"} onTouchTap={() => backToSchemaView()} />
                         )}
@@ -102,63 +118,79 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
-                        <IconButton
-                            tooltip="Close data browser"
-                            tooltipPosition="bottom-left"
-                            containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                        >
-                            <NavigationClose />
-                        </IconButton>
+                        <ClickableIconButton tooltip="Close data browser" tooltipPosition="bottom-left" onClick={onFinishBrowsing}>
+                            <NavigationClose color={"white"} />
+                        </ClickableIconButton>
                     </ToolbarGroup>
-                </DataBrowserToolbar>
+                </Toolbar>
 
-                {this.showSchemas(selectedTables, selectedColumns) && (
-                    <div>
-                        <Subheader>Data Schemas</Subheader>
-                        <DataSchemaGrid handleClickSchema={handleClickSchema} />
+                <DataBrowserInnerContainer>
+                    {this.showSchemas(selectedTables, selectedColumns) && (
+                        <div>
+                            <DataBrowserToolbar>
+                                <ToolbarGroup>
+                                    <ActionViewColumn style={{ marginRight: "10px" }} />
+                                    <ToolbarTitle text={"Data Schemas"} />
+                                </ToolbarGroup>
+                            </DataBrowserToolbar>
 
-                        {recentTables.length > 0 && (
-                            <div>
-                                <Subheader>Recent Tables</Subheader>
-                                <DataTableList
-                                    tables={recentTables}
-                                    layout={eTableChooserLayout.GRID_LAYOUT}
-                                    onClickTable={handleClickTable}
-                                />
-                            </div>
-                        )}
+                            <DataBrowserSectionContainer>
+                                <DataSchemaGrid handleClickSchema={handleClickSchema} />
+                            </DataBrowserSectionContainer>
 
-                        {favouriteTables.length > 0 && (
-                            <div>
-                                <Subheader>Favourite Tables</Subheader>
-                                <DataTableList
-                                    tables={favouriteTables}
-                                    layout={eTableChooserLayout.GRID_LAYOUT}
-                                    onClickTable={handleClickTable}
-                                />
-                            </div>
-                        )}
-                    </div>
-                )}
+                            {recentTables.length > 0 && (
+                                <DataBrowserSectionContainer>
+                                    <DataBrowserToolbar>
+                                        <ToolbarGroup>
+                                            <DeviceAccessTime style={{ marginRight: "10px" }} />
+                                            <ToolbarTitle text={"Recent Tables"} />
+                                        </ToolbarGroup>
+                                    </DataBrowserToolbar>
+                                    <DataTableList
+                                        tables={recentTables}
+                                        layout={eTableChooserLayout.GRID_LAYOUT}
+                                        onClickTable={handleClickTable}
+                                    />
+                                </DataBrowserSectionContainer>
+                            )}
 
-                {this.showTables(selectedTables, selectedColumns) && (
-                    <DataTableList
-                        tables={selectedTables}
-                        layout={eTableChooserLayout.LIST_LAYOUT}
-                        onClickTable={handleClickTable}
-                        onFavouriteTable={handleFavouriteTable}
-                    />
-                )}
+                            {favouriteTables.length > 0 && (
+                                <DataBrowserSectionContainer>
+                                    <DataBrowserToolbar>
+                                        <ToolbarGroup>
+                                            <ToggleStar style={{ marginRight: "10px" }} />
+                                            <ToolbarTitle text={"Favourite Tables"} />
+                                        </ToolbarGroup>
+                                    </DataBrowserToolbar>
+                                    <DataTableList
+                                        tables={favouriteTables}
+                                        layout={eTableChooserLayout.GRID_LAYOUT}
+                                        onClickTable={handleClickTable}
+                                    />
+                                </DataBrowserSectionContainer>
+                            )}
+                        </div>
+                    )}
 
-                {this.showColumns(selectedColumns) &&
-                    selectedTable && (
-                        <DataColumnTable
-                            table={selectedTable}
-                            selectedColumns={selectedColumns}
-                            onClickColumn={onChooseColumn}
+                    {this.showTables(selectedTables, selectedColumns) && (
+                        <DataTableList
+                            tables={selectedTables}
+                            layout={eTableChooserLayout.LIST_LAYOUT}
+                            onClickTable={handleClickTable}
                             onFavouriteTable={handleFavouriteTable}
                         />
                     )}
+
+                    {this.showColumns(selectedColumns) &&
+                        selectedTable && (
+                            <DataColumnTable
+                                table={selectedTable}
+                                selectedColumns={selectedColumns}
+                                onClickColumn={onChooseColumn}
+                                onFavouriteTable={handleFavouriteTable}
+                            />
+                        )}
+                </DataBrowserInnerContainer>
             </DataBrowserContainer>
         )
     }

@@ -324,7 +324,7 @@ class EAlGIS(object):
         return {
             "min": min,
             "max": max,
-            "stddev": stddev,
+            "stddev": stddev if stddev is not None else 0,
         }
 
     def def_get_summary_stats_for_column(self, column, table, schema_name):

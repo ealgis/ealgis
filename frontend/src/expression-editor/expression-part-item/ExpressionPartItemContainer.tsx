@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import ExpressionPartItem from "./ExpressionPartItem"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { startBrowsing } from "../../redux/modules/databrowser"
-import { IStore, eEalUIComponent } from "../../redux/modules/interfaces"
+import { IStore, ITableInfo, eEalUIComponent } from "../../redux/modules/interfaces"
 
 export interface IProps {
     componentId: eEalUIComponent
@@ -20,11 +20,15 @@ export interface IDispatchProps {
     activateDataBrowser: Function
 }
 
+export interface IStoreProps {
+    tableinfo: ITableInfo
+}
+
 export interface IState {
     open: boolean
 }
 
-export class ExpressionPartItemContainer extends React.Component<IProps & IDispatchProps, IState> {
+export class ExpressionPartItemContainer extends React.Component<IProps & IDispatchProps & IStoreProps, IState> {
     constructor(props: IProps & IDispatchProps) {
         super(props)
         this.state = { open: false }
@@ -37,12 +41,13 @@ export class ExpressionPartItemContainer extends React.Component<IProps & IDispa
             componentId,
             value,
             field,
-            activateDataBrowser,
             showCreateGroup,
             showValueSpecial,
             showNumericalInput,
             showRelatedColumns,
             onFieldChange,
+            tableinfo,
+            activateDataBrowser,
         } = this.props
 
         return (
@@ -54,6 +59,7 @@ export class ExpressionPartItemContainer extends React.Component<IProps & IDispa
                 showValueSpecial={showValueSpecial === undefined ? true : showValueSpecial}
                 showNumericalInput={showNumericalInput === undefined ? true : showNumericalInput}
                 showRelatedColumns={showRelatedColumns === undefined ? true : showRelatedColumns}
+                tableinfo={tableinfo}
                 onClick={() => {
                     this.toggleNestedListOpen()
                     if (
@@ -78,10 +84,10 @@ export class ExpressionPartItemContainer extends React.Component<IProps & IDispa
     }
 }
 
-const mapStateToProps = (state: IStore): {} => {
+const mapStateToProps = (state: IStore): IStoreProps => {
     const { maps, ealgis, databrowser } = state
 
-    return {}
+    return { tableinfo: ealgis.tableinfo }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {

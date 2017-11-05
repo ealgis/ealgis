@@ -261,7 +261,7 @@ export function parseFilterExpression(expression: string, expression_mode: eLaye
             col2: matches![3],
         }
     } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
-        throw Error("Umm, we can't do that yet.")
+        // throw Error("Umm, we can't do that yet.")
     }
     return {}
 }
@@ -275,7 +275,7 @@ export function getFilterExpressionWithColumns(expression: any, expression_mode:
             col2: getColumnByName(expression.col2, columninfo) || expression.col2,
         }
     } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
-        throw Error("Umm, we can't do that yet.")
+        // throw Error("Umm, we can't do that yet.")
     }
     return {}
 }

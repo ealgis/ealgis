@@ -36,8 +36,7 @@ import ContentCreate from "material-ui/svg-icons/content/create"
 import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
 import ImagePalette from "material-ui/svg-icons/image/palette"
 
-import ExpressionPartItem from "../expression-part-item/ExpressionPartItem"
-import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
+import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {
@@ -56,21 +55,10 @@ const ExpressionRaisedButton = styled(RaisedButton)`
     margin-right: 10px;
 `
 
-const TabContainer = styled.div`margin: 10px;`
-
-const HiddenButton = styled.button`display: none;`
-
 const ExpressionContainer = styled.div`
     margin-top: 10px;
     margin-bottom: 25px;
 `
-
-const PaddedDivider = styled(Divider)`
-    margin-top: 15px !important;
-    margin-bottom: 15px !important;
-`
-
-const PaddedCheckbox = styled(Checkbox)`margin-top: 15px !important;`
 
 export interface IProps {
     muiThemePalette: IMUIThemePalette
@@ -89,34 +77,7 @@ export interface IProps {
     onToggleAdvModeModalState: any
 }
 
-export interface IState {
-    open: boolean
-    anchorEl?: any
-    field?: string
-}
-
-class ValueExpressionEditor extends React.Component<IProps, IState> {
-    constructor(props: any) {
-        super(props)
-        this.state = { open: false }
-    }
-
-    handleTouchTap = (event: any, field: string) => {
-        // This prevents ghost click.
-        event.preventDefault()
-
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget,
-            field: field,
-        })
-    }
-
-    handleRequestClose = () => {
-        this.setState({
-            open: false,
-        })
-    }
+class ValueExpressionEditor extends React.Component<IProps, {}> {
     render() {
         const {
             muiThemePalette,
@@ -209,32 +170,43 @@ class ValueExpressionEditor extends React.Component<IProps, IState> {
 
                 {expressionMode === eLayerValueExpressionMode.SINGLE && (
                     <ExpressionContainer>
-                        <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
+                        <ExpressionPartItemContainer
+                            componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
+                            value={col1}
+                            field={"col1"}
+                            showCreateGroup={false}
+                            showValueSpecial={false}
+                            showNumericalInput={false}
+                            showRelatedColumns={false}
+                            onFieldChange={onFieldChange}
+                        />
                     </ExpressionContainer>
                 )}
 
                 {expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
                     <ExpressionContainer>
-                        <ExpressionPartItem value={col1} onClick={(event: any) => this.handleTouchTap(event, "col1")} />
-                        <ExpressionPartItem value={col2} onClick={(event: any) => this.handleTouchTap(event, "col2")} />
-                    </ExpressionContainer>
-                )}
+                        <ExpressionPartItemContainer
+                            componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
+                            value={col1}
+                            field={"col1"}
+                            showCreateGroup={false}
+                            showValueSpecial={false}
+                            showNumericalInput={false}
+                            showRelatedColumns={false}
+                            onFieldChange={onFieldChange}
+                        />
 
-                {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
-                    <ExpressionPartSelectorContainer
-                        componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
-                        field={this.state.field!}
-                        open={this.state.open}
-                        anchorEl={this.state.anchorEl}
-                        handleRequestClose={this.handleRequestClose}
-                        onFieldChange={(evt: object, key: number, payload: IColumn) => {
-                            onFieldChange({ field: this.state.field, value: payload })
-                        }}
-                        showCreateGroup={false}
-                        showValueSpecial={false}
-                        showNumericalInput={false}
-                        showRelatedColumns={false}
-                    />
+                        <ExpressionPartItemContainer
+                            componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
+                            value={col2}
+                            field={"col2"}
+                            showCreateGroup={false}
+                            showValueSpecial={false}
+                            showNumericalInput={false}
+                            showRelatedColumns={false}
+                            onFieldChange={onFieldChange}
+                        />
+                    </ExpressionContainer>
                 )}
 
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (

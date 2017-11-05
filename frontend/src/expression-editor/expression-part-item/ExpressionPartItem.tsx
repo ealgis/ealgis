@@ -1,5 +1,5 @@
 import * as React from "react"
-import { IColumn } from "../../redux/modules/interfaces"
+import { IColumn, ITableInfo, ITable } from "../../redux/modules/interfaces"
 
 import { List, ListItem } from "material-ui/List"
 import ActionViewColumn from "material-ui/svg-icons/action/view-column"
@@ -28,6 +28,7 @@ export interface IProps {
     showValueSpecial: boolean
     showNumericalInput: boolean
     showRelatedColumns: boolean
+    tableinfo: ITableInfo
     onClick: Function
     onFieldChange: Function
     onOpenDataBrowser: any
@@ -43,6 +44,7 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
             showValueSpecial,
             showNumericalInput,
             showRelatedColumns,
+            tableinfo,
             onClick,
             onFieldChange,
             onOpenDataBrowser,
@@ -76,9 +78,16 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
                 onClick: onClick,
             }
         } else if (value && "id" in value) {
+            let tableDescription = ""
+            const tableUID = `${value.schema_name}-${value.table_info_id}`
+            if (tableUID in tableinfo) {
+                const table: ITable = tableinfo[tableUID]
+                tableDescription = table.metadata_json.type
+            }
+
             listItemProps = {
                 primaryText: `${value.metadata_json.type}, ${value.metadata_json.kind}`,
-                secondaryText: "Your status is visible to everyone you use with",
+                secondaryText: tableDescription,
                 secondaryTextLines: 2,
                 leftIcon: <ActionViewColumn />,
                 onClick: onClick,

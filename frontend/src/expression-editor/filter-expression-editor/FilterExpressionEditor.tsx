@@ -33,7 +33,6 @@ import FlatButton from "material-ui/FlatButton"
 import ActionCode from "material-ui/svg-icons/action/code"
 
 import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
-import ExpressionPartSelectorContainer from "../expression-part-selector/ExpressionPartSelectorContainer"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {
@@ -74,35 +73,7 @@ export interface IProps {
     onToggleAdvModeModalState: any
 }
 
-export interface IState {
-    open: boolean
-    anchorEl?: any
-    field?: string
-}
-
-class FilterExpressionEditor extends React.Component<IProps, IState> {
-    constructor(props: any) {
-        super(props)
-        this.state = { open: false }
-    }
-
-    handleTouchTap = (event: any, field: string) => {
-        // This prevents ghost click.
-        event.preventDefault()
-
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget,
-            field: field,
-        })
-    }
-
-    handleRequestClose = () => {
-        this.setState({
-            open: false,
-        })
-    }
-
+class FilterExpressionEditor extends React.Component<IProps, {}> {
     render() {
         const {
             muiThemePalette,
@@ -199,7 +170,7 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                         />
 
                         <ListItem
-                            style={{ marginBottom: "40px" }}
+                            style={{ marginBottom: "20px" }}
                             leftIcon={<ActionCode style={{ marginTop: "36px" }} />}
                             innerDivStyle={{ paddingTop: "0px" }}
                         >
@@ -229,19 +200,6 @@ class FilterExpressionEditor extends React.Component<IProps, IState> {
                             showRelatedColumns={false}
                             onFieldChange={onFieldChange}
                         />
-
-                        {/* <ExpressionPartSelectorContainer
-                            componentId={eEalUIComponent.FILTER_EXPRESSION_EDITOR}
-                            field={this.state.field!}
-                            open={this.state.open}
-                            anchorEl={this.state.anchorEl}
-                            handleRequestClose={this.handleRequestClose}
-                            onFieldChange={onFieldChange}
-                            showCreateGroup={false}
-                            showValueSpecial={true}
-                            showNumericalInput={true}
-                            showRelatedColumns={false}
-                        /> */}
                     </ExpressionContainer>
                 )}
 

@@ -413,6 +413,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                         <Field
                                             name="valueExpression"
                                             component={TextField}
+                                            disabled={true}
                                             multiLine={true}
                                             rows={2}
                                             hintText="Write an expression..."
@@ -436,6 +437,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                         <Field
                                             name="filterExpression"
                                             component={TextField}
+                                            disabled={true}
                                             multiLine={true}
                                             rows={2}
                                             hintText="Write a filter expression..."
