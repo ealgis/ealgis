@@ -40,6 +40,13 @@ import MenuItem from "material-ui/MenuItem"
 import IconButton from "material-ui/IconButton"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 
+// Silence "TS2339: Property 'onClick' does not exist'" warnings
+class ClickableIconButton extends React.Component<any, any> {
+    render() {
+        return <IconButton {...this.props} />
+    }
+}
+
 const required = (value: any) => (value || value === 0 ? undefined : "Required")
 
 const TabContainer = styled.div`margin: 10px;`
@@ -218,6 +225,7 @@ export interface IProps {
     onRemoveColumn: Function
     onApplyValueExpression: Function
     onApplyFilterExpression: Function
+    onCloseLayer: Function
     geominfo: IGeomInfo
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
@@ -284,6 +292,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onRemoveColumn,
             onApplyValueExpression,
             onApplyFilterExpression,
+            onCloseLayer,
         } = this.props
 
         let tabId = 0
@@ -322,13 +331,14 @@ class LayerForm extends React.Component<IProps, {}> {
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
-                        <IconButton
+                        <ClickableIconButton
                             tooltip="Close this layer and return to your map"
                             tooltipPosition="bottom-right"
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
+                            onClick={onCloseLayer}
                         >
                             <NavigationClose color={muiThemePalette.alternateTextColor} />
-                        </IconButton>
+                        </ClickableIconButton>
                     </ToolbarGroup>
                 </Toolbar>
 
@@ -454,15 +464,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                                 <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/filter-expression`} />
                                             }
                                             label={"Edit Filter Expression"}
-                                            primary={true}
-                                            style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
-                                        />
-
-                                        <RaisedButton
-                                            containerElement={
-                                                <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/databrowser`} />
-                                            }
-                                            label={"Search For Data"}
                                             primary={true}
                                             style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
                                         />

@@ -16,6 +16,8 @@ import {
     startLayerEditing,
     fitLayerScaleToData,
 } from "../../redux/modules/maps"
+import { setActiveContentComponent } from "../../redux/modules/app"
+import { finishBrowsing } from "../../redux/modules/databrowser"
 import {
     IStore,
     IEALGISModule,
@@ -30,6 +32,7 @@ import {
     eLayerFilterExpressionMode,
     IMUITheme,
     IMUIThemePalette,
+    eEalUIComponent,
 } from "../../redux/modules/interfaces"
 import muiThemeable from "material-ui/styles/muiThemeable"
 
@@ -89,6 +92,7 @@ export interface IDispatchProps {
     handleRemoveColumn: Function
     onApplyValueExpression: Function
     onApplyFilterExpression: Function
+    deactivateDataBrowser: Function
 }
 
 interface IRouterProps {
@@ -365,6 +369,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             handleRemoveColumn,
             onApplyValueExpression,
             onApplyFilterExpression,
+            deactivateDataBrowser,
             dirtyFormModalOpen,
             isDirty,
             onFitScaleToData,
@@ -399,16 +404,28 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                     this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
                 onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
-                onSaveForm={() => onSaveForm(mapDefinition.id, layerId, isDirty)}
+                onSaveForm={() => {
+                    onSaveForm(mapDefinition.id, layerId, isDirty)
+                    deactivateDataBrowser()
+                }}
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
-                onModalSaveForm={() => onModalSaveForm(mapDefinition.id, layerId)}
-                onModalDiscardForm={() => onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)}
+                onModalSaveForm={() => {
+                    onModalSaveForm(mapDefinition.id, layerId)
+                    deactivateDataBrowser()
+                }}
+                onModalDiscardForm={() => {
+                    onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)
+                    deactivateDataBrowser()
+                }}
                 onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
                 onApplyValueExpression={(expression: string) => {
                     onApplyValueExpression(expression, mapDefinition.id, layerId)
                 }}
                 onApplyFilterExpression={(expression: string) => {
                     onApplyFilterExpression(expression, mapDefinition.id, layerId)
+                }}
+                onCloseLayer={() => {
+                    deactivateDataBrowser()
                 }}
             />
         )
@@ -539,6 +556,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 filterExpression: expression,
             })
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
+        },
+        deactivateDataBrowser: () => {
+            dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))
+            dispatch(finishBrowsing())
         },
     }
 }
