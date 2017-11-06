@@ -61,6 +61,8 @@ const ExpressionContainer = styled.div`
     margin-bottom: 25px;
 `
 
+const ExpressionOpenDataBrowser = styled.div`margin-bottom: 10px;`
+
 export interface IProps {
     muiThemePalette: IMUIThemePalette
     mapId: number
@@ -77,6 +79,7 @@ export interface IProps {
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
     onClose: Function
+    openDataBrowser: Function
 }
 
 class FilterExpressionEditor extends React.Component<IProps, {}> {
@@ -97,6 +100,7 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
             onChangeExpressionMode,
             onToggleAdvModeModalState,
             onClose,
+            openDataBrowser,
         } = this.props
 
         const col1: any = expression["col1"]
@@ -224,6 +228,12 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
                             onBlur={(event: any, newValue: string) => onExpressionChange(event.target.value)}
                         />
                     </ExpressionContainer>
+                )}
+
+                {expressionMode === eLayerFilterExpressionMode.ADVANCED && (
+                    <ExpressionOpenDataBrowser>
+                        <ExpressionRaisedButton label={"Open Data Browser"} primary={true} onTouchTap={openDataBrowser} />
+                    </ExpressionOpenDataBrowser>
                 )}
 
                 {expressionMode === eLayerFilterExpressionMode.SIMPLE && (

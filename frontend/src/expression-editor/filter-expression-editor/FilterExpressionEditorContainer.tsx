@@ -187,9 +187,8 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
                     }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
-                onClose={() => {
-                    deactivateDataBrowser()
-                }}
+                onClose={() => deactivateDataBrowser()}
+                openDataBrowser={() => activateDataBrowser()}
             />
         )
     }
