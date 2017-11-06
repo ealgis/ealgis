@@ -25,7 +25,7 @@ import ActionBookmark from "material-ui/svg-icons/action/bookmark"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 
-const PaperListItem = styled(Paper)`margin: 7px !important;`
+const Description = styled.span`display: block;`
 
 const LegendPeekBarListItem = styled(ListItem)`
     padding-left: 0px !important;
@@ -114,11 +114,10 @@ export class LayerUINav extends React.Component<IProps, {}> {
                     secondaryText={
                         <p>
                             {getGeometryDescription(defn)}
-                            <br />
-                            {defn.description}
+                            {defn.description.length > 0 && <Description>{defn.description}</Description>}
                         </p>
                     }
-                    secondaryTextLines={2}
+                    secondaryTextLines={defn.description.length > 0 ? 2 : 1}
                     {...mapOwnerProps}
                     rightToggle={
                         <LayerToggle

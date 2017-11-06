@@ -372,7 +372,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                     hintText="Give your layer a description..."
                                     floatingLabelText="Layer description"
                                     floatingLabelFixed={true}
-                                    validate={[required]}
                                     fullWidth={true}
                                     autoComplete="off"
                                     onBlur={(event: any, newValue: string, previousValue: string) =>
