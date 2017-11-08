@@ -381,8 +381,8 @@ class LayerForm extends React.Component<IProps, {}> {
                                 <Field
                                     name="geometry"
                                     component={SelectField}
-                                    hintText="Choose your geometry..."
-                                    floatingLabelText="Geometry"
+                                    hintText="Choose your level of detail..."
+                                    floatingLabelText="Level of detail"
                                     floatingLabelFixed={true}
                                     validate={[required]}
                                     fullWidth={true}
