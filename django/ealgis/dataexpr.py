@@ -221,7 +221,7 @@ class DataExpression(object):
 
         filter_expr = None
         if cond != '':
-            cond_processed = cond.replace("$value", expr_raw)
+            cond_processed = cond.replace("$value", "(%s)" % expr_raw)
             parsed = DataExpression.cond_expr.parseString(cond_processed, parseAll=True)[0]
             filter_expr = parsed.eval(self)
         self.query = eal.session.query(*query_attrs)
