@@ -36,6 +36,8 @@ const LegendPeekBarListItem = styled(ListItem)`
 
 const LayerToggle = styled(Toggle)`margin-right: 35px !important;`
 
+const LayerName = styled.div`max-width: 80%;`
+
 const styles: React.CSSProperties = {
     layerListItemWithLegend: {
         paddingBottom: "0px",
@@ -110,7 +112,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
         return (
             <div>
                 <ListItem
-                    primaryText={defn.name}
+                    primaryText={<LayerName>{defn.name}</LayerName>}
                     secondaryText={
                         <p>
                             {getGeometryDescription(defn)}
