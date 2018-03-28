@@ -1,10 +1,11 @@
-FROM node:8.1.2-wheezy
+FROM node:8.10.0-wheezy
 
 RUN mkdir /npm /frontend
 WORKDIR /frontend
 
 EXPOSE 35729
 
-RUN npm install -g webpack
+RUN yarn global add webpack@3.11.0
+
 ADD docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
