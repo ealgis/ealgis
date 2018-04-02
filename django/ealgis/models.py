@@ -26,7 +26,7 @@ class TableInfo(Base):
         backref=backref('attribute_table'),
         cascade="all",
         lazy='dynamic')
-    metadata_json = db.Column(db.String(2048))
+    metadata_json = db.Column(db.JSON())
 
 
 class ColumnInfo(Base):
@@ -35,7 +35,7 @@ class ColumnInfo(Base):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), index=True)
     tableinfo_id = db.Column(db.Integer, db.ForeignKey('table_info.id'), index=True, nullable=False)
-    metadata_json = db.Column(db.String(2048))
+    metadata_json = db.Column(db.JSON())
     __table_args__ = (db.UniqueConstraint('name', 'tableinfo_id'), )
 
 
