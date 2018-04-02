@@ -303,8 +303,7 @@ class EAlGIS(object):
             attr_name = s[1]
         else:
             attr_name = s[0]
-        q = q.filter(GeometryLinkage.geometry_source ==
-                     geometry_source).filter(ColumnInfo.name == attr_name)
+        q = q.filter(GeometryLinkage.geometry_source_id == geometry_source.id).filter(ColumnInfo.name == attr_name)
         matches = q.all()
         if len(matches) > 1:
             raise TooManyMatches(attribute)
