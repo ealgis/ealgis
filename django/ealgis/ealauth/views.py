@@ -789,7 +789,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         # (i.e. they're data tables, not geom tables)
         # FIXME This can go once geometries are in a separate schema.
         datatable_ids_subq = eal.session.query(tableinfo.id)\
-            .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
+            .join(geometrylinkage, tableinfo.id == geometrylinkage.table_info_id)\
             .subquery()
 
         # Hacky approach to searching by column name
@@ -806,8 +806,8 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             datainfo_id = qp["geo_source_id"]
             query = eal.session.query(tableinfo)\
                 .filter(tableinfo.id.in_(datatable_ids_subq))\
-                .join(geometrylinkage, tableinfo.id == geometrylinkage.attr_table_info_id)\
-                .filter(geometrylinkage.geo_source_id == datainfo_id)
+                .join(geometrylinkage, tableinfo.id == geometrylinkage.table_info_id)\
+                .filter(geometrylinkage.geometry_source_id == datainfo_id)
 
         else:
             query = eal.session.query(tableinfo).filter(
@@ -918,9 +918,9 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if "geo_source_id" in qp:
             datainfo_id = qp["geo_source_id"]
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.attr_table_info_id)\
+                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.table_info_id)\
                 .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
-                .filter(geometrylinkage.geo_source_id == datainfo_id)\
+                .filter(geometrylinkage.geometry_source_id == datainfo_id)\
                 .filter(tableinfo.name.ilike("{}%".format(qp["profileTablePrefix"])))
 
         elif "tableinfo_id" in qp or "tableinfo_name" in qp:
@@ -940,7 +940,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 tableinfo_id = [qp["tableinfo_id"]]
 
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_info_id)\
+                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.table_info_id)\
                 .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
                 .filter(columninfo.table_info_id.in_(tableinfo_id))
 

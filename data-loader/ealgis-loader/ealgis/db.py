@@ -507,11 +507,11 @@ class GeometryLinkage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # the geometry table, and the column which links a row in our attribute table with
     # a row in the geometry table
-    geo_source_id = db.Column(db.Integer, db.ForeignKey('geometry_source.id'), index=True, nullable=False)
+    geometry_source_id = db.Column(db.Integer, db.ForeignKey('geometry_source.id'), index=True, nullable=False)
     geo_column = db.Column(db.String(256))
     # the attribute table, and the column which links a row in our geomtry table with
     # a row in the attribute table
-    attr_table_info_id = db.Column(db.Integer, db.ForeignKey('table_info.id'), nullable=False)
+    table_info_id = db.Column(db.Integer, db.ForeignKey('table_info.id'), nullable=False)
     attr_column = db.Column(db.String(256))
 
 

@@ -270,12 +270,12 @@ class EAlGIS(object):
         columninfo, geometrylinkage, tableinfo = self.get_table_classes(
             ["column_info", "geometry_linkage", "table_info"], schema_name)
         query = self.session.query(columninfo, geometrylinkage, tableinfo)\
-                    .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_info_id)\
+                    .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.table_info_id)\
                     .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
 
         if geo_source_id is not None:
             query = query.filter(
-                geometrylinkage.geo_source_id == geo_source_id)
+                geometrylinkage.geometry_source_id == geo_source_id)
 
         column_names = [item.lower() for item in column_names]
         return query.filter(sqlalchemy.func.lower(columninfo.name).in_(column_names)).all()

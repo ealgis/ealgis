@@ -165,9 +165,9 @@ class ColumnInfoSerializer(serializers.Serializer):
 
 class GeometryLinkageSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    geo_source_id = serializers.IntegerField()
+    table_info_id = serializers.IntegerField()
+    geometry_source_id = serializers.IntegerField()
     geo_column = serializers.CharField()
-    attr_table_info_id = serializers.IntegerField()
     attr_column = serializers.CharField()
 
 
