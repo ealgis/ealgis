@@ -83,14 +83,22 @@ class GeometrySource(Base):
     def __repr__(self):
         return "GeometrySource<%s.%s>" % (self.table_info.name, self.column)
 
-    def srid_column(self, srid):
-        if self.srid == srid:
-            return self.column
-        proj = [t for t in self.geometry_source_projected_collection if t.srid == srid]
+    def srid_column(geometry_source, srid, eal):
+        cols = eal.get_geometry_source_columns(geometry_source, geometry_source.__table__.schema)
+        proj = [t for t in cols if t.srid == srid]
         if len(proj) == 1:
             return proj[0].column
         else:
             return None
+
+
+class GeometrySourceColumn(Base):
+    "table describing sources of geometry information: the table, and the column"
+    __tablename__ = 'geometry_source_column'
+    id = db.Column(db.Integer, primary_key=True)
+    geometry_source_id = db.Column(db.Integer, db.ForeignKey('geometry_source.id'), index=True, nullable=False)
+    column = db.Column(db.String(256), nullable=False)
+    srid = db.Column(db.Integer, nullable=False)
 
 
 class GeometryLinkage(Base):

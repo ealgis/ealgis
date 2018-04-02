@@ -180,7 +180,7 @@ class DataExpression(object):
         # attempt to get a column in the desired SRID, this speeds things up
         if self.srid is not None:
             from ealgis.models import GeometrySource
-            self.geometry_column = GeometrySource.srid_column(self.geometry_source, self.srid)
+            self.geometry_column = GeometrySource.srid_column(self.geometry_source, self.srid, eal)
         if self.geometry_column is None:
             self.geometry_column = self.geometry_source.column
             self.srid = self.geometry_source.srid
