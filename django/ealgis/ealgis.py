@@ -68,8 +68,7 @@ class EAlGIS(object):
         from sqlalchemy.ext.automap import automap_base
         metadata = sqlalchemy.MetaData()
 
-        onlylist = ["table_info", "column_info",
-                    "geometry_source_projected", "geometry_source", "geometry_linkage"]
+        onlylist = ["table_info", "column_info", "geometry_source", "geometry_linkage"]
         for table_name in table_names:
             if table_name not in onlylist:
                 onlylist.append(table_name)
@@ -93,7 +92,7 @@ class EAlGIS(object):
 
         # Tables required for a schemas to be EAlGIS-compliant
         required_tables = ["table_info", "column_info", "geometry_linkage",
-                           "geometry_source", "geometry_source_projected"]
+                           "geometry_source"]
 
         inspector = inspect(self.db)
         table_names = inspector.get_table_names(schema=schema_name)
