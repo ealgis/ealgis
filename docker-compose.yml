@@ -32,6 +32,8 @@ services:
       - ./nginx/nginx:/nginx
     ports:
       - "35729:35729"
+    environment:
+      - ENVIRONMENT=development
   memcached:
     image: memcached
     expose:

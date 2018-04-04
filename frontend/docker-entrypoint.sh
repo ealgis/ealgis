@@ -5,7 +5,7 @@ if [ x"$command" = x"webpack" ]; then
     export TERM=xterm
     yarn
 
-    webpack --progress --colors --watch
+    webpack --mode $ENVIRONMENT --progress --colors --watch
     echo "webpack quit, status $?, sleeping..."
     while /bin/true; do
         sleep 60

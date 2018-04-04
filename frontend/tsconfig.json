@@ -3,23 +3,13 @@
         "outDir": "./dist/",
         "sourceMap": true,
         "strict": true,
-        "module": "commonjs",
-        "target": "es5",
+        "module": "esnext",
+        "target": "esnext",
+        "moduleResolution": "node",
         "jsx": "react",
         "importHelpers": true,
-        "lib": [
-            "dom",
-            "es5",
-            "scripthost",
-            "es2015",
-            "es2015.promise"
-        ]
+        "lib": ["dom", "es5", "scripthost", "es2015", "es2015.promise"]
     },
-    "exclude": [
-        "node_modules"
-    ],
-    "typeRoots": [
-        "../node_modules/@types",
-        "../@types"
-    ]
+    "exclude": ["node_modules"],
+    "typeRoots": ["../node_modules/@types", "../@types"]
 }

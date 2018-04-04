@@ -4,6 +4,7 @@ var CopyWebpackPlugin = require("copy-webpack-plugin")
 var fs = require("fs")
 
 module.exports = {
+    target: "web",
     entry: "./src/index.tsx",
     entry: {
         app: "./src/index.tsx",
@@ -46,14 +47,7 @@ module.exports = {
             key: fs.readFileSync("/nginx/foobar.key"),
         }),
         new webpack.DefinePlugin({
-            DEVELOPMENT: JSON.stringify(true),
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: "vendor",
-            filename: "vendor.bundle.js",
-            // (with more entries, this ensures that no other module
-            //  goes into the vendor chunk)
-            minChunks: Infinity,
+            "process.env": { NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development") },
         }),
         new CopyWebpackPlugin([
             { from: __dirname + "/src/assets/brand/ealgis_white_favicon.png" },
@@ -61,8 +55,18 @@ module.exports = {
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_only_transparent_background.png" },
         ]),
     ],
+
+    optimization: {
+        // namedModules: true,
+        splitChunks: {
+            name: "vendor",
+            chunks: "all",
+        },
+        // concatenateModules: true,
+    },
+
     output: {
-        filename: "bundle.js",
+        filename: "[name].js",
         path: __dirname + "/dist",
     },
 
@@ -77,7 +81,18 @@ module.exports = {
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
+            {
+                test: /\.tsx?$/,
+                use: [
+                    {
+                        loader: require.resolve("awesome-typescript-loader"),
+                        options: {
+                            // compile with TypeScript, then transpile with Babel
+                            useBabel: true,
+                        },
+                    },
+                ],
+            },
             { test: /\.css$/, loader: "style-loader!css-loader" },
             { test: /\.js$/, loader: "source-map-loader", enforce: "pre" },
         ],
