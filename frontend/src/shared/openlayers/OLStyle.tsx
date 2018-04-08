@@ -1,7 +1,8 @@
-import olStyleStyle from "ol/style/style"
-import olStyleStroke from "ol/style/stroke"
 import olStyleFill from "ol/style/fill"
+import olStyleStroke from "ol/style/stroke"
+import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
+import has from "ol/has"
 import { ILayer, IOLFeatureProps, IOLStyleDef } from "../../redux/modules/interfaces"
 
 function getHighlightedFeaturePattern() {
@@ -11,22 +12,21 @@ function getHighlightedFeaturePattern() {
 
     // Gradient and pattern are in canvas pixel space, so we adjust for the
     // renderer's pixel ratio
-    var pixelRatio = ol.has.DEVICE_PIXEL_RATIO
 
-    canvas.width = 11 * pixelRatio
-    canvas.height = 11 * pixelRatio
+    canvas.width = 11 * has.DEVICE_PIXEL_RATIO
+    canvas.height = 11 * has.DEVICE_PIXEL_RATIO
     // white background
     context.fillStyle = "white"
     context.fillRect(0, 0, canvas.width, canvas.height)
     // outer circle
     context.fillStyle = "rgba(102, 0, 102, 0.5)"
     context.beginPath()
-    context.arc(5 * pixelRatio, 5 * pixelRatio, 4 * pixelRatio, 0, 2 * Math.PI)
+    context.arc(5 * has.DEVICE_PIXEL_RATIO, 5 * has.DEVICE_PIXEL_RATIO, 4 * has.DEVICE_PIXEL_RATIO, 0, 2 * Math.PI)
     context.fill()
     // inner circle
     context.fillStyle = "rgb(55, 0, 170)"
     context.beginPath()
-    context.arc(5 * pixelRatio, 5 * pixelRatio, 2 * pixelRatio, 0, 2 * Math.PI)
+    context.arc(5 * has.DEVICE_PIXEL_RATIO, 5 * has.DEVICE_PIXEL_RATIO, 2 * has.DEVICE_PIXEL_RATIO, 0, 2 * Math.PI)
     context.fill()
     return context.createPattern(canvas, "repeat")
 }
