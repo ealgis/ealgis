@@ -37,7 +37,7 @@ export class MapList extends React.Component<IProps, {}> {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
 
         const mapGridTiles = (maps: Array<Array<any>>) =>
-            maps.map(([mapId, map]: Array<any>) =>
+            maps.map(([mapId, map]: Array<any>) => (
                 <GridTile
                     key={mapId}
                     containerElement={<Link to={`/map/${map.id}/${map["name-url-safe"]}`} />}
@@ -48,7 +48,7 @@ export class MapList extends React.Component<IProps, {}> {
                 >
                     <MapCoverImage mapDefinition={map as IMap} width={370} height={180} />
                 </GridTile>
-            )
+            ))
 
         return (
             <div>

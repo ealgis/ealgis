@@ -25,7 +25,9 @@ import ActionBookmark from "material-ui/svg-icons/action/bookmark"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 
-const Description = styled.span`display: block;`
+const Description = styled.span`
+    display: block;
+`
 
 const LegendPeekBarListItem = styled(ListItem)`
     padding-left: 0px !important;
@@ -34,9 +36,13 @@ const LegendPeekBarListItem = styled(ListItem)`
     margin-left: 17px !important;
 `
 
-const LayerToggle = styled(Toggle)`margin-right: 35px !important;`
+const LayerToggle = styled(Toggle)`
+    margin-right: 35px !important;
+`
 
-const LayerName = styled.div`max-width: 80%;`
+const LayerName = styled.div`
+    max-width: 80%;
+`
 
 const styles: React.CSSProperties = {
     layerListItemWithLegend: {
@@ -110,7 +116,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
         }
 
         return (
-            <div>
+            <React.Fragment>
                 <ListItem
                     primaryText={<LayerName>{defn.name}</LayerName>}
                     secondaryText={
@@ -133,7 +139,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
                 <Divider />
 
                 <LayerDeleteConfirmDialog modalId={deleteConfirmModalId} mapId={mapId} layerId={layerId} layerDefinition={defn} />
-            </div>
+            </React.Fragment>
         )
     }
 }

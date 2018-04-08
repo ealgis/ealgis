@@ -14,13 +14,9 @@ import getRoutes from "./routes"
 import { IStore, IConfig } from "./redux/modules/interfaces"
 const Config: IConfig = require("Config") as any
 
-import * as injectTapEventPlugin from "react-tap-event-plugin"
-injectTapEventPlugin()
-
-declare var DEVELOPMENT: boolean
 let Middleware: Array<any> = []
 
-if ("RAVEN_URL" in Config) {
+if (process.env.NODE_ENV === "production" && "RAVEN_URL" in Config) {
     Raven.config(Config["RAVEN_URL"]).install()
     Middleware.push(createRavenMiddleware(Raven))
 }
@@ -34,11 +30,9 @@ import reducers from "./redux/modules/reducer"
 import { EALGISApiClient } from "./shared/api/EALGISApiClient"
 const ealapi = new EALGISApiClient()
 
-const composeEnhancers = composeWithDevTools(
-    {
-        // Specify name here, actionsBlacklist, actionsCreators and other options if needed
-    }
-)
+const composeEnhancers = composeWithDevTools({
+    // Specify name here, actionsBlacklist, actionsCreators and other options if needed
+})
 const store: Store<IStore> = createStore(
     reducers,
     composeEnhancers(applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), ...Middleware))

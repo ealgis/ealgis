@@ -1,6 +1,6 @@
 import "whatwg-fetch"
 import * as qs from "qs"
-import cookie from "react-cookie"
+import * as Cookies from "js-cookie"
 import * as Raven from "raven-js"
 import { iterate as iterateSnackbar, sendMessage as sendSnackbarMessage } from "../../redux/modules/snackbars"
 import { beginFetch, finishFetch } from "../../redux/modules/app"
@@ -18,7 +18,7 @@ export class EALGISApiClient {
                 // key: "SomeUID",
                 action: "Dismiss",
                 autoHideDuration: 4000,
-                onActionTouchTap: () => {
+                onActionClick: () => {
                     dispatch(iterateSnackbar())
                 },
             })
@@ -55,7 +55,7 @@ export class EALGISApiClient {
             credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": cookie.load("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken"),
             },
             body: JSON.stringify(body),
         })
@@ -77,7 +77,7 @@ export class EALGISApiClient {
             credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": cookie.load("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken"),
             },
             body: JSON.stringify(body),
         })
@@ -98,7 +98,7 @@ export class EALGISApiClient {
             method: "DELETE",
             credentials: "same-origin",
             headers: {
-                "X-CSRFToken": cookie.load("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken"),
             },
         })
             .then((response: any) => {

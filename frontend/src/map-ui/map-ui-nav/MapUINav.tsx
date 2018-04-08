@@ -44,7 +44,9 @@ const MapName = styled.h3`
     padding-left: 20px;
 `
 
-const TabContainer = styled.div`margin: 0px;`
+const TabContainer = styled.div`
+    margin: 0px;
+`
 
 const DownloadButton = styled(RaisedButton)`
     margin: 12px !important;
@@ -114,17 +116,15 @@ export class MapUINav extends React.Component<IProps, {}> {
         } = this.props
 
         const deleteMapActions = [
-            <FlatButton label="Close" primary={true} onTouchTap={onToggleDeleteModalState} />,
-            <FlatButton label="Yes" primary={true} onTouchTap={onDeleteMap} />,
+            <FlatButton label="Close" primary={true} onClick={onToggleDeleteModalState} />,
+            <FlatButton label="Yes" primary={true} onClick={onDeleteMap} />,
         ]
 
         return (
-            <div>
+            <React.Fragment>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
-                        <MapName>
-                            {defn.name}
-                        </MapName>
+                        <MapName>{defn.name}</MapName>
                     </ToolbarGroup>
                     <ToolbarGroup lastChild={true}>
                         <IconMenu
@@ -134,26 +134,19 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 </IconButton>
                             }
                         >
-                            {isOwner &&
-                                <MenuItem
-                                    primaryText="Add Layer"
-                                    leftIcon={<MapsAddLocation />}
-                                    onClick={onAddLayer}
-                                />}
-                            {isOwner &&
+                            {isOwner && <MenuItem primaryText="Add Layer" leftIcon={<MapsAddLocation />} onClick={onAddLayer} />}
+                            {isOwner && (
                                 <MenuItem
                                     primaryText="Edit Map"
                                     leftIcon={<ModeEdit />}
                                     containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}
-                                />}
+                                />
+                            )}
                             <MenuItem primaryText="Duplicate Map" leftIcon={<ContentCopy />} onClick={onDuplicateMap} />
                             <MenuItem primaryText="Reset Position" leftIcon={<ActionHome />} onClick={onResetOrigin} />
-                            {isOwner &&
-                                <MenuItem
-                                    primaryText="Delete Map"
-                                    leftIcon={<ActionDelete />}
-                                    onClick={onToggleDeleteModalState}
-                                />}
+                            {isOwner && (
+                                <MenuItem primaryText="Delete Map" leftIcon={<ActionDelete />} onClick={onToggleDeleteModalState} />
+                            )}
                         </IconMenu>
 
                         <IconButton
@@ -168,14 +161,10 @@ export class MapUINav extends React.Component<IProps, {}> {
 
                 <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                     {/* START LAYERS TAB */}
-                    <Tab
-                        label="LAYERS"
-                        containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}`} />}
-                        value={""}
-                    >
+                    <Tab label="LAYERS" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}`} />} value={""}>
                         <TabContainer>
                             <List>
-                                {defn.json.layers.map((l: any, key: number) =>
+                                {defn.json.layers.map((l: any, key: number) => (
                                     <LayerUINav
                                         key={key}
                                         layerId={key}
@@ -184,27 +173,18 @@ export class MapUINav extends React.Component<IProps, {}> {
                                         isMapOwner={isOwner}
                                         mapNameURLSafe={defn["name-url-safe"]}
                                     />
-                                )}
+                                ))}
                             </List>
                         </TabContainer>
                     </Tab>
                     {/* END LAYERS TAB */}
 
                     {/* START DATA TAB */}
-                    <Tab
-                        label="DATA"
-                        containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`} />}
-                        value={"data"}
-                    >
+                    <Tab label="DATA" containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/data`} />} value={"data"}>
                         <TabContainer>
                             <Subheader>Download Data</Subheader>
 
-                            <DownloadButton
-                                label="Whole Map"
-                                secondary={true}
-                                icon={<FileFileDownload />}
-                                onClick={onExportWholeMap}
-                            />
+                            <DownloadButton label="Whole Map" secondary={true} icon={<FileFileDownload />} onClick={onExportWholeMap} />
                             <DownloadButton
                                 label="Map Viewport"
                                 secondary={true}
@@ -227,7 +207,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                     {/* END DATA TAB */}
 
                     {/* START SETTINGS TAB */}
-                    {isOwner &&
+                    {isOwner && (
                         <Tab
                             label="SETTINGS"
                             containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/settings`} />}
@@ -253,11 +233,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     <FlatButton label="Get Shareable Link" icon={<ContentLink />} />
                                 </CopyToClipboard>
 
-                                <RadioButtonGroup
-                                    name="shared"
-                                    defaultSelected={defn.shared}
-                                    onChange={onChangeSharing}
-                                >
+                                <RadioButtonGroup name="shared" defaultSelected={defn.shared} onChange={onChangeSharing}>
                                     <RadioButton
                                         value={1}
                                         iconStyle={styles.radioButtonIconStyle}
@@ -288,8 +264,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                                                     primaryText="Shared"
                                                     secondaryText={
                                                         <SharingDescription>
-                                                            Your map is shared with everyone in the EALGIS community.
-                                                            They can view the map or make a copy for themselves.
+                                                            Your map is shared with everyone in the EALGIS community. They can view the map
+                                                            or make a copy for themselves.
                                                         </SharingDescription>
                                                     }
                                                     secondaryTextLines={2}
@@ -317,14 +293,15 @@ export class MapUINav extends React.Component<IProps, {}> {
                             />*/}
                                 </RadioButtonGroup>
                             </TabContainer>
-                        </Tab>}
+                        </Tab>
+                    )}
                     {/* END SETTINGS TAB */}
                 </Tabs>
 
                 <Dialog title="Delete Map" actions={deleteMapActions} modal={true} open={deleteModalOpen}>
                     Are you sure you want to delete this map?
                 </Dialog>
-            </div>
+            </React.Fragment>
         )
     }
 }

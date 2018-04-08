@@ -50,7 +50,9 @@ class ClickableRaisedButton extends React.Component<any, any> {
     }
 }
 
-const ExpressionEditorToolbar = styled(Toolbar)`background-color: white !important;`
+const ExpressionEditorToolbar = styled(Toolbar)`
+    background-color: white !important;
+`
 const ExpressionModeDropDownMenu = styled(DropDownMenu)`
     top: -5px;
     margin-left: 15px;
@@ -65,7 +67,9 @@ const ExpressionContainer = styled.div`
     margin-bottom: 25px;
 `
 
-const ExpressionOpenDataBrowser = styled.div`margin-bottom: 10px;`
+const ExpressionOpenDataBrowser = styled.div`
+    margin-bottom: 10px;
+`
 
 export interface IProps {
     muiThemePalette: IMUIThemePalette
@@ -111,11 +115,11 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
         const col2: any = expression["col2"]
 
         const advancedModeDialogActions = [
-            <FlatButton label="No" primary={true} onTouchTap={onToggleAdvModeModalState} />,
+            <FlatButton label="No" primary={true} onClick={onToggleAdvModeModalState} />,
             <FlatButton
                 label="Yes"
                 primary={true}
-                onTouchTap={() => {
+                onClick={() => {
                     onChangeExpressionMode(eLayerValueExpressionMode.ADVANCED)
                     onToggleAdvModeModalState()
                 }}
@@ -123,7 +127,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
         ]
 
         return (
-            <div>
+            <React.Fragment>
                 <ExpressionEditorToolbar>
                     <ToolbarGroup>
                         <ActionSettings style={{ marginRight: "10px" }} />
@@ -238,15 +242,15 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
 
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
                     <ExpressionOpenDataBrowser>
-                        <ExpressionRaisedButton label={"Open Data Browser"} primary={true} onTouchTap={openDataBrowser} />
+                        <ExpressionRaisedButton label={"Open Data Browser"} primary={true} onClick={openDataBrowser} />
                     </ExpressionOpenDataBrowser>
                 )}
 
                 {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
-                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApply} />
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApply} />
                 )}
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
-                    <ExpressionRaisedButton label={"Apply"} primary={true} onTouchTap={onApplyAdvanced} />
+                    <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApplyAdvanced} />
                 )}
 
                 <ExpressionRaisedButton
@@ -255,7 +259,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     primary={true}
                     onClick={onClose}
                 />
-            </div>
+            </React.Fragment>
         )
     }
 }

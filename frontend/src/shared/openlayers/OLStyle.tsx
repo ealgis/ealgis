@@ -1,4 +1,7 @@
-import * as ol from "openlayers"
+import olStyleStyle from "ol/style/style"
+import olStyleStroke from "ol/style/stroke"
+import olStyleFill from "ol/style/fill"
+import olStyleText from "ol/style/text"
 import { ILayer, IOLFeatureProps, IOLStyleDef } from "../../redux/modules/interfaces"
 
 function getHighlightedFeaturePattern() {
@@ -31,16 +34,16 @@ function getHighlightedFeaturePattern() {
 function createDebugFeatures(feature: any) {
     if (feature.get("label") !== undefined) {
         // Tile centroid point
-        const stroke = new ol.style.Stroke({ color: "black", width: 2 })
-        const fill = new ol.style.Fill({ color: "red" })
+        const stroke = new olStyleStroke({ color: "black", width: 2 })
+        const fill = new olStyleFill({ color: "red" })
 
-        return new ol.style.Style({
-            text: new ol.style.Text({
+        return new olStyleStyle({
+            text: new olStyleText({
                 textAlign: "center",
                 textBaseline: "middle",
                 font: "20px Arial",
                 text: feature.get("label"),
-                stroke: new ol.style.Stroke({ color: "black", width: 2 }),
+                stroke: new olStyleStroke({ color: "black", width: 2 }),
                 offsetX: 0,
                 offsetY: 0,
                 rotation: 0,
@@ -48,9 +51,9 @@ function createDebugFeatures(feature: any) {
         })
     } else {
         // Tile border polygon
-        return new ol.style.Style({
-            fill: new ol.style.Fill({ color: "rgba(255, 255, 255, 0.4)" }),
-            stroke: new ol.style.Stroke({
+        return new olStyleStyle({
+            fill: new olStyleFill({ color: "rgba(255, 255, 255, 0.4)" }),
+            stroke: new olStyleStroke({
                 color: "blue",
                 width: 2,
             }),
@@ -99,8 +102,8 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
 
             // Apply our special feature highlight pattern to these!
             if (highlightedFeatures.indexOf(feature.get("gid")) >= 0) {
-                olStyle = new ol.style.Style({
-                    fill: new ol.style.Fill({
+                olStyle = new olStyleStyle({
+                    fill: new olStyleFill({
                         color: getHighlightedFeaturePattern(),
                     }),
                 })
@@ -111,20 +114,18 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
 
                 if (rgb.length > 0) {
                     if (l["line"].width > 0) {
-                        olStyle = new ol.style.Style({
-                            fill: new ol.style.Fill({
+                        olStyle = new olStyleStyle({
+                            fill: new olStyleFill({
                                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
                             }),
-                            stroke: new ol.style.Stroke({
-                                color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l[
-                                    "line"
-                                ].colour.a})`,
+                            stroke: new olStyleStroke({
+                                color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l["line"].colour.a})`,
                                 width: l["line"].width,
                             }),
                         })
                     } else {
-                        olStyle = new ol.style.Style({
-                            fill: new ol.style.Fill({
+                        olStyle = new olStyleStyle({
+                            fill: new olStyleFill({
                                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
                             }),
                         })
@@ -132,10 +133,9 @@ export function compileLayerStyle(l: ILayer, debugMode: boolean, highlightedFeat
                 }
             } else {
                 // No fill - border style only
-                olStyle = new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l["line"]
-                            .colour.a})`,
+                olStyle = new olStyleStyle({
+                    stroke: new olStyleStroke({
+                        color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l["line"].colour.a})`,
                         width: l["line"].width,
                     }),
                 })

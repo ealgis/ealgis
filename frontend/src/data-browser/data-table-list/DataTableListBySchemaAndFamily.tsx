@@ -46,7 +46,7 @@ export class DataTableListBySchemaAndFamily extends React.PureComponent<IProps, 
                                         <ListItem
                                             key={idx}
                                             primaryText={table.metadata_json.series.toUpperCase()}
-                                            onTouchTap={() => onClickTable(table)}
+                                            onClick={() => onClickTable(table)}
                                             rightIconButton={
                                                 onFavouriteTable !== undefined ? (
                                                     <ClickableIconButton onClick={() => onFavouriteTable(table)}>
@@ -73,7 +73,7 @@ export class DataTableListBySchemaAndFamily extends React.PureComponent<IProps, 
                                     "family"
                                 ].toUpperCase()})`}
                                 secondaryText={`${tableFamily["tables"][0]["metadata_json"]["kind"]}`}
-                                onTouchTap={() => onClickTable(tableFamily["tables"][0])}
+                                onClick={() => onClickTable(tableFamily["tables"][0])}
                                 rightIconButton={
                                     onFavouriteTable !== undefined ? (
                                         <ClickableIconButton onClick={() => onFavouriteTable(tableFamily["tables"][0])}>

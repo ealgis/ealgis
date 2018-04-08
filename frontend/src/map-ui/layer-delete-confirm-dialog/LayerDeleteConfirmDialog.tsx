@@ -15,8 +15,8 @@ export class LayerDeleteConfirmDialog extends React.Component<IProps, {}> {
         const { open, onClose, onConfirm, layerDefinition } = this.props
 
         const actions = [
-            <FlatButton label="No" primary={true} onTouchTap={onClose} />,
-            <FlatButton label="Yes" primary={true} onTouchTap={onConfirm} />,
+            <FlatButton label="No" primary={true} onClick={onClose} />,
+            <FlatButton label="Yes" primary={true} onClick={onConfirm} />,
         ]
 
         return (

@@ -84,7 +84,7 @@ export interface ISnackbarMessage {
     message: string
     autoHideDuration?: number
     action?: string
-    onActionTouchTap?: Function
+    onActionClick?: Function
 }
 
 // Side effects, only as applicable

@@ -9,8 +9,11 @@
  */
 
 import * as React from "react"
+import ReactGoogleMapLoader from "react-google-maps-loader"
 import { AutoComplete, MenuItem } from "material-ui"
 import Marker from "material-ui/svg-icons/maps/place"
+import { IConfig } from "../../../redux/modules/interfaces"
+const Config: IConfig = require("Config") as any
 
 const styles: React.CSSProperties = {
     menuItem: {
@@ -87,18 +90,24 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
             searchText: "",
         }
 
-        const google = window.google
-        this.geocoder = new google.maps.Geocoder()
-
-        // Documentation for AutocompleteService
-        // https://developers.google.com/maps/documentation/javascript/places-autocomplete#place_autocomplete_service
-        this.service = new google.maps.places.AutocompleteService(null)
-
         // binding for functions
         this.updateInput = this.updateInput.bind(this)
         this.populateData = this.populateData.bind(this)
         this.getCurrentDataState = this.getCurrentDataState.bind(this)
         this.getLatLgn = this.getLatLgn.bind(this)
+    }
+
+    init() {
+        console.log("init")
+        if(this.geocoder === undefined) {
+            console.log("initing")
+            const google = window.google
+            this.geocoder = new google.maps.Geocoder()
+
+            // Documentation for AutocompleteService
+            // https://developers.google.com/maps/documentation/javascript/places-autocomplete#place_autocomplete_service
+            this.service = new google.maps.places.AutocompleteService(null)
+        }
     }
 
     getCurrentDataState() {
@@ -165,43 +174,54 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
 
     render() {
         // https://github.com/callemall/material-ui/pull/6231
-        const { componentRestrictions, ...autocompleteProps } = this.props
+        const { componentRestrictions, results, ...autocompleteProps } = this.props
 
-        return (
-            <AutoComplete
-                {...autocompleteProps as any}
-                // Used by Google Places API / No user input
-                searchText={this.state.searchText}
-                onUpdateInput={this.updateInput}
-                filter={AutoComplete.noFilter}
-                onNewRequest={(chosenRequest, index) => {
-                    this.getLatLgn(chosenRequest.placeId, (results: Array<any>, status: any) => {
-                        this.props.results!(
-                            results[0].geometry.location.lat(),
-                            results[0].geometry.location.lng(),
-                            results[0]
-                        )
-                    })
+        return <ReactGoogleMapLoader
+            params={{
+                key: "GOOGLE_MAPS_API_KEY" in Config ? Config["GOOGLE_MAPS_API_KEY"] : "",
+                libraries: "places",
+            }}
+            render={googleMaps =>
+                {
+                    if(googleMaps) {
+                        return <AutoComplete
+                            {...autocompleteProps as any}
+                            // Used by Google Places API / No user input
+                            searchText={this.state.searchText}
+                            onUpdateInput={this.updateInput}
+                            filter={AutoComplete.noFilter}
+                            onNewRequest={(chosenRequest, index) => {
+                                this.getLatLgn(chosenRequest.placeId, (results: Array<any>, status: any) => {
+                                    this.props.results!(
+                                        results[0].geometry.location.lat(),
+                                        results[0].geometry.location.lng(),
+                                        results[0]
+                                    )
+                                })
+                            }}
+                            dataSource={this.state.data!.map((item, i, a) => {
+                                if (i === a.length - 1) {
+                                    return this.getPoweredByGoogleMenuItem()
+                                }
+
+                                return {
+                                    text: item.description,
+                                    placeId: item.place_id,
+                                    value: (
+                                        <MenuItem
+                                            style={this.props.menuItemStyle || styles.menuItem}
+                                            innerDivStyle={this.props.innerDivStyle || styles.menuItemInnerDiv}
+                                            leftIcon={<Marker style={styles.menuItemMarker} />}
+                                            // Used by Google Places / No user input
+                                            primaryText={item.description}
+                                        />
+                                    ),
+                                }
+                            })}
+                        />
+                    }
+                    return null
                 }}
-                dataSource={this.state.data!.map((item, i, a) => {
-                    if (i === a.length - 1) {
-                        return this.getPoweredByGoogleMenuItem()
-                    }
-
-                    return {
-                        text: item.description,
-                        placeId: item.place_id,
-                        value: (
-                            <MenuItem
-                                style={this.props.menuItemStyle || styles.menuItem}
-                                innerDivStyle={this.props.innerDivStyle || styles.menuItemInnerDiv}
-                                leftIcon={<Marker style={styles.menuItemMarker} />}
-                                // Used by Google Places / No user input
-                                primaryText={item.description}
-                            />
-                        ),
-                    }
-                })}
             />
         )
     }

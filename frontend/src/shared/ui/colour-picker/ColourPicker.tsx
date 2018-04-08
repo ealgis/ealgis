@@ -61,18 +61,17 @@ class ColourPicker extends React.Component<ColourPickerProps, {}> {
         })
 
         return (
-            <div>
+            <React.Fragment>
                 <div style={styles.swatch} onClick={this.handleClick}>
                     <div style={styles.color} />
                 </div>
-                {this.state.displayColorPicker
-                    ? <div style={styles.popover}>
-                          <div style={styles.cover} onClick={this.handleClose} />
-                          <SwatchesPicker color={colour} onChange={this.handleChange} />
-                      </div>
-                    : null}
-
-            </div>
+                {this.state.displayColorPicker ? (
+                    <div style={styles.popover}>
+                        <div style={styles.cover} onClick={this.handleClose} />
+                        <SwatchesPicker color={colour} onChange={this.handleChange} />
+                    </div>
+                ) : null}
+            </React.Fragment>
         )
     }
 }

@@ -5,9 +5,32 @@ import AppBar from "material-ui/AppBar"
 import { Tabs, Tab } from "material-ui/Tabs"
 import { Router, Route, Link, browserHistory } from "react-router"
 import { connect } from "react-redux"
-import * as olr from "ol-react"
-import * as ol from "openlayers"
-import { IMap, ILayer } from "../../redux/modules/interfaces"
+// import * as olr from "ol-react"
+// import * as ol from "openlayers"
+import {
+    //     // interaction,
+    layer as rolLayer,
+    //     // custom,
+    // control, //name spaces
+    //     // Interactions,
+    //     // Overlays,
+    // Controls, //group
+    // Map,
+    // Layers,
+    //     // Overlay,
+    //     // Util, //objects
+} from "react-openlayers"
+import olProj from "ol/proj"
+import olProjection from "ol/proj/projection"
+import olFormatGeoJSON from "ol/format/geojson"
+import olSourceStamen from "ol/source/stamen"
+import olSourceVectorTile from "ol/source/vectortile"
+import olSourceXYZ from "ol/source/xyz"
+import olTileGrid from "ol/tilegrid"
+import olFormatMVT from "ol/format/mvt"
+// import TileGrid from "ol/tilegrid"
+import { IMap, ILayer, IConfig } from "../../redux/modules/interfaces"
+const Config: IConfig = require("Config") as any
 
 export interface IProps {
     map: IMap
@@ -17,7 +40,48 @@ export interface IProps {
 }
 
 export class Layer extends React.Component<IProps, {}> {
+    // layer: any
+    // <olr.source.VectorTile url={url} format={formatObj} overlaps={overlaps} cacheSize={cacheSize} />
+    // constructor(props: any) {
+    //     super(props)
+    //     this.layer = new olSourceXYZ({
+    //         url: `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${
+    //             Config["MAPBOX_API_KEY"]
+    //         }`,
+    //         attributions:
+    //             '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright"> OpenStreetMap contributors</a>',
+    //     })
+    // }
+
     render() {
+        // return <div>Layer</div>
+
+        // return (
+        //     <rolLayer.Tile
+        //         source={new olSourceStamen({ layer: "watercolor" })}
+        //         />)
+
+        return (
+            <rolLayer.VectorTile
+                source={
+                    new olSourceVectorTile({
+                        projection: undefined,
+                        attributions:
+                            '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> ' +
+                            '© <a href="https://www.openstreetmap.org/copyright">' +
+                            "OpenStreetMap contributors</a>",
+                        format: new olFormatMVT(),
+                        tileGrid: olTileGrid.createXYZ({ maxZoom: 22 }),
+                        tilePixelRatio: 16,
+                        url:
+                            "https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v6/" +
+                            "{z}/{x}/{y}.vector.pbf?access_token=" +
+                            Config["MAPBOX_API_KEY"],
+                    })
+                }
+            />
+        )
+
         const { map, layer, layerId, debugMode } = this.props
 
         // For ImageWMS (Single image tile.)
@@ -36,11 +100,7 @@ export class Layer extends React.Component<IProps, {}> {
         // For VectorTiles
         // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
         const bbox = layer.latlon_bbox
-        const extent = ol.proj.transformExtent(
-            [bbox!.minx, bbox!.miny, bbox!.maxx, bbox!.maxy],
-            "EPSG:4326",
-            "EPSG:900913"
-        )
+        const extent = olProj.transformExtent([bbox!.minx, bbox!.miny, bbox!.maxx, bbox!.maxy], "EPSG:4326", "EPSG:900913")
         const renderMode = "hybrid"
         const layerPropreties = {
             mapId: map.id,
@@ -53,11 +113,28 @@ export class Layer extends React.Component<IProps, {}> {
         if (debugMode === true) {
             url = url + "&debug=1"
         }
-        const formatObj = new ol.format.GeoJSON()
-        const tileGrid = ol.tilegrid.createXYZ({ maxZoom: 20 })
+        const formatObj = new olFormatGeoJSON()
+        const tileGrid = olTileGrid.createXYZ({ maxZoom: 20 })
         const overlaps = true
         const cacheSize = 256
         const visible = layer.visible
+
+        // <olr.source.VectorTile url={url} format={formatObj} overlaps={overlaps} cacheSize={cacheSize} />
+        // console.log("olSourceVectorTile2", {
+        //     url: url,
+        //     format: formatObj,
+        //     overlaps: overlaps,
+        //     cacheSize: cacheSize,
+        // })
+        const source = new olSourceVectorTile({
+            // projection: new olProjection({ code: "EPSG:4326" }),
+            projection: olProj.get("EPSG:4326"),
+            url: url,
+            format: formatObj,
+            overlaps: overlaps,
+            cacheSize: cacheSize,
+            // tileGrid: tileGrid,
+        })
 
         /*
         // Matrix.default()
@@ -133,22 +210,16 @@ export class Layer extends React.Component<IProps, {}> {
             }
         }*/
 
+        console.log("layer.VectorTile")
         return (
-            <olr.layer.VectorTile
+            <rolLayer.VectorTile
                 visible={visible}
                 extent={extent}
                 style={layer.olStyle}
                 renderMode={renderMode}
                 properties={layerPropreties}
-            >
-                <olr.source.VectorTile
-                    url={url}
-                    format={formatObj}
-                    tileGrid={tileGrid}
-                    overlaps={overlaps}
-                    cacheSize={cacheSize}
-                />
-            </olr.layer.VectorTile>
+                source={source}
+            />
         )
     }
 }

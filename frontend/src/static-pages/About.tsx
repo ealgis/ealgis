@@ -2,7 +2,7 @@ import * as React from "react";
 
 export class About extends React.Component<undefined, undefined> {
     render() {
-        return <div>
+        return <React.Fragment>
             <p>
             Copyright 2013-17 Grahame Bowland and Keith Moss
             </p>
@@ -29,7 +29,7 @@ export class About extends React.Component<undefined, undefined> {
             This product includes color specifications and designs developed
             by Cynthia Brewer (<a target="_other" href="http://colorbrewer.org/">http://colorbrewer.org/</a>).
             </p>
-        </div>
+        </React.Fragment>
     }
 }
 

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { browserHistory } from "react-router"
-import { proj } from "openlayers"
+import olProj from "ol/proj"
 import MapUINav from "./MapUINav"
 import { toggleModalState } from "../../redux/modules/app"
 import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures } from "../../redux/modules/map"
@@ -169,14 +169,14 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         onMoveToPosition: (mapDefaults: IMapPositionDefaults) => {
             const position: IPosition = {
-                center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+                center: olProj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                 zoom: mapDefaults.zoom,
             }
             dispatch(moveToPosition(position))
         },
         onResetOrigin: (mapDefaults: IMapPositionDefaults) => {
             const position: IPosition = {
-                center: proj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
+                center: olProj.transform([mapDefaults.lon, mapDefaults.lat], "EPSG:4326", "EPSG:900913"),
                 zoom: mapDefaults.zoom,
             }
             dispatch(restoreDefaultMapPosition(position))
@@ -207,7 +207,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
             dispatch(exportMapViewport(include_geom_attrs))
 
-            const extentLonLat = proj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
+            const extentLonLat = olProj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
             window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
         },
         onCheckIncludeGeomAttrs: function(that: MapUINavContainer, isInputChecked: boolean) {

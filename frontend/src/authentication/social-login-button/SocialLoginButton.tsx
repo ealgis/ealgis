@@ -24,7 +24,7 @@ export class SocialLoginButton extends React.Component<SocialLoginButtonProps, S
                 }}
                 backgroundColor={colour}
                 labelColor={"#ffffff"}
-                onTouchTap={this.handleClick}
+                onClick={this.handleClick}
             />
         )
     }

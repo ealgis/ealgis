@@ -1,12 +1,12 @@
 import * as React from "react"
 import MapUI from "./MapUI"
 import { connect } from "react-redux"
-import { proj } from "openlayers"
+import olProj from "ol/proj"
 import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
 import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
 import { IStore, IMap, IPosition, IOLFeature, IOLFeatureProps } from "../../redux/modules/interfaces"
 
-import "openlayers/css/ol.css"
+import "ol/ol.css"
 
 export interface IProps {
     params: IRouteProps
@@ -79,7 +79,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             const view = event.map.getView()
 
             const position: IPosition = {
-                center: proj.transform(view.getCenter(), "EPSG:900913", "EPSG:4326"),
+                center: olProj.transform(view.getCenter(), "EPSG:900913", "EPSG:4326"),
                 zoom: view.getZoom(),
                 resolution: view.getResolution(),
                 extent: view.calculateExtent(event.map.getSize()),

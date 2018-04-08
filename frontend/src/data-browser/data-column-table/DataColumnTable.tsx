@@ -18,20 +18,30 @@ class ClickableIconButton extends React.Component<any, any> {
     }
 }
 
-const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
+const DataBrowserToolbar = styled(Toolbar)`
+    background-color: white !important;
+`
 
-const DataBrowserToolbarTitle = styled(ToolbarTitle)`color: black;`
+const DataBrowserToolbarTitle = styled(ToolbarTitle)`
+    color: black;
+`
 
-const TableNotes = styled.div`padding-bottom: 10px;`
+const TableNotes = styled.div`
+    padding-bottom: 10px;
+`
 
-const MetadataURL = styled.div`line-height: 20px;`
+const MetadataURL = styled.div`
+    line-height: 20px;
+`
 
 const RowLabelTableHeaderColumn = styled(TableHeaderColumn)`
     width: 250px;
     white-space: normal;
 `
 
-const ColumnCellTableHeaderColumn = styled(TableHeaderColumn)`white-space: normal !important;`
+const ColumnCellTableHeaderColumn = styled(TableHeaderColumn)`
+    white-space: normal !important;
+`
 
 const RowLabelTableRowColumn = styled(TableRowColumn)`
     width: 250px;
@@ -43,7 +53,9 @@ const ColumnCellTableRowColumnClickable = styled(TableRowColumn)`
     border-left: 1px solid rgb(209, 196, 233);
 `
 
-const ColumnCellTableRowColumn = styled(TableRowColumn)`border-left: 1px solid rgb(209, 196, 233);`
+const ColumnCellTableRowColumn = styled(TableRowColumn)`
+    border-left: 1px solid rgb(209, 196, 233);
+`
 
 export interface IProps {
     showColumnNames: boolean
@@ -75,7 +87,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
 
         return (
-            <div>
+            <React.Fragment>
                 <DataBrowserToolbar>
                     <ToolbarGroup firstChild={true}>
                         <ActionViewColumn style={{ marginRight: "10px" }} />
@@ -105,7 +117,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                 </DataBrowserToolbar>
 
                 {showTableInfo && (
-                    <div>
+                    <React.Fragment>
                         {table["metadata_json"]["kind"]}
                         <br />
                         <br />
@@ -117,7 +129,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                 </a>
                             </MetadataURL>
                         ))}
-                    </div>
+                    </React.Fragment>
                 )}
 
                 <Table
@@ -164,7 +176,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                         })}
                     </TableBody>
                 </Table>
-            </div>
+            </React.Fragment>
         )
     }
 }

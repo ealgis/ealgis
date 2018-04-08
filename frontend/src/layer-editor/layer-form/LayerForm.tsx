@@ -203,11 +203,11 @@ const FillColourSchemeFields = (fields: any) => {
 
 const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }: any) => {
     return (
-        <div>
+        <React.Fragment>
             {fields.getAll().map((column: ISelectedColumn, key: number) => {
                 return <ColumnCard key={key} columnStub={column} onRemoveColumn={onRemoveColumn} />
             })}
-        </div>
+        </React.Fragment>
     )
 }
 
@@ -323,11 +323,11 @@ class LayerForm extends React.Component<IProps, {}> {
         //   })
 
         return (
-            <div>
+            <React.Fragment>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
-                        <RaisedButton label={"Save"} disabled={layerFormSubmitting || !isDirty} primary={true} onTouchTap={onSaveForm} />
-                        <RaisedButton label={"Undo"} disabled={layerFormSubmitting || !isDirty} primary={true} onTouchTap={onResetForm} />
+                        <RaisedButton label={"Save"} disabled={layerFormSubmitting || !isDirty} primary={true} onClick={onSaveForm} />
+                        <RaisedButton label={"Undo"} disabled={layerFormSubmitting || !isDirty} primary={true} onClick={onResetForm} />
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
@@ -418,7 +418,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 /> */}
 
                                 {visibleComponent === undefined && (
-                                    <div>
+                                    <React.Fragment>
                                         <Field
                                             name="valueExpression"
                                             component={TextField}
@@ -468,19 +468,19 @@ class LayerForm extends React.Component<IProps, {}> {
                                         />
 
                                         <FieldArray name="selectedColumns" component={SelectedColumns} onRemoveColumn={onRemoveColumn} />
-                                    </div>
+                                    </React.Fragment>
                                 )}
 
                                 {visibleComponent === "value-expression" && (
-                                    <div>
+                                    <React.Fragment>
                                         <ValueExpressionContainer onApply={onApplyValueExpression} />
-                                    </div>
+                                    </React.Fragment>
                                 )}
 
                                 {visibleComponent === "filter-expression" && (
-                                    <div>
+                                    <React.Fragment>
                                         <FilterExpressionContainer onApply={onApplyFilterExpression} />
-                                    </div>
+                                    </React.Fragment>
                                 )}
                             </TabContainer>
                         </Tab>
@@ -582,13 +582,13 @@ class LayerForm extends React.Component<IProps, {}> {
                 <Dialog
                     title="You have unsaved changes - what would you like to do?"
                     actions={[
-                        <FlatButton label="Discard Changes" secondary={true} onTouchTap={onModalDiscardForm} />,
-                        <FlatButton label="Save Changes" primary={true} onTouchTap={onModalSaveForm} />,
+                        <FlatButton label="Discard Changes" secondary={true} onClick={onModalDiscardForm} />,
+                        <FlatButton label="Save Changes" primary={true} onClick={onModalSaveForm} />,
                     ]}
                     modal={true}
                     open={dirtyFormModalOpen}
                 />
-            </div>
+            </React.Fragment>
         )
     }
 }

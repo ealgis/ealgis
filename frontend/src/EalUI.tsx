@@ -99,7 +99,7 @@ export class EalUI extends React.Component<IProps, {}> {
                                 src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background_header_bar.png")}
                             />
                         }
-                        onLeftIconButtonTouchTap={onTapAppBarLeft}
+                        onLeftIconButtonClick={onTapAppBarLeft}
                         iconElementRight={
                             <ToolbarGroup>
                                 {showGooglePlacesBar &&
@@ -122,7 +122,7 @@ export class EalUI extends React.Component<IProps, {}> {
                                     <HeaderBarButton
                                         label={user.username}
                                         icon={<ActionFace color={"white"} />}
-                                        onTouchTap={handleOpenUserMenu}
+                                        onClick={handleOpenUserMenu}
                                     />}
                                 {user !== null &&
                                     <IconMenu
@@ -161,9 +161,9 @@ export class EalUI extends React.Component<IProps, {}> {
                     message={snackbars.active.message}
                     action={snackbars.active.action}
                     autoHideDuration={snackbars.active.autoHideDuration}
-                    onActionTouchTap={() => {
-                        if ("onActionTouchTap" in snackbars.active) {
-                            snackbars.active.onActionTouchTap!()
+                    onActionClick={() => {
+                        if ("onActionClick" in snackbars.active) {
+                            snackbars.active.onActionClick!()
                         }
                     }}
                     onRequestClose={handleSnackbarClose}

@@ -1,7 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
 
-import { TouchTapEvent } from "material-ui"
 import IconButton from "material-ui/IconButton"
 import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
@@ -105,7 +104,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                         <ActionSearch style={{ marginRight: "10px" }} color={"white"} />
                         <DataBrowserTitle text={"Data Browser"} />
                         {this.showTables(selectedTables, selectedColumns) && (
-                            <RaisedButton primary={true} label={"Back"} onTouchTap={() => backToSchemaView()} />
+                            <RaisedButton primary={true} label={"Back"} onClick={() => backToSchemaView()} />
                         )}
                         {this.showTables(selectedTables, selectedColumns) && (
                             <TableSearchTextField
@@ -123,7 +122,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             />
                         )}
                         {this.showColumns(selectedColumns) && (
-                            <RaisedButton primary={true} label={"Back"} onTouchTap={() => backToTableView()} />
+                            <RaisedButton primary={true} label={"Back"} onClick={() => backToTableView()} />
                         )}
                     </ToolbarGroup>
 
@@ -136,7 +135,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
 
                 <DataBrowserInnerContainer>
                     {this.showSchemas(selectedTables, selectedColumns) && (
-                        <div>
+                        <React.Fragment>
                             <DataBrowserToolbar>
                                 <ToolbarGroup>
                                     <ActionViewColumn style={{ marginRight: "10px" }} />
@@ -179,7 +178,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     />
                                 </DataBrowserSectionContainer>
                             )}
-                        </div>
+                        </React.Fragment>
                     )}
 
                     {this.showTables(selectedTables, selectedColumns) && (

@@ -71,7 +71,7 @@ export class LayerQuerySummary extends React.Component<IProps, {}> {
                     <IconButton
                         tooltip="Apply scale settings to layer"
                         tooltipPosition={"bottom-left"}
-                        onTouchTap={onFitScaleToData}
+                        onClick={onFitScaleToData}
                     >
                         <ContentCopy />
                     </IconButton>

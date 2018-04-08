@@ -15,7 +15,9 @@ import { red500, white } from "material-ui/styles/colors"
 
 const required = (value: any) => (value ? undefined : "Required")
 
-const Form = styled.form`margin: 10px;`
+const Form = styled.form`
+    margin: 10px;
+`
 
 const FormErrorMessage = styled.span`
     font-weight: bold;
@@ -24,7 +26,9 @@ const FormErrorMessage = styled.span`
     margin-top: 40px;
 `
 
-const HiddenButton = styled.button`display: none;`
+const HiddenButton = styled.button`
+    display: none;
+`
 
 export interface IProps {
     mapDefinition: IMap
@@ -38,12 +42,10 @@ export class MapForm extends React.Component<IProps, {}> {
         const { mapDefinition } = this.props
 
         let closeLink =
-            mapDefinition === undefined
-                ? <Link to={`/maps`} />
-                : <Link to={`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}`} />
+            mapDefinition === undefined ? <Link to={`/maps`} /> : <Link to={`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}`} />
 
         return (
-            <div>
+            <React.Fragment>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
                         <RaisedButton
@@ -90,14 +92,11 @@ export class MapForm extends React.Component<IProps, {}> {
                         autoComplete="off"
                     />
 
-                    {error &&
-                        <FormErrorMessage>
-                            {error}
-                        </FormErrorMessage>}
+                    {error && <FormErrorMessage>{error}</FormErrorMessage>}
 
                     <HiddenButton type="submit" />
                 </Form>
-            </div>
+            </React.Fragment>
         )
     }
 }

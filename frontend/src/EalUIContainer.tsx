@@ -19,14 +19,13 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
 import getMuiTheme from "material-ui/styles/getMuiTheme"
 import EalUI from "./EalUI"
 import { connect } from "react-redux"
-import { proj } from "openlayers"
+import olProj from "ol/proj"
 import { toggleSidebarState, setLastPage, toggleUserMenu } from "./redux/modules/app"
 import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
 import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 import CircularProgress from "material-ui/CircularProgress"
 import LinearProgress from "material-ui/LinearProgress"
-import GoogleMapLoader from "react-google-maps-loader"
 import { IStore, IAppModule, ISnackbarsModule, IUser, IMUITheme, IConfig } from "./redux/modules/interfaces"
 const Config: IConfig = require("Config") as any
 
@@ -153,7 +152,8 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
                     handleOpenUserMenu={handleOpenUserMenu}
                     handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
                     handleGooglePlacesAutocomplete={(lat: number, lon: number, result: object) =>
-                        handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)}
+                        handleGooglePlacesAutocomplete(lat, lon, result, location.pathname)
+                    }
                     children={children}
                     content={content}
                     sidebar={sidebar}
@@ -209,7 +209,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 const viewport = result.geometry.viewport.toJSON()
                 dispatch(
                     moveToGooglePlacesResult(
-                        proj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], "EPSG:4326", "EPSG:900913")
+                        olProj.transformExtent([viewport.west, viewport.south, viewport.east, viewport.north], "EPSG:4326", "EPSG:900913")
                     )
                 )
             }
@@ -219,8 +219,4 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 const EalContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(EalContainer)
 
-// export default EalContainerWrapped
-export default GoogleMapLoader(EalContainerWrapped, {
-    libraries: ["places"],
-    key: "GOOGLE_MAPS_API_KEY" in Config ? Config["GOOGLE_MAPS_API_KEY"] : "",
-})
+export default EalContainerWrapped

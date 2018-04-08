@@ -1,5 +1,3 @@
-declare var DEVELOPMENT: boolean
-
 import * as ReactGA from "react-ga"
 import { Middleware, MiddlewareAPI } from "redux"
 import { IStore, IConfig } from "../../redux/modules/interfaces"
@@ -19,7 +17,7 @@ class GATracker {
     }
 
     pageview(path: string) {
-        if (DEVELOPMENT === false || this.always_send === true) {
+        if (process.env.NODE_ENV === "production" || this.always_send === true) {
             ReactGA.set({ page: path })
             ReactGA.pageview(path)
         }
@@ -30,7 +28,7 @@ class GATracker {
     }
 
     event(cfg: ReactGA.EventArgs) {
-        if (DEVELOPMENT === false || this.always_send === true) {
+        if (process.env.NODE_ENV === "production" || this.always_send === true) {
             ReactGA.event(cfg)
         }
 
