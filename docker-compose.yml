@@ -28,7 +28,7 @@ services:
     build: frontend/
     command: webpack
     volumes:
-      - ./frontend:/frontend
+      - ./frontend:/frontend:delegated
       - ./nginx/nginx:/nginx
     ports:
       - "35729:35729"
@@ -40,8 +40,8 @@ services:
     build: django/
     command: runserver
     volumes:
-      - ./django/:/app
-      - ./frontend:/frontend
+      - ./django/:/app:delegated
+      - ./frontend:/frontend:delegated
     ports:
       - "8000:8000"
     environment:
