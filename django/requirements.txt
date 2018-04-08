@@ -3,8 +3,8 @@ psycopg2==2.7.1
 djangorestframework==3.6.2
 cairocffi==0.8.0
 git+git://github.com/tiran/defusedxml
-SQLAlchemy==1.1.9
-GeoAlchemy2==0.4.0
+SQLAlchemy==1.2.6
+GeoAlchemy2==0.4.2
 pyparsing==2.1.10
 requests==2.13.0
 python-memcached==1.58
