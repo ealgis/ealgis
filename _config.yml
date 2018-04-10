@@ -1,0 +1,8 @@
+title: EAlGIS
+description: Interactive Geospatial Data Analysis
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
