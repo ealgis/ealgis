@@ -1,17 +1,17 @@
 version: "2"
 services:
   dbdata:
-    image: shongololo/postgis:2.4
+    image: mdillon/postgis:10-alpine
     entrypoint: /bin/bash
     volumes:
       - /postgresql/9.6/main
   db:
-    image: shongololo/postgis:2.4
+    image: mdillon/postgis:10-alpine
     ports:
       - "5432:5432"
     environment:
-      - PG_PASSWORD=postgres
-      - DB_NAME=ealgis
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ealgis
     volumes:
       - ./data-loader:/data-loader
 
