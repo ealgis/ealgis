@@ -4,6 +4,7 @@ import math
 import sqlalchemy as sqlalchemy
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
+from .db import DataAccess, SchemaLoader
 
 
 class NoMatches(Exception):
@@ -44,8 +45,8 @@ class EAlGIS(object):
         Session.configure(bind=self.db)
         self.session = Session()
 
-        self.schema_names = None
-        self.schemas = None
+        # self.schema_names = None
+        # self.schemas = None
         self.datainfo = None
         self.tableinfo = None
 
@@ -87,61 +88,6 @@ class EAlGIS(object):
         """
         return self.get_table_classes([table_name], schema_name)[0]
 
-    def is_compliant_schema(self, schema_name):
-        """determines if a given schema is EAlGIS-compliant"""
-
-        # Tables required for a schemas to be EAlGIS-compliant
-        required_tables = ["table_info", "column_info", "geometry_linkage",
-                           "geometry_source"]
-
-        inspector = inspect(self.db)
-        table_names = inspector.get_table_names(schema=schema_name)
-
-        if not set(required_tables).issubset(table_names):
-            return False
-
-        if "ealgis_metadata" in table_names:
-            return True
-
-        return False
-
-    def get_schema_names(self, skip_cache=False):
-        """identify and report on EAlGIS-compliant schemas available in the database"""
-
-        def make_schemas():
-            # PostgreSQL and PostGIS system schemas
-            system_schemas = ["information_schema",
-                              "tiger", "tiger_data", "topology", "public"]
-
-            inspector = inspect(self.db)
-
-            schemas = []
-            for schema_name in inspector.get_schema_names():
-                if schema_name not in system_schemas:
-                    if self.is_compliant_schema(schema_name):
-                        schemas.append(schema_name)
-            return schemas
-
-        if skip_cache is True or self.schema_names is None:
-            self.schema_names = make_schemas()
-        return self.schema_names
-
-    def get_schemas(self, skip_cache=False):
-        """identify and load the metadata for EAlGIS-compliant schemas available in the database"""
-
-        def make_schemas():
-            schemas = {}
-            for schema_name in self.get_schema_names(skip_cache):
-                ealgismetadata = self.get_table_class(
-                    "ealgis_metadata", schema_name)
-                schemas[schema_name] = self.session.query(
-                    ealgismetadata).first()
-            return schemas
-
-        if skip_cache is True or self.schemas is None:
-            self.schemas = make_schemas()
-        return self.schemas
-
     def get_datainfo(self):
         """grab a representation of the spatial data available in the database
         result is cached, so after first call this is fast"""
@@ -171,8 +117,9 @@ class EAlGIS(object):
         def make_datainfo():
             # our geography sources
             info = {}
+            loader = SchemaLoader(SchemaLoader.make_engine())
 
-            for schema_name in self.get_schema_names():
+            for schema_name in loader.get_ealgis_schemas():
                 geometrysource, tableinfo = self.get_table_classes(
                     ["geometry_source", "table_info"], schema_name)
 
@@ -181,43 +128,11 @@ class EAlGIS(object):
                     info[name] = dump_source(source)
             return info
 
+        return DataAccess.get_geometry_sources()
+
         if self.datainfo is None:
             self.datainfo = make_datainfo()
         return self.datainfo
-
-    def get_tableinfo(self):
-        """grab a representation of the tabular data available in the database
-        result is cached, so after first call this is fast"""
-
-        def dump_table_info(table):
-            if table.metadata_json is not None:
-                table_info = table.metadata_json
-            else:
-                table_info = {'description': table.name}
-            table_info['_id'] = table.id
-
-            table_info['name'] = table.name
-            table_info['schema_name'] = table.__table__.schema
-            return table_info
-
-        def make_tableinfo():
-            # our tabular sources
-            info = {}
-
-            for schema_name in self.get_schema_names():
-                tableinfo = self.get_table_class("table_info", schema_name)
-                geodata_tables = [v["name"]
-                                  for (k, v) in self.get_datainfo().items()]
-
-                for table_info in self.session.query(tableinfo).all():
-                    if table_info.name not in geodata_tables:
-                        name = "{}.{}".format(schema_name, table_info.name)
-                        info[name] = dump_table_info(table_info)
-            return info
-
-        if self.tableinfo is None:
-            self.tableinfo = make_tableinfo()
-        return self.tableinfo
 
     def get_data_info(self, table_name, schema_name):
         geometrysource, tableinfo = self.get_table_classes(
@@ -234,11 +149,6 @@ class EAlGIS(object):
             ["geometry_source", "table_info"], schema_name)
         return self.session.query(tableinfo).filter(tableinfo.id.in_(table_ids)).all()
 
-    def get_table_info(self, table_name, schema_name):
-        geometrysource, tableinfo = self.get_table_classes(
-            ["geometry_source", "table_info"], schema_name)
-        return self.session.query(tableinfo).outerjoin(geometrysource, tableinfo.id == geometrysource.table_info_id).filter(tableinfo.name == table_name).filter(geometrysource.table_info_id is None).first()
-
     def get_geometry_source(self, table_name, schema_name):
         geometrysource, tableinfo = self.get_table_classes(
             ["geometry_source", "table_info"], schema_name)
@@ -248,27 +158,6 @@ class EAlGIS(object):
         geometry_source_column = self.get_table_class(
             "geometry_source_column", schema_name)
         return self.session.query(geometry_source_column).filter(geometry_source_column.geometry_source_id == geometry_source.id).all()
-
-    def get_geometry_source_info_by_gid(self, table_name, gid, schema_name):
-        table = self.get_table_class(table_name, schema_name)
-        row = self.session.query(table).filter(table.gid == gid).first()
-
-        # FIXME Ugly hack - We have no models for the indivudal geom tables, but could use reflection?
-        dict = row.__dict__
-        del dict["geom"]
-        del dict["geom_3857"]
-        del dict["geom_3112"]
-        del dict["_sa_instance_state"]
-
-        return dict
-
-    def get_column_info(self, column_id, schema_name):
-        columninfo = self.get_table_class("column_info", schema_name)
-        return self.session.query(columninfo).filter(columninfo.id == column_id).first()
-
-    def get_column_info_by_ids(self, column_ids, schema_name):
-        columninfo = self.get_table_class("column_info", schema_name)
-        return self.session.query(columninfo).filter(columninfo.id.in_(column_ids)).all()
 
     def get_column_info_by_names(self, column_names, schema_name, geo_source_id=None):
         columninfo, geometrylinkage, tableinfo = self.get_table_classes(
@@ -328,23 +217,6 @@ class EAlGIS(object):
             "min": min,
             "max": max,
             "stddev": stddev if stddev is not None else 0,
-        }
-
-    def def_get_summary_stats_for_column(self, column, table, schema_name):
-        SQL_TEMPLATE = """
-            SELECT
-                MIN(sq.q),
-                MAX(sq.q),
-                STDDEV(sq.q)
-            FROM (SELECT {col_name} AS q FROM {schema_name}.{table_name}) AS sq"""
-
-        (min, max, stddev) = self.session.execute(
-            SQL_TEMPLATE.format(col_name=column.name, schema_name=schema_name, table_name=table.name)).first()
-
-        return {
-            "min": min,
-            "max": max,
-            "stddev": stddev,
         }
 
     def get_tile(self, query, x, y, z):

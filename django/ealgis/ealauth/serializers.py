@@ -165,15 +165,15 @@ class ColumnInfoSerializer(serializers.Serializer):
 
 class GeometryLinkageSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    table_info_id = serializers.IntegerField()
+    geometry_source_schema_name = serializers.CharField()
     geometry_source_id = serializers.IntegerField()
-    geo_column = serializers.CharField()
+    attr_table_id = serializers.IntegerField()
     attr_column = serializers.CharField()
 
 
 class EALGISMetadataSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
     name = serializers.CharField()
-    description = serializers.CharField()
     family = serializers.CharField()
+    uuid = serializers.CharField()
+    description = serializers.CharField()
     date_created = serializers.DateTimeField()

@@ -172,7 +172,8 @@ class EALGISMetadata(Base):
     __tablename__ = 'ealgis_metadata'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
-    version = db.Column(db.Float())
-    description = db.Column(db.Text())
     family = db.Column(db.String(256))
-    date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
+    uuid = db.Column(db.String(256))
+    # version = db.Column(db.Float())
+    description = db.Column(db.Text())
+    date_created = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)

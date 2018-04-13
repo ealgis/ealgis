@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.http.response import HttpResponse
 from .models import MapDefinition
 from sqlalchemy import not_, func
+from geoalchemy2.elements import WKBElement
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
@@ -23,6 +24,7 @@ import copy
 import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
+from ..db import SchemaLoader, DataAccess
 
 
 def api_not_found(request):
@@ -452,6 +454,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         qp = request.query_params
         eal = apps.get_app_config('ealauth').eal
 
+        raise ValidationError(detail="What does this method do? Why aren't we using the similar ones on /api/0.1/columninfo/columninfo?")
+
         layerId = int(qp["layerId"]) if "layerId" in qp else None
         if layerId is None:
             raise NotFound()
@@ -655,12 +659,12 @@ class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveMode
         return Response(serializer.data)
 
     def get_schema_from_request(self, request):
-        eal = apps.get_app_config('ealauth').eal
+        loader = SchemaLoader(SchemaLoader.make_engine())
 
         schema_name = request.query_params.get('schema', None)
         if schema_name is None or not schema_name:
             raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schema_names():
+        elif schema_name not in loader.get_ealgis_schemas():
             raise ValidationError(
                 detail="Schema name '{}' is not a known schema.".format(schema_name))
         return schema_name
@@ -687,28 +691,47 @@ class DataInfoViewSet(viewsets.ViewSet):
     getter_method = apps.get_app_config('ealauth').eal.get_data_info
 
     def list(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        tables = eal.get_datainfo()
+        loader = SchemaLoader(SchemaLoader.make_engine())
+
+        tables = {}
+        for schema_name in loader.get_ealgis_schemas():
+            with DataAccess(DataAccess.make_engine(), schema_name) as db:
+                for (geometrysource, tableinfo) in db.get_geometry_sources_table_info():
+                    uname = "{}.{}".format(schema_name, tableinfo.name)
+                    tables[uname] = {
+                        "name": tableinfo.name,
+                        "description": tableinfo.metadata_json['description'],
+                        "geometry_type": geometrysource.geometry_type,
+                        "schema_name": schema_name
+                    }
+
         return Response(tables)
 
     def retrieve(self, request, format=None, pk=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
-
+        table_name = pk
         gid = request.query_params.get('gid', None)
-        row = eal.get_geometry_source_info_by_gid(pk, gid, schema_name)
-        return Response(row)
-
-    def get_schema_from_request(self, request):
-        eal = apps.get_app_config('ealauth').eal
-
         schema_name = request.query_params.get('schema', None)
-        if schema_name is None or not schema_name:
-            raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schema_names():
-            raise ValidationError(
-                detail="Schema name '{}' is not a known schema.".format(schema_name))
-        return schema_name
+
+        with DataAccess(DataAccess.make_engine(), schema_name) as db:
+            row = db.get_geometry_source_row(table_name, gid)
+
+            info = {}
+            for col, val in row._asdict().items():
+                if isinstance(val, WKBElement) is False:
+                    info[col] = val
+
+        return Response(info)
+
+    # def get_schema_from_request(self, request):
+    #     loader = SchemaLoader(SchemaLoader.make_engine())
+
+    #     schema_name = request.query_params.get('schema', None)
+    #     if schema_name is None or not schema_name:
+    #         raise ValidationError(detail="No schema name provided.")
+    #     elif schema_name not in loader.get_ealgis_schemas():
+    #         raise ValidationError(
+    #             detail="Schema name '{}' is not a known schema.".format(schema_name))
+    #     return schema_name
 
     @list_route(methods=['get'])
     def create_views(self, request, format=None):
@@ -752,8 +775,19 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         pass
 
     def list(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        return Response(eal.get_tableinfo())
+        loader = SchemaLoader(SchemaLoader.make_engine())
+
+        tables = {}
+        for schema_name in loader.get_ealgis_schemas():
+            with DataAccess(DataAccess.make_engine(), schema_name) as db:
+                for t in db.get_data_tables():
+                    uname = "{}.{}".format(schema_name, t.name)
+                    tables[uname] = {
+                        **TableInfoSerializer(t).data,
+                        **{"schema_name": schema_name}
+                    }
+
+        return Response(tables)
 
     @list_route(methods=['post'])
     def fetch(self, request, format=None):
@@ -774,77 +808,42 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['get'])
     def search(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
+        schema_name = request.query_params.get('schema', None)
         qp = request.query_params
 
-        geometrylinkage, tableinfo, columninfo = eal.get_table_classes(
-            ["geometry_linkage", "table_info", "column_info"], schema_name)
         search_terms = qp["search"].split(
             ",") if "search" in qp and qp["search"] != "" else []
         search_terms_excluded = qp["search_excluded"].split(
             ",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
 
-        # A list of all tables that have a geometry_linkage row
-        # (i.e. they're data tables, not geom tables)
-        # FIXME This can go once geometries are in a separate schema.
-        datatable_ids_subq = eal.session.query(tableinfo.id)\
-            .join(geometrylinkage, tableinfo.id == geometrylinkage.table_info_id)\
-            .subquery()
-
         # Hacky approach to searching by column name
         # Let's just override the regular tableinfo subquery
         if(len(search_terms) == 1):
+            eal = apps.get_app_config('ealauth').eal
+            columninfo = eal.get_table_class("column_info", schema_name)
             if(eal.session.query(columninfo).filter(columninfo.name == search_terms[0].strip()).count() > 0):
-                datatable_ids_subq = eal.session.query(columninfo.table_info_id).filter(func.lower(columninfo.name) == search_terms[0].strip().lower()).subquery()
-                search_terms = []
-
-        # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
-        # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
-        # Find all columns mentioning "landlord" at SA3 level
-        if "geo_source_id" in qp and qp["geo_source_id"] != "":
-            datainfo_id = qp["geo_source_id"]
-            query = eal.session.query(tableinfo)\
-                .filter(tableinfo.id.in_(datatable_ids_subq))\
-                .join(geometrylinkage, tableinfo.id == geometrylinkage.table_info_id)\
-                .filter(geometrylinkage.geometry_source_id == datainfo_id)
-
-        else:
-            query = eal.session.query(tableinfo).filter(
-                tableinfo.id.in_(datatable_ids_subq))
-
-        # Further filter the resultset by one or more search terms (e.g. "diploma,advaned,females")
-        for term in search_terms:
-            query = query.filter(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term)))
-
-        # Further filter the resultset by one or more excluded search terms (e.g. "diploma,advaned,females")
-        for term in search_terms_excluded:
-            query = query.filter(not_(tableinfo.metadata_json["type"].astext.ilike("%{}%".format(term))))
-
-        query = query.order_by(tableinfo.id)
+                raise ValidationError("FIXME: Pulling a column by name should call a different endpoint.")
 
         response = {}
-        for tableinfo in query.all():
-            table = TableInfoSerializer(tableinfo).data
-            table["schema_name"] = schema_name
+        with DataAccess(DataAccess.make_engine(), schema_name) as db:
+            # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
+            # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
+            # Find all columns mentioning "landlord" at SA3 level
+            if "geo_source_id" in qp and qp["geo_source_id"] != "":
+                tables = db.search_tables(search_terms, search_terms_excluded, qp["geo_source_id"])
+            else:
+                tables = db.search_tables(search_terms, search_terms_excluded)
 
-            tableUID = "%s-%s" % (schema_name, table["id"])
-            response[tableUID] = table
+            for tableinfo in tables:
+                table = TableInfoSerializer(tableinfo).data
+                table["schema_name"] = schema_name
+
+                tableUID = "%s-%s" % (schema_name, table["id"])
+                response[tableUID] = table
 
         if len(response) == 0:
             raise NotFound()
         return Response(response)
-
-    def get_schema_from_request(self, request):
-        eal = apps.get_app_config('ealauth').eal
-
-        schema_name = request.query_params.get('schema', None)
-        if schema_name is None or not schema_name:
-            raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schema_names():
-            raise ValidationError(
-                detail="Schema name '{}' is not a known schema.".format(schema_name))
-        return schema_name
 
 
 class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -858,27 +857,28 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         pass
 
     def retrieve(self, request, format=None, pk=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
+        id = pk
+        schema_name = request.query_params.get('schema', None)
 
-        # e.g. https://localhost:8443/api/0.1/columninfo/40353/?schema=aus_census_2011
-        # Counted_at_home_on_Census_Night_Age_0_14_years
-        column = eal.get_column_info(pk, schema_name)
-        if column is None:
-            raise NotFound()
+        # e.g. https://localhost:8443/api/0.1/columninfo/142949/?schema=aus_census_2011_bcp&format=json
+        # Number of Persons usually resident Five; Non-family households
+        with DataAccess(DataAccess.make_engine(), schema_name) as db:
+            column = db.get_column_info(id)
+            if column is None:
+                raise NotFound()
 
-        table = eal.get_table_info_by_id(column.table_info_id, schema_name)
-        if table is None:
-            raise NotFound()
+            table = db.get_table_info_by_id(column.table_info_id)
+            if table is None:
+                raise NotFound()
 
-        col = self.serializer_class(column).data
-        col["schema_name"] = schema_name
-
-        return Response({
-            "column": col,
-            "table": TableInfoSerializer(table).data,
-            "schema": schema_name,
-        })
+            return Response({
+                "column": {
+                    **self.serializer_class(column).data,
+                    **{"schema_name": schema_name}
+                },
+                "table": TableInfoSerializer(table).data,
+                "schema": schema_name,
+            })
 
     @list_route(methods=['post'])
     def by_schema(self, request, format=None):
@@ -906,20 +906,22 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @list_route(methods=['get'])
     def fetch_for_table(self, request, format=None):
         eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
+        schema_name = request.query_params.get('schema', None)
         qp = request.query_params
+
+        raise ValidationError("What uses this method and why aren't we just using the regular 'give me columns' sort of methods? At the very least, let's break this up into two separate methods that return 'all columns for table' and 'all columns for geometry'")
 
         columninfo, geometrylinkage, tableinfo = eal.get_table_classes(
             ["column_info", "geometry_linkage", "table_info"], schema_name)
 
-        # Constrain our search window to a given geometry source (e.g. All columns relating to SA3s)
-        # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced&schema=aus_census_2011&geo_source_id=4
-        # Find all columns mentioning "diploma" and "advanced" at SA3 level
+        # Constrain our search window to a given geometry source (e.g. All columns relating to LGAs)
+        # e.g. https://localhost:8443/api/0.1/columninfo/fetch_for_table/?search=diploma,advanced&schema=aus_census_2011_bcp&geo_source_id=6&profileTablePrefix=b20&format=json
+        # Find all columns mentioning "diploma" and "advanced" at LGA level
         if "geo_source_id" in qp:
             datainfo_id = qp["geo_source_id"]
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.tableinfo_id == geometrylinkage.table_info_id)\
-                .outerjoin(tableinfo, columninfo.tableinfo_id == tableinfo.id)\
+                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_id)\
+                .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
                 .filter(geometrylinkage.geometry_source_id == datainfo_id)\
                 .filter(tableinfo.name.ilike("{}%".format(qp["profileTablePrefix"])))
 
@@ -940,7 +942,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 tableinfo_id = [qp["tableinfo_id"]]
 
             query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.table_info_id)\
+                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_id)\
                 .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
                 .filter(columninfo.table_info_id.in_(tableinfo_id))
 
@@ -976,31 +978,21 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @detail_route(methods=['get'])
     def summary_stats(self, request, pk=None, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        schema_name = self.get_schema_from_request(request)
-
-        # e.g. https://localhost:8443/api/0.1/columninfo/1052/summary_stats/?format=json&schema=aus_census_2011_v2
-        column = eal.get_column_info(pk, schema_name)
-        if column is None:
-            raise NotFound()
-
-        table = eal.get_table_info_by_id(column.table_info_id, schema_name)
-        if table is None:
-            raise NotFound()
-
-        summary = eal.def_get_summary_stats_for_column(column, table, schema_name)
-        return Response(summary)
-
-    def get_schema_from_request(self, request):
-        eal = apps.get_app_config('ealauth').eal
-
+        id = pk
         schema_name = request.query_params.get('schema', None)
-        if schema_name is None or not schema_name:
-            raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in eal.get_schema_names():
-            raise ValidationError(
-                detail="Schema name '{}' is not a known schema.".format(schema_name))
-        return schema_name
+
+        # e.g. https://localhost:8443/api/0.1/columninfo/60631/summary_stats/?schema=aus_census_2011_bcp&format=json
+        # Number of Persons usually resident One; Non-family households
+        with DataAccess(DataAccess.make_engine(), schema_name) as db:
+            column = db.get_column_info(id)
+            if column is None:
+                raise NotFound()
+
+            table = db.get_table_info_by_id(column.table_info_id)
+            if table is None:
+                raise NotFound()
+
+            return Response(db.get_summary_stats_for_column(column, table))
 
 
 class ColoursViewset(viewsets.ViewSet):
@@ -1024,10 +1016,10 @@ class SchemasViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        schemas = eal.get_schemas()
-        schemasJSON = {}
-        for schema_name in schemas:
-            schemasJSON[schema_name] = EALGISMetadataSerializer(
-                schemas[schema_name]).data
-        return Response(schemasJSON)
+        loader = SchemaLoader(SchemaLoader.make_engine())
+
+        schemas = {}
+        for schema_name in loader.get_ealgis_schemas():
+            with DataAccess(DataAccess.make_engine(), schema_name) as db:
+                schemas[schema_name] = EALGISMetadataSerializer(db.get_metadata()).data
+        return Response(schemas)
