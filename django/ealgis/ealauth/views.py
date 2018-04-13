@@ -25,6 +25,7 @@ import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 from ..db import SchemaLoader, DataAccess
+from ..materialised_views import MaterialisedViews
 
 
 def api_not_found(request):
@@ -735,33 +736,7 @@ class DataInfoViewSet(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def create_views(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-        qp = request.query_params
-        execute = True if "execute" in qp else False
-
-        viewNames = []
-        if "table_name" in qp and "schema_name" in qp:
-            table = eal.get_data_info(qp["table_name"], qp["schema_name"])
-            tables = "{}.{}".format(qp["schema_name"], table.name)
-            viewNames.append(eal.create_materialised_view_for_table(
-                table.name, qp["schema_name"], execute))
-        elif "all_tables" in qp:
-            tables = eal.get_datainfo()
-            for key in tables:
-                viewNames.append(eal.create_materialised_view_for_table(
-                    tables[key]["name"], tables[key]["schema_name"], execute))
-        else:
-            raise ValidationError(
-                detail="Invalid query - must specify table_name or all_tables and schema_name.")
-
-        if execute:
-            return Response({"views": viewNames})
-        else:
-            sqlAllViews = []
-            for view in viewNames:
-                sqlAllViews.append(view["sql"])
-
-            return HttpResponse("\n\n\n".join(sqlAllViews), content_type="text/plain")
+        return MaterialisedViews.create_views(request, format)
 
 
 class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
