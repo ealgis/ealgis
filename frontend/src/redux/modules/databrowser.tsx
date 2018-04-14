@@ -186,7 +186,6 @@ export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) 
             const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
                 return { name: json[tableUID]["name"], schema_name: json[tableUID]["schema_name"] }
             })
-            console.log("tablePartials", tablePartials)
             dispatch(addTables(tablePartials))
         }
     }
@@ -214,11 +213,11 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
     }
 }
 
-export function fetchColumns(schema_name: string, tableinfo_name: string) {
+export function fetchColumns(schema_name: string, tableinfo_id: number) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/columninfo/fetch_for_table/", dispatch, {
             schema: schema_name,
-            tableinfo_name: tableinfo_name,
+            tableinfo_id: tableinfo_id,
         })
 
         dispatch(loadColumnsToAppCache(json["columns"]))

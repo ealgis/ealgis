@@ -889,52 +889,15 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['get'])
     def fetch_for_table(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
         schema_name = request.query_params.get('schema', None)
-        qp = request.query_params
+        tableinfo_id = request.query_params.get('tableinfo_id', None)
 
-        raise ValidationError("What uses this method and why aren't we just using the regular 'give me columns' sort of methods? At the very least, let's break this up into two separate methods that return 'all columns for table' and 'all columns for geometry'")
-
-        columninfo, geometrylinkage, tableinfo = eal.get_table_classes(
-            ["column_info", "geometry_linkage", "table_info"], schema_name)
-
-        # Constrain our search window to a given geometry source (e.g. All columns relating to LGAs)
-        # e.g. https://localhost:8443/api/0.1/columninfo/fetch_for_table/?search=diploma,advanced&schema=aus_census_2011_bcp&geo_source_id=6&profileTablePrefix=b20&format=json
-        # Find all columns mentioning "diploma" and "advanced" at LGA level
-        if "geo_source_id" in qp:
-            datainfo_id = qp["geo_source_id"]
-            query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_id)\
-                .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
-                .filter(geometrylinkage.geometry_source_id == datainfo_id)\
-                .filter(tableinfo.name.ilike("{}%".format(qp["profileTablePrefix"])))
-
-        elif "tableinfo_id" in qp or "tableinfo_name" in qp:
-            # Constrain our search window to a given table (e.g. All columns relating to a specific table)
-            # NB: For the Census this implicitly limits us to a geometry soruce as well
-            # e.g. https://localhost:8443/api/0.1/columninfo/search/?search=diploma,advanced,indigenous&schema=aus_census_2011&tableinfo_id=253
-            # Find all columns mentioning "diploma", "advaned", and "indigenous" in table "Non-School Qualification: Level of Education by Indigenous Status by Age by Sex" (i15d_aust_sa4)
-            if "tableinfo_name" in qp:
-                tableNames = qp["tableinfo_name"].split(",")
-                query = eal.session.query(tableinfo)\
-                    .filter(tableinfo.name.in_(tableNames))
-
-                tableinfo_id = []
-                for table in query.all():
-                    tableinfo_id.append(table.id)
-            else:
-                tableinfo_id = [qp["tableinfo_id"]]
-
-            query = eal.session.query(columninfo, geometrylinkage, tableinfo)\
-                .outerjoin(geometrylinkage, columninfo.table_info_id == geometrylinkage.attr_table_id)\
-                .outerjoin(tableinfo, columninfo.table_info_id == tableinfo.id)\
-                .filter(columninfo.table_info_id.in_(tableinfo_id))
-
-        else:
-            raise ValidationError(
-                detail="No geo_source_id or tableinfo_id provided.")
-
-        query = query.order_by(columninfo.id)
+        # Constrain our fetch to a given table (i.e. All columns relating to a specific table)
+        # NB: For the Census data this implicitly limits us to a geometry soruce as well
+        # e.g. https://localhost:8443/api/0.1/columninfo/fetch_for_table/?schema=aus_census_2011_xcp&tableinfo_id=490
+        # Find all columns mentioning in table "Ancestry by Birthplace of Parents by Sex - Persons" (x06s3_aust_lga)
+        with DataAccess(DataAccess.make_engine(), schema_name) as db:
+            columns = db.fetch_columns(tableinfo_id)
 
         # Split the response into an object of columns tables indexed by ther uid.
         # Often columns will refer to the same table, so this reduces payload size.
@@ -942,18 +905,18 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             "columns": {},
             "tables": {},
         }
-        for (column, geomlinkage, tableinfo) in query.all():
+        for (column, geomlinkage, tableinfo) in columns:
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
 
-            tableUID = "%s-%s" % (schema_name, table["id"])
+            tableUID = "%s.%s" % (schema_name, table["name"])
             if tableUID not in response["tables"]:
                 response["tables"][tableUID] = table
 
             col = self.serializer_class(column).data
             col["schema_name"] = schema_name
             col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
-            columnUID = "%s-%s" % (schema_name, column.id)
+            columnUID = "%s.%s" % (schema_name, column.name)
             response["columns"][columnUID] = col
 
         if len(response["columns"]) == 0:

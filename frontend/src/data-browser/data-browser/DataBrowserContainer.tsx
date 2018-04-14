@@ -197,7 +197,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
         },
         handleChooseTable: (table: ITable) => {
-            dispatch(fetchColumns(table.schema_name, table.name))
+            dispatch(fetchColumns(table.schema_name, table.id))
         },
         favouriteTable: (table: ITable) => {
             dispatch(toggleFavouriteTables([table]))

@@ -283,3 +283,15 @@ class DataAccess(DatabaseAccess):
             return query.order_by(TableInfo.id).all()
         except sqlalchemy.orm.exc.NoResultFound:
             raise Exception("could not search tables")
+
+    def fetch_columns(self, tableinfo_id=None):
+        GeometryLinkage = self.classes['geometry_linkage']
+        ColumnInfo = self.classes['column_info']
+        TableInfo = self.classes['table_info']
+        try:
+            return self.session.query(ColumnInfo, GeometryLinkage, TableInfo)\
+                .outerjoin(GeometryLinkage, ColumnInfo.table_info_id == GeometryLinkage.attr_table_id)\
+                .outerjoin(TableInfo, ColumnInfo.table_info_id == TableInfo.id)\
+                .filter(ColumnInfo.table_info_id == tableinfo_id).order_by(ColumnInfo.id).all()
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise Exception("could not find any columns for table '{}'".format(tableinfo_id))
