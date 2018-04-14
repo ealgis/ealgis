@@ -171,6 +171,27 @@ export enum eTableChooserLayout {
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
+export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        const { response, json } = await ealapi.get("/api/0.1/tableinfo/", dispatch, {
+            schema: schema_name,
+            geo_source_id: geometry._id,
+        })
+
+        if (response.status === 404) {
+            dispatch(sendSnackbarNotification(`This schema contains no tables for '${geometry.description}' geometries.`))
+        } else if (response.status === 200) {
+            dispatch(loadTablesToAppCache(json))
+
+            const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
+                return { name: json[tableUID]["name"], schema_name: json[tableUID]["schema_name"] }
+            })
+            console.log("tablePartials", tablePartials)
+            dispatch(addTables(tablePartials))
+        }
+    }
+}
+
 export function searchTables(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string, geometry: IGeomTable) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/tableinfo/search/", dispatch, {
@@ -186,7 +207,7 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
             dispatch(loadTablesToAppCache(json))
 
             const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
-                return { id: json[tableUID]["id"], schema_name: json[tableUID]["schema_name"] }
+                return { name: json[tableUID]["name"], schema_name: json[tableUID]["schema_name"] }
             })
             dispatch(addTables(tablePartials))
         }

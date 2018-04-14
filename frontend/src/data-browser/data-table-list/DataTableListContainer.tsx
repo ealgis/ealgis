@@ -26,7 +26,7 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         const tableinfoUIDs: Array<string> = Object.keys(tableinfo)
         for (var key in tables) {
             const table = tables[key]
-            const tableUID: string = `${table.schema_name}-${table.id}`
+            const tableUID: string = `${table.schema_name}.${table.name}`
             if (tableUID in tableinfo) {
                 tablesActual.push(tableinfo[tableUID])
             }

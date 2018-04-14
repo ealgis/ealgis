@@ -229,10 +229,14 @@ class DataAccess(DatabaseAccess):
         except sqlalchemy.orm.exc.NoResultFound:
             return None
 
-    def get_data_tables(self):
+    def get_data_tables(self, geo_source_id=None):
         TableInfo = self.classes['table_info']
         try:
-            return self.session.query(TableInfo).all()
+            if geo_source_id is None:
+                return self.session.query(TableInfo).all()
+            else:
+                GeometryLinkage = self.classes['geometry_linkage']
+                return self.session.query(TableInfo).join(GeometryLinkage, TableInfo.id == GeometryLinkage.attr_table_id).filter(GeometryLinkage.geometry_source_id == geo_source_id).all()
         except sqlalchemy.orm.exc.NoResultFound:
             raise Exception("could not retrieve table_info tables")
 

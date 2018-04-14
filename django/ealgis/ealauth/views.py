@@ -699,6 +699,7 @@ class DataInfoViewSet(viewsets.ViewSet):
                 for (geometrysource, tableinfo) in db.get_geometry_sources_table_info():
                     uname = "{}.{}".format(schema_name, tableinfo.name)
                     tables[uname] = {
+                        "_id": geometrysource.id,
                         "name": tableinfo.name,
                         "description": tableinfo.metadata_json['description'],
                         "geometry_type": geometrysource.geometry_type,
@@ -749,18 +750,27 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         pass
 
     def list(self, request, format=None):
-        loader = SchemaLoader(SchemaLoader.make_engine())
+        schema_name = request.query_params.get('schema', None)
+        geo_source_id = request.query_params.get('geo_source_id', None)
+
+        if schema_name is None:
+            loader = SchemaLoader(SchemaLoader.make_engine())
+            schema_names = loader.get_ealgis_schemas()
+        else:
+            schema_names = [schema_name]
 
         tables = {}
-        for schema_name in loader.get_ealgis_schemas():
+        for schema_name in schema_names:
             with DataAccess(DataAccess.make_engine(), schema_name) as db:
-                for t in db.get_data_tables():
+                for t in db.get_data_tables(geo_source_id):
                     uname = "{}.{}".format(schema_name, t.name)
                     tables[uname] = {
                         **TableInfoSerializer(t).data,
                         **{"schema_name": schema_name}
                     }
 
+        if len(tables) == 0:
+            raise NotFound()
         return Response(tables)
 
     @list_route(methods=['post'])
@@ -812,7 +822,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 table = TableInfoSerializer(tableinfo).data
                 table["schema_name"] = schema_name
 
-                tableUID = "%s-%s" % (schema_name, table["id"])
+                tableUID = "%s.%s" % (schema_name, table["name"])
                 response[tableUID] = table
 
         if len(response) == 0:

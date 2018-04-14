@@ -5,6 +5,7 @@ import { withRouter } from "react-router"
 import { change } from "redux-form"
 import {
     selectColumn,
+    fetchTablesForSchema,
     searchTables,
     fetchColumns,
     emptySelectedTables,
@@ -47,6 +48,7 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
+    getSchemaTables: Function
     handleChooseSchema: Function
     handleChooseTable: Function
     favouriteTable: Function
@@ -110,6 +112,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             layerId,
             mapNameURLSafe,
             geometry,
+            getSchemaTables,
             handleChooseSchema,
             recentTables,
             favouriteTables,
@@ -138,7 +141,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedColumns={selectedColumns}
                 handleClickSchema={(schemaId: string, schema: ISchema) => {
                     this.handleClickSchema(schemaId, schema)
-                    handleChooseSchema(schemaId, "", geometry)
+                    getSchemaTables(schemaId, geometry)
                 }}
                 onTableSearchChange={(newValue: string) => {
                     this.setState({ dataTableSearchKeywords: newValue })
@@ -187,6 +190,9 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function) => {
     return {
+        getSchemaTables: (schemaId: string, geometry: IGeomTable) => {
+            dispatch(fetchTablesForSchema(schemaId, geometry))
+        },
         handleChooseSchema: (schemaId: string, searchString: string, geometry: IGeomTable) => {
             dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
         },
