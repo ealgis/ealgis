@@ -396,7 +396,7 @@ export function fetchColumnsForMaps() {
                     }
                 }
 
-                if (layer.fill.conditional_mode !== eLayerFilterExpressionMode.SIMPLE) {
+                if (layer.fill.conditional_mode !== undefined && layer.fill.conditional_mode !== eLayerFilterExpressionMode.SIMPLE) {
                     if (!(layer["schema"] in columnNamesBySchema)) {
                         columnNamesBySchema[layer["schema"]] = []
                     }
