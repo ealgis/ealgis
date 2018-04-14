@@ -252,13 +252,13 @@ class Tiles:
                   -- end conf
                   _geom AS (
                       SELECT
-                          ST_ClipByBox2D({geom_column_name}, extent_buffered) AS {geom_column_name},
+                          ST_ClipByBox2D({geom_column_name_wrap}, extent_buffered) AS {geom_column_name},
                           gid, q
                       FROM (
                       -- main query
                       {query}
                       ) _wrap, _conf
-                      WHERE {geom_column_name} && extent
+                      WHERE {geom_column_name_wrap} && extent
                   )
                   -- end geom
               SELECT gid, q,
@@ -382,7 +382,7 @@ class Tiles:
                 #                                 east - west, (east - west) / 256))
 
                 # print("Use matview column {} for zoom {}".format(geomColumnName, z))
-                sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName,
+                sql = SQL_TEMPLATE_MATVIEW_CLIPBYBOX.format(decimalPlaces=decimalPlaces, geom_column_name=geomColumnName, geom_column_name_wrap="_wrap.{}".format(geomColumnName.split("_z")[0]),
                                                             query=query, west=west, south=south, east=east, north=north, srid=srid, extent_buffer=extent_buffer)
 
                 # print(sql)
