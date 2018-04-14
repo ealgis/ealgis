@@ -3,7 +3,6 @@ from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
 from .models import MapDefinition
-from sqlalchemy import not_, func
 from geoalchemy2.elements import WKBElement
 
 from rest_framework import viewsets, mixins, status
