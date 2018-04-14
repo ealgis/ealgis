@@ -194,7 +194,7 @@ class DataExpression(object):
         if include_geometry:
             query_attrs.append(
                 getattr(self.tbl, self.geometry_column))
-        gid_attr = getattr(self.tbl, geometry_source.gid)
+        gid_attr = getattr(self.tbl, geometry_source.gid_column)
         query_attrs.append(gid_attr)
         # special case for empty expression
         expr_raw = expr

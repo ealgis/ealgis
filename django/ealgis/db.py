@@ -168,7 +168,11 @@ class DataAccess(DatabaseAccess):
         except sqlalchemy.orm.exc.NoResultFound:
             raise Exception("could not retrieve geometry_source tables")
 
-    def find_geom_column(self, table_name):
+    def get_geometry_source_column(self, geometry_source, srid):
+        GeometrySourceProjection = self.classes['geometry_source_projection']
+        return self.session.query(GeometrySourceProjection).filter(GeometrySourceProjection.geometry_source_id == geometry_source.id).filter(GeometrySourceProjection.srid == srid).one()
+
+    def find_geom_column(self, table_name, srid):
         info = self.get_table(table_name)
         geom_columns = []
 
@@ -178,7 +182,7 @@ class DataAccess(DatabaseAccess):
                 geom_columns.append(column)
 
         if len(geom_columns) > 1:
-            raise Exception("more than one geometry column?")
+            raise Exception("more than one geometry column for srid '{srid}'?".format(srid=srid))
         return geom_columns[0]
 
     def get_table_info(self, table_name):

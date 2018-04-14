@@ -2,6 +2,7 @@ import sqlalchemy as db
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import relationship, backref
 import datetime
+from .db import DataAccess
 
 Base = automap_base()
 
@@ -84,12 +85,10 @@ class GeometrySource(Base):
         return "GeometrySource<%s.%s>" % (self.table_info.name, self.column)
 
     def srid_column(geometry_source, srid, eal):
-        cols = eal.get_geometry_source_columns(geometry_source, geometry_source.__table__.schema)
-        proj = [t for t in cols if t.srid == srid]
-        if len(proj) == 1:
-            return proj[0].column
-        else:
-            return None
+        with DataAccess(DataAccess.make_engine(), geometry_source.__table__.schema) as db:
+            col = db.get_geometry_source_column(geometry_source, srid)
+            return col.geometry_column
+        return None
 
 
 class GeometrySourceColumn(Base):
