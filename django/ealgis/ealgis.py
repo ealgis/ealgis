@@ -1,10 +1,8 @@
 import os
-import math
 
 import sqlalchemy as sqlalchemy
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .db import DataAccess, SchemaLoader
 from .tiles import Tiles
 from .materialised_views import MaterialisedViews
 

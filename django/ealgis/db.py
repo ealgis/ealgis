@@ -1,7 +1,6 @@
 from sqlalchemy import inspect
 from geoalchemy2.types import Geometry
-from sqlalchemy import create_engine
-from sqlalchemy.schema import CreateSchema
+from sqlalchemy import create_engine, not_, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from ealgis_data_schema.schema_v1 import store
