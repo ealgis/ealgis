@@ -124,14 +124,15 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
             if (expression["col1"] === "$value") {
                 col1 = "$value" // Replaced server-side
             } else {
-                col1 = expression["col1"].name
+                col1 = `${expression["col1"].schema_name}.${expression["col1"].name}`
             }
 
             let col2 = undefined
             if (isNaN(expression["col2"]) === false) {
+                // It's a number
                 col2 = expression["col2"]
             } else {
-                col2 = expression["col2"].name
+                col2 = `${expression["col2"].schema_name}.${expression["col2"].name}`
             }
 
             expr = `${col1}${expression["operator"]}${col2}`

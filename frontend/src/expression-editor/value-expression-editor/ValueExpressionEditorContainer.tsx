@@ -123,11 +123,13 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
         let expr: string = ""
 
         if ("col1" in expression) {
-            expr = expression["col1"].name
+            expr = `${expression["col1"].schema_name}.${expression["col1"].name}`
 
             if ("col2" in expression && expressionMode === eLayerValueExpressionMode.PROPORTIONAL) {
                 if ("col2" in expression) {
-                    expr = `(${expression["col1"].name}/${expression["col2"].name})*100`
+                    expr = `(${expression["col1"].schema_name}.${expression["col1"].name}/${expression["col2"].schema_name}.${
+                        expression["col2"].name
+                    })*100`
                 }
             }
         }

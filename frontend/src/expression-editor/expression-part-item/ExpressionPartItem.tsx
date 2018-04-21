@@ -79,7 +79,7 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
             }
         } else if (value && "id" in value) {
             let tableDescription = ""
-            const tableUID = `${value.schema_name}-${value.table_info_id}`
+            const tableUID = `${value.schema_name}.${value.table_info_id}`
             if (tableUID in tableinfo) {
                 const table: ITable = tableinfo[tableUID]
                 tableDescription = table.metadata_json.type

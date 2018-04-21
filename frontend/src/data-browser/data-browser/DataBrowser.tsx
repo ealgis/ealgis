@@ -24,16 +24,24 @@ class ClickableIconButton extends React.Component<any, any> {
     }
 }
 
-const DataBrowserContainer = styled.div`overflow: auto;`
+const DataBrowserContainer = styled.div`
+    overflow: auto;
+`
 const DataBrowserInnerContainer = styled.div`
     padding-left: 12px;
     padding-right: 12px;
 `
-const DataBrowserSectionContainer = styled.div`margin-bottom: 25px;`
+const DataBrowserSectionContainer = styled.div`
+    margin-bottom: 25px;
+`
 
-const DataBrowserTitle = styled(ToolbarTitle)`color: white;`
+const DataBrowserTitle = styled(ToolbarTitle)`
+    color: white;
+`
 
-const DataBrowserToolbar = styled(Toolbar)`background-color: white !important;`
+const DataBrowserToolbar = styled(Toolbar)`
+    background-color: white !important;
+`
 
 const TableSearchTextField = styled(TextField)`
     margin-left: 15px !important;

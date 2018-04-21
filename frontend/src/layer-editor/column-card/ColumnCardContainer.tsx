@@ -27,9 +27,9 @@ export class ColumnCardContainer extends React.PureComponent<IProps & IStoreProp
 const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { ealgis } = state
 
-    const columnUID = `${ownProps.columnStub["schema"]}-${ownProps.columnStub["id"]}`
+    const columnUID = `${ownProps.columnStub["schema"]}.${ownProps.columnStub["id"]}`
     const column: IColumn = ealgis.columninfo[columnUID]
-    const tableUID = `${ownProps.columnStub["schema"]}-${column["table_info_id"]}`
+    const tableUID = `${ownProps.columnStub["schema"]}.${column["table_info_id"]}`
     const table: ITable = ealgis.tableinfo[tableUID]
 
     return {

@@ -43,13 +43,13 @@ export default function reducer(state = initialState, action: IAction) {
         case LOAD_TABLES:
             return dotProp.set(state, "tableinfo", { ...state.tableinfo, ...action.tableinfo })
         case LOAD_TABLE:
-            return dotProp.set(state, `tableinfo.${action.schema}-${action.table.id}.`, action.table)
+            return dotProp.set(state, `tableinfo.${action.schema}.${action.table.id}.`, action.table)
         case LOAD_SCHEMAS:
             return dotProp.set(state, "schemainfo", action.schemainfo)
         case LOAD_COLUMNS:
             return dotProp.set(state, "columninfo", { ...state.columninfo, ...action.columninfo })
         case LOAD_COLUMN:
-            return dotProp.set(state, `columninfo.${action.schema}-${action.column.id}`, action.column)
+            return dotProp.set(state, `columninfo.${action.schema}.${action.column.id}`, action.column)
         default:
             return state
     }
@@ -359,7 +359,7 @@ export function fetchTablesIfUncached(tables: Array<Partial<ITable>>) {
         const tableinfoUIDs: Array<string> = Object.keys(tables)
         for (var key in tables) {
             const table = tables[key]
-            const tableUID: string = `${table.schema_name}-${table.id}`
+            const tableUID: string = `${table.schema_name}.${table.id}`
             if (!(tableUID in tableinfo)) {
                 missingTables.push(table)
             }
@@ -383,30 +383,54 @@ export function fetchColumnsForMaps() {
                     layer.fill.expression_mode === eLayerValueExpressionMode.SINGLE ||
                     layer.fill.expression_mode === eLayerValueExpressionMode.PROPORTIONAL
                 ) {
-                    if (!(layer["schema"] in columnNamesBySchema)) {
-                        columnNamesBySchema[layer["schema"]] = []
+                    const parsed: any = parseValueExpression(layer.fill.expression, layer.fill.expression_mode)
+
+                    if ("col1" in parsed) {
+                        const [schema_name, column_name] = parsed.col1.split(".")
+                        if (!(schema_name in columnNamesBySchema)) {
+                            columnNamesBySchema[schema_name] = []
+                        }
+
+                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
+                            columnNamesBySchema[schema_name].push(column_name)
+                        }
                     }
 
-                    const parsed: any = parseValueExpression(layer.fill.expression, layer.fill.expression_mode)
-                    if ("col1" in parsed) {
-                        columnNamesBySchema[layer["schema"]].push(parsed.col1)
-                    }
                     if ("col2" in parsed) {
-                        columnNamesBySchema[layer["schema"]].push(parsed.col2)
+                        const [schema_name, column_name] = parsed.col2.split(".")
+                        if (!(schema_name in columnNamesBySchema)) {
+                            columnNamesBySchema[schema_name] = []
+                        }
+
+                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
+                            columnNamesBySchema[schema_name].push(column_name)
+                        }
                     }
                 }
 
                 if (layer.fill.conditional_mode !== undefined && layer.fill.conditional_mode !== eLayerFilterExpressionMode.SIMPLE) {
-                    if (!(layer["schema"] in columnNamesBySchema)) {
-                        columnNamesBySchema[layer["schema"]] = []
+                    const parsed: any = parseFilterExpression(layer.fill.conditional, layer.fill.conditional_mode)
+
+                    if ("col1" in parsed) {
+                        const [schema_name, column_name] = parsed.col1.split(".")
+                        if (!(schema_name in columnNamesBySchema)) {
+                            columnNamesBySchema[schema_name] = []
+                        }
+
+                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
+                            columnNamesBySchema[schema_name].push(column_name)
+                        }
                     }
 
-                    const parsed: any = parseFilterExpression(layer.fill.conditional, layer.fill.conditional_mode)
-                    if ("col1" in parsed) {
-                        columnNamesBySchema[layer["schema"]].push(parsed.col1)
-                    }
                     if ("col2" in parsed) {
-                        columnNamesBySchema[layer["schema"]].push(parsed.col2)
+                        const [schema_name, column_name] = parsed.col2.split(".")
+                        if (!(schema_name in columnNamesBySchema)) {
+                            columnNamesBySchema[schema_name] = []
+                        }
+
+                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
+                            columnNamesBySchema[schema_name].push(column_name)
+                        }
                     }
                 }
             }

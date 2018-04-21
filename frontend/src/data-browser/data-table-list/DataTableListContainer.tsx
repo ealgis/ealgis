@@ -26,14 +26,14 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         const tableinfoUIDs: Array<string> = Object.keys(tableinfo)
         for (var key in tables) {
             const table = tables[key]
-            const tableUID: string = `${table.schema_name}.${table.name}`
+            const tableUID: string = `${table.schema_name}.${table.id}`
             if (tableUID in tableinfo) {
                 tablesActual.push(tableinfo[tableUID])
             }
         }
         return tablesActual
     }
-    tablesBySchemaAndFamily(tables: Array<ITable>, tableinfo: ITableInfo) {
+    tablesBySchemaAndFamily(tables: Array<ITable>) {
         const tablesBySchemaAndFamily: ITablesBySchemaAndFamily = {}
         for (var key in tables) {
             let table = tables[key]
@@ -53,7 +53,7 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         const tablesActual = this.tablePartialsToFullTable(tables, tableinfo)
 
         if (layout === eTableChooserLayout.LIST_LAYOUT) {
-            const tablesBySchemaAndFamily = this.tablesBySchemaAndFamily(tablesActual, tableinfo)
+            const tablesBySchemaAndFamily = this.tablesBySchemaAndFamily(tablesActual)
             return (
                 <DataTableListBySchemaAndFamily
                     tablesBySchemaAndFamily={tablesBySchemaAndFamily}

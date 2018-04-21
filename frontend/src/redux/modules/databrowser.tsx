@@ -177,14 +177,13 @@ export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) 
             schema: schema_name,
             geo_source_id: geometry._id,
         })
-
         if (response.status === 404) {
             dispatch(sendSnackbarNotification(`This schema contains no tables for '${geometry.description}' geometries.`))
         } else if (response.status === 200) {
             dispatch(loadTablesToAppCache(json))
 
             const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
-                return { name: json[tableUID]["name"], schema_name: json[tableUID]["schema_name"] }
+                return { id: json[tableUID]["id"], schema_name: json[tableUID]["schema_name"] }
             })
             dispatch(addTables(tablePartials))
         }
@@ -206,7 +205,7 @@ export function searchTables(chips: Array<string>, chipsExcluded: Array<string>,
             dispatch(loadTablesToAppCache(json))
 
             const tablePartials: Array<Partial<ITable>> = Object.keys(json).map((tableUID: string) => {
-                return { name: json[tableUID]["name"], schema_name: json[tableUID]["schema_name"] }
+                return { id: json[tableUID]["id"], schema_name: json[tableUID]["schema_name"] }
             })
             dispatch(addTables(tablePartials))
         }
@@ -289,7 +288,7 @@ export function getValueExpressionWithColumns(expression: any, expression_mode: 
 export function parseFilterExpression(expression: string, expression_mode: eLayerFilterExpressionMode) {
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
-        let matches = /([a-z0-9$()<>*/]+)([>=<!]{1,2})([a-z0-9]+)/g.exec(expression)
+        let matches = /([a-z0-9$()<>*/]*?)([>=<!]{1,2})([a-z0-9]+)/g.exec(expression)
         return {
             col1: matches![1],
             operator: matches![2],
@@ -315,8 +314,9 @@ export function getFilterExpressionWithColumns(expression: any, expression_mode:
     return {}
 }
 
-// @FIXME Assumes Census
-function getColumnByName(column_name: string, columninfo: IColumnInfo) {
+// @FIXME Assumes column names are unique within a schema (which works OK for Census data). There's no guarnatee that they are, though.
+function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo) {
+    const [schema_name, column_name] = column_schema_and_name.split(".")
     for (let key in columninfo) {
         const col: IColumn = columninfo[key]
         if (col.name === column_name) {

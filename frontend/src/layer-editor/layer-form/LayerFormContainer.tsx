@@ -397,11 +397,14 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 initialValues={this.initialValues}
                 onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues, layerDefinition)}
                 onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) =>
-                    onSubmitFail(errors, submitError, props)}
+                    onSubmitFail(errors, submitError, props)
+                }
                 onFieldBlur={(fieldName: string, newValue: any, previousValue: any) =>
-                    onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)}
+                    onFieldUpdate(fieldName, newValue, mapDefinition.id, layerId)
+                }
                 onFieldChange={(fieldName: string, newValue: any) =>
-                    this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)}
+                    this.onFieldChangeDebounced(fieldName, newValue, mapDefinition.id, layerId)
+                }
                 onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
                 onSaveForm={() => {
@@ -440,7 +443,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     // const selectedColumnStubs: Array<ISelectedColumn> = layerFormValues(state, "selectedColumns")
     // if (selectedColumnStubs !== undefined) {
     //     let selectedColumns: Array<IColumn> = selectedColumnStubs.map((columnStub: ISelectedColumn) => {
-    //         const columnUID = `${columnStub["schema"]}-${columnStub["id"]}`
+    //         const columnUID = `${columnStub["schema"]}.${columnStub["id"]}`
     //         return ealgis.columninfo[columnUID]
     //     })
     // }
