@@ -538,35 +538,35 @@ export function updateMap(map: IMap) {
 }
 
 export function mapUpsert(map: IMap) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         // Upsert
         if (map.id === undefined) {
             return dispatch(createMap(map))
         }
         let mapCopy: IMap = JSON.parse(JSON.stringify(map))
 
-        return ealapi.put("/api/0.1/maps/" + mapCopy["id"] + "/", mapCopy, dispatch).then(({ response, json }: any) => {
-            // FIXME Cleanup and decide how to handle error at a component and application-level
-            // throw new Error('Unhandled error updating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+        const { response, json } = await ealapi.put("/api/0.1/maps/" + mapCopy["id"] + "/", mapCopy, dispatch)
 
-            if (response.status === 200) {
-                dispatch(receieveUpdatedMap(json))
-                browserHistory.push(getMapURL(json))
-                dispatch(sendSnackbarNotification("Map saved successfully"))
-            } else if (response.status === 400) {
-                // We expect that the server will return the shape:
-                // {
-                //   username: 'User does not exist',
-                //   password: 'Wrong password',
-                //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
-                // }
-                throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
-                throw new Error("Unhandled error updating map. Please report. (" + response.status + ") " + JSON.stringify(json))
-            }
-        })
+        // FIXME Cleanup and decide how to handle error at a component and application-level
+        // throw new Error('Unhandled error updating map. Please report. (' + response.status + ') ' + JSON.stringify(json));
+
+        if (response.status === 200) {
+            dispatch(receieveUpdatedMap(json))
+            browserHistory.push(getMapURL(json))
+            dispatch(sendSnackbarNotification("Map saved successfully"))
+        } else if (response.status === 400) {
+            // We expect that the server will return the shape:
+            // {
+            //   username: 'User does not exist',
+            //   password: 'Wrong password',
+            //   non_field_errors: 'Some sort of validation error not relevant to a specific field'
+            // }
+            throw new SubmissionError({ ...json, _error: json.non_field_errors || null })
+        } else {
+            // We're not sure what happened, but handle it:
+            // our Error will get passed straight to `.catch()`
+            throw new Error("Unhandled error updating map. Please report. (" + response.status + ") " + JSON.stringify(json))
+        }
     }
 }
 
@@ -760,11 +760,11 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
                     // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
                     let haveCoreFieldsChanged: boolean = false
                     if ("fill" in layerPartial) {
-                        haveCoreFieldsChanged = Object.keys(
-                            layerPartial["fill"]
-                        ).some((value: string, index: number, array: Array<string>) => {
-                            return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
-                        })
+                        haveCoreFieldsChanged = Object.keys(layerPartial["fill"]).some(
+                            (value: string, index: number, array: Array<string>) => {
+                                return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
+                            }
+                        )
                     }
 
                     if (haveCoreFieldsChanged || "geometry" in layerPartial) {

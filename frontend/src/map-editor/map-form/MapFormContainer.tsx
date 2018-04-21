@@ -69,7 +69,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 map = {} as IMap
             }
             map = Object.assign(map, values)
-            dispatch(mapUpsert(map))
+            return dispatch(mapUpsert(map))
         },
     }
 }
