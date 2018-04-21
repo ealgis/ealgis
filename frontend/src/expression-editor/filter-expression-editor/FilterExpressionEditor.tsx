@@ -46,6 +46,17 @@ class ClickableRaisedButton extends React.Component<any, any> {
     }
 }
 
+class PreventDoubleSubmitRaisedButton extends React.Component<any, any> {
+    render() {
+        const onKeyPress = (ev: any) => {
+            if (ev.key === "Enter") {
+                ev.preventDefault()
+            }
+        }
+        return <ClickableRaisedButton onKeyPress={onKeyPress} {...this.props} />
+    }
+}
+
 const ExpressionEditorToolbar = styled(Toolbar)`
     background-color: white !important;
 `
@@ -53,7 +64,7 @@ const ExpressionModeDropDownMenu = styled(DropDownMenu)`
     top: -5px;
     margin-left: 15px;
 `
-const ExpressionRaisedButton = styled(ClickableRaisedButton)`
+const ExpressionRaisedButton = styled(PreventDoubleSubmitRaisedButton)`
     margin-left: 10px;
     margin-right: 10px;
 `
