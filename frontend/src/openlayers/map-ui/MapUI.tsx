@@ -66,6 +66,9 @@ export class MapUI extends React.Component<IProps, {}> {
             return (
                 <div>
                     <Map view={view} onMoveend={onMoveEnd}>
+                        <Controls>
+                            <FullScreen source={"ealgis"} />
+                        </Controls>
                         <Layers>
                             <Tile source={this.mapboxTileSource} />
                         </Layers>
