@@ -167,6 +167,18 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     @list_route(methods=['get'])
     def all(self, request, format=None):
         maps = self.get_queryset()
+
+        # Reset any abandoned edit sessions
+        # This only works because /maps/all/ is called on app load
+        for map in maps:
+            for layerId, layer in enumerate(map.json["layers"]):
+                if map.has_master_layer(layerId):
+                    map.restore_master_layer(layerId)
+
+                    serializer = MapDefinitionSerializer(map, data={"json": map.json}, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 

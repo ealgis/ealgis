@@ -165,3 +165,9 @@ class MapDefinition(models.Model):
             return self._set(defn, **kwargs)
         except pyparsing.ParseException as e:
             raise CompilationError(str(e))
+
+    def has_master_layer(self, layerId):
+        return "master" in self.json["layers"][layerId]
+
+    def restore_master_layer(self, layerId):
+        self.json["layers"][layerId] = copy.deepcopy(self.json["layers"][layerId]["master"])
