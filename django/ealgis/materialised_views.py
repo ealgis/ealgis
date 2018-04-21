@@ -1,8 +1,8 @@
 import math
-from django.apps import apps
 from rest_framework.exceptions import ValidationError
 from django.http.response import HttpResponse
 from rest_framework.response import Response
+from .db import broker
 
 
 class MaterialisedViews:
@@ -145,15 +145,16 @@ class MaterialisedViews:
         execute = True if "execute" in qp else False
 
         viewNames = []
+        db = broker.Provider(qp["schema_name"])
         if "table_name" in qp and "schema_name" in qp:
-            table = eal.get_data_info(qp["table_name"], qp["schema_name"])
+            table = db.get_data_info(qp["table_name"])
             tables = "{}.{}".format(qp["schema_name"], table.name)
-            viewNames.append(self.create_materialised_view_for_table(
+            viewNames.append(MaterialisedViews.create_materialised_view_for_table(
                 table.name, qp["schema_name"], execute))
         elif "all_tables" in qp:
-            tables = eal.get_datainfo()
+            tables = db.get_data_tables()
             for key in tables:
-                viewNames.append(self.create_materialised_view_for_table(
+                viewNames.append(MaterialisedViews.create_materialised_view_for_table(
                     tables[key]["name"], tables[key]["schema_name"], execute))
         else:
             raise ValidationError(

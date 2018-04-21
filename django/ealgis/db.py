@@ -2,7 +2,7 @@ from functools import lru_cache
 from sqlalchemy import inspect
 from geoalchemy2.types import Geometry
 from sqlalchemy import create_engine, not_
-from sqlalchemy.orm import sessionmaker, load_only, Load
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from ealgis_data_schema.schema_v1 import store
 from collections import Counter
@@ -138,7 +138,7 @@ class DataAccess():
 
         schemas = []
         for schema_name in self.get_schemas():
-            if self.is_system_schema(schema_name) == False:
+            if self.is_system_schema(schema_name) is False:
                 if is_compliant_schema(schema_name):
                     schemas.append(schema_name)
         return schemas
@@ -160,7 +160,7 @@ class DataAccess():
 
         schemas = []
         for schema_name in self.get_schemas():
-            if self.is_system_schema(schema_name) == False:
+            if self.is_system_schema(schema_name) is False:
                 if is_compliant_schema(schema_name):
                     schemas.append(schema_name)
         return schemas

@@ -25,9 +25,11 @@ def export_iter(defn_obj, bounds=None, include_geom_attrs=False):
             return None, None
 
     if bounds is None:
-        def mkq(q): return q.get_query()
+        def mkq(q):
+            return q.get_query()
     else:
-        def mkq(q): return q.get_query_bounds(*bounds, srid=4326)
+        def mkq(q):
+            return q.get_query_bounds(*bounds, srid=4326)
 
     # for each geometry, yield a header and then the data for each geom in the geometry
     for geom_source_table_info in expressions:
