@@ -141,7 +141,6 @@ class MaterialisedViews:
 
     @staticmethod
     def create_views(request, format=None):
-        eal = apps.get_app_config('ealauth').eal
         qp = request.query_params
         execute = True if "execute" in qp else False
 
@@ -149,12 +148,12 @@ class MaterialisedViews:
         if "table_name" in qp and "schema_name" in qp:
             table = eal.get_data_info(qp["table_name"], qp["schema_name"])
             tables = "{}.{}".format(qp["schema_name"], table.name)
-            viewNames.append(eal.create_materialised_view_for_table(
+            viewNames.append(self.create_materialised_view_for_table(
                 table.name, qp["schema_name"], execute))
         elif "all_tables" in qp:
             tables = eal.get_datainfo()
             for key in tables:
-                viewNames.append(eal.create_materialised_view_for_table(
+                viewNames.append(self.create_materialised_view_for_table(
                     tables[key]["name"], tables[key]["schema_name"], execute))
         else:
             raise ValidationError(

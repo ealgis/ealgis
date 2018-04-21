@@ -13,10 +13,10 @@ def export_iter(defn_obj, bounds=None, include_geom_attrs=False):
             expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True, include_geom_attrs=include_geom_attrs)
             if expr.is_trivial():
                 continue
-            geom_source = expr.get_geometry_source()
-            if geom_source not in expressions:
-                expressions[geom_source] = []
-            expressions[geom_source].append(expr)
+            geom_source_table_info = expr.get_geometry_source_table_info()
+            if geom_source_table_info not in expressions:
+                expressions[geom_source_table_info] = []
+            expressions[geom_source_table_info].append(expr)
 
     def next_or_none(it):
         try:
@@ -25,15 +25,15 @@ def export_iter(defn_obj, bounds=None, include_geom_attrs=False):
             return None, None
 
     if bounds is None:
-        mkq = lambda q: q.get_query()
+        def mkq(q): return q.get_query()
     else:
-        mkq = lambda q: q.get_query_bounds(*bounds, srid=4326)
+        def mkq(q): return q.get_query_bounds(*bounds, srid=4326)
 
     # for each geometry, yield a header and then the data for each geom in the geometry
-    for geom_source in expressions:
-        queries = expressions[geom_source]
+    for geom_source_table_info in expressions:
+        queries = expressions[geom_source_table_info]
         # q.query_attrs[2:] because the first three columns in query_attrs are gid, q
-        yield [geom_source.table_info.name + ".gid"] + [q.get_name() for q in queries] + [[str(a) for a in q.query_attrs[2:]] for q in queries][0]
+        yield [geom_source_table_info.name + ".gid"] + [q.get_name() for q in queries] + [[str(a) for a in q.query_attrs[2:]] for q in queries][0]
         iters = [iter(mkq(q).yield_per(1)) for q in queries]
         vals = [next_or_none(i) for i in iters]
         while True:

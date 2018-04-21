@@ -7,9 +7,9 @@ from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from django.apps import apps
 from ealgis.util import make_logger
+from .db import DataAccess, broker
 
 
-eal = apps.get_app_config('ealauth').eal
 logger = make_logger(__name__)
 
 
@@ -174,21 +174,21 @@ class DataExpression(object):
     def __init__(self, name, geometry_source, expr, cond, srid=None, include_geometry=True, order_by_gid=False, include_geom_attrs=False):
         self.name = name
         self.geometry_source = geometry_source
+        self.db = broker.Provide(self.geometry_source.__table__.schema)
+        self.geometry_source_table_info = self.db.get_table_info_by_id(self.geometry_source.table_info_id)
         self.geometry_column = None
         self.srid = srid
 
         # attempt to get a column in the desired SRID, this speeds things up
         if self.srid is not None:
-            from ealgis.models import GeometrySource
-            self.geometry_column = GeometrySource.srid_column(self.geometry_source, self.srid, eal)
+            self.geometry_column = self.db.get_geometry_source_column(self.geometry_source, self.srid).geometry_column
         if self.geometry_column is None:
             self.geometry_column = self.geometry_source.column
             self.srid = self.geometry_source.srid
-        self.table_instances = {}
         self.filters = []
 
         self.joins = set()
-        self.tbl = self.get_table_class(geometry_source.table_info.name, geometry_source.__table__.schema)
+        self.tbl = self.db.get_table_class_by_id(geometry_source.table_info_id)
 
         query_attrs = []
         if include_geometry:
@@ -198,6 +198,7 @@ class DataExpression(object):
         query_attrs.append(gid_attr)
         # special case for empty expression
         expr_raw = expr
+
         if expr == '':
             # bodge bodge bodge, keep 'q' working
             expr = sqlalchemy.func.abs(0)
@@ -211,12 +212,9 @@ class DataExpression(object):
 
         if include_geom_attrs:
             # Attach all columns from the geometry source
-            attrs = self.tbl.metadata.tables[geometry_source.__table__.schema + "." + geometry_source.table_info.name].columns.keys()
-            # Prune out columns that look like geometry. Bodge bodge FIXME.
-            for attr in [c for c in attrs if c.startswith("geom") is False]:
-                if attr != "gid":
-                    query_attrs.append(getattr(self.tbl, attr))
-
+            db = broker.Provide(geometry_source.__table__.schema)
+            for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
+                query_attrs.append(getattr(self.tbl, column.name))
         self.query_attrs = query_attrs
 
         filter_expr = None
@@ -224,7 +222,9 @@ class DataExpression(object):
             cond_processed = cond.replace("$value", "(%s)" % expr_raw)
             parsed = DataExpression.cond_expr.parseString(cond_processed, parseAll=True)[0]
             filter_expr = parsed.eval(self)
-        self.query = eal.session.query(*query_attrs)
+
+        self.query = self.db.session.query(*query_attrs)
+
         if filter_expr is not None:
             self.query = self.query.filter(filter_expr)
         for filter_expr in self.filters:
@@ -243,20 +243,21 @@ class DataExpression(object):
     def get_name(self):
         return self.name
 
-    def get_table_class(self, table_name, schema_name):
-        key = "{}.{}".format(table_name, schema_name)
-        if key not in self.table_instances:
-            self.table_instances[key] = eal.get_table_class(table_name, schema_name)
-        return self.table_instances[key]
+    def lookup(self, attribute):
+        # upper case schemas or columns seem unlikely, but a possible FIXME
+        attribute = attribute.lower()
+        schema_name, attribute_name = attribute.split('.', 1)
 
-    def lookup(self, attr_name):
-        attr_column_linkage, attr_column_info = eal.resolve_attribute(self.geometry_source, attr_name)
-        attr_tbl = self.get_table_class(attr_column_info.table_info.name, attr_column_info.__table__.schema)
-        attr_attr = getattr(attr_tbl, attr_column_info.name)
+        db = broker.Provide(schema_name)
+        attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
+
+        attr_tbl = db.get_table_class_by_id(attr_column_info.table_info_id)
+        attr_attr = getattr(attr_tbl, attr_column_info.name)  # x4630
         # and our join columns
-        attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)
-        tbl_linkage = getattr(self.tbl, attr_column_linkage.geo_column)
+        attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)  # gid
+        tbl_linkage = getattr(self.tbl, attr_column_linkage.attr_column)  # aus_census_2011_shapes
         self.joins.add((attr_tbl, attr_linkage, tbl_linkage))
+
         return attr_attr
 
     def add_filter(self, f):
@@ -269,8 +270,9 @@ class DataExpression(object):
         ymin, xmin = sw
         ymax, xmax = ne
         proj_srid = int(apps.get_app_config('ealauth').projected_srid)
-        from ealgis.models import GeometrySource
-        proj_column = GeometrySource.srid_column(self.geometry_source, proj_srid)
+
+        proj_column = self.db.get_geometry_source_column(self.geometry_source, proj_srid).geometry_column
+
         q = self.query.filter(sqlalchemy.func.st_intersects(
             sqlalchemy.func.st_transform(
                 sqlalchemy.func.st_makeenvelope(xmin, ymin, xmax, ymax, srid),
@@ -280,6 +282,9 @@ class DataExpression(object):
 
     def get_geometry_source(self):
         return self.geometry_source
+
+    def get_geometry_source_table_info(self):
+        return self.geometry_source_table_info
 
     def get_printed_query(self):
         return printquery(self.query)

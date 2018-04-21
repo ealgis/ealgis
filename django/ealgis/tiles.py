@@ -1,9 +1,10 @@
 import math
+from .db import broker
 
 
 class Tiles:
     @staticmethod
-    def get_tile(eal, query, x, y, z):
+    def get_tile(query, x, y, z):
         def create_vectortile_sql(query, bounds):
             # Sets the number of decimal places per GeoJSON coordinate to reduce response size
             # (e.g. 10 decimal places per lat/long in 100 polygons with 50 sets of coords is 2 * 10 * 100 * 50 = 100,000 bytes uncompressed
@@ -93,10 +94,12 @@ class Tiles:
         import mercantile
         vt_query = create_vectortile_sql(
             query, bounds=mercantile.bounds(x, y, z))
-        return eal.session.execute(vt_query)
+
+        db = broker.Provide(None)
+        return db.session.execute(vt_query)
 
     @staticmethod
-    def get_tile_mv(eal, layer, x, y, z):
+    def get_tile_mv(layer, x, y, z):
         def create_vectortile_sql(layer, bounds):
             # Sets the number of decimal places per GeoJSON coordinate to reduce response size
             # (e.g. 10 decimal places per lat/long in 100 polygons with 50 sets of coords is 2 * 10 * 100 * 50 = 100,000 bytes uncompressed
@@ -398,4 +401,6 @@ class Tiles:
         import mercantile
         vt_query = create_vectortile_sql(
             layer, bounds=mercantile.bounds(x, y, z))
-        return eal.session.execute(vt_query)
+
+        db = broker.Provide(None)
+        return db.session.execute(vt_query)

@@ -7,7 +7,7 @@ from ealgis.util import make_logger
 import pyparsing
 import hashlib
 import copy
-
+from ..db import broker
 
 logger = make_logger(__name__)
 
@@ -46,7 +46,6 @@ class MapDefinition(models.Model):
         unique_together = ('name', 'owner_user_id')
 
     def get(self):
-        self.eal = apps.get_app_config('ealauth').eal
         if self.json is not None:
             return self.json
         return {}
@@ -56,8 +55,9 @@ class MapDefinition(models.Model):
         from ealgis.dataexpr import DataExpression
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
-        geometry_source = self.eal.get_geometry_source(
-            geometry_source_name, schema_name)
+
+        db = broker.Provide(schema_name)
+        geometry_source = db.get_geometry_source(geometry_source_name)
 
         return DataExpression(
             layer['name'],
@@ -109,25 +109,8 @@ class MapDefinition(models.Model):
         layer["latlon_bbox"] = bbox
 
     def _get_latlon_bbox(self, layer):
-        bbox_query = """
-            SELECT
-                ST_XMin(latlon_bbox) AS minx,
-                ST_XMax(latlon_bbox) AS maxx,
-                ST_YMin(latlon_bbox) AS miny,
-                ST_YMax(latlon_bbox) as maxy
-            FROM (
-                SELECT
-                    -- Eugh
-                    Box2D(ST_GeomFromText(ST_AsText(ST_Transform(ST_SetSRID(ST_Extent(geom_3857), 3857), 4326)))) AS latlon_bbox
-                FROM (
-                    {query}
-                ) AS exp
-            ) AS bbox;
-        """.format(query=layer['_postgis_query'])
-
-        eal = apps.get_app_config('ealauth').eal
-        results = eal.session.execute(bbox_query)
-        return dict(results.first())
+        db = broker.Provide(None)
+        return db.get_bbox_for_layer(layer)
 
     def _set(self, defn, force=False):
         def _private_clear(obj):

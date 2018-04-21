@@ -5,8 +5,23 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from ealgis.colour_scale import make_colour_scale
-from ealgis.ealgis import ValueError, NoMatches, TooManyMatches, CompilationError
 from urllib.parse import quote_plus
+
+
+class NoMatches(Exception):
+    pass
+
+
+class TooManyMatches(Exception):
+    pass
+
+
+class CompilationError(Exception):
+    pass
+
+
+class ValueError(Exception):
+    pass
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):

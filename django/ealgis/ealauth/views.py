@@ -23,8 +23,9 @@ import copy
 import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
-from ..db import SchemaLoader, DataAccess
+from ..db import DataAccess, broker
 from ..materialised_views import MaterialisedViews
+from ..tiles import Tiles
 
 
 def api_not_found(request):
@@ -78,18 +79,16 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'])
     def recent_tables(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-
         # Add our new tables to the start of the list of recent
         # tables that the user has interacted with.
         if "tables" in request.data and isinstance(request.data["tables"], list):
-
             # If they're valid tables
             tmp_recent_tables = []
             for table in request.data["tables"]:
-                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
-                if tbl is not None:
-                    tmp_recent_tables.append({"id": tbl.id, "schema_name": table["schema_name"]})
+                with DataAccess(DataAccess.make_engine(), table["schema_name"]) as db:
+                    tbl = db.get_table_info_by_id(table["id"])
+                    if tbl is not None:
+                        tmp_recent_tables.append({"id": tbl.id, "schema_name": table["schema_name"]})
 
             # With no duplicates
             profile = self.get_queryset()
@@ -112,15 +111,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['put'])
     def favourite_tables(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-
         if "tables" in request.data and isinstance(request.data["tables"], list):
             profile = self.get_queryset()
             favourite_tables = copy.deepcopy(profile.favourite_tables)
             removed_tables = []
 
             for table in request.data["tables"]:
-                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
+                db = broker.Provide(table["schema_name"])
+                tbl = db.get_table_info_by_id(table["id"])
                 if tbl is not None:
                     tbl_partial = {"id": tbl.id, "schema_name": table["schema_name"]}
 
@@ -399,7 +397,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     def query_summary(self, request, pk=None, format=None):
         map = self.get_object()
         qp = request.query_params
-        eal = apps.get_app_config('ealauth').eal
 
         layer = None
         if "layer" in qp:
@@ -411,8 +408,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        summary = eal.def_get_summary_stats_for_layer(layer)
-        return Response(summary)
+        db = broker.Provide(None)
+        return Response(db.get_summary_stats_for_layer(layer))
 
     @detail_route(methods=['get'])
     def export_csv(self, request, pk=None, format=None):
@@ -452,7 +449,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'])
     def columns(self, request, pk=None, format=None):
         qp = request.query_params
-        eal = apps.get_app_config('ealauth').eal
 
         raise ValidationError(detail="What does this method do? Why aren't we using the similar ones on /api/0.1/columninfo/columninfo?")
 
@@ -462,11 +458,13 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         response = []
         for c in self.get_object().json["layers"][layerId]["selectedColumns"]:
-            column = eal.get_column_info(c["id"], c["schema"])
+            db = broker.Provide(c["schema"])
+            column = db.get_column_info(c["id"])
             if column is None:
                 raise NotFound()
 
-            table = eal.get_table_info_by_id(column.table_info_id, c["schema"])
+            db = broker.Provide(c["schema"])
+            table = db.get_table_info_by_id(column.table_info_id)
             if table is None:
                 raise NotFound()
 
@@ -585,9 +583,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
                 fromMemcached = True
 
         if memcachedEnabled is False or features is None:
-            eal = apps.get_app_config('ealauth').eal
             # tileSQLStartTime = int(round(time.time() * 1000))
-            results = eal.get_tile_mv(layer, int(
+            results = Tiles.get_tile_mv(layer, int(
                 qp["x"]), int(qp["y"]), int(qp["z"]))
             # tileSQLEndTime = int(round(time.time() * 1000))
 
@@ -643,68 +640,28 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return response
 
 
-class ReadOnlyGenericTableInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    permission_classes = (IsAuthenticatedAndApproved,)
-
-    def retrieve(self, request, format=None, pk=None):
-        schema_name = self.get_schema_from_request(request)
-
-        table = self.getter_method(pk, schema_name)
-        if table is None:
-            raise NotFound()
-
-        table = self.add_columns_to_table(table, schema_name)
-
-        serializer = self.serializer_class(table)
-        return Response(serializer.data)
-
-    def get_schema_from_request(self, request):
-        loader = SchemaLoader(SchemaLoader.make_engine())
-
-        schema_name = request.query_params.get('schema', None)
-        if schema_name is None or not schema_name:
-            raise ValidationError(detail="No schema name provided.")
-        elif schema_name not in loader.get_ealgis_schemas():
-            raise ValidationError(
-                detail="Schema name '{}' is not a known schema.".format(schema_name))
-        return schema_name
-
-    def add_columns_to_table(self, table, schema_name):
-        eal = apps.get_app_config('ealauth').eal
-
-        columninfo = eal.get_table_class("column_info", schema_name)
-        columns = {}
-        for column in eal.session.query(columninfo).filter_by(tableinfo_id=table.id).all():
-            columns[column.name] = json.loads(column.metadata_json)
-
-        if len(columns) > 0:
-            table.columns = columns
-        return table
-
-
 class DataInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tabular tables to be viewed or edited.
     """
     permission_classes = (IsAuthenticatedAndApproved,)
     serializer_class = DataInfoSerializer
-    getter_method = apps.get_app_config('ealauth').eal.get_data_info
 
     def list(self, request, format=None):
-        loader = SchemaLoader(SchemaLoader.make_engine())
+        db = broker.Provide(None)
 
         tables = {}
-        for schema_name in loader.get_ealgis_schemas():
-            with DataAccess(DataAccess.make_engine(), schema_name) as db:
-                for (geometrysource, tableinfo) in db.get_geometry_sources_table_info():
-                    uname = "{}.{}".format(schema_name, tableinfo.name)
-                    tables[uname] = {
-                        "_id": geometrysource.id,
-                        "name": tableinfo.name,
-                        "description": tableinfo.metadata_json['description'],
-                        "geometry_type": geometrysource.geometry_type,
-                        "schema_name": schema_name
-                    }
+        for schema_name in db.get_geometry_schemas():
+            geometry_sources = broker.Provide(schema_name).get_geometry_sources_table_info()
+            for (geometrysource, tableinfo) in geometry_sources:
+                uname = "{}.{}".format(schema_name, tableinfo.name)
+                tables[uname] = {
+                    "_id": geometrysource.id,
+                    "name": tableinfo.name,
+                    "description": tableinfo.metadata_json['description'],
+                    "geometry_type": geometrysource.geometry_type,
+                    "schema_name": schema_name
+                }
 
         return Response(tables)
 
@@ -722,17 +679,6 @@ class DataInfoViewSet(viewsets.ViewSet):
                     info[col] = val
 
         return Response(info)
-
-    # def get_schema_from_request(self, request):
-    #     loader = SchemaLoader(SchemaLoader.make_engine())
-
-    #     schema_name = request.query_params.get('schema', None)
-    #     if schema_name is None or not schema_name:
-    #         raise ValidationError(detail="No schema name provided.")
-    #     elif schema_name not in loader.get_ealgis_schemas():
-    #         raise ValidationError(
-    #             detail="Schema name '{}' is not a known schema.".format(schema_name))
-    #     return schema_name
 
     @list_route(methods=['get'])
     def create_views(self, request, format=None):
@@ -754,20 +700,20 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         geo_source_id = request.query_params.get('geo_source_id', None)
 
         if schema_name is None:
-            loader = SchemaLoader(SchemaLoader.make_engine())
-            schema_names = loader.get_ealgis_schemas()
+            db = broker.Provide(None)
+            schema_names = db.get_ealgis_schemas()
         else:
             schema_names = [schema_name]
 
         tables = {}
         for schema_name in schema_names:
-            with DataAccess(DataAccess.make_engine(), schema_name) as db:
-                for t in db.get_data_tables(geo_source_id):
-                    uname = "{}.{}".format(schema_name, t.name)
-                    tables[uname] = {
-                        **TableInfoSerializer(t).data,
-                        **{"schema_name": schema_name}
-                    }
+            db = broker.Provide(schema_name)
+            for t in db.get_data_tables(geo_source_id):
+                uname = "{}.{}".format(schema_name, t.id)
+                tables[uname] = {
+                    **TableInfoSerializer(t).data,
+                    **{"schema_name": schema_name}
+                }
 
         if len(tables) == 0:
             raise NotFound()
@@ -775,17 +721,16 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def fetch(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-
         tables = {}
         if isinstance(request.data, list) and len(request.data) > 0:
             for table in request.data:
-                tbl = eal.get_table_info_by_id(table["id"], table["schema_name"])
+                db = broker.Provide(table["schema_name"])
+                tbl = db.get_table_info_by_id(table["id"])
                 if tbl is not None:
                     tmp = TableInfoSerializer(tbl).data
                     tmp["schema_name"] = table["schema_name"]
 
-                    tableUID = "%s-%s" % (tmp["schema_name"], tmp["id"])
+                    tableUID = "%s.%s" % (tmp["schema_name"], tmp["id"])
                     tables[tableUID] = tmp
 
         return Response({"tables": tables})
@@ -793,6 +738,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @list_route(methods=['get'])
     def search(self, request, format=None):
         schema_name = request.query_params.get('schema', None)
+        geo_source_id = request.query_params.get('geo_source_id', None)
         qp = request.query_params
 
         search_terms = qp["search"].split(
@@ -800,23 +746,30 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         search_terms_excluded = qp["search_excluded"].split(
             ",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
 
-        # Hacky approach to searching by column name
-        # Let's just override the regular tableinfo subquery
-        if(len(search_terms) == 1):
-            eal = apps.get_app_config('ealauth').eal
-            columninfo = eal.get_table_class("column_info", schema_name)
-            if(eal.session.query(columninfo).filter(columninfo.name == search_terms[0].strip()).count() > 0):
-                raise ValidationError("FIXME: Pulling a column by name should call a different endpoint.")
-
-        response = {}
         with DataAccess(DataAccess.make_engine(), schema_name) as db:
-            # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
-            # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
-            # Find all columns mentioning "landlord" at SA3 level
-            if "geo_source_id" in qp and qp["geo_source_id"] != "":
-                tables = db.search_tables(search_terms, search_terms_excluded, qp["geo_source_id"])
-            else:
-                tables = db.search_tables(search_terms, search_terms_excluded)
+            tables = []
+            response = {}
+
+            # If we have a single search term it may be a column name,
+            # so let's look that up first before trying a regular string
+            # search of Table metadata.
+            if len(search_terms) == 1:
+                columns = db.get_column_info_by_name(search_terms[0], geo_source_id)
+
+                if len(columns) > 0:
+                    table_ids = [c.table_info_id for c in columns]
+                    tables = db.get_table_info_by_ids(table_ids)
+
+            # If our column search didn't get a response, try serching the Table
+            # metadata instead
+            if len(tables) == 0:
+                # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
+                # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
+                # Find all columns mentioning "landlord" at SA3 level
+                if geo_source_id is not None:
+                    tables = db.search_tables(search_terms, search_terms_excluded, qp["geo_source_id"])
+                else:
+                    tables = db.search_tables(search_terms, search_terms_excluded)
 
             for tableinfo in tables:
                 table = TableInfoSerializer(tableinfo).data
@@ -866,24 +819,24 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['post'])
     def by_schema(self, request, format=None):
-        eal = apps.get_app_config('ealauth').eal
-
         columnsByUID = {}
         tablesByUID = {}
-        for schema in request.data:
-            columns = eal.get_column_info_by_names(request.data[schema], schema)
-            tableIds = list(set([col.column_info.table_info_id for col in columns]))
-            tables = eal.get_table_info_by_ids(tableIds, schema)
+
+        for schema_name in request.data:
+            db = broker.Provide(schema_name)
+            columns = db.get_column_info_by_names(request.data[schema_name])
+            tableIds = list(set([col.table_info_id for col in columns]))
+            tables = db.get_table_info_by_ids(tableIds)
 
             for column in columns:
-                col = ColumnInfoSerializer(column.column_info).data
-                col["schema_name"] = schema
-                columnsByUID["%s-%s" % (schema, column.column_info.id)] = col
+                col = ColumnInfoSerializer(column).data
+                col["schema_name"] = schema_name
+                columnsByUID["%s.%s" % (schema_name, column.id)] = col
 
             for table in tables:
                 tmp = TableInfoSerializer(table).data
-                tmp["schema_name"] = schema
-                tablesByUID["%s-%s" % (schema, table.id)] = tmp
+                tmp["schema_name"] = schema_name
+                tablesByUID["%s.%s" % (schema_name, table.id)] = tmp
 
         return Response({"columns": columnsByUID, "tables": tablesByUID})
 
@@ -963,10 +916,10 @@ class SchemasViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
-        loader = SchemaLoader(SchemaLoader.make_engine())
+        db = broker.Provide(None)
 
         schemas = {}
-        for schema_name in loader.get_ealgis_schemas():
-            with DataAccess(DataAccess.make_engine(), schema_name) as db:
-                schemas[schema_name] = EALGISMetadataSerializer(db.get_metadata()).data
+        for schema_name in db.get_ealgis_schemas():
+            metadata = broker.Provide(schema_name).get_schema_metadata()
+            schemas[schema_name] = EALGISMetadataSerializer(metadata).data
         return Response(schemas)
