@@ -8,6 +8,22 @@ import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
 import { yellow500 } from "material-ui/styles/colors"
 import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable } from "../../redux/modules/interfaces"
 
+const FlexboxContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    /* <div> == ListItem */
+    & > div {
+        flex-grow: 1;
+    }
+
+    & > button {
+        align-self: flex-start;
+    }
+`
+
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
     render() {
@@ -22,6 +38,30 @@ export interface IProps {
     onFavouriteTable?: Function
 }
 
+const isFavourited = (table: ITable, favouriteTablesUIDs: Array<string>) =>
+    arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`)
+
+const getTableTitle = (table: ITable, tableFamily: ITableFamily) =>
+    `${tableFamily["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
+
+const renderFavouriteIcon = (onFavouriteTable: Function, table: ITable, tableFamily: ITableFamily, favouriteTablesUIDs: Array<string>) =>
+    onFavouriteTable !== undefined ? (
+        <ClickableIconButton onClick={() => onFavouriteTable(table)}>
+            {isFavourited(table, favouriteTablesUIDs) ? <ToggleStar color={yellow500} /> : <ToggleStarBorder />}
+        </ClickableIconButton>
+    ) : (
+        <div />
+    )
+
+const renderFavouriteIconForTableFamily = (onFavouriteTable: Function, hasFavouritedTables: boolean) =>
+    onFavouriteTable !== undefined ? (
+        <ClickableIconButton style={{ cursor: "default" }} disableTouchRipple={true}>
+            {hasFavouritedTables ? <ToggleStar color={yellow500} /> : <ToggleStarBorder />}
+        </ClickableIconButton>
+    ) : (
+        <div />
+    )
+
 export class DataTableListBySchemaAndFamily extends React.PureComponent<IProps, {}> {
     render() {
         const { tablesBySchemaAndFamily, favouriteTables, onClickTable, onFavouriteTable } = this.props
@@ -33,64 +73,41 @@ export class DataTableListBySchemaAndFamily extends React.PureComponent<IProps, 
                     const tableFamily: ITableFamily = tablesBySchemaAndFamily[tableFamilyUID]
 
                     if (tableFamily["tables"].length > 1) {
+                        const tableUIds = tableFamily["tables"].map((table: ITable) => `${table.schema_name}.${table.id}`)
+                        const hasFavouritedTables = favouriteTablesUIDs.some((tableUId: string) => tableUIds.indexOf(tableUId) >= 0)
+
                         return (
-                            <ListItem
-                                key={idx}
-                                primaryText={`${tableFamily["type"]} (${tableFamily["tables"][0]["metadata_json"][
-                                    "family"
-                                ].toUpperCase()})`}
-                                secondaryText={`${tableFamily["tables"][0]["metadata_json"]["kind"]}`}
-                                primaryTogglesNestedList={true}
-                                nestedItems={tableFamily["tables"].map((table: ITable, idx: number) => {
-                                    return (
-                                        <ListItem
-                                            key={idx}
-                                            primaryText={table.metadata_json.series.toUpperCase()}
-                                            onClick={() => onClickTable(table)}
-                                            rightIconButton={
-                                                onFavouriteTable !== undefined ? (
-                                                    <ClickableIconButton onClick={() => onFavouriteTable(table)}>
-                                                        {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
-                                                            <ToggleStar color={yellow500} />
-                                                        ) : (
-                                                            <ToggleStarBorder />
-                                                        )}
-                                                    </ClickableIconButton>
-                                                ) : (
-                                                    undefined
-                                                )
-                                            }
-                                        />
-                                    )
-                                })}
-                            />
+                            <FlexboxContainer key={idx}>
+                                {renderFavouriteIconForTableFamily(onFavouriteTable!, hasFavouritedTables)}
+                                <ListItem
+                                    primaryText={getTableTitle(tableFamily["tables"][0], tableFamily)}
+                                    secondaryText={`${tableFamily["tables"][0]["metadata_json"]["kind"]}`}
+                                    primaryTogglesNestedList={true}
+                                    nestedItems={tableFamily["tables"].map((table: ITable, idx: number) => {
+                                        return (
+                                            <FlexboxContainer key={idx}>
+                                                {renderFavouriteIcon(onFavouriteTable!, table, tableFamily, favouriteTablesUIDs)}
+                                                <ListItem
+                                                    primaryText={table.metadata_json.series.toUpperCase()}
+                                                    onClick={() => onClickTable(table)}
+                                                />
+                                            </FlexboxContainer>
+                                        )
+                                    })}
+                                />
+                            </FlexboxContainer>
                         )
                     } else {
+                        const table = tableFamily["tables"][0]
                         return (
-                            <ListItem
-                                key={idx}
-                                primaryText={`${tableFamily["type"]} (${tableFamily["tables"][0]["metadata_json"][
-                                    "family"
-                                ].toUpperCase()})`}
-                                secondaryText={`${tableFamily["tables"][0]["metadata_json"]["kind"]}`}
-                                onClick={() => onClickTable(tableFamily["tables"][0])}
-                                rightIconButton={
-                                    onFavouriteTable !== undefined ? (
-                                        <ClickableIconButton onClick={() => onFavouriteTable(tableFamily["tables"][0])}>
-                                            {arrayIncludes(
-                                                favouriteTablesUIDs,
-                                                `${tableFamily["tables"][0].schema_name}.${tableFamily["tables"][0].id}`
-                                            ) ? (
-                                                <ToggleStar color={yellow500} />
-                                            ) : (
-                                                <ToggleStarBorder />
-                                            )}
-                                        </ClickableIconButton>
-                                    ) : (
-                                        undefined
-                                    )
-                                }
-                            />
+                            <FlexboxContainer key={idx}>
+                                {renderFavouriteIcon(onFavouriteTable!, table, tableFamily, favouriteTablesUIDs)}
+                                <ListItem
+                                    primaryText={getTableTitle(table, tableFamily)}
+                                    secondaryText={`${table["metadata_json"]["kind"]}` || " "}
+                                    onClick={() => onClickTable(table)}
+                                />
+                            </FlexboxContainer>
                         )
                     }
                 })}
