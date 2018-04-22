@@ -2,7 +2,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import DataColumnTable from "./DataColumnTable"
-import { IStore, IColumn, ITable, IColumnInfo, ITableColumns } from "../../redux/modules/interfaces"
+import { IStore, ISchema, IColumn, ITable, IColumnInfo, ITableColumns } from "../../redux/modules/interfaces"
 
 interface IProps {
     showColumnNames: boolean
@@ -16,6 +16,7 @@ export interface IStoreProps {
     // From Props
     columninfo: IColumnInfo
     favourite_tables: Array<Partial<ITable>>
+    schema: ISchema
 }
 
 export interface IDispatchProps {}
@@ -30,7 +31,16 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
         this.state = { showTableInfo: false }
     }
     render() {
-        const { showColumnNames, table, selectedColumns, onClickColumn, onFavouriteTable, columninfo, favourite_tables } = this.props
+        const {
+            showColumnNames,
+            table,
+            selectedColumns,
+            onClickColumn,
+            onFavouriteTable,
+            columninfo,
+            favourite_tables,
+            schema,
+        } = this.props
 
         const columns: ITableColumns = {}
         const header: Array<string> = []
@@ -53,6 +63,7 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
         return (
             <DataColumnTable
                 showColumnNames={showColumnNames}
+                schema={schema}
                 table={table}
                 columns={columns}
                 header={header}
@@ -69,11 +80,13 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
     }
 }
 
-const mapStateToProps = (state: IStore): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { ealgis } = state
+
     return {
         columninfo: ealgis.columninfo,
         favourite_tables: ealgis.user.favourite_tables,
+        schema: ealgis.schemainfo[ownProps.table.schema_name],
     }
 }
 

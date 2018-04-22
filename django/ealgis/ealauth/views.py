@@ -757,9 +757,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         search_terms_excluded = qp["search_excluded"].split(
             ",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
 
-        with DataAccess(DataAccess.make_engine(), schema_name) as db:
-            tables = []
             response = {}
+        db = broker.Provide(None)
+        schemas = [schema_name] if schema_name is not None else db.get_ealgis_schemas()
+
+        for schema_name in schemas:
+            db = broker.Provide(schema_name)
+            tables = []
 
             # If we have a single search term it may be a column name,
             # so let's look that up first before trying a regular string
@@ -786,7 +790,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 table = TableInfoSerializer(tableinfo).data
                 table["schema_name"] = schema_name
 
-                tableUID = "%s.%s" % (schema_name, table["name"])
+                tableUID = "%s.%s" % (schema_name, table["id"])
                 response[tableUID] = table
 
         if len(response) == 0:
@@ -933,4 +937,5 @@ class SchemasViewSet(viewsets.ViewSet):
         for schema_name in db.get_ealgis_schemas():
             metadata = broker.Provide(schema_name).get_schema_metadata()
             schemas[schema_name] = EALGISMetadataSerializer(metadata).data
+            schemas[schema_name]["schema_name"] = schema_name
         return Response(schemas)

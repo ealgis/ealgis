@@ -223,12 +223,12 @@ export interface IGeomTable {
 }
 
 export interface ISchema {
-    _id: number
     name: string
-    version: number
-    description: string
     family: string
-    date: string
+    uuid: string
+    description: string
+    date_created: number
+    schema_name: string
 }
 
 export interface ISchemaInfo {

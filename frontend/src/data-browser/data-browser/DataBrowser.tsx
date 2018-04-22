@@ -6,7 +6,6 @@ import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
 import NavigationClose from "material-ui/svg-icons/navigation/close"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import ActionSearch from "material-ui/svg-icons/action/search"
 import ActionViewColumn from "material-ui/svg-icons/action/view-column"
 import DeviceAccessTime from "material-ui/svg-icons/device/access-time"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
@@ -109,12 +108,11 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             <DataBrowserContainer>
                 <Toolbar>
                     <ToolbarGroup firstChild={true}>
-                        <ActionSearch style={{ marginRight: "10px" }} color={"white"} />
                         <DataBrowserTitle text={"Data Browser"} />
                         {this.showTables(selectedTables, selectedColumns) && (
                             <RaisedButton primary={true} label={"Back"} onClick={() => backToSchemaView()} />
                         )}
-                        {this.showTables(selectedTables, selectedColumns) && (
+                        {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
                             <TableSearchTextField
                                 hintText="e.g. Industry, Family"
                                 floatingLabelText="Search for data tables"

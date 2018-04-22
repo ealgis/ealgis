@@ -1,7 +1,13 @@
 import * as React from "react"
 import styled from "styled-components"
+import { entries as objectEntries } from "core-js/library/fn/object"
 import { GridList, GridTile } from "material-ui/GridList"
-import { ISchema, ISchemaInfo, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { List, ListItem } from "material-ui/List"
+import IconButton from "material-ui/IconButton"
+import Subheader from "material-ui/Subheader"
+import { ActionOpenInNew } from "material-ui/svg-icons"
+import { ISchema } from "../../redux/modules/interfaces"
+import { Function3 } from "lodash"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {
@@ -22,34 +28,43 @@ const EALGISLogo = styled.img`
 `
 
 export interface IProps {
-    schemainfo: ISchemaInfo
+    schemasByFamily: {
+        [key: string]: Array<ISchema>
+    }
     handleClickSchema: Function
-    muiThemePalette: IMUIThemePalette
+    handleClickSchemaMoreInfo: Function
 }
 
 export class DataSchemaGrid extends React.Component<IProps, {}> {
     render() {
-        const { schemainfo, handleClickSchema, muiThemePalette } = this.props
+        const { schemasByFamily, handleClickSchema, handleClickSchemaMoreInfo } = this.props
 
         return (
-            <GridList cols={5} cellHeight={180} padding={10}>
-                {Object.keys(schemainfo).map((schemaId: string, key: number) => {
-                    const schema: ISchema = schemainfo[schemaId]
+            <React.Fragment>
+                {Object.keys(schemasByFamily).map((family: string) => {
                     return (
-                        <DataSchemaGridTile
-                            key={key}
-                            title={schema.name}
-                            subtitle={schema.family}
-                            titleBackground={muiThemePalette.accent1Color}
-                            onClick={() => handleClickSchema(schemaId, schema)}
-                        >
-                            <EALGISLogo
-                                src={require("base64-inline-loader!../../assets/brand/ealgis_white_logo_only_transparent_background.png")}
-                            />
-                        </DataSchemaGridTile>
+                        <React.Fragment key={family}>
+                            <Subheader>{family}</Subheader>
+                            <List>
+                                {schemasByFamily[family].map((schema: ISchema, key: number) => {
+                                    return (
+                                        <ListItem
+                                            key={schema.name}
+                                            primaryText={schema.name}
+                                            rightIconButton={
+                                                <IconButton tooltip="More Info">
+                                                    <ActionOpenInNew onClick={() => handleClickSchemaMoreInfo(schema)} />
+                                                </IconButton>
+                                            }
+                                            onClick={() => handleClickSchema(schema)}
+                                        />
+                                    )
+                                })}
+                            </List>
+                        </React.Fragment>
                     )
                 })}
-            </GridList>
+            </React.Fragment>
         )
     }
 }

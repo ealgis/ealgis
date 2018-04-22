@@ -59,6 +59,7 @@ const ColumnCellTableRowColumn = styled(TableRowColumn)`
 
 export interface IProps {
     showColumnNames: boolean
+    schema: ISchema
     table: ITable
     columns: ITableColumns
     header: Array<string>
@@ -74,6 +75,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
         const {
             showColumnNames,
+            schema,
             table,
             columns,
             header,
@@ -84,22 +86,23 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
             onFavouriteTable,
             onToggleShowInfo,
         } = this.props
+
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
+
+        let toolbarTitle =
+            table["metadata_json"]["series"] === null
+                ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
+                : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
+                      "family"
+                  ].toUpperCase()})`
+        toolbarTitle += ` - ${schema.name}, ${schema.family}`
 
         return (
             <React.Fragment>
                 <DataBrowserToolbar>
                     <ToolbarGroup firstChild={true}>
                         <ActionViewColumn style={{ marginRight: "10px" }} />
-                        <DataBrowserToolbarTitle
-                            text={
-                                table["metadata_json"]["series"] === null
-                                    ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
-                                    : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
-                                          "family"
-                                      ].toUpperCase()})`
-                            }
-                        />
+                        <DataBrowserToolbarTitle text={toolbarTitle} />
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>

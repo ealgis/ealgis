@@ -49,7 +49,7 @@ export interface IStoreProps {
 
 export interface IDispatchProps {
     getSchemaTables: Function
-    handleChooseSchema: Function
+    handleTableSearch: Function
     handleChooseTable: Function
     favouriteTable: Function
     showSchemaView: Function
@@ -87,11 +87,15 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
     constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
         this.state = {}
-        const { handleChooseSchema, geometry } = props
+        const { handleTableSearch, geometry } = props
     }
 
-    async handleClickSchema(schemaId: string, schema: ISchema) {
-        this.setState({ selectedSchemaId: schemaId })
+    async handleSelectSchema(schema: ISchema) {
+        this.setState({ selectedSchemaId: schema.schema_name })
+    }
+
+    async handleUnselectSchema() {
+        this.setState({ selectedSchemaId: undefined })
     }
 
     // componentWillReceiveProps(nextProps: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
@@ -113,7 +117,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             mapNameURLSafe,
             geometry,
             getSchemaTables,
-            handleChooseSchema,
+            handleTableSearch,
             recentTables,
             favouriteTables,
             config,
@@ -139,13 +143,13 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
-                handleClickSchema={(schemaId: string, schema: ISchema) => {
-                    this.handleClickSchema(schemaId, schema)
-                    getSchemaTables(schemaId, geometry)
+                handleClickSchema={(schema: ISchema) => {
+                    this.handleSelectSchema(schema)
+                    getSchemaTables(schema.schema_name, geometry)
                 }}
                 onTableSearchChange={(newValue: string) => {
                     this.setState({ dataTableSearchKeywords: newValue })
-                    handleChooseSchema(this.state.selectedSchemaId, newValue, geometry)
+                    handleTableSearch(this.state.selectedSchemaId, newValue, geometry)
                 }}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
@@ -163,7 +167,10 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 onFinishBrowsing={() => {
                     handleFinishBrowsing()
                 }}
-                backToSchemaView={() => showSchemaView()}
+                backToSchemaView={() => {
+                    this.handleUnselectSchema()
+                    showSchemaView()
+                }}
                 backToTableView={() => showTableView()}
             />
         )
@@ -193,7 +200,7 @@ const mapDispatchToProps = (dispatch: Function) => {
         getSchemaTables: (schemaId: string, geometry: IGeomTable) => {
             dispatch(fetchTablesForSchema(schemaId, geometry))
         },
-        handleChooseSchema: (schemaId: string, searchString: string, geometry: IGeomTable) => {
+        handleTableSearch: (schemaId: string, searchString: string, geometry: IGeomTable) => {
             dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
         },
         handleChooseTable: (table: ITable) => {

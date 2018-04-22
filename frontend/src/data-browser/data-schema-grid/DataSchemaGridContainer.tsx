@@ -1,31 +1,37 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import DataSchemaGrid from "./DataSchemaGrid"
+import { groupBy } from "lodash-es"
 import { toggleModalState } from "../../redux/modules/app"
-import { IStore, ISchemaInfo, IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import { IStore, ISchemaInfo, ISchema } from "../../redux/modules/interfaces"
 
 interface IProps {
     handleClickSchema: Function
+    handleClickSchemaMoreInfo: Function
 }
 
 export interface IStoreProps {
     // From Props
     schemainfo: ISchemaInfo
-    muiThemePalette: IMUIThemePalette
 }
 
 export interface IDispatchProps {}
 
-interface IOwnProps {
-    muiTheme: IMUITheme
-}
+interface IOwnProps {}
 
 export class DataSchemaGridContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     render() {
-        const { schemainfo, handleClickSchema, muiThemePalette } = this.props
+        const { schemainfo, handleClickSchema, handleClickSchemaMoreInfo } = this.props
 
-        return <DataSchemaGrid schemainfo={schemainfo} handleClickSchema={handleClickSchema} muiThemePalette={muiThemePalette} />
+        const schemasByFamily = groupBy(schemainfo, (schema: ISchema) => schema.family)
+
+        return (
+            <DataSchemaGrid
+                schemasByFamily={schemasByFamily}
+                handleClickSchema={handleClickSchema}
+                handleClickSchemaMoreInfo={handleClickSchemaMoreInfo}
+            />
+        )
     }
 }
 
@@ -34,14 +40,17 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 
     return {
         schemainfo: ealgis.schemainfo,
-        muiThemePalette: ownProps.muiTheme.palette,
     }
 }
 
 const mapDispatchToProps = (dispatch: Function) => {
-    return {}
+    return {
+        handleClickSchemaMoreInfo(schema: ISchema) {
+            window.open(schema.description)
+        },
+    }
 }
 
 const DataSchemaGridContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataSchemaGridContainer)
 
-export default muiThemeable()(DataSchemaGridContainerWrapped)
+export default DataSchemaGridContainerWrapped

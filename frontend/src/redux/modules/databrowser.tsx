@@ -190,11 +190,16 @@ export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) 
     }
 }
 
-export function searchTables(chips: Array<string>, chipsExcluded: Array<string>, schema_name: string, geometry: IGeomTable) {
+export function searchTables(
+    searchStrings: Array<string>,
+    searchStringsExcluded: Array<string>,
+    schema_name: string,
+    geometry: IGeomTable
+) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/tableinfo/search/", dispatch, {
-            search: chips.join(","),
-            search_excluded: chipsExcluded.join(","),
+            search: searchStrings.join(","),
+            search_excluded: searchStringsExcluded.join(","),
             schema: schema_name,
             geo_source_id: geometry._id,
         })
