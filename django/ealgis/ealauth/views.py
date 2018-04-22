@@ -778,13 +778,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             # If our column search didn't get a response, try serching the Table
             # metadata instead
             if len(tables) == 0:
+                # Now we can search for columns AND tables that contain our search terms
+                tables = db.search_columns(search_terms, search_terms_excluded, geo_source_id)
+
                 # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
                 # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
                 # Find all columns mentioning "landlord" at SA3 level
-                if geo_source_id is not None:
-                    tables = db.search_tables(search_terms, search_terms_excluded, qp["geo_source_id"])
-                else:
-                    tables = db.search_tables(search_terms, search_terms_excluded)
+                tables += db.search_tables(search_terms, search_terms_excluded, geo_source_id)
 
             for tableinfo in tables:
                 table = TableInfoSerializer(tableinfo).data

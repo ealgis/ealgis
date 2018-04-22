@@ -12,4 +12,4 @@ mercantile==0.9.0
 social-auth-app-django==1.1.0
 social-auth-core==1.2.0
 https://github.com/ealgis/ealgis-data-schema/archive/1.1.0.tar.gz
-https://github.com/ealgis/ealgis-common/archive/0.2.2.tar.gz
+https://github.com/ealgis/ealgis-common/archive/0.2.3.tar.gz
