@@ -752,10 +752,8 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         geo_source_id = request.query_params.get('geo_source_id', None)
         qp = request.query_params
 
-        search_terms = qp["search"].split(
-            ",") if "search" in qp and qp["search"] != "" else []
-        search_terms_excluded = qp["search_excluded"].split(
-            ",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
+        search_terms = qp["search"].split(",") if "search" in qp and qp["search"] != "" else []
+        search_terms_excluded = qp["search_excluded"].split(",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
 
             response = {}
         db = broker.Provide(None)
