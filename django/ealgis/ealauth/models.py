@@ -37,7 +37,7 @@ class MapDefinition(models.Model):
     "map definition - all state for a EAlGIS map"
     name = models.CharField(max_length=32)
     owner_user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.TextField()
+    description = models.TextField(blank=True, default="")
     json = JSONField(null=True)
     shared = models.IntegerField(
         choices=SHARED_CHOICES, default=PRIVATE_SHARED)

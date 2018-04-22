@@ -201,10 +201,10 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         # values and supplement it with the user.id that's defined
         # in our URL parameter
         data = {
-            'name': request.data['name'],
-            'description': request.data['description'],
-            'json': request.data['json'] if "json" in request.data else {"layers": []},
-            'owner_user_id': self.request.user.id
+            "name": request.data["name"],
+            "description": request.data["description"] if "description" in request.data else "",
+            "json": request.data["json"] if "json" in request.data else {"layers": []},
+            "owner_user_id": self.request.user.id
         }
 
         serializer = MapDefinitionSerializer(data=data)

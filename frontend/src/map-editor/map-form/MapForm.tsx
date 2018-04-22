@@ -87,7 +87,6 @@ export class MapForm extends React.Component<IProps, {}> {
                         hintText="Give your map a description..."
                         floatingLabelText="Map description"
                         floatingLabelFixed={true}
-                        validate={[required]}
                         fullWidth={true}
                         autoComplete="off"
                     />
