@@ -7,7 +7,7 @@ from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from django.apps import apps
 from ealgis.util import make_logger
-from .db import broker
+from ealgis_common.db import broker
 
 
 logger = make_logger(__name__)

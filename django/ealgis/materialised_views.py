@@ -2,7 +2,7 @@ import math
 from rest_framework.exceptions import ValidationError
 from django.http.response import HttpResponse
 from rest_framework.response import Response
-from .db import broker
+from ealgis_common.db import broker
 
 
 class MaterialisedViews:

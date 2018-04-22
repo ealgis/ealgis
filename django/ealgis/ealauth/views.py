@@ -22,7 +22,7 @@ import copy
 import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
-from ..db import DataAccess, broker
+from ealgis_common.db import DataAccess, broker
 from ..materialised_views import MaterialisedViews
 from ..tiles import Tiles
 

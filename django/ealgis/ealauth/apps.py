@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 from ealgis.util import make_logger, get_env
-from ..db import broker
+from ealgis_common.db import broker
 
 logger = make_logger(__name__)
 

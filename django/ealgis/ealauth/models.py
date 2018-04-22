@@ -4,10 +4,10 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.apps import apps
 from ealgis.util import make_logger
+from ealgis_common.db import broker
 import pyparsing
 import hashlib
 import copy
-from ..db import broker
 
 logger = make_logger(__name__)
 
