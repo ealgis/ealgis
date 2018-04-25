@@ -3405,9 +3405,9 @@ react-list@~0.8.5:
   dependencies:
     prop-types "15"
 
-"react-openlayers@https://github.com/ealgis/react-openlayers.git#ealgis-integration":
-  version "0.2.1"
-  resolved "https://github.com/ealgis/react-openlayers.git#119c2f0d2f2ec52f9a61c52a37d574704f1d6f5a"
+"react-openlayers@https://github.com/ealgis/react-openlayers.git#0.2.4":
+  version "0.2.4"
+  resolved "https://github.com/ealgis/react-openlayers.git#1e049d0fee9fb54f83aa4d29cbac7f1943c55977"
 
 react-redux@~5.0.5:
   version "5.0.7"
