@@ -15,9 +15,6 @@ import {
 import { List, ListItem } from "material-ui/List"
 import TextField from "material-ui/TextField"
 import Avatar from "material-ui/Avatar"
-import FileFolder from "material-ui/svg-icons/file/folder"
-import ActionAssignment from "material-ui/svg-icons/action/assignment"
-import ActionSettings from "material-ui/svg-icons/action/settings"
 import { blue500, yellow600 } from "material-ui/styles/colors"
 import DropDownMenu from "material-ui/DropDownMenu"
 import { Tabs, Tab } from "material-ui/Tabs"
@@ -30,7 +27,8 @@ import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
-import ActionCode from "material-ui/svg-icons/action/code"
+import IconButton from "material-ui/IconButton"
+import { FileFolder, ActionAssignment, ActionSettings, NavigationClose, ActionCode } from "material-ui/svg-icons"
 
 import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
 
@@ -93,7 +91,7 @@ export interface IProps {
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
-    onClose: Function
+    onClose: any
     openDataBrowser: Function
 }
 
@@ -140,23 +138,33 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
                     <ToolbarGroup>
                         <ActionSettings style={{ marginRight: "10px" }} />
                         <ToolbarTitle text={expressionMode === eLayerFilterExpressionMode.NOT_SET ? "Choose a mode" : "Mode"} />
-                        {expressionMode !== eLayerFilterExpressionMode.NOT_SET && <ToolbarSeparator />}
                         {expressionMode !== eLayerFilterExpressionMode.NOT_SET && (
-                            <ExpressionModeDropDownMenu
-                                value={expressionMode}
-                                onChange={(event: any, key: number, mode: eLayerFilterExpressionMode) => {
-                                    if (mode === eLayerFilterExpressionMode.ADVANCED) {
-                                        onToggleAdvModeModalState()
-                                    } else {
-                                        onChangeExpressionMode(mode)
-                                    }
-                                }}
-                            >
-                                {expressionMode !== eLayerFilterExpressionMode.ADVANCED && (
-                                    <MenuItem value={eLayerFilterExpressionMode.SIMPLE} primaryText="Simple" />
-                                )}
-                                <MenuItem value={eLayerFilterExpressionMode.ADVANCED} primaryText="Advanced" />
-                            </ExpressionModeDropDownMenu>
+                            <React.Fragment>
+                                <ToolbarSeparator />
+
+                                <ExpressionModeDropDownMenu
+                                    value={expressionMode}
+                                    onChange={(event: any, key: number, mode: eLayerFilterExpressionMode) => {
+                                        if (mode === eLayerFilterExpressionMode.ADVANCED) {
+                                            onToggleAdvModeModalState()
+                                        } else {
+                                            onChangeExpressionMode(mode)
+                                        }
+                                    }}
+                                >
+                                    {expressionMode !== eLayerFilterExpressionMode.ADVANCED && (
+                                        <MenuItem value={eLayerFilterExpressionMode.SIMPLE} primaryText="Simple" />
+                                    )}
+                                    <MenuItem value={eLayerFilterExpressionMode.ADVANCED} primaryText="Advanced" />
+                                </ExpressionModeDropDownMenu>
+
+                                <IconButton
+                                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
+                                    onClick={onClose}
+                                >
+                                    <NavigationClose />
+                                </IconButton>
+                            </React.Fragment>
                         )}
                     </ToolbarGroup>
                 </ExpressionEditorToolbar>
@@ -251,19 +259,19 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
                     </ExpressionOpenDataBrowser>
                 )}
 
-                {expressionMode === eLayerFilterExpressionMode.SIMPLE && (
+                {/* {expressionMode === eLayerFilterExpressionMode.SIMPLE && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApply} />
-                )}
+                )} */}
                 {expressionMode === eLayerFilterExpressionMode.ADVANCED && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApplyAdvanced} />
                 )}
 
-                <ExpressionRaisedButton
+                {/* <ExpressionRaisedButton
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                     label={"Close"}
                     primary={true}
                     onClick={onClose}
-                />
+                /> */}
             </React.Fragment>
         )
     }

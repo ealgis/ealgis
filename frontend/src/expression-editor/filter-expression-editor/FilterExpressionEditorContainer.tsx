@@ -104,14 +104,39 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
         const { dataBrowserResult } = this.props
         const { expression } = this.state
 
-        if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
+        if (dataBrowserResult.valid && JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {
             if (dataBrowserResult.message === "col1") {
                 expression["col1"] = dataBrowserResult.columns![0]
             } else if (dataBrowserResult.message === "col2") {
                 expression["col2"] = dataBrowserResult.columns![0]
             }
-            this.setState({ ...this.state, expression: expression })
+            this.setState({ ...this.state, expression: expression }, this.applyExpression)
         }
+    }
+
+    applyExpression() {
+        const { onApply, handleChangeExpressionMode } = this.props
+        const { expressionMode } = this.state
+
+        if (this.isExpressionComplete()) {
+            onApply(this.compileExpression())
+            handleChangeExpressionMode(expressionMode)
+        }
+    }
+
+    isExpressionComplete() {
+        const { expression, expressionMode } = this.state
+
+        if (
+            expressionMode === eLayerFilterExpressionMode.SIMPLE &&
+            "col1" in expression &&
+            "operator" in expression &&
+            "col2" in expression
+        ) {
+            return true
+        }
+
+        return false
     }
 
     compileExpression() {
@@ -168,7 +193,7 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
                 onFieldChange={(payload: { field: string; value: any }) => {
                     let expr: any = { ...expression }
                     expr[payload.field] = payload.value
-                    this.setState({ ...this.state, expression: expr })
+                    this.setState({ ...this.state, expression: expr }, this.applyExpression)
                 }}
                 onExpressionChange={(expressionCompiled: string) => {
                     this.setState({ ...this.state, expressionCompiled: expressionCompiled })

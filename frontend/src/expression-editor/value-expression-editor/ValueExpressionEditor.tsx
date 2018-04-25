@@ -14,9 +14,6 @@ import {
 import { List, ListItem } from "material-ui/List"
 import TextField from "material-ui/TextField"
 import Avatar from "material-ui/Avatar"
-import FileFolder from "material-ui/svg-icons/file/folder"
-import ActionAssignment from "material-ui/svg-icons/action/assignment"
-import ActionSettings from "material-ui/svg-icons/action/settings"
 import { blue500, yellow600 } from "material-ui/styles/colors"
 import DropDownMenu from "material-ui/DropDownMenu"
 import Divider from "material-ui/Divider"
@@ -30,11 +27,15 @@ import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
-
-import NavigationClose from "material-ui/svg-icons/navigation/close"
-import ContentCreate from "material-ui/svg-icons/content/create"
-import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
-import ImagePalette from "material-ui/svg-icons/image/palette"
+import {
+    FileFolder,
+    ActionAssignment,
+    ActionSettings,
+    NavigationClose,
+    ContentCreate,
+    EditorInsertChart,
+    ImagePalette,
+} from "material-ui/svg-icons"
 
 import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
 
@@ -97,7 +98,7 @@ export interface IProps {
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
-    onClose: Function
+    onClose: any
     openDataBrowser: Function
 }
 
@@ -143,26 +144,36 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     <ToolbarGroup>
                         <ActionSettings style={{ marginRight: "10px" }} />
                         <ToolbarTitle text={expressionMode === eLayerValueExpressionMode.NOT_SET ? "Choose a mode" : "Mode"} />
-                        {expressionMode !== eLayerValueExpressionMode.NOT_SET && <ToolbarSeparator />}
                         {expressionMode !== eLayerValueExpressionMode.NOT_SET && (
-                            <ExpressionModeDropDownMenu
-                                value={expressionMode}
-                                onChange={(event: any, key: number, mode: eLayerValueExpressionMode) => {
-                                    if (mode === eLayerValueExpressionMode.ADVANCED) {
-                                        onToggleAdvModeModalState()
-                                    } else {
-                                        onChangeExpressionMode(mode)
-                                    }
-                                }}
-                            >
-                                {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
-                                    <MenuItem value={eLayerValueExpressionMode.SINGLE} primaryText="Simple" />
-                                )}
-                                {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
-                                    <MenuItem value={eLayerValueExpressionMode.PROPORTIONAL} primaryText="Proportional" />
-                                )}
-                                <MenuItem value={eLayerValueExpressionMode.ADVANCED} primaryText="Advanced" />
-                            </ExpressionModeDropDownMenu>
+                            <React.Fragment>
+                                <ToolbarSeparator />
+
+                                <ExpressionModeDropDownMenu
+                                    value={expressionMode}
+                                    onChange={(event: any, key: number, mode: eLayerValueExpressionMode) => {
+                                        if (mode === eLayerValueExpressionMode.ADVANCED) {
+                                            onToggleAdvModeModalState()
+                                        } else {
+                                            onChangeExpressionMode(mode)
+                                        }
+                                    }}
+                                >
+                                    {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
+                                        <MenuItem value={eLayerValueExpressionMode.SINGLE} primaryText="Simple" />
+                                    )}
+                                    {expressionMode !== eLayerValueExpressionMode.ADVANCED && (
+                                        <MenuItem value={eLayerValueExpressionMode.PROPORTIONAL} primaryText="Proportional" />
+                                    )}
+                                    <MenuItem value={eLayerValueExpressionMode.ADVANCED} primaryText="Advanced" />
+                                </ExpressionModeDropDownMenu>
+
+                                <IconButton
+                                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
+                                    onClick={onClose}
+                                >
+                                    <NavigationClose />
+                                </IconButton>
+                            </React.Fragment>
                         )}
                     </ToolbarGroup>
                 </ExpressionEditorToolbar>
@@ -257,19 +268,19 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     </ExpressionOpenDataBrowser>
                 )}
 
-                {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
+                {/* {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApply} />
-                )}
+                )} */}
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
-                    <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApplyAdvanced} />
+                    <ExpressionRaisedButton label={"Apply Expression"} primary={true} onClick={onApplyAdvanced} />
                 )}
 
-                <ExpressionRaisedButton
+                {/* <ExpressionRaisedButton
                     containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                     label={"Close"}
                     primary={true}
                     onClick={onClose}
-                />
+                /> */}
             </React.Fragment>
         )
     }

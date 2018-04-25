@@ -104,18 +104,42 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     }
 
     componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
-        const { dataBrowserResult } = this.props
-        const { expression } = this.state
+        const { dataBrowserResult, onApply, handleChangeExpressionMode } = this.props
+        const { expression, expressionMode } = this.state
 
-        if (dataBrowserResult.valid && dataBrowserResult !== prevProps.dataBrowserResult) {
+        if (dataBrowserResult.valid && JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {
             if (dataBrowserResult.message === "col1") {
                 expression["col1"] = dataBrowserResult.columns![0]
-                this.setState({ ...this.state, expression: expression })
+                this.setState({ ...this.state, expression: expression }, this.applyExpression)
             } else if (dataBrowserResult.message === "col2") {
                 expression["col2"] = dataBrowserResult.columns![0]
-                this.setState({ ...this.state, expression: expression })
+                this.setState({ ...this.state, expression: expression }, this.applyExpression)
             }
         }
+    }
+
+    applyExpression() {
+        const { onApply, handleChangeExpressionMode } = this.props
+        const { expressionMode } = this.state
+
+        if (this.isExpressionComplete()) {
+            onApply(this.compileExpression())
+            handleChangeExpressionMode(expressionMode)
+        }
+    }
+
+    isExpressionComplete() {
+        const { expression, expressionMode } = this.state
+
+        if (expressionMode === eLayerValueExpressionMode.SINGLE && "col1" in expression) {
+            return true
+        }
+
+        if (expressionMode === eLayerValueExpressionMode.PROPORTIONAL && "col1" in expression && "col2" in expression) {
+            return true
+        }
+
+        return false
     }
 
     compileExpression() {
