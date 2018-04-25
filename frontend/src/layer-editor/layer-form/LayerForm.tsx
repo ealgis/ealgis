@@ -413,21 +413,25 @@ class LayerForm extends React.Component<IProps, {}> {
                         {/* START DESCRIBE TAB */}
                         <Tab label="1. CREATE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}>
                             <TabContainer>
-                                <FormSectionSubheaderMini>1. Choose a level of detail</FormSectionSubheaderMini>
-                                <Field
-                                    name="geometry"
-                                    component={SelectField}
-                                    // hintText="Choose your level of detail..."
-                                    // floatingLabelText="Level of detail"
-                                    // floatingLabelFixed={true}
-                                    validate={[required]}
-                                    fullWidth={true}
-                                    onChange={(junk: object, newValue: object, previousValue: object) =>
-                                        onFieldChange("geometry", newValue)
-                                    }
-                                >
-                                    {this.geometryTables}
-                                </Field>
+                                {visibleComponent === undefined && (
+                                    <React.Fragment>
+                                        <FormSectionSubheaderMini>1. Choose a level of detail</FormSectionSubheaderMini>
+                                        <Field
+                                            name="geometry"
+                                            component={SelectField}
+                                            // hintText="Choose your level of detail..."
+                                            // floatingLabelText="Level of detail"
+                                            // floatingLabelFixed={true}
+                                            validate={[required]}
+                                            fullWidth={true}
+                                            onChange={(junk: object, newValue: object, previousValue: object) =>
+                                                onFieldChange("geometry", newValue)
+                                            }
+                                        >
+                                            {this.geometryTables}
+                                        </Field>
+                                    </React.Fragment>
+                                )}
 
                                 {/* // For chip input-based expression editors (if needed) */}
                                 {/* <Field
