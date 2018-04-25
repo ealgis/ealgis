@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url("https://fonts.googleapis.com/css?family=Roboto");
 
 html,
 body,
 #ealgis,
 .page {
     height: 100%; /* needed for proper layout */
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
 body {
@@ -35,7 +35,7 @@ p {
 
 .page-nav {
     order: -1;
-    overflow: auto;
+    overflow: hidden;
 }
 
 @media (min-width: 768px) {
