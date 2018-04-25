@@ -650,9 +650,9 @@ export function addLayer(mapId: number) {
                 line: {
                     width: 1,
                     colour: {
-                        r: "51",
-                        g: "105",
-                        b: "30",
+                        r: "0",
+                        g: "0",
+                        b: "0",
                         a: "1",
                     },
                 },
