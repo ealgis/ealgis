@@ -363,10 +363,10 @@ class LayerForm extends React.Component<IProps, {}> {
 
         let tabId = 0
         switch (tabName) {
-            case "data":
+            case "visualise":
                 tabId = 1
                 break
-            case "visualise":
+            case "describe":
                 tabId = 2
                 break
         }
@@ -522,7 +522,7 @@ class LayerForm extends React.Component<IProps, {}> {
                         {/* END DESCRIBE TAB */}
 
                         {/* START DATA TAB */}
-                        <Tab label="2. STYLE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}>
+                        <Tab label="2. STYLE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}>
                             <TabContainer>
                                 <FormSectionSubheader>Colours</FormSectionSubheader>
                                 <Fields
@@ -644,7 +644,7 @@ class LayerForm extends React.Component<IProps, {}> {
                         {/* START VISUALISE TAB */}
                         <Tab
                             label="3. DESCRIBE"
-                            containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}
+                            containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/describe`} />}
                         >
                             <TabContainer>
                                 <Field
