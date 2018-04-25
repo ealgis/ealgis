@@ -4,10 +4,8 @@ import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 import IconButton from "material-ui/IconButton"
-import ToggleStar from "material-ui/svg-icons/toggle/star"
-import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
-import ActionViewColumn from "material-ui/svg-icons/action/view-column"
-import ActionInfo from "material-ui/svg-icons/action/info"
+import * as CopyToClipboard from "react-copy-to-clipboard"
+import { ToggleStar, ToggleStarBorder, ActionViewColumn, ActionInfo } from "material-ui/svg-icons"
 import { yellow500 } from "material-ui/styles/colors"
 import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable, ITableColumns } from "../../redux/modules/interfaces"
 
@@ -54,6 +52,7 @@ const ColumnCellTableRowColumnClickable = styled(TableRowColumn)`
 `
 
 const ColumnCellTableRowColumn = styled(TableRowColumn)`
+    cursor: pointer;
     border-left: 1px solid rgb(209, 196, 233);
 `
 
@@ -69,6 +68,7 @@ export interface IProps {
     onClickColumn: Function
     onFavouriteTable: Function
     onToggleShowInfo: Function
+    onCopyColumnName: any
 }
 
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
@@ -85,6 +85,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
             onClickColumn,
             onFavouriteTable,
             onToggleShowInfo,
+            onCopyColumnName,
         } = this.props
 
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
@@ -138,9 +139,9 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                 <Table
                     fixedHeader={true}
                     height={`${window.innerHeight - 200}px`}
-                    onCellHover={(rowNumber: any, columnId: any) => {
-                        this.setState({ hoverRow: rowNumber, hoverCol: columnId })
-                    }}
+                    // onCellHover={(rowNumber: any, columnId: any) => {
+                    //     this.setState({ hoverRow: rowNumber, hoverCol: columnId })
+                    // }}
                     onCellClick={(rowNumber: number, columnId: number, evt?: any) => {
                         const columnUID: string = `${evt.target.dataset.col}.${evt.target.dataset.row}`
                         if (columnUID in columns) {
@@ -163,11 +164,15 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                     <RowLabelTableRowColumn>{valueRow}</RowLabelTableRowColumn>
                                     {header.map((valueCol: string, idxCol: number) => {
                                         const columnUID: string = `${valueCol}.${valueRow}`
+                                        const textToCopy =
+                                            columnUID in columns ? `${columns[columnUID].schema_name}.${columns[columnUID].name}` : ""
 
                                         return showColumnNames ? (
-                                            <ColumnCellTableRowColumn key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
-                                                {!(columnUID in columns) ? "N/A" : columns[columnUID].name}
-                                            </ColumnCellTableRowColumn>
+                                            <CopyToClipboard key={`${idxCol}`} text={textToCopy} onCopy={onCopyColumnName}>
+                                                <ColumnCellTableRowColumn>
+                                                    {!(columnUID in columns) ? "N/A" : columns[columnUID].name}
+                                                </ColumnCellTableRowColumn>
+                                            </CopyToClipboard>
                                         ) : (
                                             <ColumnCellTableRowColumnClickable key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
                                                 {!(columnUID in columns) ? "N/A" : ""}

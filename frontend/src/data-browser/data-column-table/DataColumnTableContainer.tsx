@@ -2,6 +2,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import DataColumnTable from "./DataColumnTable"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IStore, ISchema, IColumn, ITable, IColumnInfo, ITableColumns } from "../../redux/modules/interfaces"
 
 interface IProps {
@@ -19,7 +20,9 @@ export interface IStoreProps {
     schema: ISchema
 }
 
-export interface IDispatchProps {}
+export interface IDispatchProps {
+    onCopyColumnName: Function
+}
 
 export interface IState {
     showTableInfo: boolean
@@ -37,6 +40,7 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
             selectedColumns,
             onClickColumn,
             onFavouriteTable,
+            onCopyColumnName,
             columninfo,
             favourite_tables,
             schema,
@@ -75,6 +79,7 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IStor
                 onToggleShowInfo={() => {
                     this.setState({ showTableInfo: !this.state.showTableInfo })
                 }}
+                onCopyColumnName={onCopyColumnName}
             />
         )
     }
@@ -91,7 +96,11 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 }
 
 const mapDispatchToProps = (dispatch: Function) => {
-    return {}
+    return {
+        onCopyColumnName: () => {
+            dispatch(sendSnackbarNotification(`Column copied to clipboard.`))
+        },
+    }
 }
 
 const DataColumnTableContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataColumnTableContainer)
