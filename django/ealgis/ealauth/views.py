@@ -755,7 +755,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         search_terms = qp["search"].split(",") if "search" in qp and qp["search"] != "" else []
         search_terms_excluded = qp["search_excluded"].split(",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
 
-            response = {}
+        response = {}
         db = broker.Provide(None)
         schemas = [schema_name] if schema_name is not None else db.get_ealgis_schemas()
 
