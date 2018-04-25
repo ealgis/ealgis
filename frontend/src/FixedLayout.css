@@ -35,7 +35,8 @@ p {
 
 .page-nav {
     order: -1;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 @media (min-width: 768px) {
