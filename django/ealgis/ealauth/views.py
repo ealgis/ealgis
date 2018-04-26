@@ -22,7 +22,7 @@ import copy
 import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
-from ealgis_common.db import DataAccess, broker
+from ealgis_common.db import DataAccess, broker, SchemaInformation
 from ealgis.mvt import TileGenerator
 
 
@@ -543,10 +543,9 @@ class DataInfoViewSet(viewsets.ViewSet):
     serializer_class = DataInfoSerializer
 
     def list(self, request, format=None):
-        db = broker.Provide(None)
-
+        info = SchemaInformation(DataAccess.make_engine())
         tables = {}
-        for schema_name in db.get_geometry_schemas():
+        for schema_name in info.get_geometry_schemas():
             geometry_sources = broker.Provide(schema_name).get_geometry_sources_table_info()
             for (geometrysource, tableinfo) in geometry_sources:
                 # if tableinfo.name == "lga" or tableinfo.name == "sa1":

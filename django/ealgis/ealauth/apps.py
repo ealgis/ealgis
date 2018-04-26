@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 from ealgis.util import make_logger, get_env
-from ealgis_common.db import broker
+from ealgis_common.db import SchemaInformation, DataAccess
 
 logger = make_logger(__name__)
 
@@ -15,6 +15,6 @@ class EalauthConfig(AppConfig):
         self.map_srid = 3857
         self.projected_srid = 3112
 
-        db = broker.Provide(None)
-        schema_names = db.get_ealgis_schemas()
+        info = SchemaInformation(DataAccess.make_engine())
+        schema_names = info.get_ealgis_schemas()
         logger.info("Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))

@@ -1,20 +1,14 @@
 version: "2"
 services:
-  dbdata:
-    image: mdillon/postgis:10-alpine
-    entrypoint: /bin/bash
-    volumes:
-      - /postgresql/9.6/main
-  db:
+  datastore:
     image: mdillon/postgis:10-alpine
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ealgis
+      - POSTGRES_DB=datastore
     volumes:
       - ./data-loader:/data-loader
-
       # FOR DEVELOPMENT ONLY
       # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
       # NB: PostgreSQL MUST already be initialised with at least one database before you enable this.
@@ -22,8 +16,15 @@ services:
 
       # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
       # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
-    volumes_from:
-      - dbdata
+  db:
+    image: mdillon/postgis:10-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ealgis
+    volumes:
+      - ./data-loader:/data-loader
   frontend:
     build: frontend/
     command: webpack
@@ -50,6 +51,11 @@ services:
       - DB_NAME=ealgis
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
+      - DATASTORE_HOST=datastore
+      - DATASTORE_PORT=5432
+      - DATASTORE_NAME=datastore
+      - DATASTORE_USERNAME=postgres
+      - DATASTORE_PASSWORD=postgres
     env_file:
       - web-variables.env
     depends_on:
