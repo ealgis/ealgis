@@ -17,7 +17,6 @@ from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMap
 from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 
-import json
 import time
 import copy
 import urllib.parse

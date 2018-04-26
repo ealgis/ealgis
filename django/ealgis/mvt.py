@@ -45,11 +45,11 @@ class TileGenerator:
             # area_filter = "{table_name}.area_sqrt >= z_res({z}) AND".format(table_name=table_name, z=z + 1.5)
 
             query = """
-                SELECT 
-                    ST_AsMVT(tile) 
+                SELECT
+                    ST_AsMVT(tile)
                 FROM
                     ({data_query}
-                    WHERE 
+                    WHERE
                         {area_filter}
                         {geom_column_definition} && {extent}
                     ) as tile""".format(data_query=data_query, area_filter=area_filter, geom_column_definition=geom_column_definition, extent=extent)
