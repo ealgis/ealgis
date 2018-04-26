@@ -7,7 +7,7 @@ SQLAlchemy==1.2.6
 GeoAlchemy2==0.4.2
 pyparsing==2.1.10
 requests==2.13.0
-python-memcached==1.58
+python-memcached==1.59
 mercantile==0.9.0
 social-auth-app-django==1.1.0
 social-auth-core==1.2.0

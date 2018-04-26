@@ -93,6 +93,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ealgis.wsgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'memcached:11211',
+    }
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases

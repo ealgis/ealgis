@@ -2,6 +2,7 @@ import itertools
 import logging
 import os
 import time
+from math import pow
 
 
 def pairwise(iterable):
@@ -56,3 +57,8 @@ def timeit(method):
                   (method.__name__, (te - ts) * 1000))
         return result
     return timed
+
+
+def z_res(zoom_level):
+    """https://github.com/mapbox/postgis-vt-util/blob/master/src/ZRes.sql"""
+    return 40075016.6855785 / (256 * pow(2, zoom_level))

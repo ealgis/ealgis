@@ -1,7 +1,9 @@
 import olFormatGeoJSON from "ol/format/geojson"
+import olFormatMVT from "ol/format/mvt"
 import olProj from "ol/proj"
 import olSourceVectorTile from "ol/source/vectortile"
 import olTileGrid from "ol/tilegrid"
+import TileGrid from "ol/tilegrid/tilegrid"
 import * as React from "react"
 import { default as VectorTile } from "react-openlayers/dist/layers/vector-tile"
 import { IConfig, ILayer, IMap } from "../../redux/modules/interfaces"
@@ -15,134 +17,67 @@ export interface IProps {
 }
 
 export class Layer extends React.Component<IProps, {}> {
-    render() {
-        const { map, layer, layerId, debugMode } = this.props
+    source: any
+    extent: any
 
-        // For ImageWMS (Single image tile.)
-        // const url = "https://localhost:8443/geoserver/EALGIS/wms"
-        // const params = {'LAYERS': 'EALGIS:93493a38', 'SRS': 'EPSG:900913'}
+    constructor(props: IProps) {
+        super(props)
+        const { map, layer } = this.props
 
-        // For TileWMS (Multiple image tiles.)
-        // const urls = [
-        //     'https://gs1.localhost:8443/geoserver/gwc/service/wms',
-        //     'https://gs2.localhost:8443/geoserver/gwc/service/wms',
-        //     'https://gs3.localhost:8443/geoserver/gwc/service/wms',
-        //     'https://gs4.localhost:8443/geoserver/gwc/service/wms',
-        // ]
-        // const params = {'LAYERS': 'EALGIS:93493a38', 'TILED': true, 'SRS': 'EPSG:900913'}
+        // Utilise the overzooming capabilities of OpenLayers and our MapBox Vector Tiles
+        // Only request tiles from the backend for every second zoom level, and avoid requesting
+        // any tiles once we reached level 15 (full detail baked into each tile)
+        // Ref. https://github.com/openlayers/openlayers/issues/6942
+        // c.f. http://openlayers.org/en/latest/examples/mapbox-vector-tiles-advanced.html
 
-        // For VectorTiles
-        // http://openlayers.org/en/latest/apidoc/ol.html#.Extent
-        const bbox = layer.latlon_bbox
-        const extent = olProj.transformExtent([bbox!.minx, bbox!.miny, bbox!.maxx, bbox!.maxy], "EPSG:4326", "EPSG:900913")
-        const renderMode = "hybrid"
-        const layerPropreties = {
-            mapId: map.id,
-            layerId: layerId,
+        // Calculation of resolutions that match zoom levels 1, 3, 5, 7, 9, 11, 13, 15.
+        var resolutions = []
+        for (var i = 0; i <= 8; ++i) {
+            resolutions.push(156543.03392804097 / Math.pow(2, i * 2))
         }
 
-        const projection_epsg_no = "900913"
-        const format = "geojson"
-        let url = "/api/0.1/maps/" + map.id + "/tiles.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}&format=" + format
-        if (debugMode === true) {
-            url = url + "&debug=1"
+        // Calculation of tile urls for zoom levels 1, 3, 5, 7, 9, 11, 13, 15.
+        function tileUrlFunction(tileCoord: any) {
+            const url = "/api/0.1/maps/" + map.id + "/tile.json?layer=" + layer.hash + "&z={z}&x={x}&y={y}"
+            return url
+                .replace("{z}", String(tileCoord[0] * 2 - 1))
+                .replace("{x}", String(tileCoord[1]))
+                .replace("{y}", String(-tileCoord[2] - 1))
         }
-        const formatObj = new olFormatGeoJSON()
-        const tileGrid = olTileGrid.createXYZ({ maxZoom: 20 })
-        const overlaps = true
-        const cacheSize = 256
-        const visible = layer.visible
 
-        const source = new olSourceVectorTile({
-            projection: undefined,
-            url: url,
-            format: formatObj,
-            overlaps: overlaps,
-            cacheSize: cacheSize,
+        this.source = new olSourceVectorTile({
+            tileGrid: new TileGrid({
+                extent: olProj.get("EPSG:3857").getExtent(),
+                resolutions: resolutions,
+                tileSize: 512,
+            }),
+            tileUrlFunction: tileUrlFunction,
+            format: new olFormatMVT(),
+            overlaps: false,
+            cacheSize: 256,
         })
 
-        /*
-        // Matrix.default()
+        this.extent = olProj.transformExtent(
+            [layer.latlon_bbox!.minx, layer.latlon_bbox!.miny, layer.latlon_bbox!.maxx, layer.latlon_bbox!.maxy],
+            "EPSG:4326",
+            "EPSG:900913"
+        )
+    }
 
-        // let scale_min = 0.0
-        // let scale_max = 30.0
-
-        // let to_scale = Matrix
-        // to_scale.translate(scale_min, 0)
-        // to_scale.scale(scale_max - scale_min, 1)
-        // console.log("to_scale", ...to_scale.getMatrixValues())
-
-        // let normalise = Matrix
-        // normalise = normalise.setTransform(...to_scale.getMatrixValues())
-        // normalise = normalise.getInverse()
-        // console.log("normalise", ...normalise.getMatrixValues())
-
-        // let v = -7.5
-        // v = normalise.applyToPoint(v, 0)
-        // console.log("v", v)
-
-
-        var styleConfig = [{
-            name: "red",
-            colour: "#E61919"
-        },{
-            name: "orange",
-            colour: "#E6A219"
-        },{
-            name: "green",
-            colour: "#A2E619"
-        },{
-            name: "light_green",
-            colour: "#19E619"
-        },{
-            name: "aqua_green",
-            colour: "#19E6A2"
-        },{
-            name: "blue",
-            colour: "#19A2E6"
-        }]
-
-        var styles: Array<ol.style.Style> = [];
-        for(var i = 0; i < styleConfig.length; i++) {
-            var style = styleConfig[i];
-
-            styles[style["name"]] = new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: style["colour"]
-                }),
-                stroke: new ol.style.Stroke({
-                    color: style["colour"],
-                    width: 1
-                })
-            });
-        }
-
-        function simpleStyle(feature: any, resolution: number) {
-            let q: Object = feature.get("q");
-            
-            if(q < 0) {
-                return styles["red"];
-            } else if(q < 7.5) {
-                return styles["orange"];
-            } else if(q < 15) {
-                return styles["green"];
-            } else if(q < 22.5) {
-                return styles["light_green"];
-            } else if(q < 30) {
-                return styles["aqua_green"];
-            } else {
-                return styles["blue"];
-            }
-        }*/
+    render() {
+        const { map, layer, layerId } = this.props
 
         return (
             <VectorTile
-                visible={visible}
-                extent={extent}
+                visible={layer.visible}
+                extent={this.extent}
                 style={layer.olStyle}
-                renderMode={renderMode}
-                properties={layerPropreties}
-                source={source}
+                renderMode={"hybrid"}
+                properties={{
+                    mapId: map.id,
+                    layerId: layerId,
+                }}
+                source={this.source}
                 zIndex={1}
             />
         )

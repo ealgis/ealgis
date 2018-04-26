@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
+from django.core.cache import cache
 from .models import MapDefinition
 from geoalchemy2.elements import WKBElement
 
@@ -23,8 +24,7 @@ import urllib.parse
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 from ealgis_common.db import DataAccess, broker
-from ..materialised_views import MaterialisedViews
-from ..tiles import Tiles
+from ealgis.mvt import TileGenerator
 
 
 def api_not_found(request):
@@ -487,168 +487,53 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response(response)
 
     @detail_route(methods=['get'])
-    def tiles(self, request, pk=None, format=None):
-        # Used to inject features for debugging vector tile performance
-        def debug_features(features, x, y, z):
-            import mercantile
-            bounds = mercantile.bounds(x, y, z)
-
-            # Centre of the tile
-            lon = bounds[0] + ((bounds[2] - bounds[0]) / 2)
-            lat = bounds[3] - ((bounds[3] - bounds[1]) / 2)
-
-            # Polygon bounding box of the tile
-            polygon = [[
-                [bounds[0], bounds[1]],  # BL
-                [bounds[2], bounds[1]],  # BR
-                [bounds[2], bounds[3]],  # TR
-                [bounds[0], bounds[3]],  # TL
-                [bounds[0], bounds[1]],  # BL
-            ]]
-
-            return [{
-                "type": "Feature",
-                "id": "tile_centroid",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [lon, lat],
-                },
-                "properties": {
-                    "debug": True,
-                    "label": "{},{},{} / {}".format(x, y, z, len(features)),
-                }
-            }, {
-                "type": "Feature",
-                "id": "tile_bounds",
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": polygon,
-                },
-                "properties": {
-                    "debug": True,
-                }
-            }]
-
-        #  tileRequestStartTime = int(round(time.time() * 1000))
+    def tile(self, request, pk=None, format=None):
         map = self.get_object()
-        qp = request.query_params
+        layer_hash = request.query_params.get("layer", None)
+        z = request.query_params.get("z", None)
+        x = request.query_params.get("x", None)
+        y = request.query_params.get("y", None)
 
-        # Validate required params for serving a vector tile
         # Layer OK?
         layer = None
         for l in map.json["layers"]:
-            if l["hash"] == qp["layer"]:
+            if l["hash"] == layer_hash:
                 layer = l
                 break
-
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        # Format OK?
-        if "format" not in qp or qp["format"] not in ["geojson", "pbf"]:
-            raise ValidationError(
-                detail="Unknown format '{format}".format(format=format))
-
         # Has Tile Coordinates OK?
-        if not("x" in qp and "y" in qp and "z" in qp):
-            raise ValidationError(
-                detail="Tile coordinates (X, Y, Z) not found.")
+        if z is None or x is None or y is None:
+            raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
 
-        # OK, generate a GeoJSON Vector Tile
-        def row_to_dict(row):
-            def f(item):
-                return not item[0] == 'geom'
-            return dict(i for i in row.items() if f(i))
-
-        def to_geojson_feature(row):
-            def process_geometry(geometry):
-                return json.loads(geometry)
-
-            return {
-                "type": "Feature",
-                "geometry": process_geometry(row["geom"]),
-                "properties": row_to_dict(row),
-            }
-
-        def to_pbf_feature(row):
-            def process_geometry(geometry):
-                return geometry
-
-            return {
-                "geometry": process_geometry(row['geom']),
-                "properties": row_to_dict(row)
-            }
-
-        from django.core.cache import cache
-        format = qp["format"]
-        cache_key = "layer_{}_{}_{}_{}".format(
-            qp["layer"], qp["x"], qp["y"], qp["z"])
-        cache_time = 60 * 60 * 24 * 365  # time to live in seconds
-        debugMode = True if "debug" in qp else False
-        memcachedEnabled = False if "no_memcached" in qp or debugMode is True else True
+        cache_key = "layer_{}_{}_{}_{}".format(layer_hash, x, y, z)
+        memcachedEnabled = True
         fromMemcached = False
 
         if memcachedEnabled:
-            features = cache.get(cache_key)
-            if features is not None:
+            mvt_tile = cache.get(cache_key)
+            if mvt_tile is not None:
                 fromMemcached = True
 
-        if memcachedEnabled is False or features is None:
-            # tileSQLStartTime = int(round(time.time() * 1000))
-            results = Tiles.get_tile_mv(layer, int(
-                qp["x"]), int(qp["y"]), int(qp["z"]))
-            # tileSQLEndTime = int(round(time.time() * 1000))
-
-            if qp["format"] == "geojson":
-                # tileToGeoJSONStartTime = int(round(time.time() * 1000))
-                features = [to_geojson_feature(row) for row in results]
-                # tileToGeoJSONEndTime = int(round(time.time() * 1000))
-            elif qp["format"] == "pbf":
-                layers = [{
-                    "name": "Layer A",
-                    "features": [to_pbf_feature(row) for row in results]
-                }]
-
-                # Is sloooooooow
-                import mapbox_vector_tile
-                features = mapbox_vector_tile.encode(layers)
+        if memcachedEnabled is False or mvt_tile is None:
+            mvt_tile = TileGenerator.mvt(layer, int(x), int(y), int(z))
 
             if memcachedEnabled:
-                cache.set(cache_key, features, cache_time)
+                cache.set(cache_key, mvt_tile, timeout=60 * 60 * 24 * 365)
+
+        response = HttpResponse(
+            mvt_tile,
+            content_type="application/vnd.mapbox-vector-tile"
+        )
 
         headers = {
             "Access-Control-Allow-Origin": "*",
             "X-From-Memcached": fromMemcached,
         }
-
-        # tileRequestEndTime = int(round(time.time() * 1000))
-        # tileSQLTime = 0
-        # if 'tileSQLEndTime' in vars():
-        #     tileSQLTime = tileSQLEndTime - tileSQLStartTime
-        # tileGeoJSONTime = 0
-        # if 'tileToGeoJSONEndTime' in vars():
-        #     tileGeoJSONTime = tileToGeoJSONEndTime - tileToGeoJSONStartTime
-        # tileRequestTime = tileRequestEndTime - tileRequestStartTime
-        # print("{}: SQLTime = {}ms; GeoJSON Time = {}ms; Total Time = {}ms".format(cache_key, tileSQLTime, tileGeoJSONTime, tileRequestTime))
-
-        if qp["format"] == "geojson":
-            # Inject features in debug mode to allow OpenLayers to style the tile coordinates and feature count
-            if debugMode:
-                features = features + \
-                    debug_features(features, int(
-                        qp["x"]), int(qp["y"]), int(qp["z"]))
-
-            return Response({
-                "type": "FeatureCollection",
-                "features": features
-            }, headers=headers)
-
-        elif qp["format"] == "pbf":
-            response = HttpResponse(
-                features, content_type="application/x-protobuf")
-            for key, val in headers.items():
-                response[key] = val
-            return response
+        for key, val in headers.items():
+            response[key] = val
+        return response
 
 
 class DataInfoViewSet(viewsets.ViewSet):
@@ -665,6 +550,7 @@ class DataInfoViewSet(viewsets.ViewSet):
         for schema_name in db.get_geometry_schemas():
             geometry_sources = broker.Provide(schema_name).get_geometry_sources_table_info()
             for (geometrysource, tableinfo) in geometry_sources:
+                # if tableinfo.name == "lga" or tableinfo.name == "sa1":
                 uname = "{}.{}".format(schema_name, tableinfo.name)
                 tables[uname] = {
                     "_id": geometrysource.id,
@@ -690,10 +576,6 @@ class DataInfoViewSet(viewsets.ViewSet):
                     info[col] = val
 
         return Response(info)
-
-    @list_route(methods=['get'])
-    def create_views(self, request, format=None):
-        return MaterialisedViews.create_views(request, format)
 
 
 class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
