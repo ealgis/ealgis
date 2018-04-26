@@ -740,9 +740,6 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
         if ("geometry" in layerPartial) {
             willCompileServerSide = true
         }
-        if ("line" in layerPartial && layerPartial["line"]!["width"] !== undefined) {
-            willCompileServerSide = true
-        }
         if (!willCompileServerSide && "fill" in layerPartial) {
             willCompileServerSide = Object.keys(layerPartial["fill"]).some((value: string, index: number, array: Array<string>) => {
                 return (

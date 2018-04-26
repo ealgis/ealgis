@@ -100,7 +100,6 @@ class MapDefinition(models.Model):
             "geometry": layer["geometry"],
             "expression": layer["fill"]["expression"],
             "conditional": layer["fill"]["conditional"],
-            "line-width": layer["line"]["width"],
         }
         layer['hash'] = hashlib.sha1(json.dumps(
             hash_obj).encode("utf-8")).hexdigest()[:8]
