@@ -418,8 +418,8 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        db = broker.access_data()
-        return Response(db.get_summary_stats_for_layer(layer))
+        with broker.access_data() as db:
+            return Response(db.get_summary_stats_for_layer(layer))
 
     @detail_route(methods=['get'])
     def export_csv(self, request, pk=None, format=None):

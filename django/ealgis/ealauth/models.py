@@ -84,8 +84,8 @@ class MapDefinition(models.Model):
         if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
             logger.debug(
                 "compiling query for layer: {}".format(layer.get('name')))
-            expr = self.compile_expr(layer)
-            layer['_postgis_query'] = expr.get_postgis_query()
+            with self.compile_expr(layer) as expr:
+                layer['_postgis_query'] = expr.get_postgis_query()
             logger.debug("... compilation complete; query:")
             logger.debug(layer['_postgis_query'])
 
@@ -108,8 +108,8 @@ class MapDefinition(models.Model):
         layer["latlon_bbox"] = bbox
 
     def _get_latlon_bbox(self, layer):
-        db = broker.access_data()
-        return db.get_bbox_for_layer(layer)
+        with broker.access_data() as db:
+            return db.get_bbox_for_layer(layer)
 
     def _set(self, defn, force=False):
         def _private_clear(obj):

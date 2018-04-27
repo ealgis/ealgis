@@ -212,9 +212,9 @@ class DataExpression(object):
 
         if include_geom_attrs:
             # Attach all columns from the geometry source
-            db = broker.access_schema(geometry_source.__table__.schema)
-            for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
-                query_attrs.append(getattr(self.tbl, column.name))
+            with broker.access_schema(geometry_source.__table__.schema) as db:
+                for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
+                    query_attrs.append(getattr(self.tbl, column.name))
         self.query_attrs = query_attrs
 
         filter_expr = None
@@ -234,6 +234,12 @@ class DataExpression(object):
         if order_by_gid:
             self.query = self.query.order_by(gid_attr)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.db.cleanup()
+
     def __repr__(self):
         return "DataExpression<%s>" % self.name
 
@@ -248,11 +254,10 @@ class DataExpression(object):
         attribute = attribute.lower()
         schema_name, attribute_name = attribute.split('.', 1)
 
-        db = broker.access_schema(schema_name)
-        attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
-
-        # attr_tbl: aus_census_2011_xcp.x06s3_aust_lga
-        attr_tbl = db.get_table_class_by_id(attr_column_info.table_info_id)
+        with broker.access_schema(schema_name) as db:
+            attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
+            # attr_tbl: aus_census_2011_xcp.x06s3_aust_lga
+            attr_tbl = db.get_table_class_by_id(attr_column_info.table_info_id)
 
         # attr_column_info.name: x4630
         # attr_attr: aus_census_2011_xcp.x06s3_aust_lga_1.x4630

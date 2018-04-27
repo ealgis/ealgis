@@ -10,13 +10,17 @@ def export_iter(defn_obj, bounds=None, include_geom_attrs=False):
     expressions = {}
     for layer in layers:
         if layer["visible"]:
-            expr = defn_obj.compile_expr(layer, include_geometry=False, order_by_gid=True, include_geom_attrs=include_geom_attrs)
-            if expr.is_trivial():
-                continue
-            geom_source_table_info = expr.get_geometry_source_table_info()
-            if geom_source_table_info not in expressions:
-                expressions[geom_source_table_info] = []
-            expressions[geom_source_table_info].append(expr)
+            with defn_obj.compile_expr(
+                    layer,
+                    include_geometry=False,
+                    order_by_gid=True,
+                    include_geom_attrs=include_geom_attrs) as expr:
+                if expr.is_trivial():
+                    continue
+                geom_source_table_info = expr.get_geometry_source_table_info()
+                if geom_source_table_info not in expressions:
+                    expressions[geom_source_table_info] = []
+                expressions[geom_source_table_info].append(expr)
 
     def next_or_none(it):
         try:
