@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     author="Grahame Bowland and Keith Moss",
-    author_email="grahame@angrygoats.net",
+    author_email="grahame@oreamnos.com.au",
     description="ealgis",
     license="GPL3",
     keywords="gis",

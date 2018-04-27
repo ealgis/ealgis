@@ -1,6 +1,6 @@
 #
 FROM nginx:latest
-MAINTAINER Grahame Bowland <grahame@angrygoats.net>
+MAINTAINER Grahame Bowland <grahame@oreamnos.com.au>
 
 RUN rm -rf /etc/nginx
 COPY nginx /etc/nginx
