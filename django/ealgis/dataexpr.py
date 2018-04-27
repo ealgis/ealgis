@@ -174,7 +174,7 @@ class DataExpression(object):
     def __init__(self, name, geometry_source, expr, cond, srid=None, include_geometry=True, order_by_gid=False, include_geom_attrs=False):
         self.name = name
         self.geometry_source = geometry_source
-        self.db = broker.Provide(self.geometry_source.__table__.schema)
+        self.db = broker.access_schema(self.geometry_source.__table__.schema)
         self.geometry_source_table_info = self.db.get_table_info_by_id(self.geometry_source.table_info_id)
         self.geometry_column = None
         self.srid = srid
@@ -212,7 +212,7 @@ class DataExpression(object):
 
         if include_geom_attrs:
             # Attach all columns from the geometry source
-            db = broker.Provide(geometry_source.__table__.schema)
+            db = broker.access_schema(geometry_source.__table__.schema)
             for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
                 query_attrs.append(getattr(self.tbl, column.name))
         self.query_attrs = query_attrs
@@ -248,7 +248,7 @@ class DataExpression(object):
         attribute = attribute.lower()
         schema_name, attribute_name = attribute.split('.', 1)
 
-        db = broker.Provide(schema_name)
+        db = broker.access_schema(schema_name)
         attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
 
         # attr_tbl: aus_census_2011_xcp.x06s3_aust_lga

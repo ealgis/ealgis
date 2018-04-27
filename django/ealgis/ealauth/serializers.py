@@ -110,6 +110,7 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             raise ValidationError(detail={
                                   "valueExpression": "Attribube reference is ambiguous ({})".format(e.message)})
         except Exception as e:
+            raise
             raise ValidationError(
                 detail={"filterExpression": "Compilation error ({})".format(e)})
 

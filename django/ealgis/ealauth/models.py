@@ -56,7 +56,7 @@ class MapDefinition(models.Model):
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
 
-        db = broker.Provide(schema_name)
+        db = broker.access_schema(schema_name)
         geometry_source = db.get_geometry_source(geometry_source_name)
 
         return DataExpression(
@@ -108,7 +108,7 @@ class MapDefinition(models.Model):
         layer["latlon_bbox"] = bbox
 
     def _get_latlon_bbox(self, layer):
-        db = broker.Provide(None)
+        db = broker.access_data()
         return db.get_bbox_for_layer(layer)
 
     def _set(self, defn, force=False):
