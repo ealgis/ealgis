@@ -5,6 +5,6 @@ uid = ealgis
 chdir = /app
 module = ealgis.ealwsgi:app
 master = true
-lazy = true
+lazy-apps = true
 processes = 8
 py-autoreload = 1
