@@ -81,7 +81,7 @@ class MapDefinition(models.Model):
             new = get_recurse(layer, *args)
             return old != new
 
-        if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
+        if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('schema') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
             logger.debug(
                 "compiling query for layer: {}".format(layer.get('name')))
             with self.compile_expr(layer) as expr:
