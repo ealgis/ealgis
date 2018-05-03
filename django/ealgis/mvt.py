@@ -37,14 +37,10 @@ class TileGenerator:
                     "ST_AsMVTGeom(ST_Simplify({geom_column_definition}, {simplify_tolerance}), {extent})".format(geom_column_definition=geom_column_definition, simplify_tolerance=z_res(z + 2), extent=extent)
                 )
 
-            # NOT IN USE
-            # Drop any geometries that are too small for the user to see in this tile (smaller than a pixel)
-            area_filter = ""
-            # area_threshold = (40075016.6855785 / (256 * pow(2, z)))
-            # area_filter = "sqrt({table_name}.area) >= {area_threshold} AND".format(table_name=table_name, area_threshold=area_threshold)
-            # area_filter = "{table_name}.area_sqrt >= z_res({z}) AND".format(table_name=table_name, z=z + 1.5)
+            # Drop any geometries that are too small for the user to see in this tile (smaller than about a pixel)
+            area_filter = "{geom_table_name}.sqrt_area_geom_3857 >= {area_threshold} AND".format(geom_table_name=geom_table_name, area_threshold=z_res(z + 1.5))
 
-            query = """
+            return """
                 SELECT
                     ST_AsMVT(tile)
                 FROM
@@ -53,9 +49,6 @@ class TileGenerator:
                         {area_filter}
                         {geom_column_definition} && {extent}
                     ) as tile""".format(data_query=data_query, area_filter=area_filter, geom_column_definition=geom_column_definition, extent=extent)
-
-            # print(query)
-            return query
 
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         mvt_query = create_vectortile_sql(layer, bounds=bounds(x, y, z))
