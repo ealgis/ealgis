@@ -40,15 +40,22 @@ class TileGenerator:
             # Drop any geometries that are too small for the user to see in this tile (smaller than about a pixel)
             area_filter = "{geom_table_name}.sqrt_area_geom_3857 >= {area_threshold} AND".format(geom_table_name=geom_table_name, area_threshold=z_res(z + 1.5))
 
+            # FIXME Build this whole query in SQLAlchemy instead
+            # We need to begin a WHERE clause if there's no filter on the layer
+            if " WHERE " not in layer["_postgis_query"]:
+                where_cause = "WHERE"
+            else:
+                where_cause = "AND"
+
             return """
                 SELECT
                     ST_AsMVT(tile)
                 FROM
                     ({data_query}
-                    WHERE
+                    {where_cause}
                         {area_filter}
                         {geom_column_definition} && {extent}
-                    ) as tile""".format(data_query=data_query, area_filter=area_filter, geom_column_definition=geom_column_definition, extent=extent)
+                    ) as tile""".format(data_query=data_query, where_cause=where_cause, area_filter=area_filter, geom_column_definition=geom_column_definition, extent=extent)
 
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         mvt_query = create_vectortile_sql(layer, bounds=bounds(x, y, z))
