@@ -199,6 +199,7 @@ export interface TableMetadataJSON {
     family: string
     notes: string
     metadataUrls: Array<TableMetadataURL>
+    topics: Array<string>
 }
 
 export interface TableMetadataURL {

@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import DataTableListBySchemaAndFamily from "./DataTableListBySchemaAndFamily"
+import DataTableListBySchemaAndTopic from "./DataTableListBySchemaAndTopic"
 import DataTableList from "./DataTableList"
-import { IStore, ITable, ITableInfo, ITablesBySchemaAndFamily } from "../../redux/modules/interfaces"
+import { IStore, ISchemaInfo, ITable, ITableInfo } from "../../redux/modules/interfaces"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
 interface IProps {
@@ -13,7 +13,7 @@ interface IProps {
 }
 
 export interface IStoreProps {
-    // From Props
+    schemainfo: ISchemaInfo
     tableinfo: ITableInfo
     favourite_tables: Array<Partial<ITable>>
 }
@@ -33,19 +33,10 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         }
         return tablesActual
     }
-    tablesBySchemaAndFamily(tables: Array<ITable>) {
-        const tablesBySchemaAndFamily: ITablesBySchemaAndFamily = {}
-        for (var key in tables) {
-            let table = tables[key]
 
-            const tableFamilyUID = `${table.schema_name}.${table.metadata_json.family}}`
-            if (!(tableFamilyUID in tablesBySchemaAndFamily)) {
-                tablesBySchemaAndFamily[tableFamilyUID] = { type: table.metadata_json.type, family: table.metadata_json.family, tables: [] }
-            }
-
-            tablesBySchemaAndFamily[tableFamilyUID]["tables"].push(table)
-        }
-        return tablesBySchemaAndFamily
+    getTableSchemas(tables: Array<ITable>) {
+        const { schemainfo } = this.props
+        return Array.from(new Set(tables.map((table: ITable) => schemainfo[table.schema_name])))
     }
 
     render() {
@@ -53,11 +44,14 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         const tablesActual = this.tablePartialsToFullTable(tables, tableinfo)
 
         if (layout === eTableChooserLayout.LIST_LAYOUT) {
-            const tablesBySchemaAndFamily = this.tablesBySchemaAndFamily(tablesActual)
+            const tableSchemas = this.getTableSchemas(tablesActual)
+            const favouriteTablesUIDs: Array<string> = favourite_tables.map(t => `${t.schema_name}.${t.id}`)
+
             return (
-                <DataTableListBySchemaAndFamily
-                    tablesBySchemaAndFamily={tablesBySchemaAndFamily}
-                    favouriteTables={favourite_tables}
+                <DataTableListBySchemaAndTopic
+                    schemas={tableSchemas}
+                    tables={tablesActual}
+                    favouriteTables={favouriteTablesUIDs}
                     onClickTable={onClickTable}
                     onFavouriteTable={onFavouriteTable}
                 />
@@ -81,6 +75,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
     const { ealgis } = state
 
     return {
+        schemainfo: ealgis.schemainfo,
         tableinfo: ealgis.tableinfo,
         favourite_tables: ealgis.user.favourite_tables,
     }
