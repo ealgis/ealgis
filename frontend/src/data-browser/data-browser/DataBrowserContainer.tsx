@@ -91,7 +91,6 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
     constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
         super(props)
         this.state = {}
-        const { handleTableSearch, geometry } = props
     }
 
     async handleSelectSchema(schema: ISchema) {
