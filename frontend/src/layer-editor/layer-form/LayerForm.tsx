@@ -1,5 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
+import { groupBy } from "lodash-es"
 import { Link } from "react-router"
 import { connect } from "react-redux"
 import RaisedButton from "material-ui/RaisedButton"
@@ -312,19 +313,30 @@ class LayerForm extends React.Component<IProps, {}> {
     geometryTables: Array<JSX.Element>
     colourSchemes: Array<JSX.Element>
 
+    geometrySelectionRenderer = (geom_table_json: string) => {
+        const geom_table: IGeomTable = JSON.parse(geom_table_json)
+        return `${geom_table.description} (${geom_table.schema_title})`
+    }
+
     componentWillMount() {
         const { geominfo, colourinfo } = this.props
 
         this.geometryTables = []
-        for (let geomtable_name in geominfo) {
-            this.geometryTables.push(
-                <MenuItem
-                    key={geomtable_name}
-                    value={JSON.stringify(geominfo[geomtable_name])}
-                    primaryText={geominfo[geomtable_name].description}
-                />
-            )
-        }
+        const grouped = groupBy(geominfo, (geom: any) => geom.schema_title)
+
+        Object.keys(grouped).forEach((schema_title: string) => {
+            this.geometryTables.push(<Subheader key={schema_title}>{schema_title}</Subheader>)
+
+            grouped[schema_title].forEach((geom_table: IGeomTable) => {
+                this.geometryTables.push(
+                    <MenuItem
+                        key={`${geom_table.schema_name}.${geom_table.name}`}
+                        value={JSON.stringify(geom_table)}
+                        primaryText={geom_table.description}
+                    />
+                )
+            })
+        })
 
         this.colourSchemes = []
         for (let colour in colourinfo) {
@@ -410,7 +422,7 @@ class LayerForm extends React.Component<IProps, {}> {
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Tabs initialSelectedIndex={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
-                        {/* START DESCRIBE TAB */}
+                        {/* START CREATE TAB */}
                         <Tab label="1. CREATE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}>
                             <TabContainer>
                                 {visibleComponent === undefined && (
@@ -427,6 +439,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                             onChange={(junk: object, newValue: object, previousValue: object) =>
                                                 onFieldChange("geometry", newValue)
                                             }
+                                            selectionRenderer={this.geometrySelectionRenderer}
                                         >
                                             {this.geometryTables}
                                         </Field>
@@ -519,9 +532,9 @@ class LayerForm extends React.Component<IProps, {}> {
                                 )}
                             </TabContainer>
                         </Tab>
-                        {/* END DESCRIBE TAB */}
+                        {/* END CREATE TAB */}
 
-                        {/* START DATA TAB */}
+                        {/* START STYLE TAB */}
                         <Tab label="2. STYLE" containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}>
                             <TabContainer>
                                 <FormSectionSubheader>Colours</FormSectionSubheader>
@@ -639,9 +652,9 @@ class LayerForm extends React.Component<IProps, {}> {
                                 <LayerQuerySummary mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
                             </TabContainer>
                         </Tab>
-                        {/* END DATA TAB */}
+                        {/* END STYLE TAB */}
 
-                        {/* START VISUALISE TAB */}
+                        {/* START DESCRIBE TAB */}
                         <Tab
                             label="3. DESCRIBE"
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/describe`} />}
@@ -677,7 +690,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 />
                             </TabContainer>
                         </Tab>
-                        {/* END VISUALISE TAB */}
+                        {/* END DESCRIBE TAB */}
                     </Tabs>
 
                     <HiddenButton type="submit" />

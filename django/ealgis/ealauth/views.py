@@ -547,7 +547,9 @@ class DataInfoViewSet(viewsets.ViewSet):
         info = broker.schema_information()
         tables = {}
         for schema_name in info.get_geometry_schemas():
+            metadata = broker.access_schema(schema_name).get_schema_metadata()
             geometry_sources = broker.access_schema(schema_name).get_geometry_sources_table_info()
+
             for (geometrysource, tableinfo) in geometry_sources:
                 # if tableinfo.name == "lga" or tableinfo.name == "sa1":
                 uname = "{}.{}".format(schema_name, tableinfo.name)
@@ -556,7 +558,8 @@ class DataInfoViewSet(viewsets.ViewSet):
                     "name": tableinfo.name,
                     "description": tableinfo.metadata_json['description'],
                     "geometry_type": geometrysource.geometry_type,
-                    "schema_name": schema_name
+                    "schema_name": schema_name,
+                    "schema_title": metadata.name
                 }
 
         return Response(tables)

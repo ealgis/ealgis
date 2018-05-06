@@ -221,6 +221,7 @@ export interface IGeomTable {
     geometry_type: string
     name: string
     schema_name: string
+    schema_title: string
 }
 
 export interface ISchema {

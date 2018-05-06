@@ -1,6 +1,5 @@
 import * as React from "react"
 import styled from "styled-components"
-import { groupBy } from "lodash-es"
 
 import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
 
