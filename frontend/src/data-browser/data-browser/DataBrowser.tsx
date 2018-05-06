@@ -26,10 +26,19 @@ class ClickableIconButton extends React.Component<any, any> {
 const DataBrowserContainer = styled.div`
     overflow: auto;
 `
+
+const DataBrowserTopToolbar = styled(Toolbar)`
+    position: fixed;
+    z-index: 1;
+    width: 70%;
+`
+
 const DataBrowserInnerContainer = styled.div`
     padding-left: 12px;
     padding-right: 12px;
+    padding-top: 56px; /* Height of DataBrowserTopToolbar */
 `
+
 const DataBrowserSectionContainer = styled.div`
     margin-bottom: 25px;
 `
@@ -110,7 +119,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
 
         return (
             <DataBrowserContainer>
-                <Toolbar>
+                <DataBrowserTopToolbar>
                     <ToolbarGroup firstChild={true}>
                         <DataBrowserTitle text={"Data Browser"} />
                         {this.showTables(selectedTables, selectedColumns) && (
@@ -144,7 +153,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             <NavigationClose color={"white"} />
                         </ClickableIconButton>
                     </ToolbarGroup>
-                </Toolbar>
+                </DataBrowserTopToolbar>
 
                 <DataBrowserInnerContainer>
                     {this.showSchemas(selectedTables, selectedColumns) && (
