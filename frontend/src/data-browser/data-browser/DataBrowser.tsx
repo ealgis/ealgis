@@ -77,6 +77,7 @@ export interface IProps {
     onChooseColumn: Function
     onFinishBrowsing: Function
     backToSchemaView: any
+    backToTableList: any
     backToTableView: any
 }
 
@@ -86,7 +87,13 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
     }
 
     showTables(selectedTables: any, selectedColumns: any) {
+        const { dataTableSearchKeywords } = this.props
         return selectedTables.length > 0 && selectedColumns.length == 0
+    }
+
+    showTableSearchResults() {
+        const { selectedTables, dataTableSearchKeywords } = this.props
+        return selectedTables.length > 0 && dataTableSearchKeywords !== undefined
     }
 
     showColumns(selectedColumns: any) {
@@ -114,17 +121,25 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             onChooseColumn,
             onFinishBrowsing,
             backToSchemaView,
+            backToTableList,
             backToTableView,
         } = this.props
+
+        this.showTableSearchResults()
 
         return (
             <DataBrowserContainer>
                 <DataBrowserTopToolbar>
                     <ToolbarGroup firstChild={true}>
                         <DataBrowserTitle text={"Data Browser"} />
-                        {this.showTables(selectedTables, selectedColumns) && (
-                            <RaisedButton primary={true} label={"Back"} onClick={() => backToSchemaView()} />
-                        )}
+                        {this.showTables(selectedTables, selectedColumns) &&
+                            this.showTableSearchResults() === false && (
+                                <RaisedButton primary={true} label={"Back"} onClick={() => backToSchemaView()} />
+                            )}
+                        {this.showTableSearchResults() &&
+                            this.showColumns(selectedColumns) === false && (
+                                <RaisedButton primary={true} label={"Back"} onClick={() => backToTableList()} />
+                            )}
                         {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
                             <TableSearchTextField
                                 hintText="e.g. Industry, Family"

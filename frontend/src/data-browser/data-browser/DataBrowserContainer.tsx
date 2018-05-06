@@ -181,7 +181,16 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                     this.handleUnselectSchema()
                     showSchemaView()
                 }}
-                backToTableView={() => showTableView()}
+                backToTableList={() => {
+                    this.setState({ dataTableSearchKeywords: undefined })
+
+                    const schema = schemainfo[this.state.selectedSchemaId!]
+                    this.handleSelectSchema(schema)
+                    getSchemaTables(schema.schema_name, geometry)
+                }}
+                backToTableView={() => {
+                    showTableView()
+                }}
             />
         )
     }
