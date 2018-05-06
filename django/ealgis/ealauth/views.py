@@ -551,7 +551,6 @@ class DataInfoViewSet(viewsets.ViewSet):
             geometry_sources = broker.access_schema(schema_name).get_geometry_sources_table_info()
 
             for (geometrysource, tableinfo) in geometry_sources:
-                # if tableinfo.name == "lga" or tableinfo.name == "sa1":
                 uname = "{}.{}".format(schema_name, tableinfo.name)
                 tables[uname] = {
                     "_id": geometrysource.id,

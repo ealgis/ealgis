@@ -39,6 +39,10 @@ p {
     overflow-y: auto;
 }
 
+.page-main-content {
+    overflow: auto;
+}
+
 @media (min-width: 768px) {
     .page-content {
         flex-direction: row;
