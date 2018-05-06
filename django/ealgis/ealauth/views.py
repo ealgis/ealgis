@@ -20,6 +20,7 @@ from ealgis.colour_scale import definitions, make_colour_scale
 import time
 import copy
 import urllib.parse
+import json
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 from ealgis_common.db import broker
@@ -628,21 +629,46 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['get'])
     def search(self, request, format=None):
+        def getSchemasToQuery(schemas, schema_families):
+            schemaNames = []
+            info = broker.schema_information()
+            ealgisSchemas = info.get_ealgis_schemas()
+
+            if schemas is not None:
+                schemas = json.loads(schemas)
+                schemaNames += [s for s in schemas if s in ealgisSchemas]
+
+            if schema_families is not None:
+                schema_families = json.loads(schema_families)
+                for schema_name in ealgisSchemas:
+                    metadata = broker.access_schema(schema_name).get_schema_metadata()
+                    if metadata.family in schema_families and schema_name not in schemaNames:
+                        schemaNames.append(schema_name)
+
+            # Default to searching all available schemas
+            if len(schemaNames) == 0:
+                schemaNames = ealgisSchemas
+
+            return schemaNames
+
         schema_name = request.query_params.get('schema', None)
         geo_source_id = request.query_params.get('geo_source_id', None)
+        schema_families = request.query_params.get('schema_families', None)
+        schemas = request.query_params.get('schemas', None)
+        search = request.query_params.get('search', None)
+        search_excluded = request.query_params.get('search_excluded', None)
         qp = request.query_params
 
-        search_terms = qp["search"].split(",") if "search" in qp and qp["search"] != "" else []
-        search_terms_excluded = qp["search_excluded"].split(",") if "search_excluded" in qp and qp["search_excluded"] != "" else []
+        search_terms = []
+        if search is not None and search != "":
+            search_terms = search.split(",")
+
+        search_terms_excluded = []
+        if search_excluded is not None and search_excluded != "":
+            search_terms_excluded = search_excluded.split(",")
 
         response = {}
-        if schema_name is not None:
-            schemas = [schema_name]
-        else:
-            info = broker.schema_information()
-            schemas = info.get_ealgis_schemas()
-
-        for schema_name in schemas:
+        for schema_name in getSchemasToQuery(schemas, schema_families):
             db = broker.access_schema(schema_name)
             tables = []
 

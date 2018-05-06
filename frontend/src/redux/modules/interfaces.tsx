@@ -31,6 +31,7 @@ export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, 
 export {
     IModule as IDataBrowserModule,
     IDataBrowserConfig,
+    ISelectedSchemas,
     ITablesBySchemaAndFamily,
     ITableFamily,
     ITableColumns,

@@ -144,6 +144,11 @@ export interface IDataBrowserConfig {
     closeOnFinish: boolean
 }
 
+export interface ISelectedSchemas {
+    schemas: Array<string> // e.g. [General Community Profile]
+    families: Array<string> // e.g. [ABS Census 2016]
+}
+
 export interface ITablesBySchemaAndFamily {
     [key: string]: ITableFamily
 }
@@ -193,16 +198,25 @@ export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) 
 export function searchTables(
     searchStrings: Array<string>,
     searchStringsExcluded: Array<string>,
-    schema_name: string,
-    geometry: IGeomTable
+    geometry: IGeomTable,
+    selectedSchemas?: ISelectedSchemas
 ) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/tableinfo/search/", dispatch, {
+        let params: any = {
             search: searchStrings.join(","),
             search_excluded: searchStringsExcluded.join(","),
-            schema: schema_name,
             geo_source_id: geometry._id,
-        })
+        }
+        if (selectedSchemas !== undefined) {
+            if (selectedSchemas.families.length > 0) {
+                params["schema_families"] = JSON.stringify(selectedSchemas.families)
+            }
+            if (selectedSchemas.schemas.length > 0) {
+                params["schemas"] = JSON.stringify(selectedSchemas.schemas)
+            }
+        }
+
+        const { response, json } = await ealapi.get("/api/0.1/tableinfo/search/", dispatch, params)
 
         if (response.status === 404) {
             dispatch(sendSnackbarNotification("No tables found matching your search criteria."))

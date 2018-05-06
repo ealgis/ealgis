@@ -17,6 +17,7 @@ import { addColumnToLayerSelection } from "../../redux/modules/maps"
 import { loadTable, loadColumn, addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
 import {
     IStore,
+    ISchemaInfo,
     ISchema,
     ITable,
     ITableInfo,
@@ -25,6 +26,7 @@ import {
     IColumn,
     ILayer,
     IDataBrowserConfig,
+    ISelectedSchemas,
     eEalUIComponent,
 } from "../../redux/modules/interfaces"
 
@@ -45,6 +47,7 @@ export interface IStoreProps {
     favouriteTables: Array<Partial<ITable>>
     config: IDataBrowserConfig
     tableinfo: ITableInfo
+    schemainfo: ISchemaInfo
 }
 
 export interface IDispatchProps {
@@ -76,6 +79,7 @@ interface IOwnProps {
 }
 
 interface IState {
+    selectedSchemasForSearch?: ISelectedSchemas
     selectedSchemaId?: string
     dataTableSearchKeywords?: string
     selectedTable?: ITable
@@ -91,7 +95,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
     }
 
     async handleSelectSchema(schema: ISchema) {
-        this.setState({ selectedSchemaId: schema.schema_name })
+        this.setState({ selectedSchemaId: schema.schema_name, selectedSchemasForSearch: undefined })
     }
 
     async handleUnselectSchema() {
@@ -125,6 +129,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             handleChooseTable,
             favouriteTable,
             selectedColumns,
+            schemainfo,
             showTableView,
             showSchemaView,
             handleChooseColumn,
@@ -143,13 +148,18 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
+                schemainfo={schemainfo}
                 handleClickSchema={(schema: ISchema) => {
                     this.handleSelectSchema(schema)
                     getSchemaTables(schema.schema_name, geometry)
                 }}
+                onChangeSchemaSelection={(selectedSchemas: ISelectedSchemas) => {
+                    this.setState({ selectedSchemasForSearch: selectedSchemas })
+                    handleTableSearch(this.state.selectedSchemaId, this.state.dataTableSearchKeywords, geometry, selectedSchemas)
+                }}
                 onTableSearchChange={(newValue: string) => {
                     this.setState({ dataTableSearchKeywords: newValue })
-                    handleTableSearch(this.state.selectedSchemaId, newValue, geometry)
+                    handleTableSearch(this.state.selectedSchemaId, newValue, geometry, this.state.selectedSchemasForSearch)
                 }}
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
@@ -192,6 +202,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         selectedTables: databrowser.tables,
         selectedColumns: databrowser.columns,
         tableinfo: ealgis.tableinfo,
+        schemainfo: ealgis.schemainfo,
     }
 }
 
@@ -200,8 +211,24 @@ const mapDispatchToProps = (dispatch: Function) => {
         getSchemaTables: (schemaId: string, geometry: IGeomTable) => {
             dispatch(fetchTablesForSchema(schemaId, geometry))
         },
-        handleTableSearch: (schemaId: string, searchString: string, geometry: IGeomTable) => {
-            dispatch(searchTables(searchString.split(" "), [], schemaId, geometry))
+        handleTableSearch: (schemaId: string, searchString: string, geometry: IGeomTable, selectedSchemas?: ISelectedSchemas) => {
+            let searchTerms: Array<string> = []
+            if (searchString !== undefined) {
+                searchTerms = searchString.split(" ")
+            }
+
+            let searchTermsExcluded: Array<string> = [] // Not implemented in the UI (yet?)
+
+            if (selectedSchemas === undefined) {
+                selectedSchemas = {
+                    families: [],
+                    schemas: [schemaId],
+                }
+            }
+
+            if (searchTerms.length > 0) {
+                dispatch(searchTables(searchTerms, searchTermsExcluded, geometry, selectedSchemas))
+            }
         },
         handleChooseTable: (table: ITable) => {
             dispatch(fetchColumns(table.schema_name, table.id))

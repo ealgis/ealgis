@@ -1,19 +1,19 @@
 import * as React from "react"
 import styled from "styled-components"
+import { groupBy } from "lodash-es"
+
+import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
 
 import IconButton from "material-ui/IconButton"
 import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import ActionViewColumn from "material-ui/svg-icons/action/view-column"
-import DeviceAccessTime from "material-ui/svg-icons/device/access-time"
-import ToggleStar from "material-ui/svg-icons/toggle/star"
+import { NavigationClose, ActionViewColumn, DeviceAccessTime, ToggleStar } from "material-ui/svg-icons"
 
 import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import { IDataBrowserConfig, ITable } from "../../redux/modules/interfaces"
+import { ISchemaInfo, ISchema, IDataBrowserConfig, ITable } from "../../redux/modules/interfaces"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
@@ -59,7 +59,9 @@ export interface IProps {
     selectedTables: Array<Partial<ITable>>
     selectedTable?: ITable
     selectedColumns: Array<string>
+    schemainfo: ISchemaInfo
     handleClickSchema: Function
+    onChangeSchemaSelection: Function
     onTableSearchChange: Function
     handleClickTable: Function
     handleFavouriteTable: Function
@@ -95,7 +97,9 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             selectedTable,
             selectedColumns,
             handleClickSchema,
+            onChangeSchemaSelection,
             onTableSearchChange,
+            schemainfo,
             handleClickTable,
             handleFavouriteTable,
             onChooseColumn,
@@ -115,7 +119,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                         {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
                             <TableSearchTextField
                                 hintText="e.g. Industry, Family"
-                                floatingLabelText="Search for data tables"
+                                floatingLabelText="Search for data"
                                 defaultValue={dataTableSearchKeywords}
                                 inputStyle={{ color: "white" }}
                                 floatingLabelStyle={{ color: "white" }}
@@ -126,6 +130,9 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     }
                                 }}
                             />
+                        )}
+                        {this.showSchemas(selectedTables, selectedColumns) && (
+                            <DataSchemaSelectContainer onChangeSchemaSelection={onChangeSchemaSelection} />
                         )}
                         {this.showColumns(selectedColumns) && (
                             <RaisedButton primary={true} label={"Back"} onClick={() => backToTableView()} />
