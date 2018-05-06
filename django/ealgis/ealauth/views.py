@@ -659,7 +659,6 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         schemas = request.query_params.get('schemas', None)
         search = request.query_params.get('search', None)
         search_excluded = request.query_params.get('search_excluded', None)
-        qp = request.query_params
 
         search_terms = []
         if search is not None and search != "":
