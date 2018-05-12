@@ -552,7 +552,6 @@ class DataInfoViewSet(viewsets.ViewSet):
             geometry_sources = broker.access_schema(schema_name).get_geometry_sources_table_info()
 
             for (geometrysource, tableinfo) in geometry_sources:
-                uname = "{}.{}".format(schema_name, tableinfo.name)
                 tables.append({
                     "_id": geometrysource.id,
                     "name": tableinfo.name,
