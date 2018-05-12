@@ -1,35 +1,20 @@
-import * as React from "react"
-import styled from "styled-components"
-import {
-    deepPurple900,
-    deepPurple800,
-    deepPurple700,
-    deepPurple600,
-    deepPurple500,
-    deepPurple400,
-    deepPurple300,
-    deepPurple200,
-    deepPurple100,
-    white,
-    fullBlack,
-    yellow500,
-} from "material-ui/styles/colors"
-import { fade } from "material-ui/utils/colorManipulator"
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
-import getMuiTheme from "material-ui/styles/getMuiTheme"
-import EalUI from "./EalUI"
-import { connect } from "react-redux"
-import olProj from "ol/proj"
-import { toggleSidebarState, setLastPage, toggleUserMenu } from "./redux/modules/app"
-import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
-import { toggleDebugMode, moveToGooglePlacesResult } from "./redux/modules/map"
-import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
-import CircularProgress from "material-ui/CircularProgress"
 import LinearProgress from "material-ui/LinearProgress"
-import { IStore, IAppModule, ISnackbarsModule, IUser, IMUITheme, IConfig } from "./redux/modules/interfaces"
-const Config: IConfig = require("Config") as any
-
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
+import { deepPurple100, deepPurple300, deepPurple400, deepPurple500, fullBlack, white, yellow500 } from "material-ui/styles/colors"
+import getMuiTheme from "material-ui/styles/getMuiTheme"
+import { fade } from "material-ui/utils/colorManipulator"
+import olProj from "ol/proj"
+import * as React from "react"
+import { connect } from "react-redux"
+import styled from "styled-components"
+import EalUI from "./EalUI"
 import "./FixedLayout.css"
+import { setLastPage, toggleSidebarState, toggleUserMenu } from "./redux/modules/app"
+import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
+import { IAppModule, IConfig, ISnackbarsModule, IStore, IUser, eEalUIComponent } from "./redux/modules/interfaces"
+import { moveToGooglePlacesResult, toggleDebugMode } from "./redux/modules/map"
+import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
+const Config: IConfig = require("Config") as any
 
 const muiTheme = getMuiTheme({
     palette: {
@@ -124,7 +109,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
         } = this.props
 
         // Google Places Autocomplete should only appear when there is a map in the UI
-        const showGooglePlacesBar: boolean = location.pathname.startsWith("/map/")
+        const showGooglePlacesBar: boolean = app.activeContentComponent === eEalUIComponent.MAP_UI
 
         if (app.loading === true) {
             return (
