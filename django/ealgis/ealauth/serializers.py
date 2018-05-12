@@ -193,3 +193,4 @@ class EALGISMetadataSerializer(serializers.Serializer):
     uuid = serializers.CharField()
     description = serializers.CharField()
     date_created = serializers.DateTimeField()
+    date_published = serializers.DateTimeField()

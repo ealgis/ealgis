@@ -545,22 +545,30 @@ class DataInfoViewSet(viewsets.ViewSet):
 
     def list(self, request, format=None):
         info = broker.schema_information()
-        tables = {}
+        tables = []
+
         for schema_name in info.get_geometry_schemas():
             metadata = broker.access_schema(schema_name).get_schema_metadata()
             geometry_sources = broker.access_schema(schema_name).get_geometry_sources_table_info()
 
             for (geometrysource, tableinfo) in geometry_sources:
                 uname = "{}.{}".format(schema_name, tableinfo.name)
-                tables[uname] = {
+                tables.append({
                     "_id": geometrysource.id,
                     "name": tableinfo.name,
                     "description": tableinfo.metadata_json['description'],
                     "geometry_type": geometrysource.geometry_type,
                     "schema_name": schema_name,
-                    "schema_title": metadata.name
-                }
+                    "schema_title": metadata.name,
+                    "schema_date_published": metadata.date_published
+                })
 
+        tables.sort(key=lambda table: table["description"])
+        tables.sort(key=lambda table: table["schema_date_published"], reverse=True)
+        for table in tables:
+            del table["schema_date_published"]
+
+        tables = {table["schema_name"] + "." + table["name"]: table for table in tables}
         return Response(tables)
 
     def retrieve(self, request, format=None, pk=None):
@@ -651,7 +659,18 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if len(schemaNames) == 0:
                 schemaNames = ealgisSchemas
 
-            return schemaNames
+            # Sort scheams by name and date published
+            schemas = []
+            for schema_name in schemaNames:
+                metadata = broker.access_schema(schema_name).get_schema_metadata()
+
+                schema = EALGISMetadataSerializer(metadata).data
+                schema["schema_name"] = schema_name
+                schemas.append(schema)
+
+            schemas.sort(key=lambda schema: schema["name"])
+            schemas.sort(key=lambda schema: schema["date_published"], reverse=True)
+            return [schema["schema_name"] for schema in schemas]
 
         schema_name = request.query_params.get('schema', None)
         geo_source_id = request.query_params.get('geo_source_id', None)
@@ -842,9 +861,15 @@ class SchemasViewSet(viewsets.ViewSet):
         info = broker.schema_information()
         schema_names = info.get_ealgis_schemas()
 
-        schemas = {}
+        schemas = []
         for schema_name in schema_names:
             metadata = broker.access_schema(schema_name).get_schema_metadata()
-            schemas[schema_name] = EALGISMetadataSerializer(metadata).data
-            schemas[schema_name]["schema_name"] = schema_name
+
+            schema = EALGISMetadataSerializer(metadata).data
+            schema["schema_name"] = schema_name
+            schemas.append(schema)
+
+        schemas.sort(key=lambda schema: schema["name"])
+        schemas.sort(key=lambda schema: schema["date_published"], reverse=True)
+        schemas = {schema["schema_name"]: schema for schema in schemas}
         return Response(schemas)

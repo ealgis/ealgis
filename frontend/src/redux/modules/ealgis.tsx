@@ -230,6 +230,7 @@ export interface ISchema {
     uuid: string
     description: string
     date_created: number
+    date_published: number
     schema_name: string
 }
 
@@ -448,14 +449,7 @@ export function fetchColumnsForMaps() {
 export function fetchGeomInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/datainfo/", dispatch)
-
-        const ordered: IGeomInfo = {}
-        Object.keys(json)
-            .sort()
-            .forEach(function(key: string) {
-                ordered[key] = json[key]
-            })
-        dispatch(loadGeom(ordered))
+        dispatch(loadGeom(json))
     }
 }
 

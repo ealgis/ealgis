@@ -169,3 +169,4 @@ class EALGISMetadata(Base):
     # version = db.Column(db.Float())
     description = db.Column(db.Text())
     date_created = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
+    date_published = db.Column(db.DateTime(timezone=True))
