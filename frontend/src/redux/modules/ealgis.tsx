@@ -1,9 +1,9 @@
 import * as dotProp from "dot-prop-immutable"
-import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { loading as appLoading, loaded as appLoaded } from "./app"
-import { parseValueExpression, parseFilterExpression } from "./databrowser"
-import { ILayer, eLayerValueExpressionMode, eLayerFilterExpressionMode } from "./interfaces"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { loaded as appLoaded, loading as appLoading } from "./app"
+import { parseFilterExpression, parseValueExpression } from "./databrowser"
+import { eLayerFilterExpressionMode, eLayerValueExpressionMode } from "./interfaces"
 import { fetchMaps } from "./maps"
 
 // Actions
