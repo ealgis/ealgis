@@ -13,7 +13,7 @@ const TOGGLE_USER_MENU = "ealgis/app/TOGGLE_USER_MENU"
 const SET_ACTIVE_COMPONENT = "ealgis/app/SET_ACTIVE_COMPONENT"
 
 export enum eEalUIComponent {
-    MAP_UI = 1,
+    MAP_UI = 1, // Actually, this includes the static pages too.
     DATA_BROWSER = 2,
     FILTER_EXPRESSION_EDITOR = 3,
     VALUE_EXPRESSION_EDITOR = 4,

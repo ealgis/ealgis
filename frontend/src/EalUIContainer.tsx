@@ -109,7 +109,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
         } = this.props
 
         // Google Places Autocomplete should only appear when there is a map in the UI
-        const showGooglePlacesBar: boolean = app.activeContentComponent === eEalUIComponent.MAP_UI
+        const showGooglePlacesBar: boolean = location.pathname.startsWith("/map/") && app.activeContentComponent === eEalUIComponent.MAP_UI
 
         if (app.loading === true) {
             return (
