@@ -1,21 +1,17 @@
 import * as dotProp from "dot-prop-immutable"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-
+import { loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { loadTables as loadTablesToAppCache, loadColumns as loadColumnsToAppCache } from "../../redux/modules/ealgis"
-import { editDraftLayer } from "../../redux/modules/maps"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import {
-    IStore,
-    IGeomTable,
-    ITable,
-    ILayer,
     IColumn,
     IColumnInfo,
-    ISelectedColumn,
+    IGeomTable,
+    IStore,
+    ITable,
     eEalUIComponent,
-    eLayerValueExpressionMode,
     eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
 } from "./interfaces"
 
 // Actions
@@ -275,7 +271,7 @@ export function parseValueExpression(expression: string, expression_mode: eLayer
             col1: expression,
         }
     } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
-        let matches = expression.match(/[a-z0-9]+\/[a-z0-9]+/)
+        let matches = expression.match(/[a-z0-9_.]+\/[a-z0-9_.]+/)
         let column_names = matches![0].split("/")
         return {
             col1: column_names[0],
