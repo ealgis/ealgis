@@ -1,19 +1,19 @@
-import * as dotProp from "dot-prop-immutable"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IHttpResponse, IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { includes as arrayIncludes } from "core-js/library/fn/array";
+import * as dotProp from "dot-prop-immutable";
+import { merge } from "lodash-es";
+import { browserHistory } from "react-router";
+import { SubmissionError } from "redux-form";
+import { IGeomTable, ISelectedColumn, IUserPartial, getGeomInfoFromState, getUserIdFromState } from "../../redux/modules/ealgis";
+import * as layerFormModule from "../../redux/modules/layerform";
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
+import { IPosition } from "../../redux/modules/map";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
+import { getMapURL } from "../../shared/utils";
+import { IConfig } from "./interfaces";
 
-import { merge } from "lodash-es"
-import { includes as arrayIncludes } from "core-js/library/fn/array"
-import { browserHistory } from "react-router"
-import { getMapURL } from "../../shared/utils"
-import { SubmissionError } from "redux-form"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { getUserIdFromState, getGeomInfoFromState, IUserPartial, IGeomTable, ISelectedColumn } from "../../redux/modules/ealgis"
-import { IPosition } from "../../redux/modules/map"
 
-import * as layerFormModule from "../../redux/modules/layerform"
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
-import { IConfig, IColumn } from "./interfaces"
 const Config: IConfig = require("Config") as any
 
 // Actions
@@ -848,7 +848,7 @@ export function editDraftLayer(mapId: number, layerId: number, layerPartial: obj
                 dispatch(layerFormModule.loadValidationErrors(json))
             } else {
                 // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
+                // our Error will get passed straight to RavenJS (Sentry.io)
                 throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
             }
         })

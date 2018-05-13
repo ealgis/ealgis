@@ -1,40 +1,22 @@
+import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from "redux-form"
 import { withRouter } from "react-router"
-import { isEqual, debounce, reduce } from "lodash-es"
-import { values as objectValues } from "core-js/library/fn/object"
-import ValueExpressionEditor from "./ValueExpressionEditor"
-import { toggleModalState } from "../../redux/modules/app"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { setActiveContentComponent } from "../../redux/modules/app"
+import { change, formValueSelector } from "redux-form"
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
+import { fetchResultForComponent, finishBrowsing, getValueExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
 import {
-    startBrowsing,
-    finishBrowsing,
-    fetchResultForComponent,
-    parseValueExpression,
-    getValueExpressionWithColumns,
-} from "../../redux/modules/databrowser"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
     IColumnInfo,
-    IMap,
-    ILayer,
-    IColumn,
-    ISelectedColumn,
-    IMUITheme,
-    IMUIThemePalette,
-    eEalUIComponent,
     IDataBrowserConfig,
     IDataBrowserResult,
+    IMUITheme,
+    IMUIThemePalette,
+    IMap,
+    IStore,
+    eEalUIComponent,
     eLayerValueExpressionMode,
 } from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import ValueExpressionEditor from "./ValueExpressionEditor"
 
 export interface IProps {
     onApply: Function
@@ -96,10 +78,9 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
         const { mapDefinition, layerId, valueExpression, columninfo } = this.props
         const { expressionMode } = this.state
 
-        const parsed1: any = parseValueExpression(valueExpression, expressionMode)
-        const parsed2: any = getValueExpressionWithColumns(parsed1, expressionMode, columninfo)
-        if (parsed2 !== undefined) {
-            this.setState({ ...this.state, expression: parsed2 })
+        const parsed: any = getValueExpressionWithColumns(valueExpression, expressionMode, columninfo)
+        if (parsed !== undefined) {
+            this.setState({ ...this.state, expression: parsed })
         }
     }
 

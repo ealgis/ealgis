@@ -1,38 +1,12 @@
-import * as React from "react"
-import { connect } from "react-redux"
-import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from "redux-form"
-import { withRouter } from "react-router"
-import { isEqual, debounce, reduce } from "lodash-es"
-import { values as objectValues } from "core-js/library/fn/object"
-import FilterExpressionEditor from "./FilterExpressionEditor"
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
-import {
-    startBrowsing,
-    finishBrowsing,
-    fetchResultForComponent,
-    parseFilterExpression,
-    getFilterExpressionWithColumns,
-} from "../../redux/modules/databrowser"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IColumnInfo,
-    IMap,
-    ILayer,
-    IColumn,
-    ISelectedColumn,
-    IMUITheme,
-    IMUIThemePalette,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    IDataBrowserConfig,
-    IDataBrowserResult,
-} from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import muiThemeable from "material-ui/styles/muiThemeable";
+import * as React from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
+import { change, formValueSelector } from "redux-form";
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app";
+import { fetchResultForComponent, finishBrowsing, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser";
+import { IColumnInfo, IDataBrowserConfig, IDataBrowserResult, IMUITheme, IMUIThemePalette, IMap, IStore, eEalUIComponent, eLayerFilterExpressionMode } from "../../redux/modules/interfaces";
+import FilterExpressionEditor from "./FilterExpressionEditor";
 
 export interface IProps {
     onApply: Function
@@ -93,10 +67,9 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
         const { mapDefinition, layerId, filterExpression, filterExpressionMode, columninfo } = this.props
         const { expressionMode } = this.state
 
-        const parsed1: any = parseFilterExpression(filterExpression, expressionMode)
-        const parsed2: any = getFilterExpressionWithColumns(parsed1, expressionMode, columninfo)
-        if (parsed2 !== undefined) {
-            this.setState({ ...this.state, expression: parsed2 })
+        const parsed: any = getFilterExpressionWithColumns(filterExpression, expressionMode, columninfo)
+        if (parsed !== undefined) {
+            this.setState({ ...this.state, expression: parsed })
         }
     }
 

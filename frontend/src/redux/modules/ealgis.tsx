@@ -2,8 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import { loaded as appLoaded, loading as appLoading } from "./app"
-import { parseFilterExpression, parseValueExpression } from "./databrowser"
-import { eLayerFilterExpressionMode, eLayerValueExpressionMode } from "./interfaces"
+import { parseColumnsFromExpression } from "./databrowser"
 import { fetchMaps } from "./maps"
 
 // Actions
@@ -382,60 +381,27 @@ export function fetchColumnsForMaps() {
         const maps = getState()["maps"]
         for (let mapId in maps) {
             for (let layer of maps[mapId]["json"]["layers"]) {
-                if (
-                    layer.fill.expression_mode === eLayerValueExpressionMode.SINGLE ||
-                    layer.fill.expression_mode === eLayerValueExpressionMode.PROPORTIONAL
-                ) {
-                    const parsed: any = parseValueExpression(layer.fill.expression, layer.fill.expression_mode)
+                let columns: Array<any> = []
 
-                    if ("col1" in parsed) {
-                        const [schema_name, column_name] = parsed.col1.split(".")
-                        if (!(schema_name in columnNamesBySchema)) {
-                            columnNamesBySchema[schema_name] = []
-                        }
-
-                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
-                            columnNamesBySchema[schema_name].push(column_name)
-                        }
-                    }
-
-                    if ("col2" in parsed) {
-                        const [schema_name, column_name] = parsed.col2.split(".")
-                        if (!(schema_name in columnNamesBySchema)) {
-                            columnNamesBySchema[schema_name] = []
-                        }
-
-                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
-                            columnNamesBySchema[schema_name].push(column_name)
-                        }
-                    }
+                if (layer.fill.expression_mode !== undefined) {
+                    columns = parseColumnsFromExpression(layer.fill.expression, layer.fill.expression_mode)
                 }
 
-                if (layer.fill.conditional_mode !== undefined && layer.fill.conditional_mode !== eLayerFilterExpressionMode.SIMPLE) {
-                    const parsed: any = parseFilterExpression(layer.fill.conditional, layer.fill.conditional_mode)
-
-                    if ("col1" in parsed) {
-                        const [schema_name, column_name] = parsed.col1.split(".")
-                        if (!(schema_name in columnNamesBySchema)) {
-                            columnNamesBySchema[schema_name] = []
-                        }
-
-                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
-                            columnNamesBySchema[schema_name].push(column_name)
-                        }
-                    }
-
-                    if ("col2" in parsed) {
-                        const [schema_name, column_name] = parsed.col2.split(".")
-                        if (!(schema_name in columnNamesBySchema)) {
-                            columnNamesBySchema[schema_name] = []
-                        }
-
-                        if (columnNamesBySchema[schema_name].includes(column_name) === false) {
-                            columnNamesBySchema[schema_name].push(column_name)
-                        }
-                    }
+                if (layer.fill.conditional_mode !== undefined) {
+                    columns = [...columns, ...parseColumnsFromExpression(layer.fill.conditional, layer.fill.conditional_mode)]
                 }
+
+                columns.forEach((column: string) => {
+                    const [schema_name, column_name] = column.split(".")
+
+                    if (!(schema_name in columnNamesBySchema)) {
+                        columnNamesBySchema[schema_name] = []
+                    }
+
+                    if (columnNamesBySchema[schema_name].includes(column_name) === false) {
+                        columnNamesBySchema[schema_name].push(column_name)
+                    }
+                })
             }
         }
 

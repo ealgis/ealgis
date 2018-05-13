@@ -1,18 +1,10 @@
-import * as dotProp from "dot-prop-immutable"
-import { loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import {
-    IColumn,
-    IColumnInfo,
-    IGeomTable,
-    IStore,
-    ITable,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
-} from "./interfaces"
+import * as dotProp from "dot-prop-immutable";
+import { parse } from "mathjs";
+import { loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
+import { IColumn, IColumnInfo, IGeomTable, IStore, ITable, eEalUIComponent, eLayerFilterExpressionMode, eLayerValueExpressionMode } from "./interfaces";
 
 // Actions
 const START = "ealgis/databrowser/START"
@@ -264,35 +256,23 @@ export function fetchResultForComponent(component: eEalUIComponent, state: IStor
     return { valid: false }
 }
 
-export function parseValueExpression(expression: string, expression_mode: eLayerValueExpressionMode) {
-    // FIXME Hacky for proof of concept component
-    if (expression_mode === eLayerValueExpressionMode.SINGLE) {
-        return {
-            col1: expression,
-        }
-    } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
-        let matches = expression.match(/[a-z0-9_.]+\/[a-z0-9_.]+/)
-        let column_names = matches![0].split("/")
-        return {
-            col1: column_names[0],
-            col2: column_names[1],
-        }
-    } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
-        // throw Error("Umm, we can't do that yet.")
-    }
-    return {}
+export function parseColumnsFromExpression(expression: string, expression_mode: eLayerValueExpressionMode | eLayerFilterExpressionMode) {
+    const parsed: any = parse(expression)
+    return parsed.filter((node: any) => node.isAccessorNode).map((node: any) => node.toString())
 }
 
 export function getValueExpressionWithColumns(expression: any, expression_mode: eLayerValueExpressionMode, columninfo: IColumnInfo) {
+    const columns: Array<string> = parseColumnsFromExpression(expression, expression_mode)
+
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerValueExpressionMode.SINGLE) {
         return {
-            col1: getColumnByName(expression.col1, columninfo),
+            col1: getColumnByName(columns[0], columninfo),
         }
     } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
         return {
-            col1: getColumnByName(expression.col1, columninfo),
-            col2: getColumnByName(expression.col2, columninfo),
+            col1: getColumnByName(columns[0], columninfo),
+            col2: getColumnByName(columns[1], columninfo),
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
         // throw Error("Umm, we can't do that yet.")
@@ -318,10 +298,11 @@ export function parseFilterExpression(expression: string, expression_mode: eLaye
 export function getFilterExpressionWithColumns(expression: any, expression_mode: eLayerFilterExpressionMode, columninfo: IColumnInfo) {
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
+        const parsed: any = parseFilterExpression(expression, expression_mode)
         return {
-            col1: getColumnByName(expression.col1, columninfo) || expression.col1,
-            operator: expression.operator,
-            col2: getColumnByName(expression.col2, columninfo) || expression.col2,
+            col1: getColumnByName(parsed.col1, columninfo) || parsed.col1,
+            operator: parsed.operator,
+            col2: getColumnByName(parsed.col2, columninfo) || parsed.col2,
         }
     } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
         // throw Error("Umm, we can't do that yet.")
