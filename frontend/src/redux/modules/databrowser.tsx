@@ -1,10 +1,23 @@
-import * as dotProp from "dot-prop-immutable";
-import { parse } from "mathjs";
-import { loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
-import { IColumn, IColumnInfo, IGeomTable, IStore, ITable, eEalUIComponent, eLayerFilterExpressionMode, eLayerValueExpressionMode } from "./interfaces";
+import { entries as objectEntries, values as objectValues } from "core-js/library/fn/object"
+import * as dotProp from "dot-prop-immutable"
+import { xorBy } from "lodash-es"
+import { parse } from "mathjs"
+import { IGeomInfo, loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import {
+    IColumn,
+    IColumnInfo,
+    IGeomTable,
+    IMap,
+    IStore,
+    ITable,
+    ITableInfo,
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
+} from "./interfaces"
 
 // Actions
 const START = "ealgis/databrowser/START"
@@ -12,6 +25,7 @@ const FINISH = "ealgis/databrowser/FINISH"
 const ADD_TABLES = "ealgis/databrowser/ADD_TABLES"
 const ADD_COLUMNS = "ealgis/databrowser/ADD_COLUMNS"
 const SELECT_COLUMN = "ealgidatabrowser/SELECT_COLUMN"
+const DESELECT_COLUMN = "ealgidatabrowser/DESELECT_COLUMN"
 
 const initialState: Partial<IModule> = {
     active: false,
@@ -28,7 +42,7 @@ export default function reducer(state = initialState, action: IAction) {
             state = dotProp.set(state, "active", true)
             state = dotProp.set(state, "tables", [])
             state = dotProp.set(state, "columns", [])
-            state = dotProp.set(state, "selectedColumns", [])
+            state = dotProp.set(state, "selectedColumns", action.selectedColumns)
             state = dotProp.set(state, "component", action.component)
             state = dotProp.set(state, "config", { ...state.config, ...action.config })
             return dotProp.set(state, "message", action.message)
@@ -39,19 +53,32 @@ export default function reducer(state = initialState, action: IAction) {
         case ADD_COLUMNS:
             return dotProp.set(state, "columns", action.columns)
         case SELECT_COLUMN:
-            return dotProp.set(state, "selectedColumns", [...state.selectedColumns!, action.column])
+            const columns: Array<IColumn> = xorBy(
+                state.selectedColumns,
+                [action.column],
+                (column: IColumn) => `${column.schema_name}.${column.id}`
+            )
+            return dotProp.set(state, "selectedColumns", columns)
+        case DESELECT_COLUMN:
+            return dotProp.set(state, "selectedColumns", removeColumnFromList(state.selectedColumns!, action.column!))
         default:
             return state
     }
 }
 
 // Action Creators
-export function startBrowsing(component: eEalUIComponent, message: string, config: Partial<IDataBrowserConfig> = {}): IAction {
+export function startBrowsing(
+    component: eEalUIComponent,
+    message: string,
+    config: Partial<IDataBrowserConfig> = {},
+    selectedColumns: Array<IColumn> = []
+): IAction {
     return {
         type: START,
         component,
         message,
         config,
+        selectedColumns,
         meta: {
             analytics: {
                 category: "DataBrowser",
@@ -102,6 +129,17 @@ export function selectColumn(column: IColumn): IAction {
         },
     }
 }
+export function deselectColumn(column: IColumn): IAction {
+    return {
+        type: DESELECT_COLUMN,
+        column,
+        meta: {
+            analytics: {
+                category: "DataBrowser",
+            },
+        },
+    }
+}
 
 // Models
 export interface IModule {
@@ -121,6 +159,7 @@ export interface IAction {
     config?: Partial<IDataBrowserConfig>
     tables?: Array<Partial<ITable>>
     columns?: Array<string>
+    selectedColumns?: Array<IColumn>
     column?: IColumn
     meta?: {
         analytics: IAnalyticsMeta
@@ -231,12 +270,12 @@ export function fetchColumns(schema_name: string, tableinfo_id: number) {
     }
 }
 
-export function emptySelectedTables() {
+export function removeAllTables() {
     return (dispatch: Function) => {
         dispatch(addTables([]))
     }
 }
-export function emptySelectedColumns() {
+export function removeAllColumns() {
     return (dispatch: Function) => {
         dispatch(addColumns([]))
     }
@@ -255,24 +294,60 @@ export function fetchResultForComponent(component: eEalUIComponent, state: IStor
     }
     return { valid: false }
 }
+export function fetchLiveResultForComponent(component: eEalUIComponent, state: IStore): IDataBrowserResult {
+    const { databrowser } = state
+
+    if (databrowser.component === component && databrowser.selectedColumns.length > 0) {
+        return {
+            valid: true,
+            message: databrowser.message,
+            columns: databrowser.selectedColumns,
+        }
+    }
+    return { valid: false }
+}
 
 export function parseColumnsFromExpression(expression: string, expression_mode: eLayerValueExpressionMode | eLayerFilterExpressionMode) {
     const parsed: any = parse(expression)
     return parsed.filter((node: any) => node.isAccessorNode).map((node: any) => node.toString())
 }
 
-export function getValueExpressionWithColumns(expression: any, expression_mode: eLayerValueExpressionMode, columninfo: IColumnInfo) {
-    const columns: Array<string> = parseColumnsFromExpression(expression, expression_mode)
+export function parseColumnsFromValueExpression(
+    expression: string,
+    expression_mode: eLayerValueExpressionMode,
+    expression_side_to_parse: string = "both"
+) {
+    const parsed: any = parse(expression)
+    let node
+    if (expression_side_to_parse === "left") {
+        node = parsed.args[0].content.args[0]
+    } else if (expression_side_to_parse === "right") {
+        node = parsed.args[0].content.args[1]
+    } else if (expression_side_to_parse === "both") {
+        node = parsed
+    }
+    return node.filter((node: any) => node.isAccessorNode).map((node: any) => node.toString())
+}
 
+export function getValueExpressionWithColumns(
+    expression: any,
+    expression_mode: eLayerValueExpressionMode,
+    columninfo: IColumnInfo,
+    geometry: IGeomTable
+) {
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerValueExpressionMode.SINGLE) {
+        const columns: Array<string> = parseColumnsFromValueExpression(expression, expression_mode, "both")
         return {
-            col1: getColumnByName(columns[0], columninfo),
+            colgroup1: columns.map((column_uid: string) => getColumnByName(column_uid, columninfo, geometry)),
         }
     } else if (expression_mode === eLayerValueExpressionMode.PROPORTIONAL) {
+        const colgroup1Columns: Array<string> = parseColumnsFromValueExpression(expression, expression_mode, "left")
+        const colgroup2Columns: Array<string> = parseColumnsFromValueExpression(expression, expression_mode, "right")
+
         return {
-            col1: getColumnByName(columns[0], columninfo),
-            col2: getColumnByName(columns[1], columninfo),
+            colgroup1: colgroup1Columns.map((column_uid: string) => getColumnByName(column_uid, columninfo, geometry)),
+            colgroup2: colgroup2Columns.map((column_uid: string) => getColumnByName(column_uid, columninfo, geometry)),
         }
     } else if (expression_mode === eLayerValueExpressionMode.ADVANCED) {
         // throw Error("Umm, we can't do that yet.")
@@ -295,14 +370,19 @@ export function parseFilterExpression(expression: string, expression_mode: eLaye
     return {}
 }
 
-export function getFilterExpressionWithColumns(expression: any, expression_mode: eLayerFilterExpressionMode, columninfo: IColumnInfo) {
+export function getFilterExpressionWithColumns(
+    expression: any,
+    expression_mode: eLayerFilterExpressionMode,
+    columninfo: IColumnInfo,
+    geometry: IGeomTable
+) {
     // FIXME Hacky for proof of concept component
     if (expression_mode === eLayerFilterExpressionMode.SIMPLE) {
         const parsed: any = parseFilterExpression(expression, expression_mode)
         return {
-            col1: getColumnByName(parsed.col1, columninfo) || parsed.col1,
+            col1: getColumnByName(parsed.col1, columninfo, geometry) || parsed.col1,
             operator: parsed.operator,
-            col2: getColumnByName(parsed.col2, columninfo) || parsed.col2,
+            col2: getColumnByName(parsed.col2, columninfo, geometry) || parsed.col2,
         }
     } else if (expression_mode === eLayerFilterExpressionMode.ADVANCED) {
         // throw Error("Umm, we can't do that yet.")
@@ -311,13 +391,52 @@ export function getFilterExpressionWithColumns(expression: any, expression_mode:
 }
 
 // @FIXME Assumes column names are unique within a schema (which works OK for Census data). There's no guarnatee that they are, though.
-function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo) {
+function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo, geometry: IGeomTable) {
     const [schema_name, column_name] = column_schema_and_name.split(".")
-    for (let key in columninfo) {
-        const col: IColumn = columninfo[key]
-        if (col.name === column_name) {
-            return col
-        }
+    const result = objectEntries(columninfo).find(
+        ([key, column]) =>
+            column.name == column_name &&
+            column.geometry_source_schema_name == geometry.schema_name &&
+            column.geometry_source_id == geometry._id
+    )
+
+    if (result === undefined) {
+        return undefined
+    } else {
+        const [column_uid, column] = result
+        return column
     }
-    return null
+}
+
+export function getTablesForMap(map: IMap, tableinfo: ITableInfo, columninfo: IColumnInfo, geominfo: IGeomInfo) {
+    let tables: any = {}
+
+    for (let layer of map["json"]["layers"]) {
+        let columns: Array<any> = []
+
+        if (layer.fill.expression_mode !== undefined) {
+            columns = parseColumnsFromExpression(layer.fill.expression, layer.fill.expression_mode)
+        }
+
+        if (layer.fill.conditional_mode !== undefined) {
+            columns = [...columns, ...parseColumnsFromExpression(layer.fill.conditional, layer.fill.conditional_mode)]
+        }
+
+        columns.forEach((column: string) => {
+            const col: any = getColumnByName(column, columninfo, geominfo[`${layer.schema}.${layer.geometry}`])
+            const tableUID = `${col.schema_name}.${col.table_info_id}`
+            if (!(tableUID in tables)) {
+                tables[tableUID] = tableinfo[tableUID]
+            }
+        })
+    }
+
+    return objectValues(tables)
+}
+
+export function removeColumnFromList(columns: Array<IColumn>, column: IColumn) {
+    let tmpColumns = columns.slice()
+    const idx: any = tmpColumns.findIndex((col: IColumn) => col.schema_name === column.schema_name && col.id === column.id)
+    tmpColumns.splice(idx, 1)
+    return tmpColumns
 }

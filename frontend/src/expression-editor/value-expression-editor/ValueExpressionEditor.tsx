@@ -1,43 +1,18 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
-import { connect } from "react-redux"
-import {
-    IStore,
-    IMUIThemePalette,
-    ISelectedColumn,
-    IColumn,
-    eEalUIComponent,
-    eLayerValueExpressionMode,
-} from "../../redux/modules/interfaces"
-
-import { List, ListItem } from "material-ui/List"
-import TextField from "material-ui/TextField"
-import Avatar from "material-ui/Avatar"
-import { blue500, yellow600 } from "material-ui/styles/colors"
-import DropDownMenu from "material-ui/DropDownMenu"
-import Divider from "material-ui/Divider"
-import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
-import Subheader from "material-ui/Subheader"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import Checkbox from "material-ui/Checkbox"
-import SelectField from "material-ui/SelectField"
-import MenuItem from "material-ui/MenuItem"
-import RaisedButton from "material-ui/RaisedButton"
+import DropDownMenu from "material-ui/DropDownMenu"
 import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
-import {
-    FileFolder,
-    ActionAssignment,
-    ActionSettings,
-    NavigationClose,
-    ContentCreate,
-    EditorInsertChart,
-    ImagePalette,
-} from "material-ui/svg-icons"
-
-import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
+import { List, ListItem } from "material-ui/List"
+import MenuItem from "material-ui/MenuItem"
+import RaisedButton from "material-ui/RaisedButton"
+import TextField from "material-ui/TextField"
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import { ActionSettings, NavigationClose } from "material-ui/svg-icons"
+import * as React from "react"
+import { Link } from "react-router"
+import styled from "styled-components"
+import { IMUIThemePalette, eEalUIComponent, eLayerValueExpressionMode } from "../../redux/modules/interfaces"
+import ExpressionColumnSelectorContainer from "../expression-column-selector/ExpressionColumnSelectorContainer"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {
@@ -83,6 +58,34 @@ const ExpressionOpenDataBrowser = styled.div`
     margin-bottom: 10px;
 `
 
+// https://stackoverflow.com/a/15557694
+const DividedByDivider = styled.h3`
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+
+    &:before,
+    :after {
+        position: absolute;
+        top: 51%;
+        overflow: hidden;
+        width: 47%;
+        height: 2px;
+        content: "\a0";
+        background-color: lightgrey;
+    }
+
+    &:before {
+        margin-left: -50%;
+        text-align: right;
+    }
+
+    &:after {
+        margin-left: 3%;
+    }
+`
+
 export interface IProps {
     muiThemePalette: IMUIThemePalette
     mapId: number
@@ -93,6 +96,7 @@ export interface IProps {
     expressionMode: eLayerValueExpressionMode
     advancedModeModalOpen: boolean
     onFieldChange: Function
+    onRemoveColumn: Function
     onExpressionChange: Function
     onApply: any
     onApplyAdvanced: any
@@ -114,6 +118,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
             expressionMode,
             advancedModeModalOpen,
             onFieldChange,
+            onRemoveColumn,
             onExpressionChange,
             onApply,
             onApplyAdvanced,
@@ -122,9 +127,6 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
             onClose,
             openDataBrowser,
         } = this.props
-
-        const col1: any = expression["col1"]
-        const col2: any = expression["col2"]
 
         const advancedModeDialogActions = [
             <FlatButton label="No" primary={true} onClick={onToggleAdvModeModalState} />,
@@ -207,41 +209,31 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
 
                 {expressionMode === eLayerValueExpressionMode.SINGLE && (
                     <ExpressionContainer>
-                        <ExpressionPartItemContainer
+                        <ExpressionColumnSelectorContainer
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
-                            value={col1}
-                            field={"col1"}
-                            showCreateGroup={false}
-                            showValueSpecial={false}
-                            showNumericalInput={false}
-                            showRelatedColumns={false}
-                            onFieldChange={onFieldChange}
+                            field={"colgroup1"}
+                            columns={expression["colgroup1"]}
+                            onRemoveColumn={onRemoveColumn}
                         />
                     </ExpressionContainer>
                 )}
 
                 {expressionMode === eLayerValueExpressionMode.PROPORTIONAL && (
                     <ExpressionContainer>
-                        <ExpressionPartItemContainer
+                        <ExpressionColumnSelectorContainer
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
-                            value={col1}
-                            field={"col1"}
-                            showCreateGroup={false}
-                            showValueSpecial={false}
-                            showNumericalInput={false}
-                            showRelatedColumns={false}
-                            onFieldChange={onFieldChange}
+                            field={"colgroup1"}
+                            columns={expression["colgroup1"]}
+                            onRemoveColumn={onRemoveColumn}
                         />
 
-                        <ExpressionPartItemContainer
+                        <DividedByDivider>divided by</DividedByDivider>
+
+                        <ExpressionColumnSelectorContainer
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
-                            value={col2}
-                            field={"col2"}
-                            showCreateGroup={false}
-                            showValueSpecial={false}
-                            showNumericalInput={false}
-                            showRelatedColumns={false}
-                            onFieldChange={onFieldChange}
+                            field={"colgroup2"}
+                            columns={expression["colgroup2"]}
+                            onRemoveColumn={onRemoveColumn}
                         />
                     </ExpressionContainer>
                 )}

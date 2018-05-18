@@ -1,19 +1,16 @@
-import * as React from "react"
-import styled from "styled-components"
-
-import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
-
 import IconButton from "material-ui/IconButton"
 import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import { NavigationClose, ActionViewColumn, DeviceAccessTime, ToggleStar } from "material-ui/svg-icons"
-
-import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
-import DataTableList from "../data-table-list/DataTableListContainer"
-import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import { ISchemaInfo, ISchema, IDataBrowserConfig, ITable } from "../../redux/modules/interfaces"
+import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
+import { ActionViewColumn, DeviceAccessTime, NavigationClose, ToggleStar } from "material-ui/svg-icons"
+import * as React from "react"
+import styled from "styled-components"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
+import { IColumn, IDataBrowserConfig, ISchemaInfo, ITable } from "../../redux/modules/interfaces"
+import DataColumnTable from "../data-column-table/DataColumnTableContainer"
+import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
+import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
+import DataTableList from "../data-table-list/DataTableListContainer"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
@@ -64,9 +61,11 @@ export interface IProps {
     dataTableSearchKeywords?: string
     recentTables: Array<Partial<ITable>>
     favouriteTables: Array<Partial<ITable>>
+    mapTables: Array<ITable>
     selectedTables: Array<Partial<ITable>>
     selectedTable?: ITable
     selectedColumns: Array<string>
+    activeColumns: Array<IColumn>
     schemainfo: ISchemaInfo
     handleClickSchema: Function
     onChangeSchemaSelection: Function
@@ -108,9 +107,11 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             dataTableSearchKeywords,
             recentTables,
             favouriteTables,
+            mapTables,
             selectedTables,
             selectedTable,
             selectedColumns,
+            activeColumns,
             handleClickSchema,
             onChangeSchemaSelection,
             onTableSearchChange,
@@ -123,8 +124,6 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             backToTableList,
             backToTableView,
         } = this.props
-
-        this.showTableSearchResults()
 
         return (
             <DataBrowserContainer>
@@ -154,7 +153,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                 }}
                             />
                         )}
-                        {this.showSchemas(selectedTables, selectedColumns) && (
+                        {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
                             <DataSchemaSelectContainer onChangeSchemaSelection={onChangeSchemaSelection} />
                         )}
                         {this.showColumns(selectedColumns) && (
@@ -172,6 +171,22 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                 <DataBrowserInnerContainer>
                     {this.showSchemas(selectedTables, selectedColumns) && (
                         <React.Fragment>
+                            {mapTables.length > 0 && (
+                                <DataBrowserSectionContainer>
+                                    <DataBrowserToolbar>
+                                        <ToolbarGroup>
+                                            <ActionViewColumn style={{ marginRight: "10px" }} />
+                                            <ToolbarTitle text={"Tables In This Map"} />
+                                        </ToolbarGroup>
+                                    </DataBrowserToolbar>
+                                    <DataTableList
+                                        tables={mapTables}
+                                        layout={eTableChooserLayout.GRID_LAYOUT}
+                                        onClickTable={handleClickTable}
+                                    />
+                                </DataBrowserSectionContainer>
+                            )}
+
                             <DataBrowserToolbar>
                                 <ToolbarGroup>
                                     <ActionViewColumn style={{ marginRight: "10px" }} />
@@ -232,6 +247,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                 showColumnNames={config.showColumnNames}
                                 table={selectedTable}
                                 selectedColumns={selectedColumns}
+                                activeColumns={activeColumns}
                                 onClickColumn={onChooseColumn}
                                 onFavouriteTable={handleFavouriteTable}
                             />

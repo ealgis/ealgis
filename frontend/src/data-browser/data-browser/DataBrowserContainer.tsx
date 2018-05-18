@@ -1,36 +1,32 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import DataBrowser from "./DataBrowser"
 import { withRouter } from "react-router"
-import { change } from "redux-form"
-import {
-    selectColumn,
-    fetchTablesForSchema,
-    searchTables,
-    fetchColumns,
-    emptySelectedTables,
-    emptySelectedColumns,
-    finishBrowsing,
-} from "../../redux/modules/databrowser"
 import { setActiveContentComponent } from "../../redux/modules/app"
-import { addColumnToLayerSelection } from "../../redux/modules/maps"
-import { loadTable, loadColumn, addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
 import {
-    IStore,
-    ISchemaInfo,
+    fetchColumns,
+    fetchTablesForSchema,
+    finishBrowsing,
+    getTablesForMap,
+    removeAllColumns,
+    removeAllTables,
+    searchTables,
+    selectColumn,
+} from "../../redux/modules/databrowser"
+import { addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
+import {
+    IColumn,
+    IDataBrowserConfig,
+    IGeomTable,
+    ILayer,
     ISchema,
+    ISchemaInfo,
+    ISelectedSchemas,
+    IStore,
     ITable,
     ITableInfo,
-    ISelectedColumn,
-    IGeomTable,
-    IColumn,
-    ILayer,
-    IDataBrowserConfig,
-    ISelectedSchemas,
     eEalUIComponent,
 } from "../../redux/modules/interfaces"
-
-import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
+import DataBrowser from "./DataBrowser"
 
 interface IProps {
     params: IRouteProps
@@ -43,8 +39,10 @@ export interface IStoreProps {
     geometry: IGeomTable
     selectedTables: Array<Partial<ITable>>
     selectedColumns: Array<string>
+    activeColumns: Array<IColumn>
     recentTables: Array<Partial<ITable>>
     favouriteTables: Array<Partial<ITable>>
+    mapTables: Array<ITable>
     config: IDataBrowserConfig
     tableinfo: ITableInfo
     schemainfo: ISchemaInfo
@@ -123,11 +121,13 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             handleTableSearch,
             recentTables,
             favouriteTables,
+            mapTables,
             config,
             selectedTables,
             handleChooseTable,
             favouriteTable,
             selectedColumns,
+            activeColumns,
             schemainfo,
             showTableView,
             showSchemaView,
@@ -144,9 +144,11 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 dataTableSearchKeywords={this.state.dataTableSearchKeywords}
                 recentTables={recentTables}
                 favouriteTables={favouriteTables}
+                mapTables={mapTables}
                 selectedTables={selectedTables}
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
+                activeColumns={activeColumns}
                 schemainfo={schemainfo}
                 handleClickSchema={(schema: ISchema) => {
                     this.handleSelectSchema(schema)
@@ -206,9 +208,11 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
         recentTables: ealgis.user.recent_tables,
         favouriteTables: ealgis.user.favourite_tables,
+        mapTables: getTablesForMap(maps[ownProps.params.mapId], ealgis.tableinfo, ealgis.columninfo, ealgis.geominfo),
         config: databrowser.config,
         selectedTables: databrowser.tables,
         selectedColumns: databrowser.columns,
+        activeColumns: databrowser.selectedColumns,
         tableinfo: ealgis.tableinfo,
         schemainfo: ealgis.schemainfo,
     }
@@ -225,16 +229,18 @@ const mapDispatchToProps = (dispatch: Function) => {
                 searchTerms = searchString.split(" ")
             }
 
-            let searchTermsExcluded: Array<string> = [] // Not implemented in the UI (yet?)
+            let searchTermsExcluded: Array<string> = [] // Not implemented in the UI
 
-            if (selectedSchemas === undefined) {
+            if (selectedSchemas === undefined && schemaId !== undefined) {
                 selectedSchemas = {
                     families: [],
                     schemas: [schemaId],
                 }
             }
 
-            if (searchTerms.length > 0) {
+            if (selectedSchemas !== undefined && selectedSchemas.families.length === 0 && selectedSchemas.families.length === 0) {
+                dispatch(removeAllTables())
+            } else if (searchTerms.length > 0) {
                 dispatch(searchTables(searchTerms, searchTermsExcluded, geometry, selectedSchemas))
             }
         },
@@ -245,10 +251,10 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(toggleFavouriteTables([table]))
         },
         showSchemaView: () => {
-            dispatch(emptySelectedTables())
+            dispatch(removeAllTables())
         },
         showTableView: () => {
-            dispatch(emptySelectedColumns())
+            dispatch(removeAllColumns())
         },
         handleChooseColumn: (
             column: IColumn
@@ -264,8 +270,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             // dispatch(loadTable(selectedTable, schema_name))
             dispatch(selectColumn(column))
 
-            const tables: Array<Partial<ITable>> = [{ id: column.table_info_id, schema_name: column.schema_name }]
-            dispatch(addToRecentTables(tables))
+            dispatch(addToRecentTables(column.schema_name, column.table_info_id))
             // dispatch(addColumnToLayerSelection(mapId, layerId, columnPartial))
             // dispatch(change("layerForm", "selectedColumns", [...layer.selectedColumns, columnPartial]))
         },
@@ -274,8 +279,8 @@ const mapDispatchToProps = (dispatch: Function) => {
             dispatch(finishBrowsing())
         },
         handleExitDataBrowser: () => {
-            dispatch(emptySelectedTables())
-            dispatch(emptySelectedColumns())
+            dispatch(removeAllTables())
+            dispatch(removeAllColumns())
         },
     }
 }

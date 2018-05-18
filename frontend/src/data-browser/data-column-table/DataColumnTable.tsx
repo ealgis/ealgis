@@ -1,13 +1,13 @@
-import * as React from "react"
-import styled from "styled-components"
-import { includes as arrayIncludes } from "core-js/library/fn/array"
-import { Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import IconButton from "material-ui/IconButton"
-import * as CopyToClipboard from "react-copy-to-clipboard"
-import { ToggleStar, ToggleStarBorder, ActionViewColumn, ActionInfo } from "material-ui/svg-icons"
-import { yellow500 } from "material-ui/styles/colors"
-import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable, ITableColumns } from "../../redux/modules/interfaces"
+import { includes as arrayIncludes } from "core-js/library/fn/array";
+import IconButton from "material-ui/IconButton";
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table";
+import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
+import { yellow500 } from "material-ui/styles/colors";
+import { ActionInfo, ActionViewColumn, ToggleStar, ToggleStarBorder } from "material-ui/svg-icons";
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import styled from "styled-components";
+import { IColumn, IMUIThemePalette, ISchema, ITable, ITableColumns } from "../../redux/modules/interfaces";
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
@@ -57,12 +57,15 @@ const ColumnCellTableRowColumn = styled(TableRowColumn)`
 `
 
 export interface IProps {
+    muiThemePalette: IMUIThemePalette
     showColumnNames: boolean
     schema: ISchema
     table: ITable
     columns: ITableColumns
     header: Array<string>
     rows: Array<string>
+    selectedColumns: Array<string>
+    activeColumns: Array<IColumn>
     showTableInfo: boolean
     favouriteTables: Array<Partial<ITable>>
     onClickColumn: Function
@@ -74,12 +77,15 @@ export interface IProps {
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
         const {
+            muiThemePalette,
             showColumnNames,
             schema,
             table,
             columns,
             header,
             rows,
+            selectedColumns,
+            activeColumns,
             showTableInfo,
             favouriteTables,
             onClickColumn,
@@ -88,7 +94,10 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
             onCopyColumnName,
         } = this.props
 
-        const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
+        const favouriteTablesUIDs: any = favouriteTables.map((table: Partial<ITable>) => `${table.schema_name}.${table.id}`)
+        const activeColumnsTypeAndKind: any = activeColumns.map(
+            (column: IColumn) => `${column.metadata_json.kind}.${column.metadata_json.type}`
+        )
 
         let toolbarTitle =
             table["metadata_json"]["series"] === null
@@ -143,9 +152,11 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     //     this.setState({ hoverRow: rowNumber, hoverCol: columnId })
                     // }}
                     onCellClick={(rowNumber: number, columnId: number, evt?: any) => {
-                        const columnUID: string = `${evt.target.dataset.col}.${evt.target.dataset.row}`
-                        if (columnUID in columns) {
-                            onClickColumn(columns[columnUID])
+                        if (showColumnNames === false) {
+                            const columnTypeAndKind: string = `${evt.target.dataset.col}.${evt.target.dataset.row}`
+                            if (columnTypeAndKind in columns) {
+                                onClickColumn(columns[columnTypeAndKind])
+                            }
                         }
                     }}
                 >
@@ -163,19 +174,29 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                 <TableRow key={idxRow}>
                                     <RowLabelTableRowColumn>{valueRow}</RowLabelTableRowColumn>
                                     {header.map((valueCol: string, idxCol: number) => {
-                                        const columnUID: string = `${valueCol}.${valueRow}`
+                                        const columnTypeAndKind: string = `${valueCol}.${valueRow}`
                                         const textToCopy =
-                                            columnUID in columns ? `${columns[columnUID].schema_name}.${columns[columnUID].name}` : ""
+                                            columnTypeAndKind in columns
+                                                ? `${columns[columnTypeAndKind].schema_name}.${columns[columnTypeAndKind].name}`
+                                                : ""
+                                        const bgColor = arrayIncludes(activeColumnsTypeAndKind, columnTypeAndKind)
+                                            ? muiThemePalette.primary1Color
+                                            : ""
 
                                         return showColumnNames ? (
                                             <CopyToClipboard key={`${idxCol}`} text={textToCopy} onCopy={onCopyColumnName}>
-                                                <ColumnCellTableRowColumn>
-                                                    {!(columnUID in columns) ? "N/A" : columns[columnUID].name}
+                                                <ColumnCellTableRowColumn style={{ backgroundColor: bgColor }}>
+                                                    {!(columnTypeAndKind in columns) ? "N/A" : columns[columnTypeAndKind].name}
                                                 </ColumnCellTableRowColumn>
                                             </CopyToClipboard>
                                         ) : (
-                                            <ColumnCellTableRowColumnClickable key={`${idxCol}`} data-col={valueCol} data-row={valueRow}>
-                                                {!(columnUID in columns) ? "N/A" : ""}
+                                            <ColumnCellTableRowColumnClickable
+                                                key={`${idxCol}`}
+                                                data-col={valueCol}
+                                                data-row={valueRow}
+                                                style={{ backgroundColor: bgColor }}
+                                            >
+                                                {!(columnTypeAndKind in columns) ? "N/A" : ""}
                                             </ColumnCellTableRowColumnClickable>
                                         )
                                     })}
