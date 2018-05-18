@@ -1,9 +1,9 @@
 import olProj from "ol/proj"
 import olSourceXYZ from "ol/source/xyz"
 import * as React from "react"
-import { Layers } from "react-openlayers/dist/layers/layers"
 import { Controls } from "react-openlayers/dist/controls/controls"
 import { default as FullScreen } from "react-openlayers/dist/controls/full-screen"
+import { Layers } from "react-openlayers/dist/layers/layers"
 import { default as Tile } from "react-openlayers/dist/layers/tile"
 import { Map } from "react-openlayers/dist/map"
 import { IConfig, ILayer, IMap, IPosition } from "../../redux/modules/interfaces"
@@ -55,7 +55,7 @@ export class MapUI extends React.Component<IProps, {}> {
                             <Tile source={this.mapboxTileSource} />
                             {defn.json.layers
                                 .filter((layer: ILayer) => "latlon_bbox" in layer)
-                                .map((l: ILayer, key: number) => <LayerContainerWrapped key={l.hash} layerId={key} map={defn} layer={l} />)}
+                                .map((l: ILayer, key: number) => <LayerContainerWrapped key={key} layerId={key} map={defn} layer={l} />)}
                         </Layers>
                     </Map>
                 </div>
