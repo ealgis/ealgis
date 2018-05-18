@@ -458,35 +458,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return response
 
     @detail_route(methods=['get'])
-    def columns(self, request, pk=None, format=None):
-        qp = request.query_params
-
-        raise ValidationError(detail="What does this method do? Why aren't we using the similar ones on /api/0.1/columninfo/columninfo?")
-
-        layerId = int(qp["layerId"]) if "layerId" in qp else None
-        if layerId is None:
-            raise NotFound()
-
-        response = []
-        for c in self.get_object().json["layers"][layerId]["selectedColumns"]:
-            db = broker.Provide(c["schema"])
-            column = db.get_column_info(c["id"])
-            if column is None:
-                raise NotFound()
-
-            db = broker.access_schema(c["schema"])
-            table = db.get_table_info_by_id(column.table_info_id)
-            if table is None:
-                raise NotFound()
-
-            response.append({
-                "column": ColumnInfoSerializer(column).data,
-                "table": TableInfoSerializer(table).data,
-                "schema": c["schema"],
-            })
-        return Response(response)
-
-    @detail_route(methods=['get'])
     def tile(self, request, pk=None, format=None):
         map = self.get_object()
         layer_hash = request.query_params.get("layer", None)
@@ -609,12 +580,14 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         tables = {}
         for schema_name in schema_names:
             db = broker.access_schema(schema_name)
-            for t in db.get_data_tables(geo_source_id):
-                uname = "{}.{}".format(schema_name, t.id)
-                tables[uname] = {
-                    **TableInfoSerializer(t).data,
-                    **{"schema_name": schema_name}
-                }
+            for table, geometrylinkage in db.get_table_info_and_geometry_linkage_by_ids(geo_source_id=geo_source_id):
+                tmp = TableInfoSerializer(table).data
+                tmp["schema_name"] = schema_name
+                tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
+
+                tableUID = "{}.{}".format(schema_name, table.id)
+                tables[tableUID] = tmp
 
         if len(tables) == 0:
             raise NotFound()
@@ -626,13 +599,15 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         if isinstance(request.data, list) and len(request.data) > 0:
             for table in request.data:
                 db = broker.access_schema(table["schema_name"])
-                tbl = db.get_table_info_by_id(table["id"])
-                if tbl is not None:
-                    tmp = TableInfoSerializer(tbl).data
-                    tmp["schema_name"] = table["schema_name"]
+                tbl, geometrylinkage = db.get_table_info_and_geometry_linkage_by_id(table["id"])
 
-                    tableUID = "%s.%s" % (tmp["schema_name"], tmp["id"])
-                    tables[tableUID] = tmp
+                tmp = TableInfoSerializer(tbl).data
+                tmp["schema_name"] = table["schema_name"]
+                tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
+
+                tableUID = "%s.%s" % (tmp["schema_name"], tmp["id"])
+                tables[tableUID] = tmp
 
         return Response({"tables": tables})
 
@@ -699,12 +674,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
                 if len(columns) > 0:
                     table_ids = [c.table_info_id for c in columns]
-                    tables = db.get_table_info_by_ids(table_ids)
+                    if len(table_ids) > 0:
+                        tables = db.get_table_info_and_geometry_linkage_by_ids(table_ids)
 
             # If our column search didn't get a response, try serching the Table
             # metadata instead
             if len(tables) == 0:
-                # Now we can search for columns AND tables that contain our search terms
+                # Search for columns or tables that contain our search terms
                 tables = db.search_columns(search_terms, search_terms_excluded, geo_source_id)
 
                 # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
@@ -712,12 +688,14 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 # Find all columns mentioning "landlord" at SA3 level
                 tables += db.search_tables(search_terms, search_terms_excluded, geo_source_id)
 
-            for tableinfo in tables:
-                table = TableInfoSerializer(tableinfo).data
-                table["schema_name"] = schema_name
+            for table, geometrylinkage in tables:
+                tmp = TableInfoSerializer(table).data
+                tmp["schema_name"] = schema_name
+                tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
 
-                tableUID = "%s.%s" % (schema_name, table["id"])
-                response[tableUID] = table
+                tableUID = "%s.%s" % (schema_name, table.id)
+                response[tableUID] = tmp
 
         if len(response) == 0:
             raise NotFound()
@@ -745,16 +723,26 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if column is None:
                 raise NotFound()
 
-            table = db.get_table_info_by_id(column.table_info_id)
+            table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_id(column.table_info_id)
             if table is None:
                 raise NotFound()
 
             return Response({
                 "column": {
                     **self.serializer_class(column).data,
-                    **{"schema_name": schema_name}
+                    **{
+                        "schema_name": schema_name,
+                        "geometry_source_schema_name": geometrylinkage.geometry_source_schema_name,
+                        "geometry_source_id": geometrylinkage.geometry_source_id
+                    },
                 },
-                "table": TableInfoSerializer(table).data,
+                "table": {
+                    **TableInfoSerializer(table).data,
+                    **{
+                        "geometry_source_schema_name": geometrylinkage.geometry_source_schema_name,
+                        "geometry_source_id": geometrylinkage.geometry_source_id
+                    },
+                },
                 "schema": schema_name,
             })
 
@@ -766,23 +754,30 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         for schema_name in request.data:
             db = broker.access_schema(schema_name)
             columns = db.get_column_info_by_names(request.data[schema_name])
-            tableIds = list(set([col.table_info_id for col in columns]))
-            tables = db.get_table_info_by_ids(tableIds)
+            tableIds = list(set([col.table_info_id for col, gl in columns]))
+            tables = db.get_table_info_and_geometry_linkage_by_ids(tableIds)
 
-            for column in columns:
+            for column, geometrylinkage in columns:
                 col = ColumnInfoSerializer(column).data
                 col["schema_name"] = schema_name
+                col["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                col["geometry_source_id"] = geometrylinkage.geometry_source_id
                 columnsByUID["%s.%s" % (schema_name, column.id)] = col
 
-            for table in tables:
-                tmp = TableInfoSerializer(table).data
-                tmp["schema_name"] = schema_name
-                tablesByUID["%s.%s" % (schema_name, table.id)] = tmp
+            for table, geometrylinkage in tables:
+                tbl = TableInfoSerializer(table).data
+                tbl["schema_name"] = schema_name
+                tbl["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                tbl["geometry_source_id"] = geometrylinkage.geometry_source_id
+                tablesByUID["%s.%s" % (schema_name, table.id)] = tbl
 
         return Response({"columns": columnsByUID, "tables": tablesByUID})
 
     @list_route(methods=['get'])
     def fetch_for_table(self, request, format=None):
+        from collections import OrderedDict
+        from os.path import commonprefix
+
         schema_name = request.query_params.get('schema', None)
         tableinfo_id = request.query_params.get('tableinfo_id', None)
 
@@ -799,9 +794,12 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             "columns": {},
             "tables": {},
         }
-        for (column, geomlinkage, tableinfo) in columns:
+        types = []
+        for (column, geometrylinkage, tableinfo) in columns:
             table = TableInfoSerializer(tableinfo).data
             table["schema_name"] = schema_name
+            table["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+            table["geometry_source_id"] = geometrylinkage.geometry_source_id
 
             tableUID = "%s.%s" % (schema_name, table["name"])
             if tableUID not in response["tables"]:
@@ -809,9 +807,13 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
             col = self.serializer_class(column).data
             col["schema_name"] = schema_name
-            col["geomlinkage"] = GeometryLinkageSerializer(geomlinkage).data
+            col["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+            col["geometry_source_id"] = geometrylinkage.geometry_source_id
+
             columnUID = "%s.%s" % (schema_name, column.name)
             response["columns"][columnUID] = col
+
+            types.append(column.metadata_json["type"])
 
         if len(response["columns"]) == 0:
             raise NotFound()

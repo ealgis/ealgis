@@ -189,6 +189,8 @@ export interface ITable {
     name: string
     metadata_json: TableMetadataJSON
     schema_name: string
+    geometry_source_schema_name: string
+    geometry_source_id: number
 }
 
 export interface TableMetadataJSON {
@@ -254,13 +256,8 @@ export interface IColumn {
     table_info_id: number
     metadata_json: ColumnMetadataJSON
     schema_name: string
-    geomlinkage: {
-        id: number
-        geo_source_id: number
-        geo_column: string
-        attr_table_info_id: number
-        attr_column: string
-    }
+    geometry_source_schema_name: string
+    geometry_source_id: number
 }
 
 export interface ColumnMetadataJSON {
@@ -319,17 +316,24 @@ export function logoutUser() {
     }
 }
 
-export function addToRecentTables(tables: Array<Partial<ITable>>) {
+export function addToRecentTables(schema_name: string, table_id: number) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        return ealapi.put("/api/0.1/profile/recent_tables/", { tables: tables }, dispatch).then(({ response, json }: any) => {
-            if (response.status === 200) {
-                dispatch(loadRecentTables(json["recent_tables"]))
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to `.catch()`
-                throw new Error("Unhandled error adding recent tables. Please report. (" + response.status + ") " + JSON.stringify(json))
-            }
-        })
+        const recentTables = getState()["ealgis"]["user"]["recent_tables"]
+        if (recentTables.find((table: Partial<ITable>) => table.schema_name === schema_name && table.id === table_id) === undefined) {
+            return ealapi
+                .put("/api/0.1/profile/recent_tables/", { tables: { id: table_id, schema_name: schema_name } }, dispatch)
+                .then(({ response, json }: any) => {
+                    if (response.status === 200) {
+                        dispatch(loadRecentTables(json["recent_tables"]))
+                    } else {
+                        // We're not sure what happened, but handle it:
+                        // our Error will get passed straight to `.catch()`
+                        throw new Error(
+                            "Unhandled error adding recent tables. Please report. (" + response.status + ") " + JSON.stringify(json)
+                        )
+                    }
+                })
+        }
     }
 }
 
