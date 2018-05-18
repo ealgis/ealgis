@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
-from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, GeometryLinkageSerializer, EALGISMetadataSerializer
+from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, EALGISMetadataSerializer
 from ealgis.colour_scale import definitions, make_colour_scale
 
 import time
@@ -775,9 +775,6 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @list_route(methods=['get'])
     def fetch_for_table(self, request, format=None):
-        from collections import OrderedDict
-        from os.path import commonprefix
-
         schema_name = request.query_params.get('schema', None)
         tableinfo_id = request.query_params.get('tableinfo_id', None)
 
