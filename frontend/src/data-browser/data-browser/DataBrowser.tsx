@@ -8,7 +8,7 @@ import styled from "styled-components"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
 import { IColumn, IDataBrowserConfig, ISchemaInfo, ITable } from "../../redux/modules/interfaces"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
-import DataSchemaGrid from "../data-schema-grid/DataSchemaGridContainer"
+import DataSchemaGridContainer from "../data-schema-grid/DataSchemaGridContainer"
 import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
 
@@ -195,7 +195,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             </DataBrowserToolbar>
 
                             <DataBrowserSectionContainer>
-                                <DataSchemaGrid handleClickSchema={handleClickSchema} />
+                                <DataSchemaGridContainer handleClickSchema={handleClickSchema} />
                             </DataBrowserSectionContainer>
 
                             {recentTables.length > 0 && (

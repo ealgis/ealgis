@@ -1,7 +1,7 @@
 import * as React from "react"
-import MapCoverImage from "./MapCoverImage"
 import { connect } from "react-redux"
-import { IStore, IMap } from "../../redux/modules/interfaces"
+import { IMap, IStore } from "../../redux/modules/interfaces"
+import MapCoverImage from "./MapCoverImage"
 
 export interface IProps {
     mapDefinition: IMap
@@ -20,6 +20,7 @@ const mapStateToProps = (state: IStore) => {
     return {}
 }
 
-const MapCoverImageContainerWrapped = connect<{}, {}, IProps>(mapStateToProps)(MapCoverImageContainer)
+// @ts-ignore
+const MapCoverImageContainerWrapped = connect<{}, {}, IProps, IStore>(mapStateToProps)(MapCoverImageContainer)
 
 export default MapCoverImageContainerWrapped

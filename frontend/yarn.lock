@@ -98,9 +98,9 @@
     "@types/react" "*"
     redux "^3.6.0"
 
-"@types/react-router-redux@^5.0.13":
-  version "5.0.13"
-  resolved "https://registry.yarnpkg.com/@types/react-router-redux/-/react-router-redux-5.0.13.tgz#46dc040afc150ff7bbc8bb837b14ef4fa6a0b07e"
+"@types/react-router-redux@^5.0.14":
+  version "5.0.14"
+  resolved "https://registry.yarnpkg.com/@types/react-router-redux/-/react-router-redux-5.0.14.tgz#4f140248f65c74217e296854b1abe8c55e99764c"
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
@@ -139,9 +139,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/redux-form@^7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-7.2.2.tgz#8afe23ff0d21370f0921e3d942df5e889bd22866"
+"@types/redux-form@^7.2.5":
+  version "7.2.5"
+  resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-7.2.5.tgz#26faf46106805fc4601395420f1d5bbab7469c4b"
   dependencies:
     "@types/react" "*"
     redux "^3.6.0"
@@ -3463,7 +3463,7 @@ react-redux@~5.0.5:
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
 
-react-router-redux@~4.0.7:
+react-router-redux@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/react-router-redux/-/react-router-redux-4.0.8.tgz#227403596b5151e182377dab835b5d45f0f8054e"
 

@@ -1,9 +1,9 @@
+import { entries as objectEntries } from "core-js/library/fn/object"
+import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { entries as objectEntries } from "core-js/library/fn/object"
+import { IMUIThemePalette, IMUIThemeProps, IMapsModule, IStore, IUser } from "../../redux/modules/interfaces"
 import MapList from "./MapList"
-import { IStore, IUser, IMap, IMapsModule, IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
 
 export interface IProps {}
 
@@ -75,6 +75,8 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const MapListContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapListContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const MapListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(MapListContainer)
 
 export default muiThemeable()(MapListContainerWrapped)

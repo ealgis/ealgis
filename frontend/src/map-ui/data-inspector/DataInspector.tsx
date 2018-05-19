@@ -1,9 +1,9 @@
-import * as React from "react"
-import { connect } from "react-redux"
 import { List, ListItem } from "material-ui/List"
 import InsertChart from "material-ui/svg-icons/editor/insert-chart"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
-import { IStore, IFeature } from "../../redux/modules/interfaces"
+import * as React from "react"
+import { connect } from "react-redux"
+import { IFeature, IStore } from "../../redux/modules/interfaces"
 
 export interface IProps {}
 
@@ -24,22 +24,18 @@ export class DataInspector extends React.Component<IProps & IStoreProps, {}> {
                     disabled={true}
                 />
                 {records !== undefined &&
-                    records.map((row: any, key: number) =>
+                    records.map((row: any, key: number) => (
                         <ListItem
                             key={key}
                             primaryText={row.name}
                             leftIcon={<MapsLayers />}
                             initiallyOpen={true}
                             primaryTogglesNestedList={true}
-                            nestedItems={row.properties.map((propRow: any, key: any) =>
-                                <ListItem
-                                    key={key}
-                                    primaryText={propRow.value.toString()}
-                                    secondaryText={propRow.name}
-                                />
-                            )}
+                            nestedItems={row.properties.map((propRow: any, key: any) => (
+                                <ListItem key={key} primaryText={propRow.value.toString()} secondaryText={propRow.name} />
+                            ))}
                         />
-                    )}
+                    ))}
             </List>
         )
     }
@@ -57,6 +53,6 @@ const mapDispatchToProps = (dispatch: Function) => {
     return {}
 }
 
-const DataInspectorWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataInspector)
+const DataInspectorWrapped = connect<IStoreProps, {}, IProps, IStore>(mapStateToProps, mapDispatchToProps)(DataInspector)
 
 export default DataInspectorWrapped

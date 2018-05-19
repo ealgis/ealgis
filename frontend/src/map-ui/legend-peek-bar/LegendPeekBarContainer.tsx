@@ -1,9 +1,9 @@
+import { isEqual } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import LegendPeekBar from "./LegendPeekBar"
-import { isEqual } from "lodash-es"
+import { IOLStyleDef, IStore } from "../../redux/modules/interfaces"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
-import { IStore, IOLStyleDef } from "../../redux/modules/interfaces"
+import LegendPeekBar from "./LegendPeekBar"
 
 export interface IProps {
     mapId: number
@@ -11,7 +11,7 @@ export interface IProps {
     olStyleDef: Array<IOLStyleDef>
 }
 
-export interface IStateProps {
+export interface IStoreProps {
     labelText: string
 }
 
@@ -20,8 +20,8 @@ export interface IDispatchProps {
     handleMouseLeave: Function
 }
 
-export class LegendPeekBarContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
-    shouldComponentUpdate(nextProps: IProps & IStateProps) {
+export class LegendPeekBarContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
+    shouldComponentUpdate(nextProps: IProps & IStoreProps) {
         const { olStyleDef, labelText } = this.props
 
         if (!isEqual(olStyleDef, nextProps.olStyleDef)) {
@@ -49,7 +49,7 @@ export class LegendPeekBarContainer extends React.Component<IProps & IStateProps
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IProps): IStateProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { legends } = state
 
     return {
@@ -77,7 +77,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const LegendPeekBarContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+const LegendPeekBarContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
     LegendPeekBarContainer
 )
 

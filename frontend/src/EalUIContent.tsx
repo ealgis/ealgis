@@ -1,7 +1,7 @@
 import * as React from "react"
-import { eEalUIComponent } from "./redux/modules/interfaces"
 import DataBrowser from "./data-browser/data-browser/DataBrowserContainer"
-import MapUI from "./openlayers/map-ui/MapUIContainer"
+import MapUIContainer from "./openlayers/map-ui/MapUIContainer"
+import { eEalUIComponent } from "./redux/modules/interfaces"
 
 export interface IProps {
     component: eEalUIComponent
@@ -15,7 +15,7 @@ export class EalUIContent extends React.Component<IProps, {}> {
         if (component === eEalUIComponent.DATA_BROWSER) {
             return <DataBrowser params={params} />
         } else {
-            return <MapUI params={params} />
+            return <MapUIContainer params={params} />
         }
     }
 }

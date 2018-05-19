@@ -1,13 +1,11 @@
+import { groupBy } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
+import { ISchema, ISchemaInfo, IStore } from "../../redux/modules/interfaces"
 import DataSchemaGrid from "./DataSchemaGrid"
-import { groupBy } from "lodash-es"
-import { toggleModalState } from "../../redux/modules/app"
-import { IStore, ISchemaInfo, ISchema } from "../../redux/modules/interfaces"
 
 interface IProps {
     handleClickSchema: Function
-    handleClickSchemaMoreInfo: Function
 }
 
 export interface IStoreProps {
@@ -15,7 +13,9 @@ export interface IStoreProps {
     schemainfo: ISchemaInfo
 }
 
-export interface IDispatchProps {}
+export interface IDispatchProps {
+    handleClickSchemaMoreInfo: Function
+}
 
 interface IOwnProps {}
 
@@ -51,6 +51,8 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const DataSchemaGridContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataSchemaGridContainer)
+const DataSchemaGridContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    DataSchemaGridContainer
+)
 
 export default DataSchemaGridContainerWrapped

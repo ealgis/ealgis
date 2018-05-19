@@ -25,7 +25,9 @@ interface HSVColor {
 
 class ColourPicker extends React.Component<ColourPickerProps, undefined> {
     handleChange = (color: Colour) => {
-        const { input: { onChange } } = this.props
+        const {
+            input: { onChange },
+        } = this.props
         onChange(color.rgb.a)
     }
 
@@ -33,7 +35,7 @@ class ColourPicker extends React.Component<ColourPickerProps, undefined> {
         const { alpha, width } = this.props
         const rgb = { r: 0, g: 0, b: 0, a: alpha }
 
-        return <AlphaPicker color={rgb} width={width} onChange={this.handleChange} />
+        return <AlphaPicker color={rgb} width={width} onChange={this.handleChange as any} />
     }
 }
 

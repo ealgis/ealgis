@@ -1,17 +1,20 @@
 import "es6-promise/auto"
+import * as createRavenMiddleware from "raven-for-redux"
+import * as Raven from "raven-js"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-import { compose, combineReducers, createStore, applyMiddleware, Store } from "redux"
-import { composeWithDevTools } from "redux-devtools-extension"
 import { Provider } from "react-redux"
-import { Router, Route, IndexRoute, browserHistory } from "react-router"
-import { syncHistoryWithStore, routerReducer } from "react-router-redux"
+import { Router, browserHistory } from "react-router"
+// @ts-ignore
+import { syncHistoryWithStore } from "react-router-redux"
+import { Store, applyMiddleware, createStore } from "redux"
+import { composeWithDevTools } from "redux-devtools-extension"
 import thunkMiddleware from "redux-thunk"
-import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
-import * as Raven from "raven-js"
-import * as createRavenMiddleware from "raven-for-redux"
+import { IConfig, IStore } from "./redux/modules/interfaces"
+import reducers from "./redux/modules/reducer"
 import getRoutes from "./routes"
-import { IStore, IConfig } from "./redux/modules/interfaces"
+import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
+import { EALGISApiClient } from "./shared/api/EALGISApiClient"
 const Config: IConfig = require("Config") as any
 
 let Middleware: Array<any> = []
@@ -25,9 +28,6 @@ if ("GOOGLE_ANALYTICS_UA" in Config) {
     Middleware.push(AnalyticsMiddleware as any)
 }
 
-import reducers from "./redux/modules/reducer"
-
-import { EALGISApiClient } from "./shared/api/EALGISApiClient"
 const ealapi = new EALGISApiClient()
 
 const composeEnhancers = composeWithDevTools({

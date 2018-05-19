@@ -1,13 +1,12 @@
 import * as React from "react"
-import { connect } from "react-redux"
 import AlphaPicker from "./AlphaPicker"
 
-export interface AlphaPickerContainerProps {
+export interface IProps {
     input: any
     width: string
 }
 
-export class AlphaPickerContainer extends React.Component<AlphaPickerContainerProps, undefined> {
+export default class AlphaPickerContainer extends React.Component<IProps, {}> {
     public static defaultProps = {
         width: "100%",
     }
@@ -22,12 +21,13 @@ export class AlphaPickerContainer extends React.Component<AlphaPickerContainerPr
     render() {
         const { width, input } = this.props
 
+        // @ts-ignore
         return <AlphaPicker alpha={input.value} width={width} input={input} />
     }
 }
 
-const mapStateToProps = (state: any) => ({})
+// const mapStateToProps = (state: any) => ({})
 
-const AlphaPickerFieldContainerWrapped = connect(mapStateToProps)(AlphaPickerContainer)
+// const AlphaPickerFieldContainerWrapped = connect<{}, {}, IProps, {}>(mapStateToProps)(AlphaPickerContainer)
 
-export default AlphaPickerFieldContainerWrapped
+// export default AlphaPickerContainer

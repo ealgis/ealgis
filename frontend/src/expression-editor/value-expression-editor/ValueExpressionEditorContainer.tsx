@@ -80,8 +80,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
     IState
 > {
-    onFieldChangeDebounced: Function
-
     constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
         super(props)
         this.state = { expression: { colgroup1: [], colgroup2: [] }, expressionMode: props.valueExpressionMode }
@@ -277,6 +275,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const ValueExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(ValueExpressionEditorContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const ValueExpressionEditorContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    ValueExpressionEditorContainer
+)
 
 export default muiThemeable()(withRouter(ValueExpressionEditorContainerWrapped))

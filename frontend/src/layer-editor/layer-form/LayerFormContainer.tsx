@@ -1,40 +1,38 @@
+import { values as objectValues } from "core-js/library/fn/object"
+import { debounce, isEqual, reduce } from "lodash-es"
+import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { formValueSelector, getFormValues, isDirty, initialize, submit, change } from "redux-form"
 import { withRouter } from "react-router"
-import { isEqual, debounce, reduce } from "lodash-es"
-import { values as objectValues } from "core-js/library/fn/object"
-import LayerForm from "./LayerForm"
-import { toggleModalState } from "../../redux/modules/app"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { change, formValueSelector, initialize, isDirty, submit } from "redux-form"
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
+import { finishBrowsing } from "../../redux/modules/databrowser"
 import {
+    IColourInfo,
+    IGeomInfo,
+    IGeomTable,
+    ILayer,
+    ILayerQuerySummary,
+    IMUITheme,
+    IMUIThemePalette,
+    IMap,
+    ISelectedColumn,
+    IStore,
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
+} from "../../redux/modules/interfaces"
+import {
+    fitLayerScaleToData,
+    handleLayerFormChange,
     initDraftLayer,
     publishLayer,
     restoreMasterLayer,
     restoreMasterLayerAndDiscardForm,
-    handleLayerFormChange,
     startLayerEditing,
-    fitLayerScaleToData,
 } from "../../redux/modules/maps"
-import { setActiveContentComponent } from "../../redux/modules/app"
-import { finishBrowsing } from "../../redux/modules/databrowser"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IMap,
-    ILayer,
-    ISelectedColumn,
-    eLayerValueExpressionMode,
-    eLayerFilterExpressionMode,
-    IMUITheme,
-    IMUIThemePalette,
-    eEalUIComponent,
-} from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import LayerForm from "./LayerForm"
 
 export interface ILayerFormValues {
     borderColour: {
@@ -249,9 +247,9 @@ const getLayerFromLayerFormValuesPartial = (formValues: any) => {
 
 export class LayerFormContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, {}> {
     onFieldChangeDebounced: Function
-    initialValues: object
+    initialValues!: object
 
-    constructor(props: IDispatchProps & IRouterProps) {
+    constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
         super(props)
         const { onFieldUpdate } = props
 
@@ -567,6 +565,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const LayerFormContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerFormContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const LayerFormContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    LayerFormContainer
+)
 
 export default muiThemeable()(withRouter(LayerFormContainerWrapped))

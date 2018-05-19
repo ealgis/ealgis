@@ -1,6 +1,6 @@
 import * as React from "react"
+import { RGBColor, SwatchesPicker } from "react-color"
 import reactCSS from "reactcss"
-import { SwatchesPicker, RGBColor } from "react-color"
 import { Colour } from "../alpha-picker/AlphaPicker"
 
 export interface ColourPickerProps {
@@ -22,7 +22,9 @@ class ColourPicker extends React.Component<ColourPickerProps, {}> {
     }
 
     handleChange = (colour: Colour) => {
-        const { input: { onChange } } = this.props
+        const {
+            input: { onChange },
+        } = this.props
         onChange(colour.rgb)
         this.handleClose()
     }
@@ -66,9 +68,9 @@ class ColourPicker extends React.Component<ColourPickerProps, {}> {
                     <div style={styles.color} />
                 </div>
                 {this.state.displayColorPicker ? (
-                    <div style={styles.popover}>
-                        <div style={styles.cover} onClick={this.handleClose} />
-                        <SwatchesPicker color={colour} onChange={this.handleChange} />
+                    <div style={styles.popover as any}>
+                        <div style={styles.cover as any} onClick={this.handleClose} />
+                        <SwatchesPicker color={colour} onChange={this.handleChange as any} />
                     </div>
                 ) : null}
             </React.Fragment>

@@ -37,6 +37,10 @@ const mapDispatchToProps = (dispatch: Function) => {
     return {}
 }
 
-const EalUIContentContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(EalUIContentContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const EalUIContentContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    EalUIContentContainer
+)
 
 export default EalUIContentContainerWrapped

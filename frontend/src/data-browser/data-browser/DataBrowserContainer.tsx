@@ -86,7 +86,7 @@ interface IState {
 export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
     self: DataBrowserContainer = this
 
-    constructor(props: IStoreProps & IDispatchProps & IRouterProps) {
+    constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
         super(props)
         this.state = {}
     }
@@ -285,6 +285,9 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const DataBrowserContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataBrowserContainer)
+const DataBrowserContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    DataBrowserContainer
+)
 
+// @ts-ignore
 export default withRouter(DataBrowserContainerWrapped)

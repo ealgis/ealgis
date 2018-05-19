@@ -1,12 +1,24 @@
-import muiThemeable from "material-ui/styles/muiThemeable";
-import * as React from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router";
-import { change, formValueSelector } from "redux-form";
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app";
-import { fetchResultForComponent, finishBrowsing, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser";
-import { IColumnInfo, IDataBrowserConfig, IDataBrowserResult, IMUITheme, IMUIThemePalette, IMap, IStore, eEalUIComponent, eLayerFilterExpressionMode } from "../../redux/modules/interfaces";
-import FilterExpressionEditor from "./FilterExpressionEditor";
+import muiThemeable from "material-ui/styles/muiThemeable"
+import * as React from "react"
+import { connect } from "react-redux"
+import { withRouter } from "react-router"
+import { change, formValueSelector } from "redux-form"
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
+import { fetchResultForComponent, finishBrowsing, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
+import {
+    IColumnInfo,
+    IDataBrowserConfig,
+    IDataBrowserResult,
+    IGeomTable,
+    ILayer,
+    IMUITheme,
+    IMUIThemePalette,
+    IMap,
+    IStore,
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+} from "../../redux/modules/interfaces"
+import FilterExpressionEditor from "./FilterExpressionEditor"
 
 export interface IProps {
     onApply: Function
@@ -16,6 +28,7 @@ export interface IStoreProps {
     muiThemePalette: IMUIThemePalette
     mapDefinition: IMap
     layerId: number
+    geometry: IGeomTable
     columninfo: IColumnInfo
     filterExpression: string
     filterExpressionMode: eLayerFilterExpressionMode
@@ -64,10 +77,10 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, filterExpression, filterExpressionMode, columninfo } = this.props
+        const { mapDefinition, layerId, geometry, filterExpression, filterExpressionMode, columninfo } = this.props
         const { expressionMode } = this.state
 
-        const parsed: any = getFilterExpressionWithColumns(filterExpression, expressionMode, columninfo)
+        const parsed: any = getFilterExpressionWithColumns(filterExpression, expressionMode, columninfo, geometry)
         if (parsed !== undefined) {
             this.setState({ ...this.state, expression: parsed })
         }
@@ -196,11 +209,13 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { app, maps, ealgis, databrowser } = state
     const layerFormValues = formValueSelector("layerForm")
+    const layer: ILayer = maps[ownProps.params.mapId].json.layers[ownProps.params.layerId]
 
     return {
         muiThemePalette: ownProps.muiTheme.palette,
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
+        geometry: ealgis.geominfo[`${layer.schema}.${layer.geometry}`],
         columninfo: ealgis.columninfo,
         filterExpression: layerFormValues(state, "filterExpression") as string,
         filterExpressionMode: layerFormValues(state, "filterExpressionMode") as eLayerFilterExpressionMode,
@@ -230,6 +245,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const FilterExpressionEditorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(FilterExpressionEditorContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const FilterExpressionEditorContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    FilterExpressionEditorContainer
+)
 
 export default muiThemeable()(withRouter(FilterExpressionEditorContainerWrapped))

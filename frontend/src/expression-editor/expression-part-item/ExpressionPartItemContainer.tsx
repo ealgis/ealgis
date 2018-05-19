@@ -1,9 +1,9 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import ExpressionPartItem from "./ExpressionPartItem"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { startBrowsing } from "../../redux/modules/databrowser"
 import { IStore, ITableInfo, eEalUIComponent } from "../../redux/modules/interfaces"
+import ExpressionPartItem from "./ExpressionPartItem"
 
 export interface IProps {
     componentId: eEalUIComponent
@@ -29,7 +29,7 @@ export interface IState {
 }
 
 export class ExpressionPartItemContainer extends React.Component<IProps & IDispatchProps & IStoreProps, IState> {
-    constructor(props: IProps & IDispatchProps) {
+    constructor(props: IProps & IDispatchProps & IStoreProps) {
         super(props)
         this.state = { open: false }
     }
@@ -101,6 +101,8 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const ExpressionPartItemContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(ExpressionPartItemContainer)
+const ExpressionPartItemContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    ExpressionPartItemContainer
+)
 
 export default ExpressionPartItemContainerWrapped

@@ -1,8 +1,9 @@
+// @ts-ignore
+import has from "ol/has"
 import olStyleFill from "ol/style/fill"
 import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
-import has from "ol/has"
 import { ILayer, IOLFeatureProps, IOLStyleDef } from "../../redux/modules/interfaces"
 
 function getHighlightedFeaturePattern() {

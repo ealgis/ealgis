@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import LayerQuerySummary from "./LayerQuerySummary"
+import { ILayerQuerySummary, IStore } from "../../redux/modules/interfaces"
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
-import { IStore, ILayerQuerySummary } from "../../redux/modules/interfaces"
+import LayerQuerySummary from "./LayerQuerySummary"
 
 export interface IProps {
     mapId: number
@@ -62,7 +62,7 @@ const mapDispatchToProps = (dispatch: Function): IDispachProps => {
     }
 }
 
-const LayerQuerySummaryContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+const LayerQuerySummaryContainerWrapped = connect<IStoreProps, IDispachProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
     LayerQuerySummaryContainer
 )
 

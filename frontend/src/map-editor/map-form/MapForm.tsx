@@ -1,17 +1,17 @@
-import * as React from "react"
-import styled from "styled-components"
-import { IMap } from "../../redux/modules/interfaces"
+import IconButton from "material-ui/IconButton";
+import RaisedButton from "material-ui/RaisedButton";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import { red500, white } from "material-ui/styles/colors";
+import NavigationClose from "material-ui/svg-icons/navigation/close";
+import * as React from "react";
+import { Link } from "react-router";
+import { Field, reduxForm } from "redux-form";
+import { TextField } from "redux-form-material-ui";
+import styled from "styled-components";
+import { IMap } from "../../redux/modules/interfaces";
 
-import { Link } from "react-router"
-import RaisedButton from "material-ui/RaisedButton"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
-
-import { Field, reduxForm } from "redux-form"
-import { TextField } from "redux-form-material-ui"
-
-import IconButton from "material-ui/IconButton"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import { red500, white } from "material-ui/styles/colors"
+// Silence TS2322 "Types of property 'component' are incompatible" errors
+class MyField extends Field<any> {}
 
 const required = (value: any) => (value ? undefined : "Required")
 
@@ -68,7 +68,7 @@ export class MapForm extends React.Component<IProps, {}> {
                 </Toolbar>
 
                 <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Field
+                    <MyField
                         name="name"
                         component={TextField}
                         hintText="Give your map a name..."
@@ -79,7 +79,7 @@ export class MapForm extends React.Component<IProps, {}> {
                         autoComplete="off"
                     />
 
-                    <Field
+                    <MyField
                         name="description"
                         component={TextField}
                         multiLine={true}
@@ -103,4 +103,5 @@ export class MapForm extends React.Component<IProps, {}> {
 // Decorate the form component
 export default reduxForm({
     form: "mapForm", // a unique name for this form
+// @ts-ignore
 })(MapForm)

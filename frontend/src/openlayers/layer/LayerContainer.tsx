@@ -1,8 +1,8 @@
 import * as React from "react"
-import Layer from "./Layer"
-import { compileLayerStyle } from "../../shared/openlayers/OLStyle"
 import { connect } from "react-redux"
-import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"
+import { ILayer, IMap, IStore } from "../../redux/modules/interfaces"
+import { compileLayerStyle } from "../../shared/openlayers/OLStyle"
+import Layer from "./Layer"
 
 export interface IProps {
     layerId: number
@@ -32,6 +32,6 @@ const mapStateToProps = (state: IStore) => {
     }
 }
 
-const LayerContainerWrapped = connect<{}, {}, IProps>(mapStateToProps)(LayerContainer)
+const LayerContainerWrapped = connect<IStoreProps, {}, IProps, IStore>(mapStateToProps)(LayerContainer)
 
 export default LayerContainerWrapped

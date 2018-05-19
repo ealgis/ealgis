@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import MapForm from "./MapForm"
+import { IMap, IStore } from "../../redux/modules/interfaces"
 import { mapUpsert } from "../../redux/modules/maps"
-import { IStore, IMap } from "../../redux/modules/interfaces"
+import MapForm from "./MapForm"
 
 export interface IMapFormValues {
     name: string
@@ -74,6 +74,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const MapFormContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapFormContainer)
+// @ts-ignore
+const MapFormContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(MapFormContainer)
 
 export default MapFormContainerWrapped

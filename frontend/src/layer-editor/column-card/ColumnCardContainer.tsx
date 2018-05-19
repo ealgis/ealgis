@@ -1,8 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
+import { IColumn, ISelectedColumn, IStore, ITable } from "../../redux/modules/interfaces"
 import ColumnCard from "./ColumnCard"
-import { IStore, ITable, IColumn, ISelectedColumn } from "../../redux/modules/interfaces"
-import { fetchColumnInfo } from "../../redux/modules/ealgis"
 
 export interface IProps {
     columnStub: ISelectedColumn
@@ -42,6 +41,6 @@ const mapDispatchToProps = (dispatch: Function): IDispachProps => {
     return {}
 }
 
-const ColumnCardContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(ColumnCardContainer)
+const ColumnCardContainerWrapped = connect<IStoreProps, {}, IProps, IStore>(mapStateToProps, mapDispatchToProps)(ColumnCardContainer)
 
 export default ColumnCardContainerWrapped

@@ -44,6 +44,6 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     form: formReducer.plugin({
         layerForm: layerFormReducer,
     }),
-})
+} as any)
 
 export default rootReducer

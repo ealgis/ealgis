@@ -22,7 +22,7 @@ export interface IStoreProps {
     schemainfo: ISchemaInfo
 }
 
-export class ExpressionColumnSelectorContainer extends React.PureComponent<IProps & IDispatchProps & IStoreProps, void> {
+export class ExpressionColumnSelectorContainer extends React.PureComponent<IProps & IDispatchProps & IStoreProps, {}> {
     render() {
         const { componentId, columns, field, onRemoveColumn, tableinfo, schemainfo, activateDataBrowser } = this.props
 
@@ -58,8 +58,4 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const ExpressionColumnSelectorContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
-    ExpressionColumnSelectorContainer
-)
-
-export default ExpressionColumnSelectorContainerWrapped
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(ExpressionColumnSelectorContainer)

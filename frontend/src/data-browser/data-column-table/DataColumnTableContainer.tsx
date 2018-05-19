@@ -34,8 +34,8 @@ interface IOwnProps {
     muiTheme: IMUITheme
 }
 
-export class DataColumnTableContainer extends React.PureComponent<IProps & IStoreProps & IDispatchProps, IState> {
-    constructor(props: IProps & IStoreProps & IDispatchProps) {
+export class DataColumnTableContainer extends React.PureComponent<IProps & IDispatchProps & IStoreProps, IState> {
+    constructor(props: any) {
         super(props)
         this.state = { showTableInfo: false }
     }
@@ -107,7 +107,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps & IOwnProps): IStorePro
     }
 }
 
-const mapDispatchToProps = (dispatch: Function) => {
+const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         onCopyColumnName: () => {
             dispatch(sendSnackbarNotification(`Column copied to clipboard.`))
@@ -115,6 +115,10 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const DataColumnTableContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataColumnTableContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const DataColumnTableContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    DataColumnTableContainer
+)
 
 export default muiThemeable()(DataColumnTableContainerWrapped)

@@ -1,42 +1,38 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
-import LayerUINav from "../layer-ui-nav/LayerUINavContainer"
-import Subheader from "material-ui/Subheader"
-import { Tabs, Tab } from "material-ui/Tabs"
-import { List, ListItem } from "material-ui/List"
-import Dialog from "material-ui/Dialog"
-import RaisedButton from "material-ui/RaisedButton"
 import Checkbox from "material-ui/Checkbox"
-import FlatButton from "material-ui/FlatButton"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
+import Dialog from "material-ui/Dialog"
 import Divider from "material-ui/Divider"
-import DataInspector from "../data-inspector/DataInspector"
-import * as CopyToClipboard from "react-copy-to-clipboard"
-import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces"
-import { white } from "material-ui/styles/colors"
-
-import IconMenu from "material-ui/IconMenu"
+import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
+import IconMenu from "material-ui/IconMenu"
+import { List, ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton"
-
-import MapsEditLocation from "material-ui/svg-icons/maps/edit-location"
-import MapsAddLocation from "material-ui/svg-icons/maps/add-location"
-import ActionDelete from "material-ui/svg-icons/action/delete"
+import RaisedButton from "material-ui/RaisedButton"
+import Subheader from "material-ui/Subheader"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
+import { white } from "material-ui/styles/colors"
 import ActionBookmarkBorder from "material-ui/svg-icons/action/bookmark-border"
+import ActionDelete from "material-ui/svg-icons/action/delete"
 import ActionHome from "material-ui/svg-icons/action/home"
 import ActionLock from "material-ui/svg-icons/action/lock"
 import ActionLockOpen from "material-ui/svg-icons/action/lock-open"
-import ImageGridOn from "material-ui/svg-icons/image/grid-on"
-import ImageGridOff from "material-ui/svg-icons/image/grid-off"
-import SocialPublic from "material-ui/svg-icons/social/public"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import ContentLink from "material-ui/svg-icons/content/link"
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
 import FileFileDownload from "material-ui/svg-icons/file/file-download"
+import ImageGridOff from "material-ui/svg-icons/image/grid-off"
+import ImageGridOn from "material-ui/svg-icons/image/grid-on"
+import MapsAddLocation from "material-ui/svg-icons/maps/add-location"
+import NavigationClose from "material-ui/svg-icons/navigation/close"
+import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
+import * as React from "react"
+import * as CopyToClipboard from "react-copy-to-clipboard"
+import { Link } from "react-router"
+import styled from "styled-components"
+import { IMUIThemePalette, IMap } from "../../redux/modules/interfaces"
+import DataInspector from "../data-inspector/DataInspector"
+import LayerUINav from "../layer-ui-nav/LayerUINavContainer"
 
 const MapName = styled.h3`
     font-weight: normal;
@@ -61,6 +57,7 @@ const SharingDescription = styled.div`
     margin-bottom: 10px;
 `
 
+/** @type {{search: React.CSSProperties}} */
 const styles: React.CSSProperties = {
     radioButton: {
         marginBottom: "0px",

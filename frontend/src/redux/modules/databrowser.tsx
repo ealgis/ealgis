@@ -56,6 +56,7 @@ export default function reducer(state = initialState, action: IAction) {
             const columns: Array<IColumn> = xorBy(
                 state.selectedColumns,
                 [action.column],
+                // @ts-ignore
                 (column: IColumn) => `${column.schema_name}.${column.id}`
             )
             return dotProp.set(state, "selectedColumns", columns)

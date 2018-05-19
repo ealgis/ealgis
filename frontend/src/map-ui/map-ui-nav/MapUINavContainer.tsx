@@ -1,32 +1,24 @@
+import muiThemeable from "material-ui/styles/muiThemeable"
+import olProj from "ol/proj"
 import * as React from "react"
 import { connect } from "react-redux"
-import { browserHistory } from "react-router"
-import olProj from "ol/proj"
-import MapUINav from "./MapUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { restoreDefaultMapPosition, moveToPosition, setHighlightedFeatures } from "../../redux/modules/map"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
+import { IMUITheme, IMUIThemePalette, IMap, IMapPositionDefaults, IPosition, IStore } from "../../redux/modules/interfaces"
+import { moveToPosition, restoreDefaultMapPosition } from "../../redux/modules/map"
 import {
     addLayer,
-    duplicateMap,
-    updateMapOrigin,
-    removeMap,
     changeMapSharing,
+    copyShareableLink,
+    duplicateMap,
+    eMapShared,
     exportMap,
     exportMapViewport,
-    copyShareableLink,
-    eMapShared,
+    removeMap,
+    updateMapOrigin,
 } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import {
-    IStore,
-    IMap,
-    IPosition,
-    IMapPositionDefaults,
-    IMUITheme,
-    IMUIThemePalette,
-} from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import MapUINav from "./MapUINav"
 
 interface IProps {}
 
@@ -71,10 +63,7 @@ interface IOwnProps {
     muiTheme: IMUITheme
 }
 
-export class MapUINavContainer extends React.Component<
-    IProps & IStoreProps & IDispatchProps & IRouteProps & IRouterProps,
-    {}
-> {
+export class MapUINavContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps & IRouterProps, {}> {
     isIncludeGeomAttrsChecked: boolean = false
 
     componentDidMount() {
@@ -199,16 +188,14 @@ const mapDispatchToProps = (dispatch: Function) => {
             const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
             window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
         },
-        onExportMapViewport: function(
-            that: MapUINavContainer,
-            mapId: number,
-            extent: [number, number, number, number]
-        ) {
+        onExportMapViewport: function(that: MapUINavContainer, mapId: number, extent: [number, number, number, number]) {
             const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
             dispatch(exportMapViewport(include_geom_attrs))
 
             const extentLonLat = olProj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
-            window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
+            window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${
+                extentLonLat[1]
+            },${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
         },
         onCheckIncludeGeomAttrs: function(that: MapUINavContainer, isInputChecked: boolean) {
             // FIXME Should be in state or props. What's best practice for attributes like this?
@@ -221,6 +208,10 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const MapUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapUINavContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const MapUINavContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    MapUINavContainer
+)
 
 export default muiThemeable()(MapUINavContainerWrapped)

@@ -1,24 +1,22 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
 import AppBar from "material-ui/AppBar"
+import FlatButton from "material-ui/FlatButton"
+import IconButton from "material-ui/IconButton"
+import IconMenu from "material-ui/IconMenu"
+import LinearProgress from "material-ui/LinearProgress"
+import MenuItem from "material-ui/MenuItem"
 import Snackbar from "material-ui/Snackbar"
 import { ToolbarGroup } from "material-ui/Toolbar"
-import FlatButton from "material-ui/FlatButton"
-import IconMenu from "material-ui/IconMenu"
-import MenuItem from "material-ui/MenuItem"
-import IconButton from "material-ui/IconButton"
-import LinearProgress from "material-ui/LinearProgress"
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
-import Toggle from "material-ui/Toggle"
 import ActionBugReport from "material-ui/svg-icons/action/bug-report"
+import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
 import ActionFace from "material-ui/svg-icons/action/face"
 import ActionSearch from "material-ui/svg-icons/action/search"
-import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
+import * as React from "react"
+import { Link } from "react-router"
+import styled from "styled-components"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { NotApprovedDialog } from "./authentication/not-approved-dialog/NotApprovedDialog"
+import { IAppModule, IMUIThemePalette, ISnackbarsModule } from "./redux/modules/interfaces"
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
-import { IAppModule, ISnackbarsModule, IUser, IMUIThemePalette } from "./redux/modules/interfaces"
 
 const EALGISLogo = styled.img`
     width: 160px;
@@ -83,16 +81,12 @@ export class EalUI extends React.Component<IProps, {}> {
             top: "0px",
             zIndex: 1200,
             display: app.requestsInProgress > 0 ? "block" : "none",
-        }
+        } as any
 
         return (
             <div className="page">
                 <div className="page-header">
-                    <LinearProgress
-                        mode="indeterminate"
-                        color={muiThemePalette.accent3Color}
-                        style={linearProgressStyle}
-                    />
+                    <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={linearProgressStyle} />
                     <AppBar
                         title={
                             <EALGISLogo
@@ -102,11 +96,12 @@ export class EalUI extends React.Component<IProps, {}> {
                         onLeftIconButtonClick={onTapAppBarLeft}
                         iconElementRight={
                             <ToolbarGroup>
-                                {showGooglePlacesBar &&
+                                {showGooglePlacesBar && (
                                     <SearchIconButton tooltip={"Search for a place or address"}>
                                         <ActionSearch color={"white"} />
-                                    </SearchIconButton>}
-                                {showGooglePlacesBar &&
+                                    </SearchIconButton>
+                                )}
+                                {showGooglePlacesBar && (
                                     <GooglePlacesAutocomplete
                                         results={handleGooglePlacesAutocomplete}
                                         componentRestrictions={{ country: "AU" }}
@@ -114,34 +109,34 @@ export class EalUI extends React.Component<IProps, {}> {
                                         listStyle={{ width: "100%", maxWidth: "400px", overflow: "hidden" }}
                                         textFieldStyle={{ width: "100%" }}
                                         name={"google-places-autocomplete"}
-                                    />}
+                                    />
+                                )}
                                 <HeaderBarButton label="Home" containerElement={<Link to={"/"} />} />
                                 <HeaderBarButton label="Maps" containerElement={<Link to={"/maps"} />} />
                                 <HeaderBarButton label="About" containerElement={<Link to={"/about"} />} />
-                                {user !== null &&
+                                {user !== null && (
                                     <HeaderBarButton
                                         label={user.username}
                                         icon={<ActionFace color={"white"} />}
                                         onClick={handleOpenUserMenu}
-                                    />}
-                                {user !== null &&
+                                    />
+                                )}
+                                {user !== null && (
                                     <IconMenu
                                         iconButtonElement={<HiddenIconButton />}
                                         open={app.userMenuState}
                                         onRequestChange={handleUserMenuOnRequestChange}
                                     >
-                                        {user.is_staff &&
+                                        {user.is_staff && (
                                             <MenuItem
                                                 primaryText={debug ? "Debug Mode: ON" : "Debug Mode: OFF"}
                                                 leftIcon={<ActionBugReport />}
                                                 onClick={onDebugToggle}
-                                            />}
-                                        <MenuItem
-                                            primaryText="Logout"
-                                            leftIcon={<ActionExitToApp />}
-                                            onClick={doLogout}
-                                        />
-                                    </IconMenu>}
+                                            />
+                                        )}
+                                        <MenuItem primaryText="Logout" leftIcon={<ActionExitToApp />} onClick={doLogout} />
+                                    </IconMenu>
+                                )}
                             </ToolbarGroup>
                         }
                     />
@@ -149,9 +144,7 @@ export class EalUI extends React.Component<IProps, {}> {
                 <div className="page-content" style={{ display: app.sidebarOpen ? "flex" : "block" }}>
                     <LoginDialog open={user === null} />
                     <NotApprovedDialog open={user !== null && !user.is_approved} />
-                    <main className="page-main-content">
-                        {content || this.props.children}
-                    </main>
+                    <main className="page-main-content">{content || this.props.children}</main>
                     <nav className="page-nav" style={{ display: app.sidebarOpen ? "" : "none" }}>
                         {sidebar || <div />}
                     </nav>

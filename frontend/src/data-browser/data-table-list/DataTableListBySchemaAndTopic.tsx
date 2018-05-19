@@ -1,10 +1,10 @@
-import * as React from "react"
-import DataTableListByFamily from "./DataTableListByFamily"
 import { includes as arrayIncludes } from "core-js/library/fn/array"
+import { flattenDeep, uniq } from "lodash-es"
 import { List } from "material-ui/List"
 import Subheader from "material-ui/Subheader"
-import { flattenDeep, uniq } from "lodash-es"
-import { ISchema, ITableFamily, ITable } from "../../redux/modules/interfaces"
+import * as React from "react"
+import { ISchema, ITable, ITableFamily } from "../../redux/modules/interfaces"
+import DataTableListByFamily from "./DataTableListByFamily"
 
 export interface IProps {
     schemas: Array<ISchema>
@@ -17,11 +17,14 @@ export interface IProps {
 export class DataTableListBySchemaAndTopic extends React.PureComponent<IProps, {}> {
     getTablesForTopic(topic_name: string | null, tables: Array<ITable>) {
         if (topic_name !== null) {
-            return tables.filter((table: ITable) => "topics" in table.metadata_json && arrayIncludes(table.metadata_json.topics, topic_name)
+            return tables.filter(
+                (table: ITable) => "topics" in table.metadata_json && arrayIncludes(table.metadata_json.topics, topic_name)
+            )
         } else {
             return tables
         }
     }
+
     renderTopicHeading(topic_name: string | null, schema: ISchema) {
         if (topic_name !== null) {
             return (
@@ -69,7 +72,7 @@ export class DataTableListBySchemaAndTopic extends React.PureComponent<IProps, {
                                     <React.Fragment key={`${schema.schema_name}.${topic_name}`}>
                                         {this.renderTopicHeading(topic_name, schema)}
 
-                                        {familiesInTopic.map((family_name: string) => {
+                                        {familiesInTopic.map((family_name: any) => {
                                             const tablesInFamily = tablesInTopic.filter(
                                                 (table: ITable) =>
                                                     "family" in table.metadata_json && table.metadata_json.family === family_name

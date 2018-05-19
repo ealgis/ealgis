@@ -1,10 +1,8 @@
+import { groupBy } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { groupBy } from "lodash-es"
+import { ISchema, ISchemaInfo, ISelectedSchemas, IStore } from "../../redux/modules/interfaces"
 import DataSchemaSelect from "./DataSchemaSelect"
-import { IStore, ISchemaInfo, ISchema, ISelectedSchemas } from "../../redux/modules/interfaces"
-
-import { EALGISApiClient } from "../../shared/api/EALGISApiClient"
 
 interface IProps {
     onChangeSchemaSelection: Function
@@ -25,7 +23,7 @@ interface IState {
 export class DataSchemaSelectContainer extends React.Component<IProps & IStoreProps & IDispatchProps, IState> {
     self: DataSchemaSelectContainer = this
 
-    constructor(props: IStoreProps & IDispatchProps) {
+    constructor(props: IProps & IStoreProps & IDispatchProps) {
         super(props)
         // Initialise the SelectField with all items selected
         this.state = { selectedSchemas: this.getAllSelectableSchemas() }
@@ -95,6 +93,8 @@ const mapDispatchToProps = (dispatch: Function) => {
     return {}
 }
 
-const DataSchemaSelectContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(DataSchemaSelectContainer)
+const DataSchemaSelectContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    DataSchemaSelectContainer
+)
 
 export default DataSchemaSelectContainerWrapped

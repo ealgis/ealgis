@@ -1,45 +1,29 @@
-import * as React from "react"
-import styled from "styled-components"
 import { groupBy } from "lodash-es"
-import { Link } from "react-router"
-import { connect } from "react-redux"
-import RaisedButton from "material-ui/RaisedButton"
-import FlatButton from "material-ui/FlatButton"
-import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
-import Subheader from "material-ui/Subheader"
-import ContentCreate from "material-ui/svg-icons/content/create"
-import EditorInsertChart from "material-ui/svg-icons/editor/insert-chart"
-import ImagePalette from "material-ui/svg-icons/image/palette"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
-import LayerQuerySummary from "../layer-query-summary/LayerQuerySummaryContainer"
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
-import {
-    IStore,
-    IEALGISModule,
-    ILayerQuerySummary,
-    IGeomInfo,
-    IGeomTable,
-    IColourInfo,
-    IMap,
-    ILayer,
-    ISelectedColumn,
-    IColumn,
-    IMUIThemePalette,
-} from "../../redux/modules/interfaces"
-
-import { Field, Fields, FieldArray, Config, reduxForm } from "redux-form"
-import { SelectField, TextField, Checkbox, Slider } from "redux-form-material-ui"
-import ColumnCard from "../column-card/ColumnCardContainer"
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
-
 import Divider from "material-ui/Divider"
-import MenuItem from "material-ui/MenuItem"
-
+import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import MenuItem from "material-ui/MenuItem"
+import RaisedButton from "material-ui/RaisedButton"
+import Subheader from "material-ui/Subheader"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
+import NavigationClose from "material-ui/svg-icons/navigation/close"
+import * as React from "react"
+import { Link } from "react-router"
+import { Field, FieldArray, Fields, reduxForm } from "redux-form"
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
+import styled from "styled-components"
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
+import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces"
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import ColumnCard from "../column-card/ColumnCardContainer"
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
+
+// Silence TS2322 "Types of property 'component' are incompatible" errors
+class MyField extends Field<any> {}
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
@@ -136,7 +120,7 @@ const BorderSizeAndColourFields = (fields: any) => {
                 </FirstFlexboxColumn>
 
                 <SecondFlexboxColumn>
-                    <Field
+                    <MyField
                         name="borderColour"
                         component={ColourPicker}
                         color={fields.initialBorderColour}
@@ -159,7 +143,7 @@ const BorderSizeAndColourFields = (fields: any) => {
                 </FirstFlexboxColumn>
 
                 <SecondFlexboxColumn>
-                    <Field
+                    <MyField
                         name="borderSize"
                         component={Slider}
                         validate={[required]}
@@ -196,7 +180,7 @@ const FillColourSchemeFields = (fields: any) => {
                 </FirstFlexboxColumn>
 
                 <SecondFlexboxColumn>
-                    <Field
+                    <MyField
                         name="fillColourScheme"
                         component={SelectField}
                         // hintText="Choose your colour scheme..."
@@ -229,7 +213,7 @@ const FillColourSchemeFields = (fields: any) => {
                         {Object.keys(fields.colourinfo).map((colourLevel: any, key: any) => (
                             <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
                         ))}
-                    </Field>
+                    </MyField>
                 </SecondFlexboxColumn>
             </FlexboxContainer>
 
@@ -242,7 +226,7 @@ const FillColourSchemeFields = (fields: any) => {
                 </FirstFlexboxColumn>
 
                 <SecondFlexboxColumn>
-                    <Field
+                    <MyField
                         name="fillColourSchemeLevels"
                         component={SelectField}
                         // hintText="Choose the number of colour levels..."
@@ -259,7 +243,7 @@ const FillColourSchemeFields = (fields: any) => {
                         {colourSchemeLevels.map((colourLevel: any, key: any) => (
                             <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
                         ))}
-                    </Field>
+                    </MyField>
                 </SecondFlexboxColumn>
             </FlexboxContainer>
 
@@ -310,8 +294,8 @@ export interface IProps {
 }
 
 class LayerForm extends React.Component<IProps, {}> {
-    geometryTables: Array<JSX.Element>
-    colourSchemes: Array<JSX.Element>
+    geometryTables!: Array<JSX.Element>
+    colourSchemes!: Array<JSX.Element>
 
     geometrySelectionRenderer = (geom_table_json: string) => {
         const geom_table: IGeomTable = JSON.parse(geom_table_json)
@@ -428,7 +412,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 {visibleComponent === undefined && (
                                     <React.Fragment>
                                         <FormSectionSubheaderMini>1. Choose a level of detail</FormSectionSubheaderMini>
-                                        <Field
+                                        <MyField
                                             name="geometry"
                                             component={SelectField}
                                             // hintText="Choose your level of detail..."
@@ -442,12 +426,12 @@ class LayerForm extends React.Component<IProps, {}> {
                                             selectionRenderer={this.geometrySelectionRenderer}
                                         >
                                             {this.geometryTables}
-                                        </Field>
+                                        </MyField>
                                     </React.Fragment>
                                 )}
 
                                 {/* // For chip input-based expression editors (if needed) */}
-                                {/* <Field
+                                {/* <MyField
                                     name="valueExpression"
                                     component={ChipInput}
                                     hintText="Write an expression..."
@@ -464,7 +448,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 {visibleComponent === undefined && (
                                     <React.Fragment>
                                         <FormSectionSubheaderMini>2. Choose the data to map</FormSectionSubheaderMini>
-                                        <Field
+                                        <MyField
                                             name="valueExpression"
                                             component={TextField}
                                             disabled={true}
@@ -490,7 +474,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                         />
 
                                         <FormSectionSubheaderMini>3. Filter the data</FormSectionSubheaderMini>
-                                        <Field
+                                        <MyField
                                             name="filterExpression"
                                             component={TextField}
                                             disabled={true}
@@ -552,7 +536,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     </FirstFlexboxColumn>
 
                                     <SecondFlexboxColumn>
-                                        <Field
+                                        <MyField
                                             name="fillColourScaleFlip"
                                             component={Checkbox}
                                             // label={"Flip colours"}
@@ -574,7 +558,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     </FirstFlexboxColumn>
 
                                     <SecondFlexboxColumn>
-                                        <Field
+                                        <MyField
                                             name="fillOpacity"
                                             component={AlphaPicker}
                                             rgb={{ r: 0, g: 0, b: 0, a: initialValues["fillOpacity"] }}
@@ -603,7 +587,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     </FirstFlexboxColumn>
 
                                     <SecondFlexboxColumn>
-                                        <Field
+                                        <MyField
                                             name="scaleMin"
                                             component={TextField}
                                             // hintText="Scale minimum"
@@ -629,7 +613,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     </FirstFlexboxColumn>
 
                                     <SecondFlexboxColumn>
-                                        <Field
+                                        <MyField
                                             name="scaleMax"
                                             component={TextField}
                                             // hintText="Scale maximum"
@@ -649,7 +633,7 @@ class LayerForm extends React.Component<IProps, {}> {
 
                                 <PaddedDivider />
 
-                                <LayerQuerySummary mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
+                                <LayerQuerySummaryContainer mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
                             </TabContainer>
                         </Tab>
                         {/* END STYLE TAB */}
@@ -660,7 +644,7 @@ class LayerForm extends React.Component<IProps, {}> {
                             containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/describe`} />}
                         >
                             <TabContainer>
-                                <Field
+                                <MyField
                                     name="name"
                                     component={TextField}
                                     hintText="Give your layer a name..."
@@ -674,7 +658,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                     }
                                 />
 
-                                <Field
+                                <MyField
                                     name="description"
                                     component={TextField}
                                     multiLine={true}
@@ -717,6 +701,6 @@ let LayerFormReduxForm = reduxForm({
     onChange: (values: object, dispatch: Function, props: any) => {
         props.onFormChange(values, dispatch, props)
     },
-} as Config<any, any, any>)(LayerForm)
+})(LayerForm)
 
 export default LayerFormReduxForm

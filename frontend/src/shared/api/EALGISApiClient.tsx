@@ -1,9 +1,9 @@
-import "whatwg-fetch"
-import * as qs from "qs"
 import * as Cookies from "js-cookie"
+import * as qs from "qs"
 import * as Raven from "raven-js"
-import { iterate as iterateSnackbar, sendMessage as sendSnackbarMessage } from "../../redux/modules/snackbars"
+import "whatwg-fetch"
 import { beginFetch, finishFetch } from "../../redux/modules/app"
+import { iterate as iterateSnackbar, sendMessage as sendSnackbarMessage } from "../../redux/modules/snackbars"
 
 export class EALGISApiClient {
     // Only handles fatal errors from the API
@@ -55,7 +55,7 @@ export class EALGISApiClient {
             credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": Cookies.get("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken")!,
             },
             body: JSON.stringify(body),
         })
@@ -77,7 +77,7 @@ export class EALGISApiClient {
             credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": Cookies.get("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken")!,
             },
             body: JSON.stringify(body),
         })
@@ -98,7 +98,7 @@ export class EALGISApiClient {
             method: "DELETE",
             credentials: "same-origin",
             headers: {
-                "X-CSRFToken": Cookies.get("csrftoken"),
+                "X-CSRFToken": Cookies.get("csrftoken")!,
             },
         })
             .then((response: any) => {

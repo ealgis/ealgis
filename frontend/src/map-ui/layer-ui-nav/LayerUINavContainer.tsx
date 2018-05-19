@@ -1,11 +1,10 @@
+import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { browserHistory } from "react-router"
-import LayerUINav from "./LayerUINav"
 import { toggleModalState } from "../../redux/modules/app"
-import { cloneMapLayer, changeLayerVisibility } from "../../redux/modules/maps"
-import { IStore, IMap, ILayer, IGeomInfo, IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
-import muiThemeable from "material-ui/styles/muiThemeable"
+import { IGeomInfo, ILayer, IMUITheme, IMUIThemePalette, IMap, IStore } from "../../redux/modules/interfaces"
+import { changeLayerVisibility, cloneMapLayer } from "../../redux/modules/maps"
+import LayerUINav from "./LayerUINav"
 
 export interface IProps {
     // key: number
@@ -96,6 +95,11 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const LayerUINavContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(LayerUINavContainer)
+// Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
+// @ts-ignore
+const LayerUINavContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
+    LayerUINavContainer
+)
 
+// @ts-ignore
 export default muiThemeable()(LayerUINavContainerWrapped)

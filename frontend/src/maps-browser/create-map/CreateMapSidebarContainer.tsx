@@ -1,7 +1,7 @@
 import * as React from "react"
-import CreateMapSidebar from "./CreateMapSidebar"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/interfaces"
+import CreateMapSidebar from "./CreateMapSidebar"
 
 export interface IProps {}
 
@@ -24,6 +24,6 @@ const mapStateToProps = (state: IStore): IStoreProps => {
     }
 }
 
-const CreateMapSidebarContainerWrapped = connect<{}, {}, IProps>(mapStateToProps)(CreateMapSidebarContainer)
+const CreateMapSidebarContainerWrapped = connect<IStoreProps, {}, IProps, IStore>(mapStateToProps)(CreateMapSidebarContainer)
 
 export default CreateMapSidebarContainerWrapped

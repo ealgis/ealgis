@@ -1,9 +1,9 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import LayerDeleteConfirmDialog from "./LayerDeleteConfirmDialog"
 import { toggleModalState } from "../../redux/modules/app"
+import { ILayer, IMap, IStore } from "../../redux/modules/interfaces"
 import { deleteMapLayer } from "../../redux/modules/maps"
-import { IStore, IMap, ILayer } from "../../redux/modules/interfaces"
+import LayerDeleteConfirmDialog from "./LayerDeleteConfirmDialog"
 
 export interface IProps {
     modalId: string
@@ -58,7 +58,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const LayerDeleteConfirmDialogContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(
+const LayerDeleteConfirmDialogContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
     LayerDeleteConfirmDialogContainer
 )
 

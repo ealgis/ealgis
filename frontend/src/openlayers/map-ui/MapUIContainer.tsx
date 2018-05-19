@@ -1,18 +1,18 @@
-import * as React from "react"
-import MapUI from "./MapUI"
-import { connect } from "react-redux"
-import olProj from "ol/proj"
-import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
-import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
-import { IStore, IMap, IPosition, IOLFeature, IOLFeatureProps } from "../../redux/modules/interfaces"
-
 import "ol/ol.css"
+import olProj from "ol/proj"
+import * as React from "react"
+import { connect } from "react-redux"
+import { withRouter } from "react-router"
+import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
+import { IMap, IOLFeature, IOLFeatureProps, IPosition, IStore } from "../../redux/modules/interfaces"
+import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
+import MapUI from "./MapUI"
 
 export interface IProps {
     params: IRouteProps
 }
 
-export interface IStateProps {
+export interface IStoreProps {
     // From State
     mapDefinition: IMap
     position: IPosition
@@ -28,7 +28,7 @@ export interface IRouteProps {
     mapName: string
 }
 
-export class MapContainer extends React.Component<IProps & IStateProps & IDispatchProps & IRouteProps, {}> {
+export class MapUIContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
         const { mapDefinition, position, onSingleClick, onMoveEnd } = this.props
 
@@ -43,7 +43,7 @@ export class MapContainer extends React.Component<IProps & IStateProps & IDispat
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: { params: IRouteProps }): IStateProps => {
+const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
     const { maps, map } = state
 
     return {
@@ -89,6 +89,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const MapContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, mapDispatchToProps)(MapContainer)
+const MapUIContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(MapUIContainer)
 
-export default MapContainerWrapped
+// @ts-ignore
+export default withRouter(MapUIContainerWrapped)

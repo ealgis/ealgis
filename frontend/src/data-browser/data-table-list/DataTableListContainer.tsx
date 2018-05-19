@@ -1,9 +1,9 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import DataTableListBySchemaAndTopic from "./DataTableListBySchemaAndTopic"
-import DataTableList from "./DataTableList"
-import { IStore, ISchemaInfo, ITable, ITableInfo } from "../../redux/modules/interfaces"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
+import { ISchemaInfo, IStore, ITable, ITableInfo } from "../../redux/modules/interfaces"
+import DataTableList from "./DataTableList"
+import DataTableListBySchemaAndTopic from "./DataTableListBySchemaAndTopic"
 
 interface IProps {
     tables: Array<Partial<ITable>>
@@ -83,6 +83,6 @@ const mapStateToProps = (state: IStore): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): any => {}
 
-const DataTableListContainerWrapped = connect<{}, {}, IProps>(mapStateToProps, {})(DataTableListContainer)
+const DataTableListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, {})(DataTableListContainer)
 
 export default DataTableListContainerWrapped

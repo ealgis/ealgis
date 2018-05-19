@@ -125,7 +125,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <EalUI
-                    muiThemePalette={!muiTheme.palette}
+                    muiThemePalette={muiTheme.palette!}
                     app={app}
                     user={user}
                     snackbars={snackbars}
