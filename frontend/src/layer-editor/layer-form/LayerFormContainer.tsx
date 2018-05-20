@@ -84,6 +84,7 @@ export interface IDispatchProps {
     onFitScaleToData: Function
     onSaveForm: Function
     onResetForm: Function
+    onDiscardForm: Function
     onModalSaveForm: Function
     onModalDiscardForm: Function
     onToggleDirtyFormModalState: Function
@@ -290,6 +291,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
 
     shouldComponentUpdate(nextProps: IStoreProps) {
         const {
+            tabName,
             mapDefinition,
             layerId,
             layerFillColourScheme,
@@ -300,6 +302,11 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             isDirty,
         } = this.props
         // Re-render LayerForm if...
+
+        // We've changed tabs in the form
+        if (tabName !== nextProps.tabName) {
+            return true
+        }
 
         // We've changed the map or layer we're looking at
         if (mapDefinition.id != nextProps.mapDefinition.id || layerId != nextProps.layerId) {
@@ -362,6 +369,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             colourinfo,
             onSaveForm,
             onResetForm,
+            onDiscardForm,
             onModalSaveForm,
             onModalDiscardForm,
             handleRemoveColumn,
@@ -410,6 +418,9 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                     deactivateDataBrowser()
                 }}
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
+                onDiscardForm={() => {
+                    onDiscardForm(mapDefinition.id, layerId, this.initialValues)
+                }}
                 onModalSaveForm={() => {
                     onModalSaveForm(mapDefinition.id, layerId)
                     deactivateDataBrowser()
@@ -525,6 +536,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(initialize("layerForm", initialLayerFormValues, false))
             dispatch(restoreMasterLayer(mapId, layerId))
             dispatch(initDraftLayer(mapId, layerId))
+        },
+        onDiscardForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
+            dispatch(initialize("layerForm", initialLayerFormValues, false))
+            dispatch(restoreMasterLayerAndDiscardForm(mapId, layerId))
         },
         onModalSaveForm: (mapId: number, layerId: number) => {
             dispatch(submit("layerForm"))
