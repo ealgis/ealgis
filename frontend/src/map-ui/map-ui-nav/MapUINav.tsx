@@ -57,8 +57,7 @@ const SharingDescription = styled.div`
     margin-bottom: 10px;
 `
 
-/** @type {{search: React.CSSProperties}} */
-const styles: React.CSSProperties = {
+const styles: any = {
     radioButton: {
         marginBottom: "0px",
     },

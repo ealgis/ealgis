@@ -96,7 +96,7 @@ const FauxFieldLabelDescriptionHeading = styled.h4`
     transform-origin: left top 0px;
 `
 
-const styles: React.CSSProperties = {
+const styles: any = {
     fauxFiedlLabel: {
         fontSize: "12px",
         color: "rgba(0, 0, 0, 0.3)",

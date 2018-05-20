@@ -1,29 +1,19 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
-import LegendPeekBar from "../legend-peek-bar/LegendPeekBarContainer"
-import Paper from "material-ui/Paper"
-import Toggle from "material-ui/Toggle"
-import Subheader from "material-ui/Subheader"
 import Divider from "material-ui/Divider"
-import { List, ListItem } from "material-ui/List"
-import RaisedButton from "material-ui/RaisedButton"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
-import LayerDeleteConfirmDialog from "../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
-import { IMap, ILayer, IMUIThemePalette } from "../../redux/modules/interfaces"
-
-import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
+import IconMenu from "material-ui/IconMenu"
+import { ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-
-import MapsEditLocation from "material-ui/svg-icons/maps/edit-location"
-import MapsLayers from "material-ui/svg-icons/maps/layers"
-import MapsAddLocation from "material-ui/svg-icons/maps/add-location"
+import Toggle from "material-ui/Toggle"
 import ActionDelete from "material-ui/svg-icons/action/delete"
-import ActionBookmark from "material-ui/svg-icons/action/bookmark"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
+import MapsEditLocation from "material-ui/svg-icons/maps/edit-location"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
+import * as React from "react"
+import { Link } from "react-router"
+import styled from "styled-components"
+import { ILayer, IMUIThemePalette } from "../../redux/modules/interfaces"
+import LayerDeleteConfirmDialog from "../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
+import LegendPeekBar from "../legend-peek-bar/LegendPeekBarContainer"
 
 const Description = styled.span`
     display: block;
@@ -44,7 +34,7 @@ const LayerName = styled.div`
     max-width: 80%;
 `
 
-const styles: React.CSSProperties = {
+const styles: any = {
     layerListItemWithLegend: {
         paddingBottom: "0px",
     },

@@ -15,7 +15,7 @@ import ReactGoogleMapLoader from "react-google-maps-loader"
 import { IConfig } from "../../../redux/modules/interfaces"
 const Config: IConfig = require("Config") as any
 
-const styles: React.CSSProperties = {
+const styles: any = {
     menuItem: {
         fontSize: 13,
         display: "block",
