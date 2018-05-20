@@ -1,17 +1,14 @@
-import * as React from "react"
-import { IColumn, ITableInfo, ITable } from "../../redux/modules/interfaces"
-
-import { List, ListItem } from "material-ui/List"
-import ActionViewColumn from "material-ui/svg-icons/action/view-column"
+import { ListItem } from "material-ui/List"
+import RaisedButton from "material-ui/RaisedButton"
+import TextField from "material-ui/TextField"
 import ActionGroupWork from "material-ui/svg-icons/action/group-work"
 import ActionInput from "material-ui/svg-icons/action/input"
-import ActionStars from "material-ui/svg-icons/action/stars"
 import ActionSearch from "material-ui/svg-icons/action/search"
+import ActionStars from "material-ui/svg-icons/action/stars"
+import ActionViewColumn from "material-ui/svg-icons/action/view-column"
 import AlertWarning from "material-ui/svg-icons/alert/warning"
-
-import RaisedButton from "material-ui/RaisedButton"
-import Popover from "material-ui/Popover"
-import TextField from "material-ui/TextField"
+import * as React from "react"
+import { ITable, ITableInfo } from "../../redux/modules/interfaces"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {
@@ -63,8 +60,8 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
             }
         } else if (value === "$value") {
             listItemProps = {
-                primaryText: "Value expression",
-                secondaryText: "Use the result of your layer's value expression",
+                primaryText: "Data expression",
+                secondaryText: "Use the result of your layer's data expression",
                 secondaryTextLines: 2,
                 leftIcon: <ActionStars />,
                 onClick: onClick,
@@ -145,8 +142,9 @@ class ExpressionPartItem extends React.Component<IProps, {}> {
             listItemProps.nestedItems.push(
                 <ListItem
                     key={"value-special"}
-                    primaryText="Value expression"
-                    secondaryText="Use the result of your layer's value expression"
+                    primaryText="Data expression"
+                    secondaryText="Use the result of your layer's data expression"
+                    secondaryTextLines={2}
                     onClick={(evt: object) => {
                         onFieldChange({ field: field, value: "$value" })
                     }}
