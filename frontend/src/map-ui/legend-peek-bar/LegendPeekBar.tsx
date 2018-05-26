@@ -1,14 +1,14 @@
 import * as React from "react"
 import styled from "styled-components"
-import LegendPeekBarSwatch from "../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
 import { IOLStyleDef } from "../../redux/modules/interfaces"
+import LegendPeekBarSwatch from "../legend-peek-bar-swatch/LegendPeekBarSwatchContainer"
 
 const PeerBarContainer = styled.div`
     position: relative;
 `
 
 const LabelText = styled.div`
-    height: 16px
+    height: 16px;
     padding-top: 4px;
     padding-bottom: 4px;
     font-size: 12px;

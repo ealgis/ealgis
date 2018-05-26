@@ -1,7 +1,6 @@
 Django==1.11
 psycopg2==2.7.1
 djangorestframework==3.6.2
-cairocffi==0.8.0
 git+git://github.com/tiran/defusedxml
 SQLAlchemy==1.2.6
 GeoAlchemy2==0.4.2

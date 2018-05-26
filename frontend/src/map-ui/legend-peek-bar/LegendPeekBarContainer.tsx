@@ -1,7 +1,7 @@
 import { isEqual } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IOLStyleDef, IStore } from "../../redux/modules/interfaces"
+import { IOLStyleDef, IOLStyleDefExpression, IStore } from "../../redux/modules/interfaces"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
 import LegendPeekBar from "./LegendPeekBar"
 
@@ -60,13 +60,17 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         handleMouseEnter: (mapId: number, layerId: number, styleDef: IOLStyleDef) => {
+            const expressionToString = (e: IOLStyleDefExpression) => `${e["op"]} ${parseFloat(e["v"].toFixed(2)).toLocaleString()}`
             let labelText: string = ""
-            if ("to" in styleDef.expr) {
-                labelText = `${parseFloat(styleDef.expr.from.v.toFixed(2)).toLocaleString()} - ${parseFloat(
+
+            if ("from" in styleDef.expr && "to" in styleDef.expr) {
+                labelText = `${parseFloat(styleDef.expr.from!.v.toFixed(2)).toLocaleString()} - ${parseFloat(
                     styleDef.expr.to!.v.toFixed(2)
                 ).toLocaleString()}`
-            } else {
-                labelText = `>= ${parseFloat(styleDef.expr.from.v.toFixed(2)).toLocaleString()}`
+            } else if ("to" in styleDef.expr) {
+                labelText = expressionToString(styleDef.expr.to!)
+            } else if ("from" in styleDef.expr) {
+                labelText = expressionToString(styleDef.expr.from!)
             }
 
             dispatch(receiveLegendPeekLabel(mapId, layerId, labelText))

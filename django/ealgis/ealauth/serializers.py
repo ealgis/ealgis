@@ -4,7 +4,6 @@ from .models import (
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
-from ealgis.colour_scale import make_colour_scale
 from urllib.parse import quote_plus
 
 
@@ -120,8 +119,6 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         # Add a URL-safe map name for client-side to use to make semi-human-readable URLs
         map["name-url-safe"] = quote_plus(map["name"].replace(" ", "-"))
 
-        # FIXME Compile all this client-side
-        # Compile layer fill styles and attach an olStyleDef for consumption by the UI
         if "layers" not in map["json"]:
             map["json"]["layers"] = []
 
@@ -130,27 +127,7 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
             # Only expose the published 'master' layer until the draft layer is actually promoted to published.
             if "master" in layer:
                 layer = map["json"]["layers"][layerId] = layer["master"]
-
-            olStyleDef = self.createOLStyleDef(layer)
-            if olStyleDef is not False:
-                layer["olStyleDef"] = olStyleDef
-
-            # FIXME
-            if "width" in layer["line"] and not isinstance(layer["line"]["width"], int):
-                layer["line"]["width"] = int(layer["line"]["width"])
         return map
-
-    def createOLStyleDef(self, layer):
-        fill = layer['fill']
-        do_fill = (fill['expression'] != '')
-
-        # Line styles are simple and can already be read from the existing JSON object
-        if do_fill:
-            scale_min = float(fill['scale_min'])
-            scale_max = float(fill['scale_max'])
-            opacity = float(fill['opacity'])
-            return make_colour_scale(layer, 'q', float(scale_min), float(scale_max), opacity)
-        return False
 
 
 class TableInfoWithColumnsSerializer(serializers.Serializer):

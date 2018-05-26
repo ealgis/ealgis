@@ -1,6 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { ColourScale, DiscreteColourScale, HLSDiscreteColourScale, RGB } from "../../shared/openlayers/colour_scale"
 import { loaded as appLoaded, loading as appLoading } from "./app"
 import { parseColumnsFromExpression } from "./databrowser"
 import { fetchMaps } from "./maps"
@@ -10,6 +11,7 @@ const LOAD_USER = "ealgis/ealgis/LOAD_USER"
 const LOAD_RECENT_TABLES = "ealgis/ealgis/LOAD_RECENT_TABLES"
 const LOAD_FAVOURITE_TABLES = "ealgis/ealgis/LOAD_FAVOURITE_TABLES"
 const LOAD_GEOM = "ealgis/ealgis/LOAD_GEOM"
+const LOAD_COLOUR_DEFS = "ealgis/ealgis/LOAD_COLOUR_DEFS"
 const LOAD_COLOURS = "ealgis/ealgis/LOAD_COLOURS"
 const LOAD_TABLES = "ealgis/ealgis/LOAD_TABLES"
 const LOAD_TABLE = "ealgis/ealgis/LOAD_TABLE"
@@ -21,6 +23,7 @@ const initialState: IModule = {
     user: {} as IUser,
     geominfo: {},
     tableinfo: {},
+    colourdefs: {},
     colourinfo: {},
     schemainfo: {},
     columninfo: {},
@@ -37,6 +40,8 @@ export default function reducer(state = initialState, action: IAction) {
             return dotProp.set(state, "user.favourite_tables", action.favourite_tables)
         case LOAD_GEOM:
             return dotProp.set(state, "geominfo", action.geominfo)
+        case LOAD_COLOUR_DEFS:
+            return dotProp.set(state, "colourdefs", action.colourdefs)
         case LOAD_COLOURS:
             return dotProp.set(state, "colourinfo", action.colourinfo)
         case LOAD_TABLES:
@@ -80,6 +85,13 @@ export function loadGeom(geominfo: IGeomInfo) {
     return {
         type: LOAD_GEOM,
         geominfo,
+    }
+}
+
+export function loadColourDefs(colourdefs: IColourDefs) {
+    return {
+        type: LOAD_COLOUR_DEFS,
+        colourdefs,
     }
 }
 
@@ -131,6 +143,7 @@ export function loadColumn(column: IColumn, schema: string) {
 export interface IModule {
     user: IUser
     geominfo: IGeomInfo
+    colourdefs: IColourDefs
     colourinfo: IColourInfo
     tableinfo: ITableInfo
     schemainfo: ISchemaInfo
@@ -143,6 +156,7 @@ export interface IAction {
     geominfo: IGeomInfo
     tableinfo: ITableInfo
     table: ITable
+    colourdefs: IColourDefs
     colourinfo: IColourInfo
     schemainfo: ISchemaInfo
     columninfo: IColumnInfo
@@ -210,6 +224,10 @@ export interface TableMetadataURL {
 
 export interface ITableInfo {
     [key: string]: ITable
+}
+
+export interface IColourDefs {
+    [key: string]: ColourScale
 }
 
 export interface IColourInfo {
@@ -290,7 +308,7 @@ export function fetchUserMapsColumnsDataColourAndSchemaInfo() {
             await Promise.all([
                 dispatch(fetchMaps()),
                 dispatch(fetchGeomInfo()),
-                dispatch(fetchColourInfo()),
+                dispatch(fetchColourDefs()),
                 dispatch(fetchSchemaInfo()),
                 dispatch(fetchTablesIfUncached([...self.user.favourite_tables, ...self.user.recent_tables])),
             ])
@@ -422,11 +440,64 @@ export function fetchGeomInfo() {
         dispatch(loadGeom(json))
     }
 }
-
-export function fetchColourInfo() {
+export function fetchColourDefs() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const { response, json } = await ealapi.get("/api/0.1/colours/", dispatch)
-        dispatch(loadColours(json))
+
+        let colourdefs: IColourDefs = {}
+        let colourinfo: IColourInfo = {}
+        const register = (name: string, defn: ColourScale) => {
+            // Register definition
+            colourdefs[`${name}.${defn.get_nlevels()}`] = defn
+
+            // Register colour info
+            if (!(name in colourinfo)) {
+                colourinfo[name] = []
+            }
+            colourinfo[name].push(defn.get_nlevels())
+        }
+
+        // Register Huey colour definitions
+        for (var i = 2; i <= 12; i++) {
+            register("Huey", new HLSDiscreteColourScale(0.5, 0.8, i))
+        }
+
+        // object {column name: index}
+        var headerToColIdxMapping: { [key: string]: number } = json["header"].reduce((obj: any, k: any, i: any) => ({ ...obj, [k]: i }), {})
+
+        var getter = (row: any, col_name: string) => row[headerToColIdxMapping[col_name]]
+        var rgb_getter = (row: any, col_name: string) => parseInt(row[headerToColIdxMapping[col_name]]) / 255
+
+        let counter = 0
+        for (let row of json["colours"]) {
+            let colour_name = getter(row, "ColorName")
+            let num_colours = parseInt(getter(row, "NumOfColors"))
+
+            // Break out before we get to the license embedded in the CSV file
+            if (colour_name === "" && getter(row, "ColorNum") === "") {
+                break
+            }
+
+            // Skip any rows within a colour range
+            if (colour_name === "") {
+                counter += 1
+                continue
+            }
+
+            let colours: Array<any> = []
+            colours.push(new RGB(rgb_getter(row, "R"), rgb_getter(row, "G"), rgb_getter(row, "B")))
+
+            for (var index = counter + 1; index < counter + num_colours; index++) {
+                let r = json["colours"][index]
+                colours.push(new RGB(rgb_getter(r, "R"), rgb_getter(r, "G"), rgb_getter(r, "B")))
+            }
+
+            register(colour_name, new DiscreteColourScale(colours))
+            counter += 1
+        }
+
+        dispatch(loadColourDefs(colourdefs))
+        dispatch(loadColours(colourinfo))
     }
 }
 

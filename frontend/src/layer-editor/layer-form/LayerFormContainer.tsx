@@ -51,8 +51,8 @@ export interface ILayerFormValues {
     filterExpressionMode: eLayerFilterExpressionMode
     geometry: string // JSON IGeomTable
     name: string
-    scaleMax: number
-    scaleMin: number
+    scaleMax: string
+    scaleMin: string
     valueExpression: string
     valueExpressionMode: eLayerValueExpressionMode
     selectedColumns: Array<ISelectedColumn>
@@ -125,8 +125,8 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         filterExpressionMode: layer["fill"]["conditional_mode"] || eLayerFilterExpressionMode.NOT_SET,
         geometry: JSON.stringify(geominfo[layer["schema"] + "." + layer["geometry"]]),
         name: layer["name"],
-        scaleMax: layer["fill"]["scale_max"],
-        scaleMin: layer["fill"]["scale_min"],
+        scaleMax: layer["fill"]["scale_max"].toString(),
+        scaleMin: layer["fill"]["scale_min"].toString(),
         valueExpression: layer["fill"]["expression"],
         valueExpressionMode: layer["fill"]["expression_mode"] || eLayerValueExpressionMode.NOT_SET,
         selectedColumns: layer["selectedColumns"],
@@ -139,8 +139,8 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
     return {
         fill: {
             opacity: formValues["fillOpacity"],
-            scale_max: formValues["scaleMax"],
-            scale_min: formValues["scaleMin"],
+            scale_max: parseFloat(formValues["scaleMax"]),
+            scale_min: parseFloat(formValues["scaleMin"]),
             expression: formValues["valueExpression"] ? formValues["valueExpression"] : "",
             expression_mode: formValues["valueExpressionMode"] ? formValues["valueExpressionMode"] : eLayerValueExpressionMode.NOT_SET,
             scale_flip: formValues["fillColourScaleFlip"] ? formValues["fillColourScaleFlip"] : false,
@@ -479,9 +479,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(startLayerEditing())
             dispatch(initDraftLayer(mapId, layerId))
         },
-        onSubmit: (mapId: number, layerId: number, layerFormValues: ILayerFormValues, layerDefinition: any) => {
+        onSubmit: (mapId: number, layerId: number, layerFormValues: ILayerFormValues, layerDefinition: ILayer) => {
             const layer: ILayer = getLayerFromLayerFormValues(layerFormValues)
             layer.selectedColumns = layerDefinition.selectedColumns
+            layer._postgis_query = layerDefinition._postgis_query // Avoid needlessly recompiling the layer on the server
             dispatch(publishLayer(mapId, layerId, layer))
             dispatch(initialize("layerForm", layerFormValues, false))
         },

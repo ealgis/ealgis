@@ -78,7 +78,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
         )
 
         let legendPeekProps: any = {}
-        if ("olStyleDef" in defn) {
+        if ("olStyleDef" in defn && defn["olStyleDef"] !== undefined) {
             legendPeekProps.open = true
             legendPeekProps.style = styles.layerListItemWithLegend
             legendPeekProps.nestedItems = [

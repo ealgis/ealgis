@@ -1,17 +1,17 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
-import * as dotProp from "dot-prop-immutable"
-import { merge } from "lodash-es"
-import { browserHistory } from "react-router"
-import { SubmissionError } from "redux-form"
-import { IGeomTable, ISelectedColumn, IUserPartial, getGeomInfoFromState, getUserIdFromState } from "../../redux/modules/ealgis"
-import * as layerFormModule from "../../redux/modules/layerform"
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
-import { IPosition } from "../../redux/modules/map"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import { getMapURL } from "../../shared/utils"
-import { IConfig } from "./interfaces"
+import { includes as arrayIncludes } from "core-js/library/fn/array";
+import * as dotProp from "dot-prop-immutable";
+import { merge } from "lodash-es";
+import { browserHistory } from "react-router";
+import { SubmissionError } from "redux-form";
+import { IGeomTable, ISelectedColumn, IUserPartial, getGeomInfoFromState, getUserIdFromState } from "../../redux/modules/ealgis";
+import * as layerFormModule from "../../redux/modules/layerform";
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
+import { IPosition } from "../../redux/modules/map";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
+import { getMapURL } from "../../shared/utils";
+import { IConfig } from "./interfaces";
 
 const Config: IConfig = require("Config") as any
 
@@ -427,19 +427,17 @@ export interface ILayer {
 
 export interface IOLStyleDef {
     expr: {
-        from: {
-            attr: string
-            op: string
-            v: number
-        }
-        to?: {
-            attr: string
-            op: string
-            v: number
-        }
+        from?: IOLStyleDefExpression
+        to?: IOLStyleDefExpression
     }
     rgb: Array<number>
     opacity: number
+}
+
+export interface IOLStyleDefExpression {
+    attr: string
+    op: string
+    v: number
 }
 
 export interface IMapPositionDefaults {
@@ -741,9 +739,7 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
         }
         if (!willCompileServerSide && "fill" in layerPartial) {
             willCompileServerSide = Object.keys(layerPartial["fill"]!).some((value: string, index: number, array: Array<string>) => {
-                return (
-                    ["scale_min", "scale_max", "expression", "conditional", "scale_flip", "scale_name", "scale_nlevels"].indexOf(value) >= 0
-                )
+                return ["expression", "conditional"].indexOf(value) >= 0
             })
         }
 
@@ -758,7 +754,7 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
                     if ("fill" in layerPartial) {
                         haveCoreFieldsChanged = Object.keys(layerPartial["fill"]!).some(
                             (value: string, index: number, array: Array<string>) => {
-                                return ["scale_min", "scale_max", "expression", "conditional"].indexOf(value) >= 0
+                                return ["expression", "conditional"].indexOf(value) >= 0
                             }
                         )
                     }

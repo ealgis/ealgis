@@ -15,12 +15,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
 
 from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, EALGISMetadataSerializer
-from ealgis.colour_scale import definitions, make_colour_scale
 
 import time
 import copy
 import urllib.parse
 import json
+import csv
 from django.http import HttpResponseNotFound
 from ealgis.util import deepupdate
 from ealgis_common.db import broker
@@ -235,10 +235,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             layerId = len(serializer.validated_data["json"]["layers"]) - 1
             newLayer = serializer.validated_data["json"]["layers"][layerId]
 
-            olStyleDef = serializer.createOLStyleDef(newLayer)
-            if olStyleDef is not False:
-                newLayer["olStyleDef"] = olStyleDef
-
             return Response({
                 "layerId": layerId,
                 "layer": newLayer,
@@ -306,10 +302,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             del newLayer["master"]
             del newLayer["draft"]
 
-            olStyleDef = serializer.createOLStyleDef(newLayer)
-            if olStyleDef is not False:
-                newLayer["olStyleDef"] = olStyleDef
-
             return Response(newLayer)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -364,29 +356,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data["json"]["layers"][layerId])
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @list_route(methods=['get'])
-    def compileStyle(self, request, format=None):
-        qp = request.query_params
-
-        # We only need the fill params on the layer to compile the style
-        layer = {
-            "fill": {
-                "opacity": qp["opacity"],
-                "scale_max": qp["scale_max"],
-                "scale_min": qp["scale_min"],
-                "expression": qp["expression"],
-                "scale_flip": qp["scale_flip"],
-                "scale_name": qp["scale_name"],
-                "scale_nlevels": qp["scale_nlevels"],
-            }
-        }
-
-        scale_min = float(layer["fill"]['scale_min'])
-        scale_max = float(layer["fill"]['scale_max'])
-        opacity = float(layer["fill"]['opacity'])
-
-        return Response(make_colour_scale(layer, 'q', scale_min, scale_max, opacity))
 
     @detail_route(methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanCloneMap,))
     def clone(self, request, pk=None, format=None):
@@ -842,11 +811,19 @@ class ColoursViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
-        return Response(definitions.get_json())
+        with open('/app/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as f:
+            reader = csv.reader(f)
+            header = next(reader)
 
-    @list_route(methods=['get'])
-    def defs(self, request):
-        return Response(definitions.get_defs_json())
+            colours = []
+            for row in reader:
+                # Break out before we get to the license embedded in the CSV file
+                if row[0] == "" and row[4] == "":
+                    break
+                colours.append(row)
+
+            response = Response({"header": header, "colours": colours})
+            return response
 
 
 class SchemasViewSet(viewsets.ViewSet):

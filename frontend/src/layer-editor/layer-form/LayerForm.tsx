@@ -618,7 +618,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                                 min="0"
                                                 autoComplete="off"
                                                 onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                    onFieldBlur(event.target.name, newValue, previousValue)
+                                                    onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
                                                 }
                                             />
                                         </SecondFlexboxColumn>
@@ -644,7 +644,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                                 min="0"
                                                 autoComplete="off"
                                                 onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                    onFieldBlur(event.target.name, newValue, previousValue)
+                                                    onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
                                                 }
                                             />
                                         </SecondFlexboxColumn>

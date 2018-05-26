@@ -12,6 +12,7 @@ export {
     ISelectedColumn,
     IColumnInfo,
     IColumn,
+    IColourDefs,
     ISchema,
     ISchemaInfo,
 } from "./ealgis"
@@ -25,6 +26,7 @@ export {
     IOLStyleDef,
     IMapPositionDefaults,
     eLayerValueExpressionMode,
+    IOLStyleDefExpression,
     eLayerFilterExpressionMode,
 } from "./maps"
 export { IModule as IDataInspectorpModule, IFeature, IFeatureProps, IOLFeature, IOLFeatureProps } from "./datainspector"
