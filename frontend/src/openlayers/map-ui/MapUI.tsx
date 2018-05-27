@@ -54,7 +54,7 @@ export class MapUI extends React.Component<IProps, {}> {
                         <Layers>
                             <Tile source={this.mapboxTileSource} />
                             {defn.json.layers
-                                .filter((layer: ILayer) => "latlon_bbox" in layer)
+                                .filter((layer: ILayer) => "latlon_bbox" in layer && layer["latlon_bbox"] !== null)
                                 .map((l: ILayer, key: number) => (
                                     <LayerContainerWrapped key={`${key}.${l.hash}`} layerId={key} map={defn} layer={l} />
                                 ))}

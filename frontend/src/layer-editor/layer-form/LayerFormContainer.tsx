@@ -121,7 +121,7 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
 }
 
 const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
-    const geometry: IGeomTable = JSON.parse(formValues["geometry"])
+    const geometry: IGeomTable = "geometry" in formValues ? JSON.parse(formValues["geometry"]) : null
 
     return {
         fill: {
@@ -141,10 +141,10 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
             colour: formValues["borderColour"],
         },
         name: formValues["name"],
-        type: geometry["geometry_type"],
-        schema: geometry["schema_name"],
+        type: geometry !== null ? geometry["geometry_type"] : null,
+        schema: geometry !== null ? geometry["schema_name"] : null,
         visible: true,
-        geometry: geometry["name"],
+        geometry: geometry !== null ? geometry["name"] : null,
         description: formValues["description"],
         selectedColumns: formValues["selectedColumns"],
     }
@@ -353,7 +353,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 mapId={mapDefinition.id}
                 mapNameURLSafe={mapDefinition["name-url-safe"]}
                 layerId={layerId}
-                layerHash={layerDefinition.hash || ""}
+                layerHash={layerDefinition.hash}
                 layerFillColourScheme={layerFillColourScheme}
                 visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
@@ -374,16 +374,16 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
                 onFormComplete={() => {
-                    onFormComplete(mapDefinition.id, layerId)
+                    onFormComplete(mapDefinition)
                     deactivateDataBrowser()
                 }}
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
                 onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
-                onApplyValueExpression={(expression: string) => {
-                    onApplyValueExpression(expression, mapDefinition.id, layerId)
+                onApplyValueExpression={(expression: string, expression_mode: eLayerValueExpressionMode) => {
+                    onApplyValueExpression(expression, expression_mode, mapDefinition.id, layerId)
                 }}
-                onApplyFilterExpression={(expression: string) => {
-                    onApplyFilterExpression(expression, mapDefinition.id, layerId)
+                onApplyFilterExpression={(expression: string, expression_mode: eLayerFilterExpressionMode) => {
+                    onApplyFilterExpression(expression, expression_mode, mapDefinition.id, layerId)
                 }}
                 onCloseLayer={() => {
                     deactivateDataBrowser()
@@ -478,19 +478,23 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             layer.selectedColumns.splice(layer.selectedColumns.findIndex(columnStub => columnStub === selectedColumn), 1)
             dispatch(change("layerForm", "selectedColumns", layer.selectedColumns))
         },
-        onApplyValueExpression: (expression: string, mapId: number, layerId: number) => {
+        onApplyValueExpression: (expression: string, expression_mode: eLayerValueExpressionMode, mapId: number, layerId: number) => {
             dispatch(change("layerForm", "valueExpression", expression))
+            dispatch(change("layerForm", "valueExpressionMode", expression_mode))
 
             const layerPartial = getLayerFromLayerFormValuesPartial({
                 valueExpression: expression,
+                valueExpressionMode: expression_mode,
             })
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
-        onApplyFilterExpression: (expression: string, mapId: number, layerId: number) => {
+        onApplyFilterExpression: (expression: string, expression_mode: eLayerFilterExpressionMode, mapId: number, layerId: number) => {
             dispatch(change("layerForm", "filterExpression", expression))
+            dispatch(change("layerForm", "filterExpressionMode", expression_mode))
 
             const layerPartial = getLayerFromLayerFormValuesPartial({
                 filterExpression: expression,
+                filterExpressionMode: expression_mode,
             })
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },

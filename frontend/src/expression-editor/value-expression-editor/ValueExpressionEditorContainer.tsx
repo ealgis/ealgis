@@ -2,7 +2,7 @@ import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { change, formValueSelector } from "redux-form"
+import { formValueSelector } from "redux-form"
 import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
 import {
     deselectColumn,
@@ -46,7 +46,6 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    handleChangeExpressionMode: Function
     onToggleAdvancedModeWarnModalState: Function
     handleRemoveColumn: Function
     activateDataBrowser: Function
@@ -96,8 +95,8 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     }
 
     componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
-        const { dataBrowserResult, onApply, handleChangeExpressionMode } = this.props
-        const { expression, expressionMode } = this.state
+        const { dataBrowserResult, onApply } = this.props
+        const { expression } = this.state
 
         if (dataBrowserResult.valid && JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {
             if (dataBrowserResult.message === "colgroup1") {
@@ -111,12 +110,11 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
     }
 
     applyExpression() {
-        const { onApply, handleChangeExpressionMode } = this.props
+        const { onApply } = this.props
         const { expressionMode } = this.state
 
         if (this.isExpressionComplete()) {
-            onApply(this.compileExpression())
-            handleChangeExpressionMode(expressionMode)
+            onApply(this.compileExpression(), expressionMode)
         }
     }
 
@@ -169,13 +167,12 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
             advancedModeModalOpen,
             isDataBrowserActive,
             onApply,
-            handleChangeExpressionMode,
             onToggleAdvancedModeWarnModalState,
             handleRemoveColumn,
             activateDataBrowser,
             deactivateDataBrowser,
         } = this.props
-        const { expression } = this.state
+        const { expression, expressionMode } = this.state
 
         return (
             <ValueExpressionEditor
@@ -185,7 +182,7 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 layerId={layerId}
                 expression={expression}
                 expressionCompiled={valueExpression}
-                expressionMode={this.state.expressionMode}
+                expressionMode={expressionMode}
                 advancedModeModalOpen={advancedModeModalOpen}
                 onRemoveColumn={(payload: { colgroup: string; column: IColumn }) => {
                     // If the Data Browser is active it's managing selected columns for us.
@@ -207,14 +204,12 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                     this.setState({ ...this.state, expressionCompiled: expressionCompiled })
                 }}
                 onApply={() => {
-                    onApply(this.compileExpression())
+                    onApply(this.compileExpression(), expressionMode)
                     deactivateDataBrowser()
-                    handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onApplyAdvanced={() => {
-                    onApply(this.state.expressionCompiled)
+                    onApply(this.state.expressionCompiled, expressionMode)
                     deactivateDataBrowser()
-                    handleChangeExpressionMode(this.state.expressionMode)
                 }}
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
                     this.setState({ ...this.state, expressionMode: mode })
@@ -253,9 +248,6 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        handleChangeExpressionMode(mode: eLayerValueExpressionMode) {
-            dispatch(change("layerForm", "valueExpressionMode", mode))
-        },
         onToggleAdvancedModeWarnModalState: () => {
             dispatch(toggleModalState("valueExpressionAdvancedModeWarning"))
         },
@@ -263,7 +255,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(deselectColumn(column))
         },
         activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
-            console.log("activateDataBrowser", message, componentId)
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
             const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
             dispatch(startBrowsing(componentId, message, config))

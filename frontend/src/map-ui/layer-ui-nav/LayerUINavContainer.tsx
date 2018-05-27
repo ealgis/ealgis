@@ -34,7 +34,10 @@ interface IOwnProps {
 
 export class LayerUINavContainer extends React.Component<IProps & IStateProps & IDispatchProps, {}> {
     private getGeometryDescription(layer: ILayer, geominfo: IGeomInfo) {
-        return geominfo[layer["schema"] + "." + layer["geometry"]].description
+        if ("schema" in layer && "geometry" in layer && layer["schema"] !== null && layer["geometry"] !== null) {
+            return geominfo[layer["schema"] + "." + layer["geometry"]].description
+        }
+        return null
     }
 
     render() {

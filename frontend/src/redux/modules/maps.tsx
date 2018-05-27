@@ -1,16 +1,16 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array";
-import * as dotProp from "dot-prop-immutable";
-import { cloneDeep, isEqual, merge } from "lodash-es";
-import { browserHistory } from "react-router";
-import { SubmissionError } from "redux-form";
-import { IGeomTable, ISelectedColumn, IUserPartial, getGeomInfoFromState, getUserIdFromState } from "../../redux/modules/ealgis";
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
-import { IPosition } from "../../redux/modules/map";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
-import { getMapURL } from "../../shared/utils";
-import { IConfig } from "./interfaces";
+import { includes as arrayIncludes } from "core-js/library/fn/array"
+import * as dotProp from "dot-prop-immutable"
+import { cloneDeep, isEqual, merge } from "lodash-es"
+import { browserHistory } from "react-router"
+import { SubmissionError } from "redux-form"
+import { ISelectedColumn, IUserPartial, getUserIdFromState } from "../../redux/modules/ealgis"
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import { IPosition } from "../../redux/modules/map"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { getMapURL } from "../../shared/utils"
+import { IConfig } from "./interfaces"
 
 const Config: IConfig = require("Config") as any
 
@@ -394,10 +394,10 @@ export interface ILayer {
         }
     }
     name: string
-    type: string
-    schema: string
+    type: string | null
+    schema: string | null
     visible: boolean
-    geometry: string
+    geometry: string | null
     olStyleDef?: Array<IOLStyleDef>
     olStyle?: any
     description: string
@@ -607,17 +607,6 @@ export function removeMap(mapId: number) {
 
 export function addLayer(mapId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        // Default to 2011 SA4s or whatever the first geometry is
-        // FIXME Have schemas nominate their default geometry and set that here or in Python-land in /addLayer
-        const geominfo = getGeomInfoFromState(getState)
-        let defaultGeometry: IGeomTable
-
-        if (geominfo["aus_census_2011.sa4_2011_aust_pow"] !== undefined) {
-            defaultGeometry = geominfo["aus_census_2011.sa4_2011_aust_pow"]
-        } else {
-            defaultGeometry = geominfo[Object.keys(geominfo)[0]]
-        }
-
         const payload = {
             layer: {
                 fill: {
@@ -640,10 +629,11 @@ export function addLayer(mapId: number) {
                     },
                 },
                 name: "Unnamed Layer",
-                type: defaultGeometry["geometry_type"],
-                schema: defaultGeometry["schema_name"],
+                type: null,
+                schema: null,
                 visible: true,
-                geometry: defaultGeometry["name"],
+                geometry: null,
+                hash: null,
                 description: "",
                 selectedColumns: [],
             },
@@ -728,8 +718,8 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
                         )
                     }
 
-                    if (haveCoreFieldsChanged || "geometry" in layerPartial) {
-                        dispatch(fetchLayerQuerySummary(mapId, json.hash!))
+                    if (json.hash !== null && (haveCoreFieldsChanged || "geometry" in layerPartial)) {
+                        dispatch(fetchLayerQuerySummary(mapId, json.hash))
                     }
 
                     return json

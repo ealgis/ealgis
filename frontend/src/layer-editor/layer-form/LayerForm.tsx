@@ -9,7 +9,7 @@ import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
 import * as React from "react";
 import { Link } from "react-router";
-import { Field, FieldArray, Fields, reduxForm } from "redux-form";
+import { Field, Fields, reduxForm } from "redux-form";
 import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
 import styled from "styled-components";
 import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
@@ -410,6 +410,83 @@ const StylingFields = (fields: any) => {
     )
 }
 
+const GeometryAndDataFields = (fields: any) => {
+    return (
+        <React.Fragment>
+            <FormSectionSubheaderMini>1. Choose a level of detail</FormSectionSubheaderMini>
+            <MyField
+                name="geometry"
+                component={SelectField}
+                // hintText="Choose your level of detail..."
+                // floatingLabelText="Level of detail"
+                // floatingLabelFixed={true}
+                validate={[required]}
+                fullWidth={true}
+                onChange={(junk: object, newValue: object, previousValue: object) => fields.onFieldChange("geometry", newValue)}
+                selectionRenderer={fields.geometrySelectionRenderer}
+            >
+                {fields.geometryTables}
+            </MyField>
+
+            <FormSectionSubheaderMini>2. Choose the data to map</FormSectionSubheaderMini>
+            <MyField
+                name="valueExpression"
+                component={TextField}
+                disabled={true}
+                multiLine={true}
+                rows={2}
+                // hintText="Write an expression..."
+                // floatingLabelText="Value expression"
+                // floatingLabelFixed={true}
+                fullWidth={true}
+                autoComplete="off"
+                onBlur={(event: any, newValue: string, previousValue: string) =>
+                    fields.onFieldBlur(event.target.name, newValue, previousValue)
+                }
+            />
+
+            <RaisedButton
+                containerElement={<Link to={`${fields.layerURLBase}/data/value-expression`} />}
+                label={"Choose Data"}
+                primary={true}
+                disabled={fields["geometry"].input.value === ""}
+                style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+            />
+
+            <FormSectionSubheaderMini>3. Filter the data</FormSectionSubheaderMini>
+            <MyField
+                name="filterExpression"
+                component={TextField}
+                disabled={true}
+                multiLine={true}
+                rows={2}
+                hintText="Optionally apply a filter to your data"
+                // floatingLabelText="Filter expression"
+                // floatingLabelFixed={true}
+                fullWidth={true}
+                autoComplete="off"
+                onBlur={(event: any, newValue: string, previousValue: string) =>
+                    fields.onFieldBlur(event.target.name, newValue, previousValue)
+                }
+            />
+
+            <RaisedButton
+                containerElement={<Link to={`${fields.layerURLBase}/data/filter-expression`} />}
+                label={"Apply Filter"}
+                primary={true}
+                disabled={fields["geometry"].input.value === ""}
+                style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
+            />
+
+            {/* <FieldArray
+                name="selectedColumns"
+                component={SelectedColumns}
+                onRemoveColumn={onRemoveColumn}
+            /> */}
+        </React.Fragment>
+    )
+}
+
 const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }: any) => {
     return (
         <React.Fragment>
@@ -450,7 +527,6 @@ export interface IProps {
 
 class LayerForm extends React.Component<IProps, {}> {
     geometryTables!: Array<JSX.Element>
-    colourSchemes!: Array<JSX.Element>
 
     geometrySelectionRenderer = (geom_table_json: string) => {
         const geom_table: IGeomTable = JSON.parse(geom_table_json)
@@ -476,11 +552,6 @@ class LayerForm extends React.Component<IProps, {}> {
                 )
             })
         })
-
-        this.colourSchemes = []
-        for (let colour in colourinfo) {
-            this.colourSchemes.push(<MenuItem key={colour} value={colour} primaryText={colour} />)
-        }
     }
 
     render() {
@@ -555,22 +626,15 @@ class LayerForm extends React.Component<IProps, {}> {
                                 <TabContainer>
                                     {visibleComponent === undefined && (
                                         <React.Fragment>
-                                            <FormSectionSubheaderMini>1. Choose a level of detail</FormSectionSubheaderMini>
-                                            <MyField
-                                                name="geometry"
-                                                component={SelectField}
-                                                // hintText="Choose your level of detail..."
-                                                // floatingLabelText="Level of detail"
-                                                // floatingLabelFixed={true}
-                                                validate={[required]}
-                                                fullWidth={true}
-                                                onChange={(junk: object, newValue: object, previousValue: object) =>
-                                                    onFieldChange("geometry", newValue)
-                                                }
-                                                selectionRenderer={this.geometrySelectionRenderer}
-                                            >
-                                                {this.geometryTables}
-                                            </MyField>
+                                            <Fields
+                                                names={["geometry", "valueExpression", "filterExpression"]}
+                                                component={GeometryAndDataFields}
+                                                onFieldChange={onFieldChange}
+                                                onFieldBlur={onFieldBlur}
+                                                layerURLBase={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`}
+                                                geometrySelectionRenderer={this.geometrySelectionRenderer}
+                                                geometryTables={this.geometryTables}
+                                            />
                                         </React.Fragment>
                                     )}
 
@@ -588,68 +652,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                     onBlur={(event: any, newValue: string, previousValue: string) =>
                                         onFieldBlur(event.target.name, newValue, previousValue)}
                                 /> */}
-
-                                    {visibleComponent === undefined && (
-                                        <React.Fragment>
-                                            <FormSectionSubheaderMini>2. Choose the data to map</FormSectionSubheaderMini>
-                                            <MyField
-                                                name="valueExpression"
-                                                component={TextField}
-                                                disabled={true}
-                                                multiLine={true}
-                                                rows={2}
-                                                // hintText="Write an expression..."
-                                                // floatingLabelText="Value expression"
-                                                // floatingLabelFixed={true}
-                                                fullWidth={true}
-                                                autoComplete="off"
-                                                onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                    onFieldBlur(event.target.name, newValue, previousValue)
-                                                }
-                                            />
-
-                                            <RaisedButton
-                                                containerElement={
-                                                    <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/value-expression`} />
-                                                }
-                                                label={"Choose Data"}
-                                                primary={true}
-                                                style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
-                                            />
-
-                                            <FormSectionSubheaderMini>3. Filter the data</FormSectionSubheaderMini>
-                                            <MyField
-                                                name="filterExpression"
-                                                component={TextField}
-                                                disabled={true}
-                                                multiLine={true}
-                                                rows={2}
-                                                hintText="Optionally apply a filter to your data"
-                                                // floatingLabelText="Filter expression"
-                                                // floatingLabelFixed={true}
-                                                fullWidth={true}
-                                                autoComplete="off"
-                                                onBlur={(event: any, newValue: string, previousValue: string) =>
-                                                    onFieldBlur(event.target.name, newValue, previousValue)
-                                                }
-                                            />
-
-                                            <RaisedButton
-                                                containerElement={
-                                                    <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data/filter-expression`} />
-                                                }
-                                                label={"Apply Filter"}
-                                                primary={true}
-                                                style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
-                                            />
-
-                                            <FieldArray
-                                                name="selectedColumns"
-                                                component={SelectedColumns}
-                                                onRemoveColumn={onRemoveColumn}
-                                            />
-                                        </React.Fragment>
-                                    )}
 
                                     {visibleComponent === "value-expression" && (
                                         <React.Fragment>
@@ -694,7 +696,13 @@ class LayerForm extends React.Component<IProps, {}> {
 
                                     <PaddedDivider />
 
-                                    <LayerQuerySummaryContainer mapId={mapId} layerHash={layerHash} onFitScaleToData={onFitScaleToData} />
+                                    {layerHash !== null && (
+                                        <LayerQuerySummaryContainer
+                                            mapId={mapId}
+                                            layerHash={layerHash}
+                                            onFitScaleToData={onFitScaleToData}
+                                        />
+                                    )}
                                 </TabContainer>
                             </Tab>
                             {/* END STYLE TAB */}
@@ -767,7 +775,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                 tooltip="Discard your recent changes to this layer"
                                 tooltipPosition="top-right"
                                 disabled={isDirty === false}
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
                                 onClick={onResetForm}
                             >
                                 <ContentUndo color={muiThemePalette.alternateTextColor} />
@@ -775,7 +782,6 @@ class LayerForm extends React.Component<IProps, {}> {
                             <ClickableIconButton
                                 tooltip="Return to the layer list"
                                 tooltipPosition="top-right"
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
                                 onClick={onFormComplete}
                             >
                                 <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />

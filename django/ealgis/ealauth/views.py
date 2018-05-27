@@ -236,7 +236,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if (layerId + 1) > len(map.json["layers"]):
             raise ValidationError(detail="Layer not found.")
 
-        json = map.json
+        json = copy.deepcopy(map.json)
         json["layers"][layerId] = request.data["layer"]
 
         serializer = MapDefinitionSerializer(

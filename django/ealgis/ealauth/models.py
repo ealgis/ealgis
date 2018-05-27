@@ -50,6 +50,9 @@ class MapDefinition(models.Model):
             return self.json
         return {}
 
+    def has_geometry(self, layer):
+        return "geometry" in layer and layer["geometry"] is not None
+
     def compile_expr(self, layer, **kwargs):
         # in here to avoid circular import
         from ealgis.dataexpr import DataExpression
@@ -150,12 +153,21 @@ class MapDefinition(models.Model):
                 pass
             if old_layer is not None:
                 _private_copy_over(old_layer, layer)
-            # rebuild postgis query
-            self._layer_build_postgis_query(old_layer, layer, force)
-            # update layer hash
-            self._layer_update_hash(layer)
-            # calculate latlon bounding box of the expression
-            self._layer_set_latlon_bbox(layer, self._get_latlon_bbox(layer))
+
+            if self.has_geometry(layer):
+                # rebuild postgis query
+                self._layer_build_postgis_query(old_layer, layer, force)
+                # update layer hash
+                self._layer_update_hash(layer)
+                # calculate latlon bounding box of the expression
+                self._layer_set_latlon_bbox(layer, self._get_latlon_bbox(layer))
+            else:
+                # Handle cases where the old layer had geometry, but the new layer
+                # doesn't (e.g. the user has reset the layer creation form)
+                layer["hash"] = None
+                layer["latlon_bbox"] = None
+                layer["_postgis_query"] = None
+
         self.json = defn
         return rev
 

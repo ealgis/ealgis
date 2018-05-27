@@ -2,7 +2,7 @@ import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { change, formValueSelector } from "redux-form"
+import { formValueSelector } from "redux-form"
 import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
 import { fetchResultForComponent, finishBrowsing, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
 import {
@@ -38,7 +38,6 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    handleChangeExpressionMode: Function
     onToggleAdvancedModeWarnModalState: Function
     activateDataBrowser: Function
     deactivateDataBrowser: Function
@@ -101,12 +100,11 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
     }
 
     applyExpression() {
-        const { onApply, handleChangeExpressionMode } = this.props
+        const { onApply } = this.props
         const { expressionMode } = this.state
 
         if (this.isExpressionComplete()) {
-            onApply(this.compileExpression())
-            handleChangeExpressionMode(expressionMode)
+            onApply(this.compileExpression(), expressionMode)
         }
     }
 
@@ -159,12 +157,11 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
             filterExpression,
             advancedModeModalOpen,
             onApply,
-            handleChangeExpressionMode,
             onToggleAdvancedModeWarnModalState,
             activateDataBrowser,
             deactivateDataBrowser,
         } = this.props
-        const { expression } = this.state
+        const { expression, expressionMode } = this.state
 
         return (
             <FilterExpressionEditor
@@ -185,12 +182,10 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
                     this.setState({ ...this.state, expressionCompiled: expressionCompiled })
                 }}
                 onApply={() => {
-                    onApply(this.compileExpression())
-                    handleChangeExpressionMode(this.state.expressionMode)
+                    onApply(this.compileExpression(), expressionMode)
                 }}
                 onApplyAdvanced={() => {
-                    onApply(this.state.expressionCompiled)
-                    handleChangeExpressionMode(this.state.expressionMode)
+                    onApply(this.state.expressionCompiled, expressionMode)
                 }}
                 onChangeExpressionMode={(mode: eLayerFilterExpressionMode) => {
                     this.setState({ ...this.state, expressionMode: mode })
@@ -227,9 +222,6 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        handleChangeExpressionMode(mode: eLayerFilterExpressionMode) {
-            dispatch(change("layerForm", "filterExpressionMode", mode))
-        },
         onToggleAdvancedModeWarnModalState: () => {
             dispatch(toggleModalState("filterExpressionAdvancedModeWarning"))
         },
