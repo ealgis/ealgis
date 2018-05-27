@@ -22,7 +22,6 @@ import urllib.parse
 import json
 import csv
 from django.http import HttpResponseNotFound
-from ealgis.util import deepupdate
 from ealgis_common.db import broker
 from ealgis.mvt import TileGenerator
 
