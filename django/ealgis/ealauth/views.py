@@ -337,7 +337,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if z is None or x is None or y is None:
             raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
 
-        cache_key = "layer_{}_{}_{}_{}".format(layer_hash, x, y, z)
+        cache_key = "map_{}_layer_{}_{}_{}_{}".format(map.id, layer_hash, x, y, z)
         memcachedEnabled = True
         fromMemcached = False
 
