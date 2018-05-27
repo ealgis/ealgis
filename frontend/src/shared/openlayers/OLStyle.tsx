@@ -174,7 +174,10 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
             let ruleId: any = null
             let olStyle: any = null
 
-            if (layerUID in layerStyleIdCache && layerStyleIdCache[layerUID] !== undefined) {
+            // Apply our special feature highlight pattern to this feature
+            if (highlightedFeatures.indexOf(gid) >= 0) {
+                return styleCache["_highlightedFeatures"]
+            } else if (layerUID in layerStyleIdCache && layerStyleIdCache[layerUID] !== undefined) {
                 styleId = layerStyleIdCache[layerUID]
             } else {
                 if (do_fill) {
@@ -195,10 +198,7 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
             }
             // console.log(`Cache Miss for ${styleId}!`)
 
-            // Apply our special feature highlight pattern to this feature
-            if (highlightedFeatures.indexOf(gid) >= 0) {
-                return styleCache["_highlightedFeatures"]
-            } else if (do_fill) {
+            if (do_fill) {
                 // Fill according to a set of user-defined styling rules
                 let rule = l["olStyleDef"]![ruleId]
                 let rgb = rule["rgb"]
