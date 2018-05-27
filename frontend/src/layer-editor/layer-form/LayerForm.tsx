@@ -1,25 +1,25 @@
-import { groupBy } from "lodash-es"
-import Divider from "material-ui/Divider"
-import IconButton from "material-ui/IconButton"
-import MenuItem from "material-ui/MenuItem"
-import RaisedButton from "material-ui/RaisedButton"
-import Subheader from "material-ui/Subheader"
-import { Tab, Tabs } from "material-ui/Tabs"
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
-import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
-import * as React from "react"
-import { Link } from "react-router"
-import { Field, FieldArray, Fields, reduxForm } from "redux-form"
-import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
-import styled from "styled-components"
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
-import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces"
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
-import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
-import ColumnCard from "../column-card/ColumnCardContainer"
-import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
+import { groupBy } from "lodash-es";
+import Divider from "material-ui/Divider";
+import IconButton from "material-ui/IconButton";
+import MenuItem from "material-ui/MenuItem";
+import RaisedButton from "material-ui/RaisedButton";
+import Subheader from "material-ui/Subheader";
+import { Tab, Tabs } from "material-ui/Tabs";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
+import * as React from "react";
+import { Link } from "react-router";
+import { Field, FieldArray, Fields, reduxForm } from "redux-form";
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
+import styled from "styled-components";
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
+import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
+import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
+import ColumnCard from "../column-card/ColumnCardContainer";
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -39,7 +39,9 @@ const MasterFlexboxContainer = styled.div`
     min-height: 100vh;
 `
 
-const MasterFlexboxItem = styled.div``
+const MasterFlexboxItem = styled.div`
+    padding-bottom: 56px; /* Height of MasterFlexboxItemBottomFixed */
+`
 
 const MasterFlexboxItemBottomFixed = styled.div`
     position: absolute;
@@ -795,7 +797,7 @@ let LayerFormReduxForm = reduxForm({
     },
     onSubmitFail: (a: any, b: any, c: any) => {
         console.log("onSubmitFail", a, b, c)
-    }
+    },
 })(LayerForm)
 
 export default LayerFormReduxForm
