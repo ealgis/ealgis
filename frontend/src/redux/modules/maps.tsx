@@ -1,10 +1,9 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array";
 import * as dotProp from "dot-prop-immutable";
-import { merge } from "lodash-es";
+import { cloneDeep, isEqual, merge } from "lodash-es";
 import { browserHistory } from "react-router";
 import { SubmissionError } from "redux-form";
 import { IGeomTable, ISelectedColumn, IUserPartial, getGeomInfoFromState, getUserIdFromState } from "../../redux/modules/ealgis";
-import * as layerFormModule from "../../redux/modules/layerform";
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
 import { IPosition } from "../../redux/modules/map";
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
@@ -31,7 +30,6 @@ const CLONE_MAP_LAYER = "ealgis/maps/CLONE_MAP_LAYER"
 const SET_LAYER_VISIBILITY = "ealgis/maps/SET_LAYER_VISIBILITY"
 const DELETE_LAYER = "ealgis/maps/DELETE_LAYER"
 const CHANGE_LAYER_PROPERTY = "ealgis/maps/CHANGE_LAYER_PROPERTY"
-const MERGE_LAYER_PROPERTIES = "ealgis/maps/MERGE_LAYER_PROPERTIES"
 const EXPORT_MAP = "ealgis/maps/EXPORT_MAP"
 const EXPORT_MAP_VIEWPORT = "ealgis/maps/EXPORT_MAP_VIEWPORT"
 const COPY_SHAREABLE_LINK = "ealgis/maps/COPY_SHAREABLE_LINK"
@@ -80,9 +78,6 @@ export default function reducer(state = initialState, action: IAction) {
                 `${action.mapId}.json.layers.${action.layerId}.${action.layerPropertyPath}`,
                 action.layerPropertyValue
             )
-        case MERGE_LAYER_PROPERTIES:
-            const newLayer = merge(dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}`), action.layerPartial)
-            return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}`, newLayer)
         case ADD_COLUMN_TO_SELECTION:
             const selectedColumns: Array<ISelectedColumn> =
                 dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`) || []
@@ -275,15 +270,6 @@ export function receiveChangeLayerProperty(mapId: number, layerId: number, layer
     }
 }
 
-export function receiveMergeLayerProperties(mapId: number, layerId: number, layerPartial: object): IAction {
-    return {
-        type: MERGE_LAYER_PROPERTIES,
-        mapId,
-        layerId,
-        layerPartial,
-    }
-}
-
 export function exportMap(): IAction {
     return {
         type: EXPORT_MAP,
@@ -456,7 +442,7 @@ export enum eMapShared {
 // e.g. thunks, epics, et cetera
 export function fetchMaps() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/maps/all/", dispatch)
+        const { response, json } = await ealapi.get("/api/0.1/maps/", dispatch)
 
         if (response.status === 200 && json.length > 0) {
             // Map maps from an array of objects to a dict keyed by mapId
@@ -686,7 +672,7 @@ export function changeLayerVisibility(map: IMap, layerId: number) {
         dispatch(receiveChangeLayerVisibility(map["id"], layerId))
 
         if (getUserIdFromState(getState) === map.owner_user_id) {
-            // FIXME Client-side or make the API accept a layer object to merge for /publishLayer
+            // FIXME Client-side or make the API accept a layer object to merge for /updateLayer
             const layer = getMapFromState(getState, map["id"]).json.layers[layerId]
             dispatch(updateLayer(map["id"], layerId, layer))
         }
@@ -722,33 +708,16 @@ export function deleteMapLayer(map: IMap, layerId: number) {
     }
 }
 
-export function initDraftLayer(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const payload = { layerId: layerId }
-        return ealapi.put(`/api/0.1/maps/${mapId}/initDraftLayer/`, payload, dispatch)
-    }
-}
-
 export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: number, layerId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        // Determine if we need to recompile the layer server-side.
-        // e.g. Recompile the SQL expression, recompile the layer styles, et cetera
-        let willCompileServerSide: boolean = false
-        if ("geometry" in layerPartial) {
-            willCompileServerSide = true
-        }
-        if (!willCompileServerSide && "fill" in layerPartial) {
-            willCompileServerSide = Object.keys(layerPartial["fill"]!).some((value: string, index: number, array: Array<string>) => {
-                return ["expression", "conditional"].indexOf(value) >= 0
-            })
-        }
+        const layer = getLayerFromState(getState, mapId, layerId)
+        const newLayer = merge(cloneDeep(layer), layerPartial)
 
-        // Where possible, simply merge our partial layer object into the Redux store.
-        if (!willCompileServerSide) {
-            return dispatch(receiveMergeLayerProperties(mapId, layerId, layerPartial))
-        } else {
-            return dispatch(editDraftLayer(mapId, layerId, layerPartial)).then((layer: ILayer) => {
-                if (typeof layer === "object") {
+        if (isEqual(layer, newLayer) === false) {
+            return dispatch(updateLayer(mapId, layerId, newLayer, true)).then(({ response, json }: any) => {
+                if (response.status === 200) {
+                    dispatch(receieveUpdatedLayer(mapId, layerId, json))
+
                     // Refresh layer query summary if any of the core fields change (i.e. Fields that change the PostGIS query)
                     let haveCoreFieldsChanged: boolean = false
                     if ("fill" in layerPartial) {
@@ -760,97 +729,37 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
                     }
 
                     if (haveCoreFieldsChanged || "geometry" in layerPartial) {
-                        dispatch(fetchLayerQuerySummary(mapId, layer.hash!))
+                        dispatch(fetchLayerQuerySummary(mapId, json.hash!))
                     }
+
+                    return json
+                } else {
+                    const message = Object.keys(json).map((key: any, index: any) => {
+                        return `${key}: ${json[key].toLowerCase()}`
+                    })
+                    dispatch(sendSnackbarNotification(`Errors updating layer: ${message.join(", ")}`))
                 }
             })
         }
     }
 }
 
-export function updateLayer(mapId: number, layerId: number, layer: ILayer) {
+export function updateLayer(mapId: number, layerId: number, layer: ILayer, quiet: boolean = false) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const payload = {
             layerId: layerId,
             layer: JSON.parse(JSON.stringify(layer)),
         }
 
-        return ealapi.put(`/api/0.1/maps/${mapId}/publishLayer/`, payload, dispatch)
-    }
-}
-
-export function publishLayer(mapId: number, layerId: number, layer: ILayer) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        dispatch(layerFormModule.beginPublish())
-
-        return dispatch(updateLayer(mapId, layerId, layer)).then(({ response, json }: any) => {
-            if (response.status === 200) {
-                dispatch(layerFormModule.finishedSubmitting())
-                dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                dispatch(sendSnackbarNotification(`Layer saved successfully`))
-                browserHistory.push(getMapURL(getMapFromState(getState, mapId)))
-                return json
-            } else {
-                const message = Object.keys(json).map((key: any, index: any) => {
-                    return `${key}: ${json[key].toLowerCase()}`
-                })
-                dispatch(sendSnackbarNotification(`Errors publishing layer: ${message.join(", ")}`))
-            }
-        })
-    }
-}
-
-export function restoreMasterLayer(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        dispatch(layerFormModule.beginRestoreMaster())
-
-        const payload = {
-            layerId: layerId,
-        }
-
-        return ealapi.put(`/api/0.1/maps/${mapId}/restoreMasterLayer/`, payload, dispatch).then(({ response, json }: any) => {
-            if (response.status === 200) {
-                dispatch(layerFormModule.finishedSubmitting())
-                dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                // dispatch(sendSnackbarNotification(`Layer restored successfully`))
-                // browserHistory.push(`/map/${mapId}`)
-                return json
-            }
-        })
-    }
-}
-
-export function restoreMasterLayerAndDiscardForm(mapId: number, layerId: number) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        return dispatch(restoreMasterLayer(mapId, layerId)).then(() => {
-            browserHistory.push(getMapURL(getMapFromState(getState, mapId)))
-        })
-    }
-}
-
-export function editDraftLayer(mapId: number, layerId: number, layerPartial: object) {
-    return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const payload = {
-            layerId: layerId,
-            layer: layerPartial,
-        }
-
-        return ealapi.put(`/api/0.1/maps/${mapId}/editDraftLayer/`, payload, dispatch).then(({ response, json }: any) => {
-            if (response.status === 200) {
-                dispatch(receieveUpdatedLayer(mapId, layerId, json))
-                return json
-            } else if (response.status === 400) {
-                dispatch(layerFormModule.loadValidationErrors(json))
-            } else {
-                // We're not sure what happened, but handle it:
-                // our Error will get passed straight to RavenJS (Sentry.io)
-                throw new Error("Unhandled error creating map. Please report. (" + response.status + ") " + JSON.stringify(json))
-            }
-        })
+        return ealapi.put(`/api/0.1/maps/${mapId}/updateLayer/`, payload, dispatch, quiet)
     }
 }
 
 // Helper methods
 export function getMapFromState(getState: Function, mapId: number) {
     return getState().maps[mapId]
+}
+
+export function getLayerFromState(getState: Function, mapId: number, layerId: number) {
+    return getState().maps[mapId].json.layers[layerId]
 }

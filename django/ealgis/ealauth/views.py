@@ -165,24 +165,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @list_route(methods=['get'])
-    def all(self, request, format=None):
-        maps = self.get_queryset()
-
-        # Reset any abandoned edit sessions
-        # This only works because /maps/all/ is called on app load
-        for map in maps:
-            for layerId, layer in enumerate(map.json["layers"]):
-                if map.has_master_layer(layerId):
-                    map.restore_master_layer(layerId)
-
-                    serializer = MapDefinitionSerializer(map, data={"json": map.json}, partial=True)
-                    if serializer.is_valid():
-                        serializer.save()
-
-        serializer = MapDefinitionSerializer(maps, many=True)
-        return Response(serializer.data)
-
-    @list_route(methods=['get'])
     def shared(self, request, format=None):
         maps = MapDefinition.objects.all().filter(
             shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
@@ -243,71 +225,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @detail_route(methods=['put'])
-    def initDraftLayer(self, request, pk=None, format=None):
-        map = self.get_object()
-        layerId = int(request.data["layerId"])
-
-        if layerId < 0:
-            raise ValidationError(detail="LayerId not valid.")
-
-        if (layerId + 1) > len(map.json["layers"]):
-            raise ValidationError(detail="Layer not found.")
-
-        json = map.json
-        layer = json["layers"][layerId]
-
-        if "master" in layer:
-            layer = layer["master"]
-
-        # Make a new master object (first time editing this layer) so we have a copy to restore
-        # if we don't publish the edits to this layer.
-        layer["master"] = copy.deepcopy(layer)
-        layer["draft"] = True
-        json["layers"][layerId] = layer
-
-        serializer = MapDefinitionSerializer(
-            map, data={"json": json}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @detail_route(methods=['put'])
-    def editDraftLayer(self, request, pk=None, format=None):
-        map = self.get_object()
-        layerId = int(request.data["layerId"])
-
-        if not (layerId >= 0 or type(request.data["layer"]) is dict):
-            raise ValidationError(
-                detail="LayerId and/or Layer object not found.")
-
-        if (layerId + 1) > len(map.json["layers"]):
-            raise ValidationError(detail="Layer not found.")
-
-        json = copy.deepcopy(map.json)
-        layer = json["layers"][layerId]
-
-        if "master" not in layer:
-            raise ValidationError(detail="Layer edit session not initialised.")
-
-        json["layers"][layerId] = deepupdate(layer, request.data["layer"])
-
-        serializer = MapDefinitionSerializer(
-            map, data={"json": json}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-
-            newLayer = serializer.validated_data["json"]["layers"][layerId]
-            del newLayer["master"]
-            del newLayer["draft"]
-
-            return Response(newLayer)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @detail_route(methods=['put'])
-    def publishLayer(self, request, pk=None, format=None):
+    def updateLayer(self, request, pk=None, format=None):
         map = self.get_object()
         layerId = int(request.data["layerId"])
 
@@ -320,34 +238,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         json = map.json
         json["layers"][layerId] = request.data["layer"]
-
-        serializer = MapDefinitionSerializer(
-            map, data={"json": json}, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data["json"]["layers"][layerId])
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @detail_route(methods=['put'])
-    def restoreMasterLayer(self, request, pk=None, format=None):
-        map = self.get_object()
-        layerId = int(request.data["layerId"])
-
-        if not (layerId >= 0 or type(request.data["layer"]) is dict):
-            raise ValidationError(
-                detail="LayerId and/or Layer object not found.")
-
-        if (layerId + 1) > len(map.json["layers"]):
-            raise ValidationError(detail="Layer not found.")
-
-        if "master" not in map.json["layers"][layerId] or "draft" not in map.json["layers"][layerId]:
-            raise ValidationError(
-                detail="Layer has not been edited - nothing to restore.")
-
-        json = map.json
-        json["layers"][layerId] = copy.deepcopy(
-            json["layers"][layerId]["master"])
 
         serializer = MapDefinitionSerializer(
             map, data={"json": json}, partial=True)

@@ -1,25 +1,25 @@
-import { groupBy } from "lodash-es";
-import Divider from "material-ui/Divider";
-import IconButton from "material-ui/IconButton";
-import MenuItem from "material-ui/MenuItem";
-import RaisedButton from "material-ui/RaisedButton";
-import Subheader from "material-ui/Subheader";
-import { Tab, Tabs } from "material-ui/Tabs";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
-import { ContentSave, NavigationArrowBack, NavigationArrowForward, NavigationClose } from "material-ui/svg-icons";
-import * as React from "react";
-import { Link } from "react-router";
-import { Field, FieldArray, Fields, reduxForm } from "redux-form";
-import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
-import styled from "styled-components";
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
-import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
-import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
-import ColumnCard from "../column-card/ColumnCardContainer";
-import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
+import { groupBy } from "lodash-es"
+import Divider from "material-ui/Divider"
+import IconButton from "material-ui/IconButton"
+import MenuItem from "material-ui/MenuItem"
+import RaisedButton from "material-ui/RaisedButton"
+import Subheader from "material-ui/Subheader"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
+import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
+import * as React from "react"
+import { Link } from "react-router"
+import { Field, FieldArray, Fields, reduxForm } from "redux-form"
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
+import styled from "styled-components"
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
+import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces"
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
+import ColumnCard from "../column-card/ColumnCardContainer"
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -149,11 +149,12 @@ const BorderSizeAndColourFields = (fields: any) => {
                         name="borderColour"
                         component={ColourPicker}
                         color={fields.initialBorderColour}
-                        onChange={(junk: object, newValue: object, previousValue: object) =>
-                            fields.onFieldChange("borderColour", {
-                                borderColour: newValue,
-                                borderSize: fields["borderSize"].input.value,
-                            })
+                        onChange={
+                            (junk: object, newValue: object, previousValue: object) => fields.onFieldChange("borderColour", newValue)
+                            // fields.onFieldChange("borderColour", {
+                            //     borderColour: newValue,
+                            //     borderSize: fields["borderSize"].input.value,
+                            // })
                         }
                     />
                 </SecondFlexboxColumn>
@@ -176,11 +177,12 @@ const BorderSizeAndColourFields = (fields: any) => {
                         max={10}
                         sliderStyle={styles.borderSizeSlider}
                         step={1}
-                        onChange={(event: any, newValue: string, previousValue: string) =>
-                            fields.onFieldChange("borderSize", {
-                                borderColour: fields["borderColour"],
-                                borderSize: newValue,
-                            })
+                        onChange={
+                            (event: any, newValue: string, previousValue: string) => fields.onFieldChange("borderSize", newValue)
+                            // fields.onFieldChange("borderSize", {
+                            //     borderColour: fields["borderColour"],
+                            //     borderSize: newValue,
+                            // })
                         }
                     />
                 </SecondFlexboxColumn>
@@ -226,6 +228,9 @@ const StylingFields = (fields: any) => {
                         // floatingLabelFixed={true}
                         validate={[required]}
                         fullWidth={true}
+                        // onChange={(junk: object, newValue: object, previousValue: object) =>
+                        //     fields.onFieldChange("fillColourScheme", newValue)
+                        // }
                         onChange={(junk: object, newValue: string, previousValue: string) => {
                             // There's two gotchas here:
                             // 1. redux-form-material-ui doesn't pass (event, newValue, previousValue) for SelectFields like it does for other field types. Hence the `junk` argument and repeating the field name.
@@ -281,12 +286,15 @@ const StylingFields = (fields: any) => {
                         // floatingLabelText="Fill colour levels"
                         // floatingLabelFixed={true}
                         fullWidth={true}
-                        onChange={(junk: object, newValue: string, previousValue: string) => {
-                            fields.onFieldChange("fillColourSchemeLevels", {
-                                fillColourScheme: fields["fillColourScheme"].input.value,
-                                fillColourSchemeLevels: newValue,
-                            })
-                        }}
+                        onChange={(junk: object, newValue: object, previousValue: object) =>
+                            fields.onFieldChange("fillColourSchemeLevels", newValue)
+                        }
+                        // onChange={(junk: object, newValue: string, previousValue: string) => {
+                        //     fields.onFieldChange("fillColourSchemeLevels", {
+                        //         fillColourScheme: fields["fillColourScheme"].input.value,
+                        //         fillColourSchemeLevels: newValue,
+                        //     })
+                        // }}
                     >
                         {colourSchemeLevels.map((colourLevel: any, key: any) => (
                             <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
@@ -429,17 +437,13 @@ export interface IProps {
     colourinfo: IColourInfo
     layerFormSubmitting: boolean
     initialValues: object
-    onSubmit: Function
     onSubmitFail: Function
     onFieldBlur: Function
     onFieldChange: Function
     onFormChange: Function
     onFitScaleToData: Function
-    onSaveForm: any
+    onFormComplete: any
     onResetForm: any
-    onDiscardForm: any
-    onModalSaveForm: any
-    onModalDiscardForm: any
 }
 
 class LayerForm extends React.Component<IProps, {}> {
@@ -486,17 +490,13 @@ class LayerForm extends React.Component<IProps, {}> {
             layerId,
             layerHash,
             tabName,
-            onSubmit,
             onFieldBlur,
             onFieldChange,
             colourinfo,
             layerFillColourScheme,
             visibleComponent,
-            onSaveForm,
+            onFormComplete,
             onResetForm,
-            onDiscardForm,
-            onModalSaveForm,
-            onModalDiscardForm,
             dirtyFormModalOpen,
             onFitScaleToData,
             layerFormSubmitting,
@@ -542,7 +542,7 @@ class LayerForm extends React.Component<IProps, {}> {
         return (
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form>
                         <Tabs value={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                             {/* START CREATE TAB */}
                             <Tab
@@ -762,34 +762,25 @@ class LayerForm extends React.Component<IProps, {}> {
 
                         <ToolbarGroup lastChild={true}>
                             <ClickableIconButton
-                                tooltip="Discard your changes and return to the layer list"
+                                tooltip="Discard your recent changes to this layer"
                                 tooltipPosition="top-right"
+                                disabled={isDirty === false}
                                 containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
-                                onClick={onDiscardForm}
+                                onClick={onResetForm}
                             >
-                                <NavigationClose color={muiThemePalette.alternateTextColor} />
+                                <ContentUndo color={muiThemePalette.alternateTextColor} />
                             </ClickableIconButton>
                             <ClickableIconButton
-                                tooltip="Save your changes and return to the layer list"
+                                tooltip="Return to the layer list"
                                 tooltipPosition="top-right"
                                 containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}`} />}
-                                onClick={onSaveForm}
+                                onClick={onFormComplete}
                             >
-                                <ContentSave color={muiThemePalette.alternateTextColor} />
+                                <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />
                             </ClickableIconButton>
                         </ToolbarGroup>
                     </Toolbar>
                 </MasterFlexboxItemBottomFixed>
-
-                {/* <Dialog
-                    title="You have unsaved changes - what would you like to do?"
-                    actions={[
-                        <FlatButton label="Discard Changes" secondary={true} onClick={onModalDiscardForm} />,
-                        <FlatButton label="Save Changes" primary={true} onClick={onModalSaveForm} />,
-                    ]}
-                    modal={true}
-                    open={dirtyFormModalOpen}
-                /> */}
             </MasterFlexboxContainer>
         )
     }
@@ -802,6 +793,9 @@ let LayerFormReduxForm = reduxForm({
     onChange: (values: object, dispatch: Function, props: any) => {
         props.onFormChange(values, dispatch, props)
     },
+    onSubmitFail: (a: any, b: any, c: any) => {
+        console.log("onSubmitFail", a, b, c)
+    }
 })(LayerForm)
 
 export default LayerFormReduxForm

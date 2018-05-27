@@ -121,12 +121,6 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
 
         if "layers" not in map["json"]:
             map["json"]["layers"] = []
-
-        for layerId, layer in enumerate(map["json"]["layers"]):
-            # Internal fields for handling draft vs published layers.
-            # Only expose the published 'master' layer until the draft layer is actually promoted to published.
-            if "master" in layer:
-                layer = map["json"]["layers"][layerId] = layer["master"]
         return map
 
 

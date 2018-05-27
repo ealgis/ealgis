@@ -69,8 +69,10 @@ export class EALGISApiClient {
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
-    public put(url: string, body: object, dispatch: any) {
-        dispatch(beginFetch())
+    public put(url: string, body: object, dispatch: any, quiet: boolean = false) {
+        if (quiet === false) {
+            dispatch(beginFetch())
+        }
 
         return fetch(url, {
             method: "PUT",
@@ -82,7 +84,10 @@ export class EALGISApiClient {
             body: JSON.stringify(body),
         })
             .then((response: any) => {
-                dispatch(finishFetch())
+                if (quiet === false) {
+                    dispatch(finishFetch())
+                }
+
                 return response.json().then((json: any) => ({
                     response: response,
                     json: json,

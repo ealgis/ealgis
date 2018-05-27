@@ -3,9 +3,9 @@ import { debounce, isEqual, reduce } from "lodash-es"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { withRouter } from "react-router"
-import { change, formValueSelector, initialize, isDirty, submit } from "redux-form"
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
+import { browserHistory } from "react-router"
+import { change, formValueSelector, initialize, isDirty } from "redux-form"
+import { setActiveContentComponent } from "../../redux/modules/app"
 import { finishBrowsing } from "../../redux/modules/databrowser"
 import {
     IColourInfo,
@@ -22,16 +22,9 @@ import {
     eLayerFilterExpressionMode,
     eLayerValueExpressionMode,
 } from "../../redux/modules/interfaces"
-import {
-    fitLayerScaleToData,
-    handleLayerFormChange,
-    initDraftLayer,
-    publishLayer,
-    restoreMasterLayer,
-    restoreMasterLayerAndDiscardForm,
-    startLayerEditing,
-} from "../../redux/modules/maps"
+import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { getMapURL } from "../../shared/utils"
 import LayerForm from "./LayerForm"
 
 export interface ILayerFormValues {
@@ -76,18 +69,12 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    startLayerEditSession: Function
-    onSubmit: Function
     onSubmitFail: Function
     onFieldUpdate: Function
     onFormChange: Function
     onFitScaleToData: Function
-    onSaveForm: Function
+    onFormComplete: Function
     onResetForm: Function
-    onDiscardForm: Function
-    onModalSaveForm: Function
-    onModalDiscardForm: Function
-    onToggleDirtyFormModalState: Function
     handleRemoveColumn: Function
     onApplyValueExpression: Function
     onApplyFilterExpression: Function
@@ -258,35 +245,14 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
         this.onFieldChangeDebounced = debounce(function(fieldName: string, newValue: any, mapId: number, layerId: number) {
             onFieldUpdate(fieldName, newValue, mapId, layerId)
         }, 500)
-
-        props.router.setRouteLeaveHook(props.route, this.routerWillLeave.bind(this))
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, startLayerEditSession, layerDefinition, geominfo } = this.props
-
-        // Start a new layer edit session whenever the form is initialised.
-        // (This happens for each layer we load the form for.)
-        startLayerEditSession(mapDefinition.id, layerId)
+        const { mapDefinition, layerId, layerDefinition, geominfo } = this.props
 
         // Each layer mounts this component anew, so store their initial layer form values.
         // e.g. For use in resetting the form state (Undo/Discard Changes)
         this.initialValues = JSON.parse(JSON.stringify(getLayerFormValuesFromLayer(layerDefinition, geominfo)))
-    }
-
-    routerWillLeave(nextLocation: any) {
-        const { mapDefinition, layerId, isDirty, onToggleDirtyFormModalState } = this.props
-
-        // Prompt the user to discard/save their changes if we're navigate away from the layer form
-        if (!nextLocation.pathname.startsWith(`/map/${mapDefinition.id}/${mapDefinition["name-url-safe"]}/layer/${layerId}`)) {
-            // return false to prevent a transition w/o prompting the user,
-            // or return a string to allow the user to decide:
-            if (isDirty) {
-                onToggleDirtyFormModalState()
-                // return 'Your layer is not saved! Are you sure you want to leave?'
-                return false
-            }
-        }
     }
 
     shouldComponentUpdate(nextProps: IStoreProps) {
@@ -330,8 +296,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
         }
 
         // Again, for sub-components. This ensures that when the layerDefinition changes that we also refresh them.
-        // e.g. If we restoreMasterLayer we get a new layerDefinition with new border colours that needs to
-        // flow through to ColourPicker.
+        // e.g. If we get a new layerDefinition with new border colours that needs to flow through to ColourPicker.
         if (!isEqual(layerDefinition, nextProps.layerDefinition)) {
             // If the ONLY thing that changes is olStyle (the OpenLayers style function) then don't bother to re-render
             // FIXME Having a function shoved on the layerDef and having that drip down to the layer editing form feels...icky.
@@ -362,16 +327,12 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             mapDefinition,
             layerDefinition,
             visibleComponent,
-            onSubmit,
             onSubmitFail,
             onFieldUpdate,
             geominfo,
             colourinfo,
-            onSaveForm,
+            onFormComplete,
             onResetForm,
-            onDiscardForm,
-            onModalSaveForm,
-            onModalDiscardForm,
             handleRemoveColumn,
             onApplyValueExpression,
             onApplyFilterExpression,
@@ -401,7 +362,6 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 colourinfo={colourinfo}
                 layerFormSubmitting={layerFormSubmitting}
                 initialValues={this.initialValues}
-                onSubmit={(formValues: Array<any>) => onSubmit(mapDefinition.id, layerId, formValues, layerDefinition)}
                 onSubmitFail={(errors: object, dispatch: Function, submitError: Error, props: object) =>
                     onSubmitFail(errors, submitError, props)
                 }
@@ -413,22 +373,11 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 }
                 onFormChange={(values: ILayerFormValues, dispatch: Function, props: any) => onFormChange(values, dispatch, props)}
                 onFitScaleToData={(stats: ILayerQuerySummary) => onFitScaleToData(mapDefinition.id, layerId, stats)}
-                onSaveForm={() => {
-                    onSaveForm(mapDefinition.id, layerId, isDirty)
+                onFormComplete={() => {
+                    onFormComplete(mapDefinition.id, layerId)
                     deactivateDataBrowser()
                 }}
                 onResetForm={() => onResetForm(mapDefinition.id, layerId, this.initialValues)}
-                onDiscardForm={() => {
-                    onDiscardForm(mapDefinition.id, layerId, this.initialValues)
-                }}
-                onModalSaveForm={() => {
-                    onModalSaveForm(mapDefinition.id, layerId)
-                    deactivateDataBrowser()
-                }}
-                onModalDiscardForm={() => {
-                    onModalDiscardForm(mapDefinition.id, layerId, this.initialValues)
-                    deactivateDataBrowser()
-                }}
                 onRemoveColumn={(selectedColumn: ISelectedColumn) => handleRemoveColumn(layerDefinition, selectedColumn)}
                 onApplyValueExpression={(expression: string) => {
                     onApplyValueExpression(expression, mapDefinition.id, layerId)
@@ -475,31 +424,18 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        startLayerEditSession: (mapId: number, layerId: number) => {
-            dispatch(startLayerEditing())
-            dispatch(initDraftLayer(mapId, layerId))
-        },
-        onSubmit: (mapId: number, layerId: number, layerFormValues: ILayerFormValues, layerDefinition: ILayer) => {
-            const layer: ILayer = getLayerFromLayerFormValues(layerFormValues)
-            layer.selectedColumns = layerDefinition.selectedColumns
-            layer._postgis_query = layerDefinition._postgis_query // Avoid needlessly recompiling the layer on the server
-            dispatch(publishLayer(mapId, layerId, layer))
-            dispatch(initialize("layerForm", layerFormValues, false))
-        },
         onSubmitFail: (errors: object, submitError: Error, props: object) => {
             const fieldNames = Object.keys(errors)
             dispatch(sendSnackbarNotification(`Some fields have errors (${fieldNames.join(", ")})`))
         },
         onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
             let formValues: object = {}
-            // The Fill Colour Scheme and Border fields are controlled by two <Fields> components
-            // and submit their value as an object containing both fields.
-            if (
-                fieldName === "fillColourScheme" ||
-                fieldName === "fillColourSchemeLevels" ||
-                fieldName === "borderColour" ||
-                fieldName === "borderSize"
-            ) {
+
+            // The Fill Colour Scheme field submits an object as its value
+            // containing both the Colour Scheme and Number of Levels.
+            // This is so we can keep the Fill Colour Scheme Level in the
+            // valid range for this given colour scheme.
+            if (fieldName === "fillColourScheme") {
                 formValues = newValue
             } else {
                 formValues = { [fieldName]: newValue }
@@ -530,29 +466,13 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             })
             dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
-        onSaveForm: (mapId: number, layerId: number, isDirty: boolean) => {
-            dispatch(submit("layerForm"))
+        onFormComplete: (map: IMap) => {
+            browserHistory.push(getMapURL(map))
         },
-        onResetForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
+        onResetForm: (mapId: number, layerId: number, initialLayerFormValues: ILayerFormValues) => {
             dispatch(initialize("layerForm", initialLayerFormValues, false))
-            dispatch(restoreMasterLayer(mapId, layerId))
-            dispatch(initDraftLayer(mapId, layerId))
-        },
-        onDiscardForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
-            dispatch(initialize("layerForm", initialLayerFormValues, false))
-            dispatch(restoreMasterLayerAndDiscardForm(mapId, layerId))
-        },
-        onModalSaveForm: (mapId: number, layerId: number) => {
-            dispatch(submit("layerForm"))
-            dispatch(toggleModalState("dirtyLayerForm"))
-        },
-        onModalDiscardForm: (mapId: number, layerId: number, initialLayerFormValues: object) => {
-            dispatch(initialize("layerForm", initialLayerFormValues, false))
-            dispatch(restoreMasterLayerAndDiscardForm(mapId, layerId))
-            dispatch(toggleModalState("dirtyLayerForm"))
-        },
-        onToggleDirtyFormModalState: () => {
-            dispatch(toggleModalState("dirtyLayerForm"))
+            const layerPartial = getLayerFromLayerFormValues(initialLayerFormValues)
+            dispatch(handleLayerFormChange(layerPartial, mapId, layerId))
         },
         handleRemoveColumn: (layer: ILayer, selectedColumn: ISelectedColumn) => {
             layer.selectedColumns.splice(layer.selectedColumns.findIndex(columnStub => columnStub === selectedColumn), 1)
@@ -587,4 +507,4 @@ const LayerFormContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, I
     LayerFormContainer
 )
 
-export default muiThemeable()(withRouter(LayerFormContainerWrapped))
+export default muiThemeable()(LayerFormContainerWrapped)
