@@ -1,25 +1,25 @@
-import { groupBy } from "lodash-es";
-import Divider from "material-ui/Divider";
-import IconButton from "material-ui/IconButton";
-import MenuItem from "material-ui/MenuItem";
-import RaisedButton from "material-ui/RaisedButton";
-import Subheader from "material-ui/Subheader";
-import { Tab, Tabs } from "material-ui/Tabs";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
-import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
-import * as React from "react";
-import { Link } from "react-router";
-import { Field, Fields, reduxForm } from "redux-form";
-import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
-import styled from "styled-components";
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
-import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
-import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
-import ColumnCard from "../column-card/ColumnCardContainer";
-import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
+import { groupBy } from "lodash-es"
+import Divider from "material-ui/Divider"
+import IconButton from "material-ui/IconButton"
+import MenuItem from "material-ui/MenuItem"
+import RaisedButton from "material-ui/RaisedButton"
+import Subheader from "material-ui/Subheader"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
+import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
+import * as React from "react"
+import { Link } from "react-router"
+import { Field, Fields, reduxForm } from "redux-form"
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
+import styled from "styled-components"
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
+import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces"
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
+import ColumnCard from "../column-card/ColumnCardContainer"
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -615,7 +615,7 @@ class LayerForm extends React.Component<IProps, {}> {
         return (
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
-                    <form>
+                    <form onSubmit={(e: any) => e.preventDefault()}>
                         <Tabs value={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                             {/* START CREATE TAB */}
                             <Tab
@@ -779,11 +779,7 @@ class LayerForm extends React.Component<IProps, {}> {
                             >
                                 <ContentUndo color={muiThemePalette.alternateTextColor} />
                             </ClickableIconButton>
-                            <ClickableIconButton
-                                tooltip="Return to the layer list"
-                                tooltipPosition="top-right"
-                                onClick={onFormComplete}
-                            >
+                            <ClickableIconButton tooltip="Return to the layer list" tooltipPosition="top-right" onClick={onFormComplete}>
                                 <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />
                             </ClickableIconButton>
                         </ToolbarGroup>
