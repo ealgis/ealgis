@@ -20,6 +20,10 @@ export class RGB {
         this.g = g
         this.b = b
     }
+
+    toString() {
+        return `${this.r * 255},${this.g * 255},${this.b * 255}`
+    }
 }
 
 export class ColourScale {
