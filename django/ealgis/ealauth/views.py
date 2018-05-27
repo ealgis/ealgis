@@ -80,10 +80,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def recent_tables(self, request, format=None):
         # Add our new tables to the start of the list of recent
         # tables that the user has interacted with.
-        if "tables" in request.data and isinstance(request.data["tables"], list):
+        if "table" in request.data and isinstance(request.data["table"], dict):
             # If they're valid tables
             tmp_recent_tables = []
-            for table in request.data["tables"]:
+            # Support for sending multiple tables in the future
+            for table in [request.data["table"]]:
                 with broker.access_schema(table["schema_name"]) as db:
                     tbl = db.get_table_info_by_id(table["id"])
                     if tbl is not None:

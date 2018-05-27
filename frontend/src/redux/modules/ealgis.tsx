@@ -1,10 +1,10 @@
-import * as dotProp from "dot-prop-immutable"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import { ColourScale, DiscreteColourScale, HLSDiscreteColourScale, RGB } from "../../shared/openlayers/colour_scale"
-import { loaded as appLoaded, loading as appLoading } from "./app"
-import { parseColumnsFromExpression } from "./databrowser"
-import { fetchMaps } from "./maps"
+import * as dotProp from "dot-prop-immutable";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
+import { ColourScale, DiscreteColourScale, HLSDiscreteColourScale, RGB } from "../../shared/openlayers/colour_scale";
+import { loaded as appLoaded, loading as appLoading } from "./app";
+import { parseColumnsFromExpression } from "./databrowser";
+import { fetchMaps } from "./maps";
 
 // Actions
 const LOAD_USER = "ealgis/ealgis/LOAD_USER"
@@ -339,7 +339,7 @@ export function addToRecentTables(schema_name: string, table_id: number) {
         const recentTables = getState()["ealgis"]["user"]["recent_tables"]
         if (recentTables.find((table: Partial<ITable>) => table.schema_name === schema_name && table.id === table_id) === undefined) {
             return ealapi
-                .put("/api/0.1/profile/recent_tables/", { tables: { id: table_id, schema_name: schema_name } }, dispatch)
+                .put("/api/0.1/profile/recent_tables/", { table: { id: table_id, schema_name: schema_name } }, dispatch)
                 .then(({ response, json }: any) => {
                     if (response.status === 200) {
                         dispatch(loadRecentTables(json["recent_tables"]))
