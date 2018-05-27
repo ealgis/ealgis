@@ -736,9 +736,14 @@ export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: numb
 
 export function updateLayer(mapId: number, layerId: number, layer: ILayer, quiet: boolean = false) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        const layerCopy = JSON.parse(JSON.stringify(layer))
+        if ("olStyleDef" in layerCopy) {
+            delete layerCopy["olStyleDef"]
+        }
+
         const payload = {
             layerId: layerId,
-            layer: JSON.parse(JSON.stringify(layer)),
+            layer: layerCopy,
         }
 
         return ealapi.put(`/api/0.1/maps/${mapId}/updateLayer/`, payload, dispatch, quiet)
