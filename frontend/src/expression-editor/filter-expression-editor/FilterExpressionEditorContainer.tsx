@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { formValueSelector } from "redux-form"
 import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
-import { fetchResultForComponent, finishBrowsing, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
+import { fetchResultForComponent, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
 import {
     IColumnInfo,
     IDataBrowserConfig,
@@ -40,7 +40,6 @@ export interface IStoreProps {
 export interface IDispatchProps {
     onToggleAdvancedModeWarnModalState: Function
     activateDataBrowser: Function
-    deactivateDataBrowser: Function
 }
 
 interface IRouterProps {
@@ -159,7 +158,6 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
             onApply,
             onToggleAdvancedModeWarnModalState,
             activateDataBrowser,
-            deactivateDataBrowser,
         } = this.props
         const { expression, expressionMode } = this.state
 
@@ -194,7 +192,6 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
                     }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
-                onClose={() => deactivateDataBrowser()}
                 openDataBrowser={() => activateDataBrowser()}
             />
         )
@@ -229,10 +226,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
             const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
             dispatch(startBrowsing(componentId, message, config))
-        },
-        deactivateDataBrowser: () => {
-            dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))
-            dispatch(finishBrowsing())
         },
     }
 }

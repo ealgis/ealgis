@@ -1,15 +1,13 @@
 import Dialog from "material-ui/Dialog"
 import DropDownMenu from "material-ui/DropDownMenu"
 import FlatButton from "material-ui/FlatButton"
-import IconButton from "material-ui/IconButton"
 import { List, ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import { ActionSettings, NavigationClose } from "material-ui/svg-icons"
+import { ActionSettings } from "material-ui/svg-icons"
 import * as React from "react"
-import { Link } from "react-router"
 import styled from "styled-components"
 import { IMUIThemePalette, eEalUIComponent, eLayerValueExpressionMode } from "../../redux/modules/interfaces"
 import ExpressionColumnSelectorContainer from "../expression-column-selector/ExpressionColumnSelectorContainer"
@@ -98,11 +96,9 @@ export interface IProps {
     onFieldChange: Function
     onRemoveColumn: Function
     onExpressionChange: Function
-    onApply: any
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
-    onClose: any
     openDataBrowser: Function
 }
 
@@ -120,11 +116,9 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
             onFieldChange,
             onRemoveColumn,
             onExpressionChange,
-            onApply,
             onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
-            onClose,
             openDataBrowser,
         } = this.props
 
@@ -168,13 +162,6 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                                     )}
                                     <MenuItem value={eLayerValueExpressionMode.ADVANCED} primaryText="Advanced" />
                                 </ExpressionModeDropDownMenu>
-
-                                <IconButton
-                                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                                    onClick={onClose}
-                                >
-                                    <NavigationClose />
-                                </IconButton>
                             </React.Fragment>
                         )}
                     </ToolbarGroup>
@@ -260,19 +247,9 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                     </ExpressionOpenDataBrowser>
                 )}
 
-                {/* {(expressionMode === eLayerValueExpressionMode.SINGLE || expressionMode === eLayerValueExpressionMode.PROPORTIONAL) && (
-                    <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApply} />
-                )} */}
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
                     <ExpressionRaisedButton label={"Apply Expression"} primary={true} onClick={onApplyAdvanced} />
                 )}
-
-                {/* <ExpressionRaisedButton
-                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                    label={"Close"}
-                    primary={true}
-                    onClick={onClose}
-                /> */}
             </React.Fragment>
         )
     }

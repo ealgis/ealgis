@@ -1,31 +1,17 @@
-import { values as objectValues } from "core-js/library/fn/object"
-import { debounce, isEqual, reduce } from "lodash-es"
-import muiThemeable from "material-ui/styles/muiThemeable"
-import * as React from "react"
-import { connect } from "react-redux"
-import { browserHistory } from "react-router"
-import { change, formValueSelector, initialize, isDirty } from "redux-form"
-import { setActiveContentComponent } from "../../redux/modules/app"
-import { finishBrowsing } from "../../redux/modules/databrowser"
-import {
-    IColourInfo,
-    IGeomInfo,
-    IGeomTable,
-    ILayer,
-    ILayerQuerySummary,
-    IMUITheme,
-    IMUIThemePalette,
-    IMap,
-    ISelectedColumn,
-    IStore,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
-} from "../../redux/modules/interfaces"
-import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { getMapURL } from "../../shared/utils"
-import LayerForm from "./LayerForm"
+import { values as objectValues } from "core-js/library/fn/object";
+import { debounce, isEqual, reduce } from "lodash-es";
+import muiThemeable from "material-ui/styles/muiThemeable";
+import * as React from "react";
+import { connect } from "react-redux";
+import { browserHistory } from "react-router";
+import { change, formValueSelector, initialize, isDirty } from "redux-form";
+import { setActiveContentComponent } from "../../redux/modules/app";
+import { finishBrowsing } from "../../redux/modules/databrowser";
+import { IColourInfo, IGeomInfo, IGeomTable, ILayer, ILayerQuerySummary, IMUITheme, IMUIThemePalette, IMap, ISelectedColumn, IStore, eEalUIComponent, eLayerFilterExpressionMode, eLayerValueExpressionMode } from "../../redux/modules/interfaces";
+import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { getMapURL } from "../../shared/utils";
+import LayerForm from "./LayerForm";
 
 export interface ILayerFormValues {
     borderColour: {
@@ -59,7 +45,7 @@ export interface IStoreProps {
     layerId: number
     layerDefinition: ILayer
     layerFillColourScheme: string
-    visibleComponent: string
+    visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
     geominfo: IGeomInfo
@@ -97,6 +83,13 @@ interface IRouteProps {
 interface IOwnProps {
     params: IRouteProps
     muiTheme: IMUITheme
+}
+
+// Part of the LayerForm URL
+export enum eVisibleComponent {
+    LAYER_FORM = "layer-form",
+    VALUE_EXPRESSION = "value-expression",
+    FILTER_EXPRESSION = "filter-expression",
 }
 
 const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayerFormValues => {
@@ -385,6 +378,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 onApplyFilterExpression={(expression: string, expression_mode: eLayerFilterExpressionMode) => {
                     onApplyFilterExpression(expression, expression_mode, mapDefinition.id, layerId)
                 }}
+                onCloseExpressionEditor={() => deactivateDataBrowser()}
                 onCloseLayer={() => {
                     deactivateDataBrowser()
                 }}
@@ -406,13 +400,22 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     //     })
     // }
 
+    const getVisibleComponent = (component: string): eVisibleComponent => {
+        if(component === "value-expression") {
+            return eVisibleComponent.VALUE_EXPRESSION
+        } else if(component === "filter-expression") {
+            return eVisibleComponent.FILTER_EXPRESSION
+        }
+        return eVisibleComponent.LAYER_FORM
+    }
+
     return {
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme") as string,
-        visibleComponent: ownProps.params.component,
+        visibleComponent: getVisibleComponent(ownProps.params.component),
         dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
         geominfo: ealgis.geominfo,

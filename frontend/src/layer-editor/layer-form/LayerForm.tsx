@@ -6,7 +6,7 @@ import RaisedButton from "material-ui/RaisedButton"
 import Subheader from "material-ui/Subheader"
 import { Tab, Tabs } from "material-ui/Tabs"
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
-import { AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
+import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
 import * as React from "react"
 import { Link } from "react-router"
 import { Field, Fields, reduxForm } from "redux-form"
@@ -20,6 +20,7 @@ import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
 import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
 import ColumnCard from "../column-card/ColumnCardContainer"
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
+import { eVisibleComponent } from "./LayerFormContainer"
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -472,7 +473,7 @@ const GeometryAndDataFields = (fields: any) => {
 
             <RaisedButton
                 containerElement={<Link to={`${fields.layerURLBase}/data/filter-expression`} />}
-                label={"Apply Filter"}
+                label={"Set a Filter"}
                 primary={true}
                 disabled={fields["geometry"].input.value === ""}
                 style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
@@ -505,12 +506,13 @@ export interface IProps {
     layerId: number
     layerHash: string
     layerFillColourScheme: string
-    visibleComponent: string
+    visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
     onRemoveColumn: Function
     onApplyValueExpression: Function
     onApplyFilterExpression: Function
+    onCloseExpressionEditor: Function
     onCloseLayer: Function
     geominfo: IGeomInfo
     colourinfo: IColourInfo
@@ -577,6 +579,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onRemoveColumn,
             onApplyValueExpression,
             onApplyFilterExpression,
+            onCloseExpressionEditor,
             onCloseLayer,
         } = this.props
 
@@ -624,7 +627,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                 containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}
                             >
                                 <TabContainer>
-                                    {visibleComponent === undefined && (
+                                    {visibleComponent === eVisibleComponent.LAYER_FORM && (
                                         <React.Fragment>
                                             <Fields
                                                 names={["geometry", "valueExpression", "filterExpression"]}
@@ -653,13 +656,13 @@ class LayerForm extends React.Component<IProps, {}> {
                                         onFieldBlur(event.target.name, newValue, previousValue)}
                                 /> */}
 
-                                    {visibleComponent === "value-expression" && (
+                                    {visibleComponent === eVisibleComponent.VALUE_EXPRESSION && (
                                         <React.Fragment>
                                             <ValueExpressionContainer onApply={onApplyValueExpression} />
                                         </React.Fragment>
                                     )}
 
-                                    {visibleComponent === "filter-expression" && (
+                                    {visibleComponent === eVisibleComponent.FILTER_EXPRESSION && (
                                         <React.Fragment>
                                             <FilterExpressionContainer onApply={onApplyFilterExpression} />
                                         </React.Fragment>
@@ -753,36 +756,62 @@ class LayerForm extends React.Component<IProps, {}> {
 
                 <MasterFlexboxItemBottomFixed>
                     <Toolbar>
-                        <ToolbarGroup firstChild={true}>
-                            <MyRaisedButton
-                                label={"Back"}
-                                disabled={tabId < 1}
-                                primary={true}
-                                containerElement={backButtonLink}
-                                icon={<NavigationArrowBack />}
-                            />
-                            <MyRaisedButton
-                                label={"Next"}
-                                disabled={tabId === 2}
-                                primary={true}
-                                containerElement={nextButtonLink}
-                                icon={<NavigationArrowForward />}
-                            />
-                        </ToolbarGroup>
+                        {visibleComponent === eVisibleComponent.LAYER_FORM && (
+                            <React.Fragment>
+                                <ToolbarGroup firstChild={true}>
+                                    <MyRaisedButton
+                                        label={"Back"}
+                                        disabled={tabId < 1}
+                                        primary={true}
+                                        containerElement={backButtonLink}
+                                        icon={<NavigationArrowBack />}
+                                    />
+                                    <MyRaisedButton
+                                        label={"Next"}
+                                        disabled={tabId === 2}
+                                        primary={true}
+                                        containerElement={nextButtonLink}
+                                        icon={<NavigationArrowForward />}
+                                    />
+                                </ToolbarGroup>
 
-                        <ToolbarGroup lastChild={true}>
-                            <ClickableIconButton
-                                tooltip="Discard your recent changes to this layer"
-                                tooltipPosition="top-right"
-                                disabled={isDirty === false}
-                                onClick={onResetForm}
-                            >
-                                <ContentUndo color={muiThemePalette.alternateTextColor} />
-                            </ClickableIconButton>
-                            <ClickableIconButton tooltip="Return to the layer list" tooltipPosition="top-right" onClick={onFormComplete}>
-                                <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />
-                            </ClickableIconButton>
-                        </ToolbarGroup>
+                                <ToolbarGroup lastChild={true}>
+                                    <ClickableIconButton
+                                        tooltip="Discard your recent changes to this layer"
+                                        tooltipPosition="top-right"
+                                        disabled={isDirty === false}
+                                        onClick={onResetForm}
+                                    >
+                                        <ContentUndo color={muiThemePalette.alternateTextColor} />
+                                    </ClickableIconButton>
+                                    <ClickableIconButton
+                                        tooltip="Return to the layer list"
+                                        tooltipPosition="top-right"
+                                        onClick={onFormComplete}
+                                    >
+                                        <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />
+                                    </ClickableIconButton>
+                                </ToolbarGroup>
+                            </React.Fragment>
+                        )}
+
+                        {(visibleComponent === eVisibleComponent.VALUE_EXPRESSION ||
+                            visibleComponent === eVisibleComponent.FILTER_EXPRESSION) && (
+                            <React.Fragment>
+                                <ToolbarGroup firstChild={true} />
+
+                                <ToolbarGroup lastChild={true}>
+                                    <ClickableIconButton
+                                        tooltip="Return to the layer editor"
+                                        tooltipPosition="top-right"
+                                        onClick={onCloseExpressionEditor}
+                                        containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
+                                    >
+                                        <ActionCheckCircle color={muiThemePalette.alternateTextColor} />
+                                    </ClickableIconButton>
+                                </ToolbarGroup>
+                            </React.Fragment>
+                        )}
                     </Toolbar>
                 </MasterFlexboxItemBottomFixed>
             </MasterFlexboxContainer>

@@ -1,35 +1,16 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
-import { connect } from "react-redux"
-import {
-    IStore,
-    IMUIThemePalette,
-    ILayer,
-    ISelectedColumn,
-    IColumn,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-} from "../../redux/modules/interfaces"
-
-import { List, ListItem } from "material-ui/List"
-import TextField from "material-ui/TextField"
-import Avatar from "material-ui/Avatar"
-import { blue500, yellow600 } from "material-ui/styles/colors"
-import DropDownMenu from "material-ui/DropDownMenu"
-import { Tabs, Tab } from "material-ui/Tabs"
 import Dialog from "material-ui/Dialog"
-import Subheader from "material-ui/Subheader"
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import Divider from "material-ui/Divider"
-import Checkbox from "material-ui/Checkbox"
-import SelectField from "material-ui/SelectField"
+import DropDownMenu from "material-ui/DropDownMenu"
+import FlatButton from "material-ui/FlatButton"
+import { List, ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
-import FlatButton from "material-ui/FlatButton"
-import IconButton from "material-ui/IconButton"
-import { FileFolder, ActionAssignment, ActionSettings, NavigationClose, ActionCode } from "material-ui/svg-icons"
-
+import SelectField from "material-ui/SelectField"
+import TextField from "material-ui/TextField"
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import { ActionCode, ActionSettings } from "material-ui/svg-icons"
+import * as React from "react"
+import styled from "styled-components"
+import { IMUIThemePalette, eEalUIComponent, eLayerFilterExpressionMode } from "../../redux/modules/interfaces"
 import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
@@ -91,7 +72,6 @@ export interface IProps {
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
-    onClose: any
     openDataBrowser: Function
 }
 
@@ -112,7 +92,6 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
             onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
-            onClose,
             openDataBrowser,
         } = this.props
 
@@ -157,13 +136,6 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
                                     )}
                                     <MenuItem value={eLayerFilterExpressionMode.ADVANCED} primaryText="Advanced" />
                                 </ExpressionModeDropDownMenu>
-
-                                <IconButton
-                                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                                    onClick={onClose}
-                                >
-                                    <NavigationClose />
-                                </IconButton>
                             </React.Fragment>
                         )}
                     </ToolbarGroup>
@@ -265,13 +237,6 @@ class FilterExpressionEditor extends React.Component<IProps, {}> {
                 {expressionMode === eLayerFilterExpressionMode.ADVANCED && (
                     <ExpressionRaisedButton label={"Apply"} primary={true} onClick={onApplyAdvanced} />
                 )}
-
-                {/* <ExpressionRaisedButton
-                    containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
-                    label={"Close"}
-                    primary={true}
-                    onClick={onClose}
-                /> */}
             </React.Fragment>
         )
     }

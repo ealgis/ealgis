@@ -203,10 +203,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                 onExpressionChange={(expressionCompiled: string) => {
                     this.setState({ ...this.state, expressionCompiled: expressionCompiled })
                 }}
-                onApply={() => {
-                    onApply(this.compileExpression(), expressionMode)
-                    deactivateDataBrowser()
-                }}
                 onApplyAdvanced={() => {
                     onApply(this.state.expressionCompiled, expressionMode)
                     deactivateDataBrowser()
@@ -218,7 +214,6 @@ export class ValueExpressionEditorContainer extends React.PureComponent<
                     }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
-                onClose={() => deactivateDataBrowser()}
                 openDataBrowser={() => activateDataBrowser()}
             />
         )
