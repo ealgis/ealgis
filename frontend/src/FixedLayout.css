@@ -51,6 +51,7 @@ p {
     .page-main-content {
         flex: 1;
     }
+    /* For...the map? */
     .page-main-content > div,
     .page-main-content > div > div {
         height: 100%;

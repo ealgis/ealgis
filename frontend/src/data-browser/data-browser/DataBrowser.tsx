@@ -1,8 +1,15 @@
 import IconButton from "material-ui/IconButton"
-import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
-import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
-import { ActionViewColumn, DeviceAccessTime, NavigationClose, ToggleStar } from "material-ui/svg-icons"
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
+import {
+    ActionSearch,
+    ActionViewColumn,
+    ContentFilterList,
+    DeviceAccessTime,
+    MapsMap,
+    NavigationArrowBack,
+    ToggleStar,
+} from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
@@ -19,20 +26,24 @@ class ClickableIconButton extends React.Component<any, any> {
     }
 }
 
-const DataBrowserContainer = styled.div`
-    overflow: auto;
+const MasterFlexboxContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 `
 
-const DataBrowserTopToolbar = styled(Toolbar)`
-    position: fixed;
-    z-index: 1;
-    width: 70%;
-`
-
-const DataBrowserInnerContainer = styled.div`
+const MasterFlexboxItem = styled.div`
+    padding-bottom: 56px; /* Height of MasterFlexboxItemBottomFixed */
+    height: auto !important; /* Override FixedLayout.css .page-main-content > div > div */
     padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 56px; /* Height of DataBrowserTopToolbar */
+`
+
+const MasterFlexboxItemBottomFixed = styled.div`
+    position: absolute;
+    bottom: 0;
+    width: 2000px; /* Bodge bodge bodge */
+    z-index: 1;
+    height: auto !important; /* Override FixedLayout.css .page-main-content > div > div */
 `
 
 const DataBrowserSectionContainer = styled.div`
@@ -41,6 +52,7 @@ const DataBrowserSectionContainer = styled.div`
 
 const DataBrowserTitle = styled(ToolbarTitle)`
     color: white;
+    padding-left: 10px;
 `
 
 const DataBrowserToolbar = styled(Toolbar)`
@@ -48,7 +60,7 @@ const DataBrowserToolbar = styled(Toolbar)`
 `
 
 const TableSearchTextField = styled(TextField)`
-    margin-left: 15px !important;
+    /* margin-left: 15px !important; */
     top: -10px !important;
     color: white !important;
 `
@@ -125,50 +137,18 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             backToTableView,
         } = this.props
 
+        let onGoBack
+        if (this.showTableSearchResults() && this.showColumns(selectedColumns) === false) {
+            onGoBack = backToTableList
+        } else if (this.showColumns(selectedColumns)) {
+            onGoBack = backToTableView
+        } else if (this.showTables(selectedTables, selectedColumns) && this.showTableSearchResults() === false) {
+            onGoBack = backToSchemaView
+        }
+
         return (
-            <DataBrowserContainer>
-                <DataBrowserTopToolbar>
-                    <ToolbarGroup firstChild={true}>
-                        <DataBrowserTitle text={"Data Browser"} />
-                        {this.showTables(selectedTables, selectedColumns) &&
-                            this.showTableSearchResults() === false && (
-                                <RaisedButton primary={true} label={"Back"} onClick={() => backToSchemaView()} />
-                            )}
-                        {this.showTableSearchResults() &&
-                            this.showColumns(selectedColumns) === false && (
-                                <RaisedButton primary={true} label={"Back"} onClick={() => backToTableList()} />
-                            )}
-                        {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
-                            <TableSearchTextField
-                                hintText="e.g. Industry, Family"
-                                floatingLabelText="Search for data"
-                                defaultValue={dataTableSearchKeywords}
-                                inputStyle={{ color: "white" }}
-                                floatingLabelStyle={{ color: "white" }}
-                                hintStyle={{ color: "white" }}
-                                onKeyPress={(ev: any) => {
-                                    if (ev.key === "Enter") {
-                                        onTableSearchChange(ev.target.value)
-                                    }
-                                }}
-                            />
-                        )}
-                        {(this.showSchemas(selectedTables, selectedColumns) || this.showTables(selectedTables, selectedColumns)) && (
-                            <DataSchemaSelectContainer onChangeSchemaSelection={onChangeSchemaSelection} />
-                        )}
-                        {this.showColumns(selectedColumns) && (
-                            <RaisedButton primary={true} label={"Back"} onClick={() => backToTableView()} />
-                        )}
-                    </ToolbarGroup>
-
-                    <ToolbarGroup lastChild={true}>
-                        <ClickableIconButton tooltip="Close data browser" tooltipPosition="bottom-left" onClick={onFinishBrowsing}>
-                            <NavigationClose color={"white"} />
-                        </ClickableIconButton>
-                    </ToolbarGroup>
-                </DataBrowserTopToolbar>
-
-                <DataBrowserInnerContainer>
+            <MasterFlexboxContainer>
+                <MasterFlexboxItem>
                     {this.showSchemas(selectedTables, selectedColumns) && (
                         <React.Fragment>
                             {mapTables.length > 0 && (
@@ -176,7 +156,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     <DataBrowserToolbar>
                                         <ToolbarGroup>
                                             <ActionViewColumn style={{ marginRight: "10px" }} />
-                                            <ToolbarTitle text={"Tables In This Map"} />
+                                            <ToolbarTitle text={"Tables Used In This Map"} />
                                         </ToolbarGroup>
                                     </DataBrowserToolbar>
                                     <DataTableList
@@ -252,8 +232,51 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                 onFavouriteTable={handleFavouriteTable}
                             />
                         )}
-                </DataBrowserInnerContainer>
-            </DataBrowserContainer>
+                </MasterFlexboxItem>
+
+                <MasterFlexboxItemBottomFixed>
+                    <Toolbar>
+                        <ToolbarGroup firstChild={true}>
+                            <DataBrowserTitle text={"Data Browser"} />
+
+                            {onGoBack !== undefined && (
+                                <ClickableIconButton tooltip="Go back" tooltipPosition="top-left" onClick={onGoBack}>
+                                    <NavigationArrowBack color={"white"} />
+                                </ClickableIconButton>
+                            )}
+                            <ClickableIconButton
+                                tooltip="Close the data browser and return to the map"
+                                tooltipPosition="top-left"
+                                onClick={onFinishBrowsing}
+                            >
+                                <MapsMap color={"white"} />
+                            </ClickableIconButton>
+                            <ToolbarSeparator style={{ backgroundColor: "rgba(255, 255, 255, 0.176)" }} />
+
+                            <ClickableIconButton disableTouchRipple={true} style={{ cursor: "default" }}>
+                                <ActionSearch color={"white"} />
+                            </ClickableIconButton>
+                            <TableSearchTextField
+                                floatingLabelText="Search for data"
+                                defaultValue={dataTableSearchKeywords}
+                                inputStyle={{ color: "white" }}
+                                floatingLabelStyle={{ color: "white" }}
+                                hintStyle={{ color: "white" }}
+                                onKeyPress={(ev: any) => {
+                                    if (ev.key === "Enter") {
+                                        onTableSearchChange(ev.target.value)
+                                    }
+                                }}
+                            />
+
+                            <ClickableIconButton disableTouchRipple={true} style={{ cursor: "default" }}>
+                                <ContentFilterList color={"white"} />
+                            </ClickableIconButton>
+                            <DataSchemaSelectContainer onChangeSchemaSelection={onChangeSchemaSelection} />
+                        </ToolbarGroup>
+                    </Toolbar>
+                </MasterFlexboxItemBottomFixed>
+            </MasterFlexboxContainer>
         )
     }
 }

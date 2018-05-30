@@ -1,12 +1,12 @@
-import * as React from "react"
-import styled from "styled-components"
 import { includes as arrayIncludes } from "core-js/library/fn/array"
-import { ListItem } from "material-ui/List"
 import IconButton from "material-ui/IconButton"
+import { ListItem } from "material-ui/List"
+import { yellow500 } from "material-ui/styles/colors"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
-import { yellow500 } from "material-ui/styles/colors"
-import { ITableFamily, ITable } from "../../redux/modules/interfaces"
+import * as React from "react"
+import styled from "styled-components"
+import { ITable, ITableFamily } from "../../redux/modules/interfaces"
 
 const FlexboxContainer = styled.div`
     display: flex;
@@ -45,7 +45,11 @@ const getTableTitle = (table: ITable, tableFamily: ITableFamily) =>
 
 const renderFavouriteIcon = (onFavouriteTable: Function, table: ITable, tableFamily: ITableFamily, favouriteTables: Array<string>) =>
     onFavouriteTable !== undefined ? (
-        <ClickableIconButton onClick={() => onFavouriteTable(table)}>
+        <ClickableIconButton
+            tooltip={"Favourite this table to easily find it again later"}
+            tooltipPosition={"top-right"}
+            onClick={() => onFavouriteTable(table)}
+        >
             {isFavourited(table, favouriteTables) ? <ToggleStar color={yellow500} /> : <ToggleStarBorder />}
         </ClickableIconButton>
     ) : (

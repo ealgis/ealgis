@@ -1,13 +1,13 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array";
-import IconButton from "material-ui/IconButton";
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table";
-import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar";
-import { yellow500 } from "material-ui/styles/colors";
-import { ActionInfo, ActionViewColumn, ToggleStar, ToggleStarBorder } from "material-ui/svg-icons";
-import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
-import styled from "styled-components";
-import { IColumn, IMUIThemePalette, ISchema, ITable, ITableColumns } from "../../redux/modules/interfaces";
+import { includes as arrayIncludes } from "core-js/library/fn/array"
+import IconButton from "material-ui/IconButton"
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
+import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
+import { yellow500 } from "material-ui/styles/colors"
+import { ActionInfo, ActionViewColumn, ToggleStar, ToggleStarBorder } from "material-ui/svg-icons"
+import * as React from "react"
+import * as CopyToClipboard from "react-copy-to-clipboard"
+import styled from "styled-components"
+import { IColumn, IMUIThemePalette, ISchema, ITable, ITableColumns } from "../../redux/modules/interfaces"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
@@ -16,12 +16,20 @@ class ClickableIconButton extends React.Component<any, any> {
     }
 }
 
+const DataTableContainer = styled.div`
+    overflow: hidden;
+`
+
 const DataBrowserToolbar = styled(Toolbar)`
     background-color: white !important;
 `
 
 const DataBrowserToolbarTitle = styled(ToolbarTitle)`
     color: black;
+`
+
+const TableNotesLink = styled.a`
+    padding-bottom: 10px;
 `
 
 const TableNotes = styled.div`
@@ -70,7 +78,7 @@ export interface IProps {
     favouriteTables: Array<Partial<ITable>>
     onClickColumn: Function
     onFavouriteTable: Function
-    onToggleShowInfo: Function
+    onToggleShowInfo: any
     onCopyColumnName: any
 }
 
@@ -108,7 +116,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
         toolbarTitle += ` - ${schema.name}, ${schema.family}`
 
         return (
-            <React.Fragment>
+            <DataTableContainer>
                 <DataBrowserToolbar>
                     <ToolbarGroup firstChild={true}>
                         <ActionViewColumn style={{ marginRight: "10px" }} />
@@ -116,22 +124,38 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     </ToolbarGroup>
 
                     <ToolbarGroup lastChild={true}>
-                        <ClickableIconButton onClick={() => onFavouriteTable(table)}>
+                        <ClickableIconButton
+                            onClick={() => onFavouriteTable(table)}
+                            tooltip={"Favourite this table to easily find it again later"}
+                            tooltipPosition={"bottom-left"}
+                        >
                             {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
                                 <ToggleStar color={yellow500} />
                             ) : (
                                 <ToggleStarBorder />
                             )}
                         </ClickableIconButton>
-                        <ClickableIconButton onClick={onToggleShowInfo}>
+                        <ClickableIconButton
+                            onClick={onToggleShowInfo}
+                            tooltip={"Get more information about this data table"}
+                            tooltipPosition={"bottom-left"}
+                        >
                             <ActionInfo />
                         </ClickableIconButton>
                     </ToolbarGroup>
                 </DataBrowserToolbar>
-
+                {table["metadata_json"]["kind"]}{" "}
+                <TableNotesLink
+                    href=""
+                    onClick={(e: any) => {
+                        e.preventDefault()
+                        onToggleShowInfo()
+                    }}
+                >
+                    more
+                </TableNotesLink>
                 {showTableInfo && (
                     <React.Fragment>
-                        {table["metadata_json"]["kind"]}
                         <br />
                         <br />
                         <TableNotes dangerouslySetInnerHTML={{ __html: table["metadata_json"]["notes"] }} />
@@ -144,7 +168,6 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                         ))}
                     </React.Fragment>
                 )}
-
                 <Table
                     fixedHeader={true}
                     height={`${window.innerHeight - 200}px`}
@@ -205,7 +228,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                         })}
                     </TableBody>
                 </Table>
-            </React.Fragment>
+            </DataTableContainer>
         )
     }
 }

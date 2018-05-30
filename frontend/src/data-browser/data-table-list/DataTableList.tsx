@@ -1,13 +1,12 @@
-import * as React from "react"
-import styled from "styled-components"
 import { includes as arrayIncludes } from "core-js/library/fn/array"
-import { List, ListItem } from "material-ui/List"
 import { GridList, GridTile } from "material-ui/GridList"
 import IconButton from "material-ui/IconButton"
+import { ListItem } from "material-ui/List"
+import { yellow500 } from "material-ui/styles/colors"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
-import { yellow500 } from "material-ui/styles/colors"
-import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable } from "../../redux/modules/interfaces"
+import * as React from "react"
+import { ITable } from "../../redux/modules/interfaces"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {
@@ -55,7 +54,11 @@ export class DataTableList extends React.PureComponent<IProps, {}> {
                                 secondaryTextLines={2}
                                 rightIconButton={
                                     onFavouriteTable !== undefined ? (
-                                        <ClickableIconButton onClick={() => onFavouriteTable(table)}>
+                                        <ClickableIconButton
+                                            tooltip={"Favourite this table to easily find it again later"}
+                                            tooltipPosition={"top-right"}
+                                            onClick={() => onFavouriteTable(table)}
+                                        >
                                             {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
                                                 <ToggleStar color={yellow500} />
                                             ) : (
