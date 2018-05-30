@@ -6,7 +6,7 @@ import { yellow500 } from "material-ui/styles/colors"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
 import * as React from "react"
-import { ITable } from "../../redux/modules/interfaces"
+import { ISchemaInfo, ITable } from "../../redux/modules/interfaces"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {
@@ -23,6 +23,7 @@ class ClickableIconButton extends React.Component<any, any> {
 }
 
 export interface IProps {
+    schemas: ISchemaInfo
     tables: Array<ITable>
     favouriteTables: Array<Partial<ITable>>
     onClickTable: Function
@@ -40,7 +41,7 @@ export class DataTableList extends React.PureComponent<IProps, {}> {
         }
     }
     render() {
-        const { tables, favouriteTables, onClickTable, onFavouriteTable } = this.props
+        const { schemas, tables, favouriteTables, onClickTable, onFavouriteTable } = this.props
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
 
         return (
@@ -50,7 +51,13 @@ export class DataTableList extends React.PureComponent<IProps, {}> {
                         <ClickableGridTile key={idx} cols={2} onClick={() => onClickTable(table)}>
                             <ListItem
                                 primaryText={this.getTableName(table)}
-                                secondaryText={`${table["metadata_json"]["kind"]}`}
+                                secondaryText={
+                                    <span>
+                                        {`${table["metadata_json"]["kind"]}`}
+                                        <br />
+                                        {`${schemas[table.schema_name].name}, ${schemas[table.schema_name].family}`}
+                                    </span>
+                                }
                                 secondaryTextLines={2}
                                 rightIconButton={
                                     onFavouriteTable !== undefined ? (

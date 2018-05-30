@@ -1,3 +1,4 @@
+import { includes as arrayIncludes } from "core-js/library/fn/array"
 import * as React from "react"
 import { connect } from "react-redux"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
@@ -24,13 +25,32 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
     tablePartialsToFullTable(tables: Array<Partial<ITable>>, tableinfo: ITableInfo): Array<ITable> {
         const tablesActual: Array<ITable> = []
         const tableinfoUIDs: Array<string> = Object.keys(tableinfo)
+        const tableFamilies: Array<string> = []
+
+        // Turn out partial table objects (id + schema_name) into
+        // fully ITable objects, and deduplicate them based on table
+        // family (i.e. if a map uses a table from the same family twice
+        // then we'll only display it once)
         for (var key in tables) {
-            const table = tables[key]
-            const tableUID: string = `${table.schema_name}.${table.id}`
+            const tableUID = `${tables[key].schema_name}.${tables[key].id}`
             if (tableUID in tableinfo) {
-                tablesActual.push(tableinfo[tableUID])
+                const table = tableinfo[tableUID]
+
+                // If the table has a family then it is not unique in its schema (it will exist for multiple geometries)
+                // Families must be unique within a schema - i.e. one family = one set of tables representing a dataset
+                if ("family" in table.metadata_json) {
+                    const tableFamilyUID = `${table.schema_name}.${table.metadata_json.family}`
+                    if (arrayIncludes(tableFamilies, tableFamilyUID) === false) {
+                        tableFamilies.push(tableFamilyUID)
+                        tablesActual.push(table)
+                    }
+                } else {
+                    // If the table has no families then it is considered unique within its schema
+                    tablesActual.push(table)
+                }
             }
         }
+
         return tablesActual
     }
 
@@ -40,7 +60,7 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
     }
 
     render() {
-        const { tables, layout, onClickTable, onFavouriteTable, tableinfo, favourite_tables } = this.props
+        const { tables, layout, onClickTable, onFavouriteTable, schemainfo, tableinfo, favourite_tables } = this.props
         const tablesActual = this.tablePartialsToFullTable(tables, tableinfo)
 
         if (layout === eTableChooserLayout.LIST_LAYOUT) {
@@ -59,6 +79,7 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
         } else if (layout === eTableChooserLayout.GRID_LAYOUT) {
             return (
                 <DataTableList
+                    schemas={schemainfo}
                     tables={tablesActual}
                     favouriteTables={favourite_tables}
                     onClickTable={onClickTable}
