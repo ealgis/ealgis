@@ -479,7 +479,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         db = broker.access_schema(schema_name)
         try:
             table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_family_and_geometry(table_family, geo_source_id)
-        except:
+        except Exception:
             raise NotFound()
 
         tmp = TableInfoSerializer(table).data
