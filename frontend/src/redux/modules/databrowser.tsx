@@ -211,7 +211,7 @@ export function fetchTablesForSchema(schema_name: string, geometry: IGeomTable) 
             geo_source_id: geometry._id,
         })
         if (response.status === 404) {
-            dispatch(sendSnackbarNotification(`This schema contains no tables for '${geometry.description}' geometries.`))
+            dispatch(sendSnackbarNotification(`This schema contains no data for the '${geometry.description}' level of detail.`))
         } else if (response.status === 200) {
             dispatch(loadTablesToAppCache(json))
 
