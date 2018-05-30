@@ -471,6 +471,25 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response({"tables": tables})
 
     @list_route(methods=['get'])
+    def fetch_table_for_geometry(self, request, format=None):
+        schema_name = request.query_params.get('schema', None)
+        table_family = request.query_params.get('table_family', None)
+        geo_source_id = request.query_params.get('geo_source_id', None)
+
+        db = broker.access_schema(schema_name)
+        table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_family_and_geometry(table_family, geo_source_id)
+
+        if table is None:
+            raise NotFound()
+
+        tmp = TableInfoSerializer(table).data
+        tmp["schema_name"] = schema_name
+        tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+        tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
+
+        return Response({"table": tmp})
+
+    @list_route(methods=['get'])
     def search(self, request, format=None):
         def getSchemasToQuery(schemas, schema_families):
             schemaNames = []

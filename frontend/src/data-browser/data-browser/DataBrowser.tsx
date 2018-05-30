@@ -83,6 +83,7 @@ export interface IProps {
     onChangeSchemaSelection: Function
     onTableSearchChange: Function
     handleClickTable: Function
+    onClickRecentFavouriteOrUsedInThisMapTable: Function
     handleFavouriteTable: Function
     onChooseColumn: Function
     onFinishBrowsing: Function
@@ -129,6 +130,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             onTableSearchChange,
             schemainfo,
             handleClickTable,
+            onClickRecentFavouriteOrUsedInThisMapTable,
             handleFavouriteTable,
             onChooseColumn,
             onFinishBrowsing,
@@ -162,7 +164,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     <DataTableList
                                         tables={mapTables}
                                         layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={handleClickTable}
+                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
                                     />
                                 </DataBrowserSectionContainer>
                             )}
@@ -189,7 +191,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     <DataTableList
                                         tables={recentTables}
                                         layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={handleClickTable}
+                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
                                     />
                                 </DataBrowserSectionContainer>
                             )}
@@ -205,7 +207,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                                     <DataTableList
                                         tables={favouriteTables}
                                         layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={handleClickTable}
+                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
                                     />
                                 </DataBrowserSectionContainer>
                             )}

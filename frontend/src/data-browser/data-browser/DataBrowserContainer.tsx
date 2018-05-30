@@ -4,6 +4,7 @@ import { withRouter } from "react-router"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import {
     fetchColumns,
+    fetchTableByFamilyAndGeometry,
     fetchTablesForSchema,
     finishBrowsing,
     getTablesForMap,
@@ -52,6 +53,7 @@ export interface IDispatchProps {
     getSchemaTables: Function
     handleTableSearch: Function
     handleChooseTable: Function
+    getTableByFamilyAndGeometry: Function
     favouriteTable: Function
     showSchemaView: Function
     showTableView: Function
@@ -125,6 +127,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
             config,
             selectedTables,
             handleChooseTable,
+            getTableByFamilyAndGeometry,
             favouriteTable,
             selectedColumns,
             activeColumns,
@@ -165,6 +168,17 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 handleClickTable={(table: ITable) => {
                     handleChooseTable(table)
                     this.setState({ selectedTable: table })
+                }}
+                onClickRecentFavouriteOrUsedInThisMapTable={async (table: ITable) => {
+                    // Tables from Recents, Favourites, or Used In This Map may point to a
+                    // geometry that is different to the geometry on this layer. In data schemas
+                    // where tables exist at multiple levels of detail we'll be nice to the user
+                    // and try to send them to the right table in this family for their current geometry.
+                    const tableForLayerGeometry = await getTableByFamilyAndGeometry(table, geometry)
+                    if (tableForLayerGeometry !== null) {
+                        handleChooseTable(tableForLayerGeometry)
+                        this.setState({ selectedTable: tableForLayerGeometry })
+                    }
                 }}
                 handleFavouriteTable={(table: ITable) => {
                     favouriteTable(table)
@@ -246,6 +260,12 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         handleChooseTable: (table: ITable) => {
             dispatch(fetchColumns(table.schema_name, table.id))
+        },
+        getTableByFamilyAndGeometry: async (table: ITable, geometry: IGeomTable) => {
+            if (table.geometry_source_id !== geometry._id) {
+                return await dispatch(fetchTableByFamilyAndGeometry(table, geometry))
+            }
+            return table
         },
         favouriteTable: (table: ITable) => {
             dispatch(toggleFavouriteTables([table]))

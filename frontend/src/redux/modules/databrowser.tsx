@@ -2,7 +2,12 @@ import { entries as objectEntries, values as objectValues } from "core-js/librar
 import * as dotProp from "dot-prop-immutable"
 import { xorBy } from "lodash-es"
 import { parse } from "mathjs"
-import { IGeomInfo, loadColumns as loadColumnsToAppCache, loadTables as loadTablesToAppCache } from "../../redux/modules/ealgis"
+import {
+    IGeomInfo,
+    loadColumns as loadColumnsToAppCache,
+    loadTable as loadTableToAppCache,
+    loadTables as loadTablesToAppCache,
+} from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
@@ -256,6 +261,27 @@ export function searchTables(
             })
             dispatch(addTables(tablePartials))
         }
+    }
+}
+
+export function fetchTableByFamilyAndGeometry(table: ITable, geometry: IGeomTable) {
+    return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
+        if (table.geometry_source_id !== geometry._id) {
+            const { response, json } = await ealapi.get("/api/0.1/tableinfo/fetch_table_for_geometry/", dispatch, {
+                schema: table.schema_name,
+                table_family: table.metadata_json.family,
+                geo_source_id: geometry._id,
+            })
+
+            if (response.status === 404) {
+                dispatch(sendSnackbarNotification(`There is no equivalent table for the '${geometry.description}' level of detail.`))
+                return null
+            } else if (response.status === 200) {
+                dispatch(loadTableToAppCache(json.table, json.table.schema_name))
+                return json.table
+            }
+        }
+        return table
     }
 }
 
