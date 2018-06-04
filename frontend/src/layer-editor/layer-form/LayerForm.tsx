@@ -1,26 +1,26 @@
-import { groupBy } from "lodash-es"
-import Divider from "material-ui/Divider"
-import IconButton from "material-ui/IconButton"
-import MenuItem from "material-ui/MenuItem"
-import RaisedButton from "material-ui/RaisedButton"
-import Subheader from "material-ui/Subheader"
-import { Tab, Tabs } from "material-ui/Tabs"
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
-import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons"
-import * as React from "react"
-import { Link } from "react-router"
-import { Field, Fields, reduxForm } from "redux-form"
-import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
-import styled from "styled-components"
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
-import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces"
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
-import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
-import ColumnCard from "../column-card/ColumnCardContainer"
-import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
-import { eVisibleComponent } from "./LayerFormContainer"
+import { groupBy } from "lodash-es";
+import Divider from "material-ui/Divider";
+import IconButton from "material-ui/IconButton";
+import MenuItem from "material-ui/MenuItem";
+import RaisedButton from "material-ui/RaisedButton";
+import Subheader from "material-ui/Subheader";
+import { Tab, Tabs } from "material-ui/Tabs";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
+import * as React from "react";
+import { Link } from "react-router";
+import { Field, Fields, reduxForm } from "redux-form";
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
+import styled from "styled-components";
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
+import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
+import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
+import ColumnCard from "../column-card/ColumnCardContainer";
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
+import { eVisibleComponent } from "./LayerFormContainer";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -216,137 +216,144 @@ const StylingFields = (fields: any) => {
 
     return (
         <React.Fragment>
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Colour scheme</FauxFieldLabelDescriptionHeading>
-                    Choose a colour scheme for your data.
-                </FirstFlexboxColumn>
+            {fields["doFill"] && (
+                <React.Fragment>
+                    <FormSectionSubheader>Colours</FormSectionSubheader>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Colour scheme</FauxFieldLabelDescriptionHeading>
+                            Choose a colour scheme for your data.
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="fillColourScheme"
-                        component={ColourSelectField}
-                        // hintText="Choose your colour scheme..."
-                        // floatingLabelText="Fill colour scheme"
-                        // floatingLabelFixed={true}
-                        validate={[required]}
-                        fullWidth={true}
-                        // onChange={(junk: object, newValue: object, previousValue: object) =>
-                        //     fields.onFieldChange("fillColourScheme", newValue)
-                        // }
-                        onChange={(junk: object, newValue: string, previousValue: string) => {
-                            // There's two gotchas here:
-                            // 1. redux-form-material-ui doesn't pass (event, newValue, previousValue) for SelectFields like it does for other field types. Hence the `junk` argument and repeating the field name.
-                            // 2. We were (seemingly) seeing onChange firing before the application state had been updated with the new value for this SelectField. We'll work around this by using the debounced version.
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="fillColourScheme"
+                                component={ColourSelectField}
+                                // hintText="Choose your colour scheme..."
+                                // floatingLabelText="Fill colour scheme"
+                                // floatingLabelFixed={true}
+                                validate={[required]}
+                                fullWidth={true}
+                                // onChange={(junk: object, newValue: object, previousValue: object) =>
+                                //     fields.onFieldChange("fillColourScheme", newValue)
+                                // }
+                                onChange={(junk: object, newValue: string, previousValue: string) => {
+                                    // There's two gotchas here:
+                                    // 1. redux-form-material-ui doesn't pass (event, newValue, previousValue) for SelectFields like it does for other field types. Hence the `junk` argument and repeating the field name.
+                                    // 2. We were (seemingly) seeing onChange firing before the application state had been updated with the new value for this SelectField. We'll work around this by using the debounced version.
 
-                            fields.onFieldChange("fillColourScheme", {
-                                fillColourScheme: newValue,
-                                fillColourSchemeLevels: getColourSchemeLevelWithinRange(newValue),
-                            })
-                        }}
-                        selectionRenderer={(colourLevel: string) => {
-                            return (
-                                <ColourScaleBarContainer
-                                    colourName={colourLevel}
-                                    colourLevel={getColourSchemeLevelWithinRange(colourLevel)}
-                                    scaleMin={parseFloat(fields["scaleMin"].input.value)}
-                                    scaleMax={parseFloat(fields["scaleMax"].input.value)}
-                                    scaleFlip={fields["fillColourScaleFlip"].input.value}
-                                    opacity={fields["fillOpacity"].input.value}
-                                />
-                            )
-                        }}
-                    >
-                        {Object.keys(fields.colourinfo).map((colourLevel: any, key: any) => (
-                            <MenuItem key={key} value={colourLevel} style={{ paddingBottom: 10 }}>
-                                <ColourScaleBarContainer
-                                    colourName={colourLevel}
-                                    colourLevel={getColourSchemeLevelWithinRange(colourLevel)}
-                                    scaleMin={parseFloat(fields["scaleMin"].input.value)}
-                                    scaleMax={parseFloat(fields["scaleMax"].input.value)}
-                                    scaleFlip={fields["fillColourScaleFlip"].input.value}
-                                    opacity={fields["fillOpacity"].input.value}
-                                />
-                            </MenuItem>
-                        ))}
-                    </MyField>
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                                    fields.onFieldChange("fillColourScheme", {
+                                        fillColourScheme: newValue,
+                                        fillColourSchemeLevels: getColourSchemeLevelWithinRange(newValue),
+                                    })
+                                }}
+                                selectionRenderer={(colourLevel: string) => {
+                                    return (
+                                        <ColourScaleBarContainer
+                                            colourName={colourLevel}
+                                            colourLevel={getColourSchemeLevelWithinRange(colourLevel)}
+                                            scaleMin={parseFloat(fields["scaleMin"].input.value)}
+                                            scaleMax={parseFloat(fields["scaleMax"].input.value)}
+                                            scaleFlip={fields["fillColourScaleFlip"].input.value}
+                                            opacity={fields["fillOpacity"].input.value}
+                                        />
+                                    )
+                                }}
+                            >
+                                {Object.keys(fields.colourinfo).map((colourLevel: any, key: any) => (
+                                    <MenuItem key={key} value={colourLevel} style={{ paddingBottom: 10 }}>
+                                        <ColourScaleBarContainer
+                                            colourName={colourLevel}
+                                            colourLevel={getColourSchemeLevelWithinRange(colourLevel)}
+                                            scaleMin={parseFloat(fields["scaleMin"].input.value)}
+                                            scaleMax={parseFloat(fields["scaleMax"].input.value)}
+                                            scaleFlip={fields["fillColourScaleFlip"].input.value}
+                                            opacity={fields["fillOpacity"].input.value}
+                                        />
+                                    </MenuItem>
+                                ))}
+                            </MyField>
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
 
-            <PaddedDivider />
+                    <PaddedDivider />
 
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Colour categories</FauxFieldLabelDescriptionHeading>
-                    Choose how many colour categories you want.
-                </FirstFlexboxColumn>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Colour categories</FauxFieldLabelDescriptionHeading>
+                            Choose how many colour categories you want.
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="fillColourSchemeLevels"
-                        component={SelectField}
-                        // hintText="Choose the number of colour levels..."
-                        // floatingLabelText="Fill colour levels"
-                        // floatingLabelFixed={true}
-                        fullWidth={true}
-                        onChange={(junk: object, newValue: object, previousValue: object) =>
-                            fields.onFieldChange("fillColourSchemeLevels", newValue)
-                        }
-                        // onChange={(junk: object, newValue: string, previousValue: string) => {
-                        //     fields.onFieldChange("fillColourSchemeLevels", {
-                        //         fillColourScheme: fields["fillColourScheme"].input.value,
-                        //         fillColourSchemeLevels: newValue,
-                        //     })
-                        // }}
-                    >
-                        {colourSchemeLevels.map((colourLevel: any, key: any) => (
-                            <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
-                        ))}
-                    </MyField>
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="fillColourSchemeLevels"
+                                component={SelectField}
+                                // hintText="Choose the number of colour levels..."
+                                // floatingLabelText="Fill colour levels"
+                                // floatingLabelFixed={true}
+                                fullWidth={true}
+                                onChange={(junk: object, newValue: object, previousValue: object) =>
+                                    fields.onFieldChange("fillColourSchemeLevels", newValue)
+                                }
+                                // onChange={(junk: object, newValue: string, previousValue: string) => {
+                                //     fields.onFieldChange("fillColourSchemeLevels", {
+                                //         fillColourScheme: fields["fillColourScheme"].input.value,
+                                //         fillColourSchemeLevels: newValue,
+                                //     })
+                                // }}
+                            >
+                                {colourSchemeLevels.map((colourLevel: any, key: any) => (
+                                    <MenuItem key={key} value={colourLevel} primaryText={colourLevel} />
+                                ))}
+                            </MyField>
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
 
-            <PaddedDivider />
+                    <PaddedDivider />
 
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Flip colours</FauxFieldLabelDescriptionHeading>
-                    Invert the colours used by your chosen colour scheme.
-                </FirstFlexboxColumn>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Flip colours</FauxFieldLabelDescriptionHeading>
+                            Invert the colours used by your chosen colour scheme.
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="fillColourScaleFlip"
-                        component={Checkbox}
-                        // label={"Flip colours"}
-                        // labelPosition={"left"}
-                        // labelStyle={styles.fauxFiedlLabel}
-                        onChange={(event: any, newValue: string, previousValue: string) =>
-                            fields.onFieldChange("fillColourScaleFlip", newValue)
-                        }
-                    />
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="fillColourScaleFlip"
+                                component={Checkbox}
+                                // label={"Flip colours"}
+                                // labelPosition={"left"}
+                                // labelStyle={styles.fauxFiedlLabel}
+                                onChange={(event: any, newValue: string, previousValue: string) =>
+                                    fields.onFieldChange("fillColourScaleFlip", newValue)
+                                }
+                            />
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
 
-            <PaddedDivider />
+                    <PaddedDivider />
 
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Transparency</FauxFieldLabelDescriptionHeading>
-                    Choose the level of transparency your colours should have.
-                </FirstFlexboxColumn>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Transparency</FauxFieldLabelDescriptionHeading>
+                            Choose the level of transparency your colours should have.
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="fillOpacity"
-                        component={AlphaPicker}
-                        rgb={{ r: 0, g: 0, b: 0, a: fields.initialValues["fillOpacity"] }}
-                        onChange={(event: any, newValue: object, previousValue: object) => fields.onFieldChange("fillOpacity", newValue)}
-                    />
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="fillOpacity"
+                                component={AlphaPicker}
+                                rgb={{ r: 0, g: 0, b: 0, a: fields.initialValues["fillOpacity"] }}
+                                onChange={(event: any, newValue: object, previousValue: object) =>
+                                    fields.onFieldChange("fillOpacity", newValue)
+                                }
+                            />
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
 
-            <PaddedDivider />
+                    <PaddedDivider />
+                </React.Fragment>
+            )}
 
             <FormSectionSubheader>Outline</FormSectionSubheader>
             <Fields
@@ -356,57 +363,61 @@ const StylingFields = (fields: any) => {
                 initialBorderColour={fields.initialValues["borderColour"]}
             />
 
-            <FormSectionSubheader>Scaling</FormSectionSubheader>
+            {fields["doFill"] && (
+                <React.Fragment>
+                    <FormSectionSubheader>Scaling</FormSectionSubheader>
 
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Scale minimum</FauxFieldLabelDescriptionHeading>
-                </FirstFlexboxColumn>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Scale minimum</FauxFieldLabelDescriptionHeading>
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="scaleMin"
-                        component={TextField}
-                        // hintText="Scale minimum"
-                        // floatingLabelText="Scale minimum"
-                        // floatingLabelFixed={true}
-                        validate={[required]}
-                        fullWidth={true}
-                        type="number"
-                        min="0"
-                        autoComplete="off"
-                        onBlur={(event: any, newValue: string, previousValue: string) =>
-                            fields.onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
-                        }
-                    />
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="scaleMin"
+                                component={TextField}
+                                // hintText="Scale minimum"
+                                // floatingLabelText="Scale minimum"
+                                // floatingLabelFixed={true}
+                                validate={[required]}
+                                fullWidth={true}
+                                type="number"
+                                min="0"
+                                autoComplete="off"
+                                onBlur={(event: any, newValue: string, previousValue: string) =>
+                                    fields.onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
+                                }
+                            />
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
 
-            <PaddedDivider />
+                    <PaddedDivider />
 
-            <FlexboxContainer>
-                <FirstFlexboxColumn>
-                    <FauxFieldLabelDescriptionHeading>Scale maximum</FauxFieldLabelDescriptionHeading>
-                </FirstFlexboxColumn>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Scale maximum</FauxFieldLabelDescriptionHeading>
+                        </FirstFlexboxColumn>
 
-                <SecondFlexboxColumn>
-                    <MyField
-                        name="scaleMax"
-                        component={TextField}
-                        // hintText="Scale maximum"
-                        // floatingLabelText="Scale maximum"
-                        // floatingLabelFixed={true}
-                        validate={[required]}
-                        fullWidth={true}
-                        type="number"
-                        min="0"
-                        autoComplete="off"
-                        onBlur={(event: any, newValue: string, previousValue: string) =>
-                            fields.onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
-                        }
-                    />
-                </SecondFlexboxColumn>
-            </FlexboxContainer>
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="scaleMax"
+                                component={TextField}
+                                // hintText="Scale maximum"
+                                // floatingLabelText="Scale maximum"
+                                // floatingLabelFixed={true}
+                                validate={[required]}
+                                fullWidth={true}
+                                type="number"
+                                min="0"
+                                autoComplete="off"
+                                onBlur={(event: any, newValue: string, previousValue: string) =>
+                                    fields.onFieldBlur(event.target.name, parseFloat(newValue), parseFloat(previousValue))
+                                }
+                            />
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
+                </React.Fragment>
+            )}
         </React.Fragment>
     )
 }
@@ -506,6 +517,7 @@ export interface IProps {
     layerId: number
     layerHash: string
     layerFillColourScheme: string
+    doFill: boolean
     visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
@@ -569,6 +581,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onFieldChange,
             colourinfo,
             layerFillColourScheme,
+            doFill,
             visibleComponent,
             onFormComplete,
             onResetForm,
@@ -678,7 +691,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                 containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}
                             >
                                 <TabContainer>
-                                    <FormSectionSubheader>Colours</FormSectionSubheader>
                                     <Fields
                                         names={[
                                             "fillColourScheme",
@@ -695,16 +707,18 @@ class LayerForm extends React.Component<IProps, {}> {
                                         onFieldBlur={onFieldBlur}
                                         initialValues={initialValues}
                                         colourinfo={colourinfo}
+                                        doFill={doFill}
                                     />
 
-                                    <PaddedDivider />
-
-                                    {layerHash !== null && (
-                                        <LayerQuerySummaryContainer
-                                            mapId={mapId}
-                                            layerHash={layerHash}
-                                            onFitScaleToData={onFitScaleToData}
-                                        />
+                                    {layerHash !== null && doFill && (
+                                        <React.Fragment>
+                                            <PaddedDivider />
+                                            <LayerQuerySummaryContainer
+                                                mapId={mapId}
+                                                layerHash={layerHash}
+                                                onFitScaleToData={onFitScaleToData}
+                                            />
+                                        </React.Fragment>
                                     )}
                                 </TabContainer>
                             </Tab>

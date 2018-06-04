@@ -1,17 +1,31 @@
-import { values as objectValues } from "core-js/library/fn/object";
-import { debounce, isEqual, reduce } from "lodash-es";
-import muiThemeable from "material-ui/styles/muiThemeable";
-import * as React from "react";
-import { connect } from "react-redux";
-import { browserHistory } from "react-router";
-import { change, formValueSelector, initialize, isDirty } from "redux-form";
-import { setActiveContentComponent } from "../../redux/modules/app";
-import { finishBrowsing } from "../../redux/modules/databrowser";
-import { IColourInfo, IGeomInfo, IGeomTable, ILayer, ILayerQuerySummary, IMUITheme, IMUIThemePalette, IMap, ISelectedColumn, IStore, eEalUIComponent, eLayerFilterExpressionMode, eLayerValueExpressionMode } from "../../redux/modules/interfaces";
-import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { getMapURL } from "../../shared/utils";
-import LayerForm from "./LayerForm";
+import { values as objectValues } from "core-js/library/fn/object"
+import { debounce, isEqual, reduce } from "lodash-es"
+import muiThemeable from "material-ui/styles/muiThemeable"
+import * as React from "react"
+import { connect } from "react-redux"
+import { browserHistory } from "react-router"
+import { change, formValueSelector, initialize, isDirty } from "redux-form"
+import { setActiveContentComponent } from "../../redux/modules/app"
+import { finishBrowsing } from "../../redux/modules/databrowser"
+import {
+    IColourInfo,
+    IGeomInfo,
+    IGeomTable,
+    ILayer,
+    ILayerQuerySummary,
+    IMUITheme,
+    IMUIThemePalette,
+    IMap,
+    ISelectedColumn,
+    IStore,
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
+} from "../../redux/modules/interfaces"
+import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { getMapURL } from "../../shared/utils"
+import LayerForm from "./LayerForm"
 
 export interface ILayerFormValues {
     borderColour: {
@@ -45,6 +59,7 @@ export interface IStoreProps {
     layerId: number
     layerDefinition: ILayer
     layerFillColourScheme: string
+    doFill: boolean
     visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
@@ -334,6 +349,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             isDirty,
             onFitScaleToData,
             layerFillColourScheme,
+            doFill,
             onFormChange,
             layerFormSubmitting,
             muiThemePalette,
@@ -348,6 +364,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerId={layerId}
                 layerHash={layerDefinition.hash}
                 layerFillColourScheme={layerFillColourScheme}
+                doFill={doFill}
                 visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
@@ -401,9 +418,9 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     // }
 
     const getVisibleComponent = (component: string): eVisibleComponent => {
-        if(component === "value-expression") {
+        if (component === "value-expression") {
             return eVisibleComponent.VALUE_EXPRESSION
-        } else if(component === "filter-expression") {
+        } else if (component === "filter-expression") {
             return eVisibleComponent.FILTER_EXPRESSION
         }
         return eVisibleComponent.LAYER_FORM
@@ -415,6 +432,7 @@ const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
         layerId: ownProps.params.layerId,
         layerDefinition: maps[ownProps.params.mapId].json.layers[ownProps.params.layerId],
         layerFillColourScheme: layerFormValues(state, "fillColourScheme") as string,
+        doFill: layerFormValues(state, "valueExpression") !== "",
         visibleComponent: getVisibleComponent(ownProps.params.component),
         dirtyFormModalOpen: app.modals.get("dirtyLayerForm") || false,
         isDirty: isDirty("layerForm")(state),
