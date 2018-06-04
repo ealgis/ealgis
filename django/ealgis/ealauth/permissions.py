@@ -1,6 +1,19 @@
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import User, AnonymousUser
 from rest_framework import permissions
 from .models import MapDefinition
+from .admin import is_private_site
+
+
+class AllowAnyIfPublicSite(permissions.AllowAny):
+    """
+    Custom permission to modify the base AllowAny permission if this is a public Ealgis site.
+    """
+
+    def has_permission(self, request, view):
+        if is_private_site() is False:
+            return True
+
+        return isinstance(request.user, User)
 
 
 class IsAuthenticatedAndApproved(permissions.BasePermission):
@@ -39,9 +52,9 @@ class IsMapOwner(permissions.BasePermission):
         return obj.owner_user_id == request.user
 
 
-class CanCloneMap(permissions.BasePermission):
+class CanViewOrCloneMap(permissions.BasePermission):
     """
-    Custom permission to allow map owners through.
+    Custom permission to allow anyone to view stuff if this is a public Ealgis site.
     """
 
     def has_object_permission(self, request, view, obj):

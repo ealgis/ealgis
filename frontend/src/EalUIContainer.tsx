@@ -49,7 +49,7 @@ const EALGISLogo = styled.img`
     height: 226px;
 `
 
-export interface IStateProps {
+export interface IStoreProps {
     // From Props
     app: IAppModule
     user: IUser
@@ -69,13 +69,21 @@ export interface IDispatchProps {
     handleGooglePlacesAutocomplete: Function
 }
 
+export interface IState {
+    showLoginDialog: boolean
+}
+
 export interface IRouteProps {
     content: any
     sidebar: any
     location: any
 }
 
-export class EalContainer extends React.Component<IStateProps & IDispatchProps & IRouteProps, {}> {
+export class EalContainer extends React.Component<IStoreProps & IDispatchProps & IRouteProps, IState> {
+    constructor(props: IStoreProps & IDispatchProps & IRouteProps) {
+        super(props)
+        this.state = { showLoginDialog: false }
+    }
     componentDidMount() {
         const { fetchStuff } = this.props
         fetchStuff()
@@ -107,6 +115,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
             sidebar,
             location,
         } = this.props
+        const showLoginDialog = user === null && (app.private_site === true || this.state.showLoginDialog === true)
 
         // Google Places Autocomplete should only appear when there is a map in the UI
         const showGooglePlacesBar: boolean = location.pathname.startsWith("/map/") && app.activeContentComponent === eEalUIComponent.MAP_UI
@@ -130,10 +139,19 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
                     user={user}
                     snackbars={snackbars}
                     debug={debug}
+                    showLoginDialog={showLoginDialog}
                     onTapAppBarLeft={onTapAppBarLeft}
                     handleSnackbarClose={handleSnackbarClose}
                     onDebugToggle={onDebugToggle}
+                    onRequestCloseLoginDialog={() => {
+                        if (app.private_site === false) {
+                            this.setState({ showLoginDialog: false })
+                        }
+                    }}
                     doLogout={doLogout}
+                    handleShowLoginDialog={() => {
+                        this.setState({ showLoginDialog: true })
+                    }}
                     handleOpenUserMenu={handleOpenUserMenu}
                     handleUserMenuOnRequestChange={handleUserMenuOnRequestChange}
                     handleGooglePlacesAutocomplete={(lat: number, lon: number, result: object) =>
@@ -149,7 +167,7 @@ export class EalContainer extends React.Component<IStateProps & IDispatchProps &
     }
 }
 
-const mapStateToProps = (state: IStore): IStateProps => {
+const mapStateToProps = (state: IStore): IStoreProps => {
     const { app, map, ealgis, snackbars } = state
 
     return {

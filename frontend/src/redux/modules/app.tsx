@@ -1,5 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IConfig } from "./interfaces"
+const Config: IConfig = require("Config") as any
 
 // Actions
 const LOADING = "ealgis/app/LOADING"
@@ -20,6 +22,7 @@ export enum eEalUIComponent {
 }
 
 const initialState: IModule = {
+    private_site: Config["PRIVATE_SITE"],
     loading: true,
     requestsInProgress: 0,
     sidebarOpen: true,
@@ -130,6 +133,7 @@ export function setActiveContentComponent(contentComponent: eEalUIComponent) {
 
 // Models
 export interface IModule {
+    private_site: boolean
     loading: boolean
     requestsInProgress: number
     sidebarOpen: boolean

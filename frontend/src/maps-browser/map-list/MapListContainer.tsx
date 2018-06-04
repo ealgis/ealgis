@@ -3,11 +3,13 @@ import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
 import { IMUIThemePalette, IMUIThemeProps, IMapsModule, IStore, IUser } from "../../redux/modules/interfaces"
+import { eMapShared } from "../../redux/modules/maps"
 import MapList from "./MapList"
 
 export interface IProps {}
 
 export interface IStoreProps {
+    isPrivateSite: boolean
     user: IUser
     maps: IMapsModule
     muiThemePalette: IMUIThemePalette
@@ -25,30 +27,32 @@ export interface IRouteProps {
 
 export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
     render() {
-        const { tabName, user, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
+        const { tabName, isPrivateSite, user, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
 
-        if (user === null) {
-            return <div />
+        if (user === null && isPrivateSite === true) {
+            return null
         }
 
+        const userId = user !== null ? user.id : null
         return (
             <MapList
                 muiThemePalette={muiThemePalette}
                 tabName={tabName}
-                userId={user.id}
+                userId={userId}
                 maps={maps}
-                getMyMaps={() => getMyMaps(objectEntries(maps), user.id)}
-                getSharedMaps={() => getSharedMaps(objectEntries(maps), user.id)}
-                getPublicMaps={() => getPublicMaps(objectEntries(maps), user.id)}
+                getMyMaps={() => getMyMaps(objectEntries(maps), userId)}
+                getSharedMaps={() => getSharedMaps(objectEntries(maps), userId)}
+                getPublicMaps={() => getPublicMaps(objectEntries(maps), userId)}
             />
         )
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps => {
-    const { maps, ealgis } = state
+    const { app, maps, ealgis } = state
 
     return {
+        isPrivateSite: app.private_site,
         user: ealgis.user,
         maps,
         muiThemePalette: ownProps.muiTheme.palette,
@@ -57,20 +61,35 @@ const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps =
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        getMyMaps: (maps: Array<Array<any>>, userId: number) => {
-            return maps.filter((item: any) => {
-                return item[1].owner_user_id === userId
-            })
+        getMyMaps: (maps: Array<Array<any>>, userId: number | null) => {
+            if (userId !== null) {
+                return maps.filter((item: any) => {
+                    return item[1].owner_user_id === userId
+                })
+            }
+            return []
         },
-        getSharedMaps: (maps: Array<Array<any>>, userId: number) => {
-            return maps.filter((item: any) => {
-                return item[1].owner_user_id !== userId && item[1].shared === 2
-            })
+        getSharedMaps: (maps: Array<Array<any>>, userId: number | null) => {
+            if (userId !== null) {
+                return maps.filter((item: any) => {
+                    return item[1].owner_user_id !== userId && item[1].shared === eMapShared.AUTHENTICATED_USERS_SHARED
+                })
+            } else {
+                return maps.filter((item: any) => {
+                    return item[1].shared === eMapShared.AUTHENTICATED_USERS_SHARED
+                })
+            }
         },
-        getPublicMaps: (maps: Array<Array<any>>, userId: number) => {
-            return maps.filter((item: any) => {
-                return item[1].owner_user_id !== userId && item[1].shared === 3
-            })
+        getPublicMaps: (maps: Array<Array<any>>, userId: number | null) => {
+            if (userId !== null) {
+                return maps.filter((item: any) => {
+                    return item[1].owner_user_id !== userId && item[1].shared === eMapShared.PUBLIC_SHARED
+                })
+            } else {
+                return maps.filter((item: any) => {
+                    return item[1].shared === eMapShared.PUBLIC_SHARED
+                })
+            }
         },
     }
 }

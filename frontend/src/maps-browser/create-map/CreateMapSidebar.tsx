@@ -1,13 +1,13 @@
-import * as React from "react"
-import styled from "styled-components"
-import { Link } from "react-router"
 import RaisedButton from "material-ui/RaisedButton"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
+import * as React from "react"
+import { Link } from "react-router"
+import styled from "styled-components"
 
 const HugeCreateMapButton = styled(RaisedButton)`
-  width: 95%;
-  margin-left: 10px;
-  margin-top: 10px;
+    width: 95%;
+    margin-left: 10px;
+    margin-top: 10px;
 `
 
 const HugeCreateMapIcon = styled(MapsLayers)`
@@ -25,7 +25,7 @@ export class CreateMap extends React.Component<IProps, {}> {
 
         return (
             <HugeCreateMapButton
-                containerElement={<Link to={"/new/map/"} />}
+                containerElement={isApprovedUser ? <Link to={"/new/map/"} /> : undefined}
                 label="New Map"
                 secondary={true}
                 disabled={!isApprovedUser}

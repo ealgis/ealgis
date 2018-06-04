@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
@@ -12,7 +12,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from .permissions import IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanCloneMap
+from .permissions import AllowAnyIfPublicSite, IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanViewOrCloneMap
 
 from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, EALGISMetadataSerializer
 
@@ -24,6 +24,7 @@ import csv
 from django.http import HttpResponseNotFound
 from ealgis_common.db import broker
 from ealgis.mvt import TileGenerator
+from ealgis.ealauth.admin import is_private_site
 
 
 def api_not_found(request):
@@ -150,31 +151,56 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # More complex example from SO:
         # http://stackoverflow.com/questions/34968725/djangorestframework-how-to-get-user-in-viewset
-        return MapDefinition.objects.filter(
-            Q(owner_user_id=self.request.user) |
-            Q(
-                ~Q(owner_user_id=self.request.user) & Q(
-                    shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+
+        if isinstance(self.request.user, AnonymousUser):
+            if is_private_site() is False:
+                return MapDefinition.objects.filter(
+                    Q(
+                        Q(shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+                    )
+                )
+        else:
+            return MapDefinition.objects.filter(
+                Q(owner_user_id=self.request.user) |
+                Q(
+                    ~Q(owner_user_id=self.request.user) & Q(
+                        shared=MapDefinition.AUTHENTICATED_USERS_SHARED) | Q(shared=MapDefinition.PUBLIC_SHARED)
+                )
+                # owner_user_id=self.request.user
             )
-            # owner_user_id=self.request.user
-        )
 
     def list(self, request, format=None):
         maps = MapDefinition.objects.all().filter(owner_user_id=self.request.user)
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'])
-    def shared(self, request, format=None):
-        maps = MapDefinition.objects.all().filter(
-            shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
+    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
+    def all(self, request, format=None):
+        maps = self.get_queryset()
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'])
+    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
+    def shared(self, request, format=None):
+        maps = None
+        if isinstance(request.user, AnonymousUser):
+            if is_private_site() is False:
+                maps = MapDefinition.objects.all().filter(shared=MapDefinition.AUTHENTICATED_USERS_SHARED)
+        else:
+            maps = MapDefinition.objects.all().filter(shared=MapDefinition.AUTHENTICATED_USERS_SHARED).exclude(owner_user_id=request.user)
+
+        serializer = MapDefinitionSerializer(maps, many=True)
+        return Response(serializer.data)
+
+    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
     def public(self, request, format=None):
-        maps = MapDefinition.objects.all().filter(
-            shared=MapDefinition.PUBLIC_SHARED).exclude(owner_user_id=request.user)
+        maps = None
+        if isinstance(request.user, AnonymousUser):
+            if is_private_site() is False:
+                maps = MapDefinition.objects.all().filter(shared=MapDefinition.PUBLIC_SHARED)
+        else:
+            maps = MapDefinition.objects.all().filter(shared=MapDefinition.PUBLIC_SHARED).exclude(owner_user_id=request.user)
+
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
@@ -247,7 +273,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanCloneMap,))
+    @detail_route(methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanViewOrCloneMap,))
     def clone(self, request, pk=None, format=None):
         map = self.get_object()
 
@@ -281,7 +307,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         with broker.access_data() as db:
             return Response(db.get_summary_stats_for_layer(layer))
 
-    @detail_route(methods=['get'])
+    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def export_csv(self, request, pk=None, format=None):
         mapDefn = self.get_object()
         include_geom_attrs = request.query_params.get(
@@ -296,7 +322,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         response['Cache-Control'] = 'max-age=86400, public'
         return response
 
-    @detail_route(methods=['get'])
+    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def export_csv_viewport(self, request, pk=None, format=None):
         mapDefn = self.get_object()
         include_geom_attrs = request.query_params.get(
@@ -316,7 +342,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         response['Cache-Control'] = 'max-age=86400, public'
         return response
 
-    @detail_route(methods=['get'])
+    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def tile(self, request, pk=None, format=None):
         map = self.get_object()
         layer_hash = request.query_params.get("layer", None)
@@ -370,7 +396,7 @@ class DataInfoViewSet(viewsets.ViewSet):
     """
     API endpoint that allows tabular tables to be viewed or edited.
     """
-    permission_classes = (IsAuthenticatedAndApproved,)
+    permission_classes = (AllowAnyIfPublicSite,)
     serializer_class = DataInfoSerializer
 
     def list(self, request, format=None):

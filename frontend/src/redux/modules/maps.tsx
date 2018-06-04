@@ -1,16 +1,16 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
-import * as dotProp from "dot-prop-immutable"
-import { cloneDeep, isEqual, merge } from "lodash-es"
-import { browserHistory } from "react-router"
-import { SubmissionError } from "redux-form"
-import { ISelectedColumn, IUserPartial, getUserIdFromState } from "../../redux/modules/ealgis"
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
-import { IPosition } from "../../redux/modules/map"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import { getMapURL } from "../../shared/utils"
-import { IConfig } from "./interfaces"
+import { includes as arrayIncludes } from "core-js/library/fn/array";
+import * as dotProp from "dot-prop-immutable";
+import { cloneDeep, isEqual, merge } from "lodash-es";
+import { browserHistory } from "react-router";
+import { SubmissionError } from "redux-form";
+import { ISelectedColumn, IUserPartial, getUserIdFromState } from "../../redux/modules/ealgis";
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
+import { IPosition } from "../../redux/modules/map";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
+import { getMapURL } from "../../shared/utils";
+import { IConfig } from "./interfaces";
 
 const Config: IConfig = require("Config") as any
 
@@ -442,7 +442,7 @@ export enum eMapShared {
 // e.g. thunks, epics, et cetera
 export function fetchMaps() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/maps/", dispatch)
+        const { response, json } = await ealapi.get("/api/0.1/maps/all/", dispatch)
 
         if (response.status === 200 && json.length > 0) {
             // Map maps from an array of objects to a dict keyed by mapId

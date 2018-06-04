@@ -6,10 +6,7 @@ import LinearProgress from "material-ui/LinearProgress"
 import MenuItem from "material-ui/MenuItem"
 import Snackbar from "material-ui/Snackbar"
 import { ToolbarGroup } from "material-ui/Toolbar"
-import ActionBugReport from "material-ui/svg-icons/action/bug-report"
-import ActionExitToApp from "material-ui/svg-icons/action/exit-to-app"
-import ActionFace from "material-ui/svg-icons/action/face"
-import ActionSearch from "material-ui/svg-icons/action/search"
+import { ActionBugReport, ActionExitToApp, ActionFace, ActionInput, ActionSearch } from "material-ui/svg-icons"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
@@ -44,10 +41,13 @@ export interface IProps {
     user: any
     snackbars: ISnackbarsModule
     debug: boolean
+    showLoginDialog: boolean
     onTapAppBarLeft: any
     handleSnackbarClose: any
     onDebugToggle: any
+    onRequestCloseLoginDialog: any
     doLogout: any
+    handleShowLoginDialog: any
     handleOpenUserMenu: any
     handleUserMenuOnRequestChange: any
     handleGooglePlacesAutocomplete: any
@@ -64,10 +64,13 @@ export class EalUI extends React.Component<IProps, {}> {
             user,
             snackbars,
             debug,
+            showLoginDialog,
             onTapAppBarLeft,
             handleSnackbarClose,
             onDebugToggle,
+            onRequestCloseLoginDialog,
             doLogout,
+            handleShowLoginDialog,
             handleOpenUserMenu,
             handleUserMenuOnRequestChange,
             handleGooglePlacesAutocomplete,
@@ -97,52 +100,61 @@ export class EalUI extends React.Component<IProps, {}> {
                         iconElementRight={
                             <ToolbarGroup>
                                 {showGooglePlacesBar && (
-                                    <SearchIconButton tooltip={"Search for a place or address"}>
-                                        <ActionSearch color={"white"} />
-                                    </SearchIconButton>
-                                )}
-                                {showGooglePlacesBar && (
-                                    <GooglePlacesAutocomplete
-                                        results={handleGooglePlacesAutocomplete}
-                                        componentRestrictions={{ country: "AU" }}
-                                        inputStyle={{ color: "#ffffff" }}
-                                        listStyle={{ width: "100%", maxWidth: "400px", overflow: "hidden" }}
-                                        textFieldStyle={{ width: "100%" }}
-                                        name={"google-places-autocomplete"}
-                                    />
+                                    <React.Fragment>
+                                        <SearchIconButton tooltip={"Search for a place or address"}>
+                                            <ActionSearch color={"white"} />
+                                        </SearchIconButton>
+
+                                        <GooglePlacesAutocomplete
+                                            results={handleGooglePlacesAutocomplete}
+                                            componentRestrictions={{ country: "AU" }}
+                                            inputStyle={{ color: "#ffffff" }}
+                                            listStyle={{ width: "100%", maxWidth: "400px", overflow: "hidden" }}
+                                            textFieldStyle={{ width: "100%" }}
+                                            name={"google-places-autocomplete"}
+                                        />
+                                    </React.Fragment>
                                 )}
                                 <HeaderBarButton label="Home" containerElement={<Link to={"/"} />} />
-                                <HeaderBarButton label="Maps" containerElement={<Link to={"/maps"} />} />
+                                <HeaderBarButton label="Maps" containerElement={<Link to={user !== null ? "/maps" : "/shared"} />} />
                                 <HeaderBarButton label="About" containerElement={<Link to={"/about"} />} />
-                                {user !== null && (
+                                {user === null && (
                                     <HeaderBarButton
-                                        label={user.username}
-                                        icon={<ActionFace color={"white"} />}
-                                        onClick={handleOpenUserMenu}
+                                        label={"Login/Register"}
+                                        icon={<ActionInput color={"white"} />}
+                                        onClick={handleShowLoginDialog}
                                     />
                                 )}
                                 {user !== null && (
-                                    <IconMenu
-                                        iconButtonElement={<HiddenIconButton />}
-                                        open={app.userMenuState}
-                                        onRequestChange={handleUserMenuOnRequestChange}
-                                    >
-                                        {user.is_staff && (
-                                            <MenuItem
-                                                primaryText={debug ? "Debug Mode: ON" : "Debug Mode: OFF"}
-                                                leftIcon={<ActionBugReport />}
-                                                onClick={onDebugToggle}
-                                            />
-                                        )}
-                                        <MenuItem primaryText="Logout" leftIcon={<ActionExitToApp />} onClick={doLogout} />
-                                    </IconMenu>
+                                    <React.Fragment>
+                                        <HeaderBarButton
+                                            label={user.username}
+                                            icon={<ActionFace color={"white"} />}
+                                            onClick={handleOpenUserMenu}
+                                        />
+
+                                        <IconMenu
+                                            iconButtonElement={<HiddenIconButton />}
+                                            open={app.userMenuState}
+                                            onRequestChange={handleUserMenuOnRequestChange}
+                                        >
+                                            {user.is_staff && (
+                                                <MenuItem
+                                                    primaryText={debug ? "Debug Mode: ON" : "Debug Mode: OFF"}
+                                                    leftIcon={<ActionBugReport />}
+                                                    onClick={onDebugToggle}
+                                                />
+                                            )}
+                                            <MenuItem primaryText="Logout" leftIcon={<ActionExitToApp />} onClick={doLogout} />
+                                        </IconMenu>
+                                    </React.Fragment>
                                 )}
                             </ToolbarGroup>
                         }
                     />
                 </div>
                 <div className="page-content" style={{ display: app.sidebarOpen ? "flex" : "block" }}>
-                    <LoginDialog open={user === null} />
+                    <LoginDialog open={showLoginDialog} onRequestClose={onRequestCloseLoginDialog} />
                     <NotApprovedDialog open={user !== null && !user.is_approved} />
                     <main className="page-main-content">{content || this.props.children}</main>
                     <nav className="page-nav" style={{ display: app.sidebarOpen ? "" : "none" }}>

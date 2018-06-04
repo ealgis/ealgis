@@ -24,7 +24,7 @@ interface IProps {}
 
 export interface IStoreProps {
     // From Props
-    userId: number
+    userId: number | null
     tabName: string
     mapDefinition: IMap
     mapPosition: IPosition
@@ -106,7 +106,8 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
                     muiThemePalette={muiThemePalette}
                     tabName={tabName}
                     defn={mapDefinition}
-                    isOwner={mapDefinition.owner_user_id === userId}
+                    isOwner={userId !== null && mapDefinition.owner_user_id === userId}
+                    isLoggedIn={userId !== null}
                     onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
                     onAddLayer={() => onAddLayer(mapDefinition.id)}
                     onSetOrigin={() => onSetOrigin(mapDefinition, mapPosition)}
@@ -135,7 +136,7 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
     const { maps, app, map, ealgis } = state
     return {
-        userId: ealgis.user.id,
+        userId: ealgis.user !== null ? ealgis.user.id : null,
         tabName: ownProps.params.tabName,
         mapDefinition: maps[ownProps.params.mapId],
         mapPosition: map.position,

@@ -1,10 +1,10 @@
-import * as dotProp from "dot-prop-immutable";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
-import { ColourScale, DiscreteColourScale, HLSDiscreteColourScale, RGB } from "../../shared/openlayers/colour_scale";
-import { loaded as appLoaded, loading as appLoading } from "./app";
-import { parseColumnsFromExpression } from "./databrowser";
-import { fetchMaps } from "./maps";
+import * as dotProp from "dot-prop-immutable"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { ColourScale, DiscreteColourScale, HLSDiscreteColourScale, RGB } from "../../shared/openlayers/colour_scale"
+import { loaded as appLoaded, loading as appLoading } from "./app"
+import { parseColumnsFromExpression } from "./databrowser"
+import { fetchMaps } from "./maps"
 
 // Actions
 const LOAD_USER = "ealgis/ealgis/LOAD_USER"
@@ -313,6 +313,8 @@ export function fetchUserMapsColumnsDataColourAndSchemaInfo() {
                 dispatch(fetchTablesIfUncached([...self.user.favourite_tables, ...self.user.recent_tables])),
             ])
             await dispatch(fetchColumnsForMaps())
+        } else if (self.is_logged_in === false && getState()["app"]["private_site"] === false) {
+            await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo())])
         }
 
         dispatch(appLoaded())
@@ -330,7 +332,7 @@ export function fetchUser() {
 export function logoutUser() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         await ealapi.get("/api/0.1/logout", dispatch)
-        window.location.reload()
+        window.location.href = "/"
     }
 }
 
@@ -518,7 +520,8 @@ export function fetchColumnInfo(column: ISelectedColumn) {
 
 // Helper methods
 export function getUserIdFromState(getState: Function) {
-    return getState().ealgis["user"].id
+    const user = getState().ealgis["user"]
+    return user !== null ? user.id : null
 }
 
 export function getGeomInfoFromState(getState: Function) {

@@ -79,6 +79,7 @@ export interface IProps {
     tabName: string
     defn: IMap
     isOwner: boolean
+    isLoggedIn: boolean
     onDuplicateMap: any
     onAddLayer: any
     onSetOrigin: any
@@ -100,6 +101,7 @@ export class MapUINav extends React.Component<IProps, {}> {
             tabName,
             defn,
             isOwner,
+            isLoggedIn,
             onDuplicateMap,
             onAddLayer,
             onSetOrigin,
@@ -141,7 +143,9 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}
                                 />
                             )}
-                            <MenuItem primaryText="Duplicate Map" leftIcon={<ContentContentCopy />} onClick={onDuplicateMap} />
+                            {isLoggedIn && (
+                                <MenuItem primaryText="Duplicate Map" leftIcon={<ContentContentCopy />} onClick={onDuplicateMap} />
+                            )}
                             <MenuItem primaryText="Reset Position" leftIcon={<ActionHome />} onClick={onResetOrigin} />
                             {isOwner && (
                                 <MenuItem primaryText="Delete Map" leftIcon={<ActionDelete />} onClick={onToggleDeleteModalState} />
@@ -175,15 +179,17 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 ))}
                             </List>
 
-                            <FlatButton
-                                key={"add-layer-button"}
-                                label="Add Layer"
-                                secondary={true}
-                                icon={<ContentAddBox />}
-                                fullWidth={true}
-                                onClick={onAddLayer}
-                                style={{ marginBottom: 20 }}
-                            />
+                            {isOwner && (
+                                <FlatButton
+                                    key={"add-layer-button"}
+                                    label="Add Layer"
+                                    secondary={true}
+                                    icon={<ContentAddBox />}
+                                    fullWidth={true}
+                                    onClick={onAddLayer}
+                                    style={{ marginBottom: 20 }}
+                                />
+                            )}
                         </TabContainer>
                     </Tab>
                     {/* END LAYERS TAB */}
