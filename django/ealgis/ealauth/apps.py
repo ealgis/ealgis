@@ -2,7 +2,6 @@ from django.apps import AppConfig
 from ealgis.util import make_logger, get_env
 from ealgis_common.db import broker
 from raven import Client
-import logging
 
 logger = make_logger(__name__)
 
@@ -23,7 +22,7 @@ class EalauthConfig(AppConfig):
         from ealgis.ealauth.admin import is_development
         if is_development():
             raven_config["dsn"] = None
-        self.raven = client = Client(**raven_config)
+        self.raven = Client(**raven_config)
 
         # An Ealgis instance needs admins
         from ealgis.ealauth.admin import get_ealgis_admins

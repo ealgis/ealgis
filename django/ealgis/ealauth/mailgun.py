@@ -16,7 +16,7 @@ def send_mail(to, subject, html):
 
         if r.status_code != 200:
             raise Exception("Got a {code} error from Mailgun: {text}".format(code=r.status_code, text=r.text))
-    except:
+    except Exception:
         apps.get_app_config("ealauth").raven.captureException()
 
 
@@ -71,7 +71,7 @@ def send_new_user_welcome_awaiting_approval_mail(user):
     <br />
     Welcome to Ealgis!<br />
     <br />
-    The {ealgis_site_name} Ealgis site is private and only open to access by pre-approved users. 
+    The {ealgis_site_name} Ealgis site is private and only open to access by pre-approved users.
     The Ealgis administrators have been notified and will review your application (this usually doesn't take more than 24 hours).<br />
     <br />
     If you have any questions, please get in touch with us at <a href="mailto:{ealgis_site_contact_mail}">{ealgis_site_contact_mail}</a>.<br />
