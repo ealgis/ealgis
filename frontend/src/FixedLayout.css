@@ -35,8 +35,7 @@ p {
 
 .page-nav {
     order: -1;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: visible;
 }
 
 .page-main-content {
