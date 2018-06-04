@@ -1,6 +1,5 @@
 import * as ReactGA from "react-ga"
-import { Middleware, MiddlewareAPI } from "redux"
-import { IStore, IConfig } from "../../redux/modules/interfaces"
+import { IConfig, IStore } from "../../redux/modules/interfaces"
 const Config: IConfig = require("Config") as any
 
 if ("GOOGLE_ANALYTICS_UA" in Config) {
@@ -17,7 +16,7 @@ class GATracker {
     }
 
     pageview(path: string) {
-        if (process.env.NODE_ENV === "production" || this.always_send === true) {
+        if (Config["ENVIRONMENT"] === "production" || this.always_send === true) {
             ReactGA.set({ page: path })
             ReactGA.pageview(path)
         }
@@ -28,7 +27,7 @@ class GATracker {
     }
 
     event(cfg: ReactGA.EventArgs) {
-        if (process.env.NODE_ENV === "production" || this.always_send === true) {
+        if (Config["ENVIRONMENT"] === "production" || this.always_send === true) {
             ReactGA.event(cfg)
         }
 

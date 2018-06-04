@@ -46,6 +46,7 @@ export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"
 
 import { IMapPositionDefaults } from "./maps"
 export interface IConfig {
+    ENVIRONMENT: string
     GOOGLE_ANALYTICS_UA: string
     GOOGLE_MAPS_API_KEY: string
     MAPBOX_API_KEY: string
