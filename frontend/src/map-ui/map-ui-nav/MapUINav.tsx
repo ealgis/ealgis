@@ -12,20 +12,23 @@ import Subheader from "material-ui/Subheader"
 import { Tab, Tabs } from "material-ui/Tabs"
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
 import { white } from "material-ui/styles/colors"
-import ActionBookmarkBorder from "material-ui/svg-icons/action/bookmark-border"
-import ActionDelete from "material-ui/svg-icons/action/delete"
-import ActionHome from "material-ui/svg-icons/action/home"
-import ActionLock from "material-ui/svg-icons/action/lock"
-import ActionLockOpen from "material-ui/svg-icons/action/lock-open"
-import ContentCopy from "material-ui/svg-icons/content/content-copy"
-import ContentLink from "material-ui/svg-icons/content/link"
-import ModeEdit from "material-ui/svg-icons/editor/mode-edit"
-import FileFileDownload from "material-ui/svg-icons/file/file-download"
-import ImageGridOff from "material-ui/svg-icons/image/grid-off"
-import ImageGridOn from "material-ui/svg-icons/image/grid-on"
-import MapsAddLocation from "material-ui/svg-icons/maps/add-location"
-import NavigationClose from "material-ui/svg-icons/navigation/close"
-import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
+import {
+    ActionBookmarkBorder,
+    ActionDelete,
+    ActionHome,
+    ActionLock,
+    ActionLockOpen,
+    ContentAddBox,
+    ContentContentCopy,
+    ContentLink,
+    EditorModeEdit,
+    FileFileDownload,
+    ImageGridOff,
+    ImageGridOn,
+    MapsAddLocation,
+    NavigationClose,
+    NavigationMoreVert,
+} from "material-ui/svg-icons"
 import * as React from "react"
 import * as CopyToClipboard from "react-copy-to-clipboard"
 import { Link } from "react-router"
@@ -126,7 +129,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                         <IconMenu
                             iconButtonElement={
                                 <IconButton touch={true}>
-                                    <MoreVertIcon color={white} />
+                                    <NavigationMoreVert color={white} />
                                 </IconButton>
                             }
                         >
@@ -134,11 +137,11 @@ export class MapUINav extends React.Component<IProps, {}> {
                             {isOwner && (
                                 <MenuItem
                                     primaryText="Edit Map"
-                                    leftIcon={<ModeEdit />}
+                                    leftIcon={<EditorModeEdit />}
                                     containerElement={<Link to={`/map/${defn.id}/${defn["name-url-safe"]}/edit`} />}
                                 />
                             )}
-                            <MenuItem primaryText="Duplicate Map" leftIcon={<ContentCopy />} onClick={onDuplicateMap} />
+                            <MenuItem primaryText="Duplicate Map" leftIcon={<ContentContentCopy />} onClick={onDuplicateMap} />
                             <MenuItem primaryText="Reset Position" leftIcon={<ActionHome />} onClick={onResetOrigin} />
                             {isOwner && (
                                 <MenuItem primaryText="Delete Map" leftIcon={<ActionDelete />} onClick={onToggleDeleteModalState} />
@@ -171,6 +174,16 @@ export class MapUINav extends React.Component<IProps, {}> {
                                     />
                                 ))}
                             </List>
+
+                            <FlatButton
+                                key={"add-layer-button"}
+                                label="Add Layer"
+                                secondary={true}
+                                icon={<ContentAddBox />}
+                                fullWidth={true}
+                                onClick={onAddLayer}
+                                style={{ marginBottom: 20 }}
+                            />
                         </TabContainer>
                     </Tab>
                     {/* END LAYERS TAB */}
