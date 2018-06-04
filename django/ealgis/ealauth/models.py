@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.apps import apps
+from model_utils import FieldTracker
 from ealgis.util import make_logger
 from ealgis_common.db import broker
 import pyparsing
