@@ -174,71 +174,68 @@ class DataExpression(object):
     def __init__(self, name, geometry_source, expr, cond, srid=None, include_geometry=True, order_by_gid=False, include_geom_attrs=False):
         self.name = name
         self.geometry_source = geometry_source
-        self.db = broker.access_schema(self.geometry_source.__table__.schema)
-        self.geometry_source_table_info = self.db.get_table_info_by_id(self.geometry_source.table_info_id)
         self.geometry_column = None
         self.srid = srid
 
-        # attempt to get a column in the desired SRID, this speeds things up
-        if self.srid is not None:
-            self.geometry_column = self.db.get_geometry_source_column(self.geometry_source, self.srid).geometry_column
-        if self.geometry_column is None:
-            self.geometry_column = self.geometry_source.column
-            self.srid = self.geometry_source.srid
-        self.filters = []
+        with broker.access_schema(self.geometry_source.__table__.schema) as db:
+            self.geometry_source_table_info = db.get_table_info_by_id(self.geometry_source.table_info_id)
 
-        self.joins = set()
-        self.tbl = self.db.get_table_class_by_id(geometry_source.table_info_id)
+            # attempt to get a column in the desired SRID, this speeds things up
+            if self.srid is not None:
+                self.geometry_column = db.get_geometry_source_column(self.geometry_source, self.srid).geometry_column
+            if self.geometry_column is None:
+                self.geometry_column = self.geometry_source.column
+                self.srid = self.geometry_source.srid
+            self.filters = []
 
-        query_attrs = []
-        if include_geometry:
-            query_attrs.append(
-                getattr(self.tbl, self.geometry_column))
-        gid_attr = getattr(self.tbl, geometry_source.gid_column)
-        query_attrs.append(gid_attr)
-        # special case for empty expression
-        expr_raw = expr
+            self.joins = set()
+            self.tbl = db.get_table_class_by_id(geometry_source.table_info_id)
 
-        if expr == '':
-            # bodge bodge bodge, keep 'q' working
-            expr = sqlalchemy.func.abs(0)
-            self.trivial = True
-        else:
-            parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[0]
-            self.trivial = False
-            # + 0 is to stop non-binary expressions breaking with sqlalchemy's label() -- bodge, fixme
-            expr = parsed.eval(self) + 0
-        query_attrs.append(sqlalchemy.sql.expression.label('q', expr))
+            query_attrs = []
+            if include_geometry:
+                query_attrs.append(
+                    getattr(self.tbl, self.geometry_column))
+            gid_attr = getattr(self.tbl, geometry_source.gid_column)
+            query_attrs.append(gid_attr)
+            # special case for empty expression
+            expr_raw = expr
 
-        if include_geom_attrs:
-            # Attach all columns from the geometry source
-            with broker.access_schema(geometry_source.__table__.schema) as db:
+            if expr == '':
+                # bodge bodge bodge, keep 'q' working
+                expr = sqlalchemy.func.abs(0)
+                self.trivial = True
+            else:
+                parsed = DataExpression.arith_expr.parseString(expr, parseAll=True)[0]
+                self.trivial = False
+                # + 0 is to stop non-binary expressions breaking with sqlalchemy's label() -- bodge, fixme
+                expr = parsed.eval(self) + 0
+            query_attrs.append(sqlalchemy.sql.expression.label('q', expr))
+
+            if include_geom_attrs:
+                # Attach all columns from the geometry source
                 for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
                     query_attrs.append(getattr(self.tbl, column.name))
-        self.query_attrs = query_attrs
+            self.query_attrs = query_attrs
 
-        filter_expr = None
-        if cond != '':
-            cond_processed = cond.replace("$value", "(%s)" % expr_raw)
-            parsed = DataExpression.cond_expr.parseString(cond_processed, parseAll=True)[0]
-            filter_expr = parsed.eval(self)
+            filter_expr = None
+            if cond != '':
+                cond_processed = cond.replace("$value", "(%s)" % expr_raw)
+                parsed = DataExpression.cond_expr.parseString(cond_processed, parseAll=True)[0]
+                filter_expr = parsed.eval(self)
 
-        self.query = self.db.session.query(*query_attrs)
+            self.query = db.session.query(*query_attrs)
 
-        if filter_expr is not None:
-            self.query = self.query.filter(filter_expr)
-        for filter_expr in self.filters:
-            self.query = self.query.filter(filter_expr)
-        for tbl, join_l, join_r in self.joins:
-            self.query = self.query.join(tbl, join_l == join_r)
-        if order_by_gid:
-            self.query = self.query.order_by(gid_attr)
+            if filter_expr is not None:
+                self.query = self.query.filter(filter_expr)
+            for filter_expr in self.filters:
+                self.query = self.query.filter(filter_expr)
+            for tbl, join_l, join_r in self.joins:
+                self.query = self.query.join(tbl, join_l == join_r)
+            if order_by_gid:
+                self.query = self.query.order_by(gid_attr)
 
     def __enter__(self):
         return self
-
-    def __exit__(self, type, value, traceback):
-        self.db.cleanup()
 
     def __repr__(self):
         return "DataExpression<%s>" % self.name
@@ -288,7 +285,8 @@ class DataExpression(object):
         ymax, xmax = ne
         proj_srid = int(apps.get_app_config('ealauth').projected_srid)
 
-        proj_column = self.db.get_geometry_source_column(self.geometry_source, proj_srid).geometry_column
+        with broker.access_schema(self.geometry_source.__table__.schema) as db:
+            proj_column = db.get_geometry_source_column(self.geometry_source, proj_srid).geometry_column
 
         q = self.query.filter(sqlalchemy.func.st_intersects(
             sqlalchemy.func.st_transform(

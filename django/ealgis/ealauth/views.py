@@ -117,8 +117,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
             removed_tables = []
 
             for table in request.data["tables"]:
-                db = broker.access_schema(table["schema_name"])
-                tbl = db.get_table_info_by_id(table["id"])
+                with broker.access_schema(table["schema_name"]) as db:
+                    tbl = db.get_table_info_by_id(table["id"])
                 if tbl is not None:
                     tbl_partial = {"id": tbl.id, "schema_name": table["schema_name"]}
 
@@ -403,9 +403,12 @@ class DataInfoViewSet(viewsets.ViewSet):
         info = broker.schema_information()
         tables = []
 
-        for schema_name in info.get_geometry_schemas():
-            metadata = broker.access_schema(schema_name).get_schema_metadata()
-            geometry_sources = broker.access_schema(schema_name).get_geometry_sources_table_info()
+        # NOTE: not in the for loop directly, to avoid recursive use of schema access
+        schema_names = info.get_geometry_schemas()
+        for schema_name in schema_names:
+            with broker.access_schema(schema_name) as db:
+                metadata = db.get_schema_metadata()
+                geometry_sources = db.get_geometry_sources_table_info()
 
             for (geometrysource, tableinfo) in geometry_sources:
                 tables.append({
@@ -529,7 +532,8 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if schema_families is not None:
                 schema_families = json.loads(schema_families)
                 for schema_name in ealgisSchemas:
-                    metadata = broker.access_schema(schema_name).get_schema_metadata()
+                    with broker.access_schema(schema_name) as db:
+                        metadata = db.get_schema_metadata()
                     if metadata.family in schema_families and schema_name not in schemaNames:
                         schemaNames.append(schema_name)
 
@@ -540,7 +544,8 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             # Sort scheams by name and date published
             schemas = []
             for schema_name in schemaNames:
-                metadata = broker.access_schema(schema_name).get_schema_metadata()
+                with broker.access_schema(schema_name) as db:
+                    metadata = db.get_schema_metadata()
 
                 schema = EALGISMetadataSerializer(metadata).data
                 schema["schema_name"] = schema_name
