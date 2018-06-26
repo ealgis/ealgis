@@ -1,4 +1,4 @@
-from ealgis_common.db import broker
+from ealgis_common.db import ealdb
 from ealgis.util import z_res
 from mercantile import bounds, xy
 from io import BytesIO
@@ -59,7 +59,7 @@ class TileGenerator:
 
         # Wrap EALGIS query in a PostGIS query to produce a vector tile
         mvt_query = create_vectortile_sql(layer, bounds=bounds(x, y, z))
-        with broker.access_data() as db:
+        with ealdb.access_data() as db:
             tile = db.session.execute(mvt_query).fetchone()[0]
 
         return BytesIO(tile).read()

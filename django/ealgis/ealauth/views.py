@@ -22,7 +22,7 @@ import urllib.parse
 import json
 import csv
 from django.http import HttpResponseNotFound
-from ealgis_common.db import broker
+from ealgis_common.db import ealdb
 from ealgis.mvt import TileGenerator
 from ealgis.ealauth.admin import is_private_site
 
@@ -85,7 +85,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             tmp_recent_tables = []
             # Support for sending multiple tables in the future
             for table in [request.data["table"]]:
-                with broker.access_schema(table["schema_name"]) as db:
+                with ealdb.access_schema(table["schema_name"]) as db:
                     tbl = db.get_table_info_by_id(table["id"])
                     if tbl is not None:
                         tmp_recent_tables.append({"id": tbl.id, "schema_name": table["schema_name"]})
@@ -117,7 +117,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             removed_tables = []
 
             for table in request.data["tables"]:
-                with broker.access_schema(table["schema_name"]) as db:
+                with ealdb.access_schema(table["schema_name"]) as db:
                     tbl = db.get_table_info_by_id(table["id"])
                 if tbl is not None:
                     tbl_partial = {"id": tbl.id, "schema_name": table["schema_name"]}
@@ -304,7 +304,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        with broker.access_data() as db:
+        with ealdb.access_data() as db:
             return Response(db.get_summary_stats_for_layer(layer))
 
     @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
@@ -400,13 +400,12 @@ class DataInfoViewSet(viewsets.ViewSet):
     serializer_class = DataInfoSerializer
 
     def list(self, request, format=None):
-        info = broker.schema_information()
         tables = []
 
         # NOTE: not in the for loop directly, to avoid recursive use of schema access
-        schema_names = info.get_geometry_schemas()
+        schema_names = ealdb.get_geometry_schemas()
         for schema_name in schema_names:
-            with broker.access_schema(schema_name) as db:
+            with ealdb.access_schema(schema_name) as db:
                 metadata = db.get_schema_metadata()
                 geometry_sources = db.get_geometry_sources_table_info()
 
@@ -434,7 +433,7 @@ class DataInfoViewSet(viewsets.ViewSet):
         gid = request.query_params.get('gid', None)
         schema_name = request.query_params.get('schema', None)
 
-        with broker.access_schema(schema_name) as db:
+        with ealdb.access_schema(schema_name) as db:
             row = db.get_geometry_source_row(table_name, gid)
 
             info = {}
@@ -460,22 +459,21 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         geo_source_id = request.query_params.get('geo_source_id', None)
 
         if schema_name is None:
-            info = broker.schema_information()
-            schema_names = info.get_ealgis_schemas()
+            schema_names = ealdb.get_ealgis_schemas()
         else:
             schema_names = [schema_name]
 
         tables = {}
         for schema_name in schema_names:
-            db = broker.access_schema(schema_name)
-            for table, geometrylinkage in db.get_table_info_and_geometry_linkage_by_ids(geo_source_id=geo_source_id):
-                tmp = TableInfoSerializer(table).data
-                tmp["schema_name"] = schema_name
-                tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
-                tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
+            with ealdb.access_schema(schema_name) as db:
+                for table, geometrylinkage in db.get_table_info_and_geometry_linkage_by_ids(geo_source_id=geo_source_id):
+                    tmp = TableInfoSerializer(table).data
+                    tmp["schema_name"] = schema_name
+                    tmp["geometry_source_schema_name"] = geometrylinkage.geometry_source_schema_name
+                    tmp["geometry_source_id"] = geometrylinkage.geometry_source_id
 
-                tableUID = "{}.{}".format(schema_name, table.id)
-                tables[tableUID] = tmp
+                    tableUID = "{}.{}".format(schema_name, table.id)
+                    tables[tableUID] = tmp
 
         if len(tables) == 0:
             raise NotFound()
@@ -486,8 +484,8 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         tables = {}
         if isinstance(request.data, list) and len(request.data) > 0:
             for table in request.data:
-                db = broker.access_schema(table["schema_name"])
-                tbl, geometrylinkage = db.get_table_info_and_geometry_linkage_by_id(table["id"])
+                with ealdb.access_schema(table["schema_name"]) as db:
+                    tbl, geometrylinkage = db.get_table_info_and_geometry_linkage_by_id(table["id"])
 
                 tmp = TableInfoSerializer(tbl).data
                 tmp["schema_name"] = table["schema_name"]
@@ -505,11 +503,11 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         table_family = request.query_params.get('table_family', None)
         geo_source_id = request.query_params.get('geo_source_id', None)
 
-        db = broker.access_schema(schema_name)
-        try:
-            table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_family_and_geometry(table_family, geo_source_id)
-        except Exception:
-            raise NotFound()
+        with ealdb.access_schema(schema_name) as db:
+            try:
+                table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_family_and_geometry(table_family, geo_source_id)
+            except Exception:
+                raise NotFound()
 
         tmp = TableInfoSerializer(table).data
         tmp["schema_name"] = schema_name
@@ -522,8 +520,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def search(self, request, format=None):
         def getSchemasToQuery(schemas, schema_families):
             schemaNames = []
-            info = broker.schema_information()
-            ealgisSchemas = info.get_ealgis_schemas()
+            ealgisSchemas = ealdb.get_ealgis_schemas()
 
             if schemas is not None:
                 schemas = json.loads(schemas)
@@ -532,7 +529,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if schema_families is not None:
                 schema_families = json.loads(schema_families)
                 for schema_name in ealgisSchemas:
-                    with broker.access_schema(schema_name) as db:
+                    with ealdb.access_schema(schema_name) as db:
                         metadata = db.get_schema_metadata()
                     if metadata.family in schema_families and schema_name not in schemaNames:
                         schemaNames.append(schema_name)
@@ -544,7 +541,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             # Sort scheams by name and date published
             schemas = []
             for schema_name in schemaNames:
-                with broker.access_schema(schema_name) as db:
+                with ealdb.access_schema(schema_name) as db:
                     metadata = db.get_schema_metadata()
 
                 schema = EALGISMetadataSerializer(metadata).data
@@ -572,30 +569,30 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         response = {}
         for schema_name in getSchemasToQuery(schemas, schema_families):
-            db = broker.access_schema(schema_name)
-            tables = []
+            with ealdb.access_schema(schema_name) as db:
+                tables = []
 
-            # If we have a single search term it may be a column name,
-            # so let's look that up first before trying a regular string
-            # search of Table metadata.
-            if len(search_terms) == 1:
-                columns = db.get_column_info_by_name(search_terms[0], geo_source_id)
+                # If we have a single search term it may be a column name,
+                # so let's look that up first before trying a regular string
+                # search of Table metadata.
+                if len(search_terms) == 1:
+                    columns = db.get_column_info_by_name(search_terms[0], geo_source_id)
 
-                if len(columns) > 0:
-                    table_ids = [c.table_info_id for c in columns]
-                    if len(table_ids) > 0:
-                        tables = db.get_table_info_and_geometry_linkage_by_ids(table_ids)
+                    if len(columns) > 0:
+                        table_ids = [c.table_info_id for c in columns]
+                        if len(table_ids) > 0:
+                            tables = db.get_table_info_and_geometry_linkage_by_ids(table_ids)
 
-            # If our column search didn't get a response, try serching the Table
-            # metadata instead
-            if len(tables) == 0:
-                # Search for columns or tables that contain our search terms
-                tables = db.search_columns(search_terms, search_terms_excluded, geo_source_id)
+                # If our column search didn't get a response, try serching the Table
+                # metadata instead
+                if len(tables) == 0:
+                    # Search for columns or tables that contain our search terms
+                    tables = db.search_columns(search_terms, search_terms_excluded, geo_source_id)
 
-                # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
-                # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
-                # Find all columns mentioning "landlord" at SA3 level
-                tables += db.search_tables(search_terms, search_terms_excluded, geo_source_id)
+                    # Constrain our search window to a given geometry source (e.g. All tables relating to SA3s)
+                    # e.g. https://localhost:8443/api/0.1/tableinfo/search/?search=landlord&schema=aus_census_2011&geo_source_id=4
+                    # Find all columns mentioning "landlord" at SA3 level
+                    tables += db.search_tables(search_terms, search_terms_excluded, geo_source_id)
 
             for table, geometrylinkage in tables:
                 tmp = TableInfoSerializer(table).data
@@ -627,7 +624,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # e.g. https://localhost:8443/api/0.1/columninfo/142949/?schema=aus_census_2011_bcp&format=json
         # Number of Persons usually resident Five; Non-family households
-        with broker.access_schema(schema_name) as db:
+        with ealdb.access_schema(schema_name) as db:
             column = db.get_column_info(id)
             if column is None:
                 raise NotFound()
@@ -661,10 +658,10 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         tablesByUID = {}
 
         for schema_name in request.data:
-            db = broker.access_schema(schema_name)
-            columns = db.get_column_info_by_names(request.data[schema_name])
-            tableIds = list(set([col.table_info_id for col, gl in columns]))
-            tables = db.get_table_info_and_geometry_linkage_by_ids(tableIds)
+            with ealdb.access_schema(schema_name) as db:
+                columns = db.get_column_info_by_names(request.data[schema_name])
+                tableIds = list(set([col.table_info_id for col, gl in columns]))
+                tables = db.get_table_info_and_geometry_linkage_by_ids(tableIds)
 
             for column, geometrylinkage in columns:
                 col = ColumnInfoSerializer(column).data
@@ -691,7 +688,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         # NB: For the Census data this implicitly limits us to a geometry soruce as well
         # e.g. https://localhost:8443/api/0.1/columninfo/fetch_for_table/?schema=aus_census_2011_xcp&tableinfo_id=490
         # Find all columns mentioning in table "Ancestry by Birthplace of Parents by Sex - Persons" (x06s3_aust_lga)
-        with broker.access_schema(schema_name) as db:
+        with ealdb.access_schema(schema_name) as db:
             columns = db.fetch_columns(tableinfo_id)
 
         # Split the response into an object of columns tables indexed by ther uid.
@@ -732,7 +729,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # e.g. https://localhost:8443/api/0.1/columninfo/60631/summary_stats/?schema=aus_census_2011_bcp&format=json
         # Number of Persons usually resident One; Non-family households
-        with broker.access_schema(schema_name) as db:
+        with ealdb.access_schema(schema_name) as db:
             column = db.get_column_info(id)
             if column is None:
                 raise NotFound()
@@ -773,12 +770,12 @@ class SchemasViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
-        info = broker.schema_information()
-        schema_names = info.get_ealgis_schemas()
+        schema_names = ealdb.get_ealgis_schemas()
 
         schemas = []
         for schema_name in schema_names:
-            metadata = broker.access_schema(schema_name).get_schema_metadata()
+            with ealdb.access_schema(schema_name) as db:
+                metadata = db.get_schema_metadata()
 
             schema = EALGISMetadataSerializer(metadata).data
             schema["schema_name"] = schema_name

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.apps import apps
 from model_utils import FieldTracker
 from ealgis.util import make_logger
-from ealgis_common.db import broker
+from ealgis_common.db import ealdb
 import pyparsing
 import hashlib
 import copy
@@ -65,8 +65,8 @@ class MapDefinition(models.Model):
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
 
-        db = broker.access_schema(schema_name)
-        geometry_source = db.get_geometry_source(geometry_source_name)
+        with ealdb.access_schema(schema_name) as db:
+            geometry_source = db.get_geometry_source(geometry_source_name)
 
         return DataExpression(
             layer['name'],
@@ -93,8 +93,8 @@ class MapDefinition(models.Model):
         if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('schema') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
             logger.debug(
                 "compiling query for layer: {}".format(layer.get('name')))
-            with self.compile_expr(layer) as expr:
-                layer['_postgis_query'] = expr.get_postgis_query()
+            expr = self.compile_expr(layer)
+            layer['_postgis_query'] = expr.get_postgis_query()
             logger.debug("... compilation complete; query:")
             logger.debug(layer['_postgis_query'])
 
@@ -117,7 +117,7 @@ class MapDefinition(models.Model):
         layer["latlon_bbox"] = bbox
 
     def _get_latlon_bbox(self, layer):
-        with broker.access_data() as db:
+        with ealdb.access_data() as db:
             return db.get_bbox_for_layer(layer)
 
     def _set(self, defn, force=False):

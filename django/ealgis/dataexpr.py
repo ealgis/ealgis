@@ -7,8 +7,7 @@ from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from django.apps import apps
 from ealgis.util import make_logger
-from ealgis_common.db import broker
-
+from ealgis_common.db import ealdb
 
 logger = make_logger(__name__)
 
@@ -177,7 +176,7 @@ class DataExpression(object):
         self.geometry_column = None
         self.srid = srid
 
-        with broker.access_schema(self.geometry_source.__table__.schema) as db:
+        with ealdb.access_schema(self.geometry_source.__table__.schema) as db:
             self.geometry_source_table_info = db.get_table_info_by_id(self.geometry_source.table_info_id)
 
             # attempt to get a column in the desired SRID, this speeds things up
@@ -234,9 +233,6 @@ class DataExpression(object):
             if order_by_gid:
                 self.query = self.query.order_by(gid_attr)
 
-    def __enter__(self):
-        return self
-
     def __repr__(self):
         return "DataExpression<%s>" % self.name
 
@@ -251,7 +247,7 @@ class DataExpression(object):
         attribute = attribute.lower()
         schema_name, attribute_name = attribute.split('.', 1)
 
-        with broker.access_schema(schema_name) as db:
+        with ealdb.access_schema(schema_name) as db:
             attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
             # attr_tbl: aus_census_2011_xcp.x06s3_aust_lga
             attr_tbl = db.get_table_class_by_id(attr_column_info.table_info_id)
@@ -285,7 +281,7 @@ class DataExpression(object):
         ymax, xmax = ne
         proj_srid = int(apps.get_app_config('ealauth').projected_srid)
 
-        with broker.access_schema(self.geometry_source.__table__.schema) as db:
+        with ealdb.access_schema(self.geometry_source.__table__.schema) as db:
             proj_column = db.get_geometry_source_column(self.geometry_source, proj_srid).geometry_column
 
         q = self.query.filter(sqlalchemy.func.st_intersects(
