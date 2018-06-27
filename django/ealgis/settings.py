@@ -21,12 +21,63 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'lga89_xe^o#o&7xkcocvzz3zua^p2v_^ya22&ek-dbq(j+%*u$'
+SECRET_KEY = get_env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Security
+# Causes an infite redirect loop...but works fine on Scremsong. Gotta work out why.
+# SECURE_SSL_REDIRECT = True
+# https://stackoverflow.com/a/22284717
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = "DENY"
+CORS_ALLOW_CREDENTIALS = True
 
-ALLOWED_HOSTS = ["localhost", "10.0.2.2", "ealgis.org"]
+if get_env("ENVIRONMENT") == "PRODUCTION":
+    DEBUG = False
+    CONN_MAX_AGE = 100  # Should be half our max number of PostgreSQL connections
+    CORS_ORIGIN_WHITELIST = (
+        # 'localhost',
+        'ealgis.org',
+    )
+    ALLOWED_HOSTS = ["localhost", "ealgis.org"]
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+        },
+        'handlers': {
+            'file': {
+                'level': 'WARNING',
+                'class': 'logging.FileHandler',
+                'filename': '/var/log/django.log',
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'WARNING',
+                'propagate': True,
+            },
+        },
+    }
+    STATIC_ROOT = "/app/static"
+else:
+    DEBUG = True
+    CORS_ORIGIN_WHITELIST = (
+        'localhost',
+    )
+    ALLOWED_HOSTS = ["localhost"]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "static"),
+        '/frontend/dist/',
+    ]
 
 
 # Application definition
@@ -48,6 +99,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -77,6 +129,9 @@ AUTHENTICATION_BACKENDS = (
 # )
 
 ROOT_URLCONF = 'ealgis.urls'
+
+LOGIN_REDIRECT_URL = get_env("EALGIS_BASE_URL")
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
 SOCIAL_AUTH_TWITTER_KEY = get_env('SOCIAL_AUTH_TWITTER_KEY')
 SOCIAL_AUTH_TWITTER_SECRET = get_env('SOCIAL_AUTH_TWITTER_SECRET')
@@ -154,7 +209,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-au'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Australia/Perth'
 
 USE_I18N = True
 
@@ -167,10 +222,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    '/frontend/dist/',
-]
-
-LOGIN_REDIRECT_URL = 'home'
