@@ -33,7 +33,7 @@ def api_not_found(request):
 
 class CurrentUserView(APIView):
     def get(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             serializer = UserSerializer(
                 request.user, context={'request': request}
             )
