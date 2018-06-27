@@ -13,7 +13,6 @@ __pycache__
 dist/
 node_modules/
 web-variables.env
-data-loader/tmp
 data/
 dev/*
 abs-datapack-parse/

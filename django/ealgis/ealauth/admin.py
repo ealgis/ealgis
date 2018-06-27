@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.apps import apps
+from django.db import connection
 from .models import MapDefinition, Profile
 from ealgis.util import get_env
 
@@ -10,7 +11,10 @@ admin.register(Profile)(admin.ModelAdmin)
 
 
 def get_ealgis_admins():
-    return User.objects.filter(is_staff=True, is_superuser=True, is_active=True).all()
+    if "auth_users" in connection.introspection.table_names():
+        return User.objects.filter(is_staff=True, is_superuser=True, is_active=True).all()
+    else:
+        return []
 
 
 def is_private_site():
