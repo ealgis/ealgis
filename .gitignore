@@ -1,3 +1,4 @@
+build/
 recipes/
 backend/geoserver/data/
 .vagrant
