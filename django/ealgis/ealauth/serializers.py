@@ -5,6 +5,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from urllib.parse import quote_plus
+from ealgis.util import make_logger
+
+
+logger = make_logger(__name__)
 
 
 class NoMatches(Exception):
@@ -79,6 +83,20 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
                 message='Please choose a map name that you haven\'t used before.'
             )
         ]
+
+    def update(self, instance, data):
+        # FIXME Do this properly
+        if "name" in data:
+            instance.name = data["name"]
+        if "description" in data:
+            instance.description = data["description"]
+        if "shared" in data:
+            instance.shared = data["shared"]
+
+        self._set(instance, data["json"])
+
+        instance.save()
+        return instance
 
     def _set(self, map, json):
         try:
