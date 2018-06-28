@@ -1,4 +1,6 @@
 build/
+nginx-prod/build/
+log/
 recipes/
 backend/geoserver/data/
 .vagrant

@@ -1,16 +1,12 @@
-"""
-WSGI config for ealgis project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/
-"""
-
+# Generic WSGI application
 import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ealgis.settings")
 
-application = get_wsgi_application()
+def application(environ, start):
+
+    # copy any vars into os.environ
+    for key in environ:
+        os.environ[key] = str(environ[key])
+
+    return get_wsgi_application()(environ, start)

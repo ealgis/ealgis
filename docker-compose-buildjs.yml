@@ -1,0 +1,8 @@
+version: "2"
+services:
+  frontend:
+    build: frontend/
+    command: build
+    volumes:
+      - ./frontend:/frontend:delegated
+      - ./build:/build
