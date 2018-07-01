@@ -8,6 +8,6 @@ setup(
     keywords="gis",
     url="https://github.com/grahame/dividebatur",
     name="ealgis",
-    version="1.9.0",
+    version="2.0.0",
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
 )
