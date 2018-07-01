@@ -40,7 +40,7 @@ if [ "$CMD" = "build" ]; then
    waitfordb
    export ENVIRONMENT=PRODUCTION
    rm -rf /build/static
-   django-admin collectstatic
+   django-admin collectstatic --noinput
    cd /build/static && tar czvf /build/django.tgz . && rm -rf /build/static
    exit
 fi
@@ -49,7 +49,7 @@ if [ "$CMD" = "uwsgi" ]; then
    waitfordb
    export ENVIRONMENT=PRODUCTION
    django-admin migrate
-   django-admin collectstatic
+   django-admin collectstatic --noinput
    chown 1000:1000 /var/log/django.log
    uwsgi --lazy-apps --uid 1000 --gid 1000 --http-socket :9090 --wsgi ealgis.wsgi --master --processes 8 --threads 8
    exit
