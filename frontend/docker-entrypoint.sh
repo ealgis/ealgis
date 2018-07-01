@@ -13,6 +13,17 @@ if [ x"$command" = x"webpack" ]; then
     exit
 fi
 
+if [ x"$command" = x"build" ]; then
+    export TERM=xterm
+    yarn
+
+    rm -rf /frontend/dist
+    mkdir /frontend/dist
+    webpack --progress --colors --config webpack.prod.js
+    cd /frontend/dist && tar czvf /build/frontend.tgz .
+    exit
+fi
+
 echo "executing: $*"
 exec $*
 

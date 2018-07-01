@@ -2,8 +2,6 @@ version: "2"
 services:
   datastore:
     image: mdillon/postgis:10-alpine
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=datastore
@@ -18,31 +16,19 @@ services:
 #     - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
   db:
     image: mdillon/postgis:10-alpine
-    ports:
-      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
-  frontend:
-    build: frontend/
-    command: webpack
-    volumes:
-      - ./frontend:/frontend:delegated
-      - ./nginx-dev/nginx:/nginx
-    ports:
-      - "35729:35729"
   memcached:
     image: memcached
     expose:
       - "11211"
   web:
     build: django/
-    command: runserver
+    command: build
     volumes:
       - ./django/:/app:delegated
-      - ./frontend:/frontend:delegated
-    ports:
-      - "8000:8000"
+      - ./build/:/build:delegated
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -60,13 +46,3 @@ services:
       - db
       - datastore
       - memcached
-      - frontend
-  nginx-dev:
-    build: nginx-dev/
-    volumes:
-      - ./nginx-dev:/app
-      - ./nginx-dev/web:/var/www/html
-    depends_on:
-      - web
-    ports:
-      - "443:443"

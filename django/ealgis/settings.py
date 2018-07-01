@@ -35,14 +35,13 @@ CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = "DENY"
 CORS_ALLOW_CREDENTIALS = True
 
+
 if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 100  # Should be half our max number of PostgreSQL connections
     CORS_ORIGIN_WHITELIST = (
-        # 'localhost',
-        'ealgis.org',
+        get_env("CORS_DOMAIN"),
     )
-    ALLOWED_HOSTS = ["localhost", "ealgis.org"]
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -53,7 +52,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         },
         'handlers': {
             'file': {
-                'level': 'WARNING',
+                'level': 'DEBUG',
                 'class': 'logging.FileHandler',
                 'filename': '/var/log/django.log',
                 'formatter': 'verbose',
@@ -62,12 +61,13 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         'loggers': {
             'django': {
                 'handlers': ['file'],
-                'level': 'WARNING',
+                'level': 'DEBUG',
                 'propagate': True,
             },
         },
     }
-    STATIC_ROOT = "/app/static"
+    ALLOWED_HOSTS = ["localhost", get_env("CORS_DOMAIN")]
+    STATIC_ROOT = "/build/static"
 else:
     DEBUG = True
     CORS_ORIGIN_WHITELIST = (
@@ -75,7 +75,6 @@ else:
     )
     ALLOWED_HOSTS = ["localhost"]
     STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "static"),
         '/frontend/dist/',
     ]
 

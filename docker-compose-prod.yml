@@ -1,29 +1,42 @@
-version: '2'
+version: "2"
 services:
+  datastore:
+    image: mdillon/postgis:10-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=datastore
   db:
-    image: mdillon/postgis:9.6
-  frontend:
-    build: frontend/
-    command: webpack
+    image: mdillon/postgis:10-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ealgis
+  memcached:
+    image: memcached
+  uwsgi:
+    image: ealgis/uwsgi:latest
+    command: uwsgi
     volumes:
-      - ./frontend:/frontend
-    ports:
-      - "35729:35729"
-  web:
-    build: django/
-    command: runserver
-    volumes:
-      - ./django/:/app
-      - ./frontend:/frontend
-    ports:
-      - "8000:8000"
+      - ./log/:/var/log:delegated
     environment:
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=postgres
+      - DB_NAME=ealgis
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
+      - DATASTORE_HOST=datastore
+      - DATASTORE_PORT=5432
+      - DATASTORE_NAME=datastore
+      - DATASTORE_USERNAME=postgres
+      - DATASTORE_PASSWORD=postgres
     env_file:
       - web-variables.env
     depends_on:
       - db
+      - datastore
+      - memcached
+  nginx-prod:
+    image: ealgis/nginx:latest
+    depends_on:
+      - uwsgi
+    ports:
+      - "443:443"

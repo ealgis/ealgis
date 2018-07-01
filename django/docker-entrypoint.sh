@@ -13,21 +13,46 @@ sys.exit(0)
 END
 }
 
-until postgres_ready; do
-  >&2 echo "Postgres is unavailable - sleeping"
-  sleep 1
-done
+waitfordb()
+{
+  until postgres_ready; do
+    >&2 echo "Postgres is unavailable - sleeping"
+    sleep 1
+  done
 
->&2 echo "Postgres is up - continuing..."
+  >&2 echo "Postgres is up - continuing..."
 
-sleep 8
+  sleep 8
+}
 
-django-admin migrate
+
 
 CMD="$1"
 echo $CMD
 if [ "$CMD" = "runserver" ]; then
-    django-admin runserver "0.0.0.0:8000"
+   waitfordb
+   django-admin migrate
+   django-admin runserver "0.0.0.0:8000"
+   exit
+fi
+
+if [ "$CMD" = "build" ]; then
+   waitfordb
+   export ENVIRONMENT=PRODUCTION
+   rm -rf /build/static
+   django-admin collectstatic
+   cd /build/static && tar czvf /build/django.tgz . && rm -rf /build/static
+   exit
+fi
+
+if [ "$CMD" = "uwsgi" ]; then
+   waitfordb
+   export ENVIRONMENT=PRODUCTION
+   django-admin migrate
+   django-admin collectstatic
+   chown 1000:1000 /var/log/django.log
+   uwsgi --lazy-apps --uid 1000 --gid 1000 --http-socket :9090 --wsgi ealgis.wsgi --master --processes 8 --threads 8
+   exit
 fi
 
 exec "$@"
