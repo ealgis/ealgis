@@ -1,9 +1,9 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import IconButton from "material-ui/IconButton"
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
-import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
 import { yellow500 } from "material-ui/styles/colors"
 import { ActionInfo, ActionViewColumn, ToggleStar, ToggleStarBorder } from "material-ui/svg-icons"
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
+import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
 import * as React from "react"
 import * as CopyToClipboard from "react-copy-to-clipboard"
 import styled from "styled-components"
@@ -81,6 +81,8 @@ export interface IProps {
     onToggleShowInfo: any
     onCopyColumnName: any
 }
+
+const isCellNotApplicable = (column: IColumn) => "na" in column.metadata_json && column.metadata_json["na"] === true
 
 export class DataColumnTable extends React.PureComponent<IProps, {}> {
     render() {
@@ -177,7 +179,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     onCellClick={(rowNumber: number, columnId: number, evt?: any) => {
                         if (showColumnNames === false) {
                             const columnTypeAndKind: string = `${evt.target.dataset.col}.${evt.target.dataset.row}`
-                            if (columnTypeAndKind in columns) {
+                            if (columnTypeAndKind in columns && isCellNotApplicable(columns[columnTypeAndKind]) === false) {
                                 onClickColumn(columns[columnTypeAndKind])
                             }
                         }
@@ -202,13 +204,19 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                             columnTypeAndKind in columns
                                                 ? `${columns[columnTypeAndKind].schema_name}.${columns[columnTypeAndKind].name}`
                                                 : ""
-                                        const bgColor = arrayIncludes(activeColumnsTypeAndKind, columnTypeAndKind)
+                                        let bgColor = arrayIncludes(activeColumnsTypeAndKind, columnTypeAndKind)
                                             ? muiThemePalette.primary1Color
                                             : ""
 
+                                        let cursor = "pointer"
+                                        if (isCellNotApplicable(columns[columnTypeAndKind])) {
+                                            cursor = "not-allowed"
+                                            bgColor = "grey"
+                                        }
+
                                         return showColumnNames ? (
                                             <CopyToClipboard key={`${idxCol}`} text={textToCopy} onCopy={onCopyColumnName}>
-                                                <ColumnCellTableRowColumn style={{ backgroundColor: bgColor }}>
+                                                <ColumnCellTableRowColumn style={{ backgroundColor: bgColor, cursor: cursor }}>
                                                     {!(columnTypeAndKind in columns) ? "N/A" : columns[columnTypeAndKind].name}
                                                 </ColumnCellTableRowColumn>
                                             </CopyToClipboard>
@@ -217,7 +225,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                                 key={`${idxCol}`}
                                                 data-col={valueCol}
                                                 data-row={valueRow}
-                                                style={{ backgroundColor: bgColor }}
+                                                style={{ backgroundColor: bgColor, cursor: cursor }}
                                             >
                                                 {!(columnTypeAndKind in columns) ? "N/A" : ""}
                                             </ColumnCellTableRowColumnClickable>

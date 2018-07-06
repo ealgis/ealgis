@@ -286,6 +286,7 @@ export interface ColumnMetadataJSON {
     category_value: string
     bucket: string
     is_total?: boolean
+    na?: boolean // Not applicable i.e. This data point has no value for this row/column combination
 }
 
 export interface IColumnInfo {
