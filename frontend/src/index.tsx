@@ -4,12 +4,11 @@ import * as Raven from "raven-js"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { Provider } from "react-redux"
-import { Router, browserHistory } from "react-router"
+import { browserHistory, Router } from "react-router"
 // @ts-ignore
 import { syncHistoryWithStore } from "react-router-redux"
-import { Store, applyMiddleware, createStore } from "redux"
+import { applyMiddleware, createStore, Store } from "redux"
 import { composeWithDevTools } from "redux-devtools-extension"
-import { createLogger } from "redux-logger"
 import thunkMiddleware from "redux-thunk"
 import { IConfig, IStore } from "./redux/modules/interfaces"
 import reducers from "./redux/modules/reducer"
@@ -29,14 +28,15 @@ if ("GOOGLE_ANALYTICS_UA" in Config) {
     Middleware.push(AnalyticsMiddleware as any)
 }
 
-if (Config["ENVIRONMENT"] === "development") {
-    const logger = createLogger({
-        level: "log", // log, console, warn, error, info
-        collapsed: true,
-        diff: true,
-    })
-    Middleware.push(logger)
-}
+// Enable for detailed debugging of Redux actions
+// if (Config["ENVIRONMENT"] === "development") {
+//     const logger = createLogger({
+//         level: "log", // log, console, warn, error, info
+//         collapsed: true,
+//         diff: true,
+//     })
+//     Middleware.push(logger)
+// }
 
 const ealapi = new EALGISApiClient()
 

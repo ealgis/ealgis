@@ -75,7 +75,7 @@ interface IState {
     expressionMode: eLayerValueExpressionMode
 }
 
-export class ValueExpressionEditorContainer extends React.PureComponent<
+export class ValueExpressionEditorContainer extends React.Component<
     IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps,
     IState
 > {
