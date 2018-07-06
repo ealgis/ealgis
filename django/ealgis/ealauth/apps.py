@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 from ealgis.util import make_logger, get_env
 from ealgis_common.db import ealdb
-from raven import Client
 
 logger = make_logger(__name__)
 
@@ -15,14 +14,6 @@ class EalauthConfig(AppConfig):
         self.private_site = get_env('EALGIS_CONFIG_PRIVATE_SITE')
         self.map_srid = 3857
         self.projected_srid = 3112
-
-        # Raven
-        raven_config = {"dsn": get_env("RAVEN_URL"), "environment": get_env("ENVIRONMENT"), "site": get_env("EALGIS_SITE_NAME")}
-        # Disable logging errors dev
-        from ealgis.ealauth.admin import is_development
-        if is_development():
-            raven_config["dsn"] = None
-        self.raven = Client(**raven_config)
 
         # An Ealgis instance needs admins
         from ealgis.ealauth.admin import get_ealgis_admins

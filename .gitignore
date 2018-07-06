@@ -20,3 +20,4 @@ dev/*
 abs-datapack-parse/
 .gitattributes
 notes.txt
+data-loader/

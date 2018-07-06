@@ -15,7 +15,6 @@ export class EALGISApiClient {
         dispatch(
             sendSnackbarMessage({
                 message: `Error from ${url}`,
-                // key: "SomeUID",
                 action: "Dismiss",
                 autoHideDuration: 4000,
                 onActionClick: () => {
@@ -39,10 +38,16 @@ export class EALGISApiClient {
         })
             .then((response: any) => {
                 dispatch(finishFetch())
-                return response.json().then((json: any) => ({
-                    response: response,
-                    json: json,
-                }))
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json().then((json: any) => ({
+                        response: response,
+                        json: json,
+                    }))
+                } else {
+                    var error: any = new Error(response.statusText || response.status)
+                    error.response = response
+                    return Promise.reject(error)
+                }
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
@@ -61,10 +66,16 @@ export class EALGISApiClient {
         })
             .then((response: any) => {
                 dispatch(finishFetch())
-                return response.json().then((json: any) => ({
-                    response: response,
-                    json: json,
-                }))
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json().then((json: any) => ({
+                        response: response,
+                        json: json,
+                    }))
+                } else {
+                    var error: any = new Error(response.statusText || response.status)
+                    error.response = response
+                    return Promise.reject(error)
+                }
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
@@ -88,10 +99,16 @@ export class EALGISApiClient {
                     dispatch(finishFetch())
                 }
 
-                return response.json().then((json: any) => ({
-                    response: response,
-                    json: json,
-                }))
+                if (response.status >= 200 && response.status < 300) {
+                    return response.json().then((json: any) => ({
+                        response: response,
+                        json: json,
+                    }))
+                } else {
+                    var error: any = new Error(response.statusText || response.status)
+                    error.response = response
+                    return Promise.reject(error)
+                }
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
@@ -108,7 +125,13 @@ export class EALGISApiClient {
         })
             .then((response: any) => {
                 dispatch(finishFetch())
-                return response
+                if (response.status >= 200 && response.status < 300) {
+                    return response
+                } else {
+                    var error: any = new Error(response.statusText || response.status)
+                    error.response = response
+                    return Promise.reject(error)
+                }
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }

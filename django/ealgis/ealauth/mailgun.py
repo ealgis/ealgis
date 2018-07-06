@@ -2,6 +2,7 @@ import requests
 from ealgis.util import get_env
 from ealgis.ealauth.admin import get_ealgis_admins
 from django.apps import apps
+from raven.contrib.django.raven_compat.models import client
 
 
 def send_mail(to, subject, html):
@@ -17,7 +18,7 @@ def send_mail(to, subject, html):
         if r.status_code != 200:
             raise Exception("Got a {code} error from Mailgun: {text}".format(code=r.status_code, text=r.text))
     except Exception:
-        apps.get_app_config("ealauth").raven.captureException()
+        client.captureException()
 
 
 def send_new_user_welcome_mail(user):
