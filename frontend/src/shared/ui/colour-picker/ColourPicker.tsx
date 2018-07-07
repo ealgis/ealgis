@@ -17,16 +17,11 @@ const Swatch = styled.div`
     width: 95%;
 `
 
-interface IColourPatchProps {
-    colour: RGBColor;
-}
-
-const ColourPatch = styled<IColourPatchProps, any>("div")` /* tslint:disable */
+const ColourPatch = styled.div`
     width: 100%;
     height: 20px;
     border-radius: 2px;
-    background: rgba(${(props: any) => props.colour.r}, ${(props: any) => props.colour.g}, ${(props: any) => props.colour.b}, ${(props: any) => props.colour.a});
-`
+` as any
 
 const Popover = styled.div`
     position: absolute;
@@ -42,7 +37,7 @@ const Cover = styled.div`
     left: 0px;
 `
 
-class ColourPicker extends React.Component<ColourPickerProps, {}> {
+class ColourPicker extends React.Component<ColourPickerProps, any> {
     state = {
         displayColorPicker: false,
     }
@@ -69,7 +64,7 @@ class ColourPicker extends React.Component<ColourPickerProps, {}> {
         return (
             <React.Fragment>
                 <Swatch onClick={this.handleClick}>
-                    <ColourPatch colour={colour as any} />
+                    <ColourPatch colour={colour as any} style={{background: `rgba(${colour.r}, ${colour.g}, ${colour.b}, ${colour.a})`}} />
                 </Swatch>
                 {this.state.displayColorPicker ? (
                     <Popover>
