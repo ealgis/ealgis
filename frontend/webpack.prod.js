@@ -1,6 +1,7 @@
 const webpack = require("webpack")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 const fs = require("fs")
 
 module.exports = {
@@ -62,7 +63,7 @@ module.exports = {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: "vendor",
-            filename: "vendor.bundle.js",
+            filename: "vendor.bundle.[hash].js",
             // (with more entries, this ensures that no other module
             //  goes into the vendor chunk)
             minChunks: Infinity,
@@ -72,9 +73,12 @@ module.exports = {
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_transparent_background.png" },
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_only_transparent_background.png" },
         ]),
+        new HtmlWebpackPlugin({
+            template: "index.prod.html",
+        }),
     ],
     output: {
-        filename: "bundle.js",
+        filename: "bundle.[hash].js",
         path: __dirname + "/dist",
     },
 

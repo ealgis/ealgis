@@ -1,6 +1,8 @@
 var webpack = require("webpack")
 var LiveReloadPlugin = require("webpack-livereload-plugin")
 var CopyWebpackPlugin = require("copy-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const CleanWebpackPlugin = require("clean-webpack-plugin")
 var fs = require("fs")
 
 module.exports = {
@@ -61,7 +63,7 @@ module.exports = {
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: "vendor",
-            filename: "vendor.bundle.js",
+            filename: "vendor.bundle.[hash].js",
             // (with more entries, this ensures that no other module
             //  goes into the vendor chunk)
             minChunks: Infinity,
@@ -71,9 +73,13 @@ module.exports = {
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_transparent_background.png" },
             { from: __dirname + "/src/assets/brand/ealgis_white_logo_only_transparent_background.png" },
         ]),
+        new HtmlWebpackPlugin({
+            template: "index.dev.html",
+        }),
+        new CleanWebpackPlugin(["dist"]),
     ],
     output: {
-        filename: "bundle.js",
+        filename: "bundle.[hash].js",
         path: __dirname + "/dist",
     },
 
