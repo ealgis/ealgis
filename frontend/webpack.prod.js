@@ -80,6 +80,7 @@ module.exports = {
     output: {
         filename: "bundle.[hash].js",
         path: __dirname + "/dist",
+        publicPath: "/static/",
     },
 
     // Enable sourcemaps for debugging webpack's output.

@@ -36,6 +36,8 @@ services:
       - memcached
   nginx-prod:
     image: ealgis/nginx:latest
+    volumes:
+      - ./keys/:/app/keys/:delegated
     depends_on:
       - uwsgi
     ports:

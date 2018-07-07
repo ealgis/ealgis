@@ -29,6 +29,7 @@ services:
     volumes:
       - ./django/:/app:delegated
       - ./build/:/build:delegated
+      - ./frontend:/frontend:delegated
     environment:
       - DB_HOST=db
       - DB_PORT=5432

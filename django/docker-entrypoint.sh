@@ -40,6 +40,8 @@ if [ "$CMD" = "build" ]; then
    waitfordb
    export ENVIRONMENT=PRODUCTION
    rm -rf /build/static
+   # Copy frontend's built index.html in (cleaned up in prodbuild.sh)
+   cp /frontend/dist/index.html /app/ealgis/ealfront/templates/index.html
    django-admin collectstatic --noinput
    cd /build/static && tar czvf /build/django.tgz . && rm -rf /build/static
    exit
