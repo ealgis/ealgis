@@ -66,6 +66,7 @@ services:
     volumes:
       - ./nginx-dev:/app
       - ./nginx-dev/web:/var/www/html
+      - ./frontend:/frontend:delegated
     depends_on:
       - web
     ports:
