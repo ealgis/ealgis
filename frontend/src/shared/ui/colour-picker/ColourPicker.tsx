@@ -1,12 +1,46 @@
 import * as React from "react"
 import { RGBColor, SwatchesPicker } from "react-color"
-import reactCSS from "reactcss"
+import styled from "styled-components"
 import { Colour } from "../alpha-picker/AlphaPicker"
 
 export interface ColourPickerProps {
     colour: RGBColor
     input: any
 }
+
+const Swatch = styled.div`
+    background: #fff;
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
+    display: inline-block;
+    cursor: pointer;
+    width: 95%;
+`
+
+interface IColourPatchProps {
+    colour: RGBColor;
+}
+
+const ColourPatch = styled<IColourPatchProps, any>("div")` /* tslint:disable */
+    width: 100%;
+    height: 20px;
+    border-radius: 2px;
+    background: rgba(${(props: any) => props.colour.r}, ${(props: any) => props.colour.g}, ${(props: any) => props.colour.b}, ${(props: any) => props.colour.a});
+`
+
+const Popover = styled.div`
+    position: absolute;
+    z-index: 2;
+    left: 10%;
+`
+
+const Cover = styled.div`
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+`
 
 class ColourPicker extends React.Component<ColourPickerProps, {}> {
     state = {
@@ -32,46 +66,16 @@ class ColourPicker extends React.Component<ColourPickerProps, {}> {
     render() {
         const { colour } = this.props
 
-        const styles = reactCSS({
-            default: {
-                color: {
-                    width: "100%",
-                    height: "20px",
-                    borderRadius: "2px",
-                    background: `rgba(${colour.r}, ${colour.g}, ${colour.b}, ${colour.a})`,
-                },
-                swatch: {
-                    background: "#fff",
-                    borderRadius: "1px",
-                    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-                    display: "inline-block",
-                    cursor: "pointer",
-                    width: "95%",
-                },
-                popover: {
-                    position: "absolute",
-                    zIndex: 2,
-                },
-                cover: {
-                    position: "fixed",
-                    top: "0px",
-                    right: "0px",
-                    bottom: "0px",
-                    left: "0px",
-                },
-            },
-        })
-
         return (
             <React.Fragment>
-                <div style={styles.swatch} onClick={this.handleClick}>
-                    <div style={styles.color} />
-                </div>
+                <Swatch onClick={this.handleClick}>
+                    <ColourPatch colour={colour as any} />
+                </Swatch>
                 {this.state.displayColorPicker ? (
-                    <div style={styles.popover as any}>
-                        <div style={styles.cover as any} onClick={this.handleClose} />
+                    <Popover>
+                        <Cover onClick={this.handleClose} />
                         <SwatchesPicker color={colour} onChange={this.handleChange as any} />
-                    </div>
+                    </Popover>
                 ) : null}
             </React.Fragment>
         )
