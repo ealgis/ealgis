@@ -70,7 +70,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: "index.dev.html",
         }),
-        new CleanWebpackPlugin(["dist"]),
+        new CleanWebpackPlugin(["dist"], { exclude: "index.html" }),
     ],
     output: {
         filename: "bundle.[hash].js",
