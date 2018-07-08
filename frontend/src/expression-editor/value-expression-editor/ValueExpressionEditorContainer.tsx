@@ -1,32 +1,12 @@
-import muiThemeable from "material-ui/styles/muiThemeable"
-import * as React from "react"
-import { connect } from "react-redux"
-import { withRouter } from "react-router"
-import { formValueSelector } from "redux-form"
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
-import {
-    deselectColumn,
-    fetchLiveResultForComponent,
-    finishBrowsing,
-    getValueExpressionWithColumns,
-    removeColumnFromList,
-    startBrowsing,
-} from "../../redux/modules/databrowser"
-import {
-    IColumn,
-    IColumnInfo,
-    IDataBrowserConfig,
-    IDataBrowserResult,
-    IGeomTable,
-    ILayer,
-    IMUITheme,
-    IMUIThemePalette,
-    IMap,
-    IStore,
-    eEalUIComponent,
-    eLayerValueExpressionMode,
-} from "../../redux/modules/interfaces"
-import ValueExpressionEditor from "./ValueExpressionEditor"
+import muiThemeable from "material-ui/styles/muiThemeable";
+import * as React from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
+import { formValueSelector } from "redux-form";
+import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app";
+import { deselectColumn, fetchLiveResultForComponent, finishBrowsing, getValueExpressionWithColumns, removeColumnFromList, startBrowsing } from "../../redux/modules/databrowser";
+import { eEalUIComponent, eLayerValueExpressionMode, IColumn, IColumnInfo, IDataBrowserConfig, IDataBrowserResult, IGeomTable, ILayer, IMap, IMUITheme, IMUIThemePalette, IStore } from "../../redux/modules/interfaces";
+import ValueExpressionEditor from "./ValueExpressionEditor";
 
 export interface IProps {
     onApply: Function
@@ -98,7 +78,7 @@ export class ValueExpressionEditorContainer extends React.Component<
         const { dataBrowserResult, onApply } = this.props
         const { expression } = this.state
 
-        if (dataBrowserResult.valid && JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {
+        if (/*dataBrowserResult.valid && */ JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {
             if (dataBrowserResult.message === "colgroup1") {
                 expression["colgroup1"] = dataBrowserResult.columns
                 this.setState({ ...this.state, expression: expression }, this.applyExpression)
@@ -121,11 +101,17 @@ export class ValueExpressionEditorContainer extends React.Component<
     isExpressionComplete() {
         const { expression, expressionMode } = this.state
 
-        if (expressionMode === eLayerValueExpressionMode.SINGLE && "colgroup1" in expression) {
+        if (expressionMode === eLayerValueExpressionMode.SINGLE && "colgroup1" in expression && expression["colgroup1"].length >= 1) {
             return true
         }
 
-        if (expressionMode === eLayerValueExpressionMode.PROPORTIONAL && "colgroup1" in expression && "colgroup2" in expression) {
+        if (
+            expressionMode === eLayerValueExpressionMode.PROPORTIONAL &&
+            "colgroup1" in expression &&
+            "colgroup2" in expression &&
+            expression["colgroup1"].length >= 1 &&
+            expression["colgroup2"].length >= 1
+        ) {
             return true
         }
 
@@ -158,6 +144,15 @@ export class ValueExpressionEditorContainer extends React.Component<
         return expr
     }
 
+    getExpressionColumns(field: string) {
+        const { expression } = this.state
+
+        if (field in expression) {
+            return expression[field]
+        }
+        return []
+    }
+
     render() {
         const {
             muiThemePalette,
@@ -184,6 +179,10 @@ export class ValueExpressionEditorContainer extends React.Component<
                 expressionCompiled={valueExpression}
                 expressionMode={expressionMode}
                 advancedModeModalOpen={advancedModeModalOpen}
+                onActivateDataBrowser={(field: string, componentId: eEalUIComponent) => {
+                    const config: IDataBrowserConfig = { showColumnNames: false, closeOnFinish: false }
+                    activateDataBrowser(field, componentId, config, this.getExpressionColumns(field))
+                }}
                 onRemoveColumn={(payload: { colgroup: string; column: IColumn }) => {
                     // If the Data Browser is active it's managing selected columns for us.
                     // If not, we just need to update the expression in our state.
@@ -210,11 +209,15 @@ export class ValueExpressionEditorContainer extends React.Component<
                 onChangeExpressionMode={(mode: eLayerValueExpressionMode) => {
                     this.setState({ ...this.state, expressionMode: mode })
                     if (mode === eLayerValueExpressionMode.ADVANCED) {
-                        activateDataBrowser("advanced", eEalUIComponent.VALUE_EXPRESSION_EDITOR)
+                        const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
+                        activateDataBrowser("advanced", eEalUIComponent.VALUE_EXPRESSION_EDITOR, config)
                     }
                 }}
                 onToggleAdvModeModalState={() => onToggleAdvancedModeWarnModalState()}
-                openDataBrowser={() => activateDataBrowser()}
+                onOpenAdvancedDataBrowser={() => {
+                    const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
+                    activateDataBrowser("advanced", eEalUIComponent.VALUE_EXPRESSION_EDITOR, config)
+                }}
             />
         )
     }
@@ -249,10 +252,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         handleRemoveColumn: (column: IColumn) => {
             dispatch(deselectColumn(column))
         },
-        activateDataBrowser: (message: string, componentId: eEalUIComponent) => {
+        activateDataBrowser: (message: string, componentId: eEalUIComponent, config: IDataBrowserConfig, columns: Array<IColumn> = []) => {
             dispatch(setActiveContentComponent(eEalUIComponent.DATA_BROWSER))
-            const config: IDataBrowserConfig = { showColumnNames: true, closeOnFinish: false }
-            dispatch(startBrowsing(componentId, message, config))
+            dispatch(startBrowsing(componentId, message, config, columns))
         },
         deactivateDataBrowser: () => {
             dispatch(setActiveContentComponent(eEalUIComponent.MAP_UI))

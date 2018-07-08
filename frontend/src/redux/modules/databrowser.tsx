@@ -12,6 +12,9 @@ import { sendNotification as sendSnackbarNotification } from "../../redux/module
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
 import {
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
     IColumn,
     IColumnInfo,
     IGeomTable,
@@ -19,9 +22,6 @@ import {
     IStore,
     ITable,
     ITableInfo,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
 } from "./interfaces"
 
 // Actions
@@ -324,9 +324,9 @@ export function fetchResultForComponent(component: eEalUIComponent, state: IStor
 export function fetchLiveResultForComponent(component: eEalUIComponent, state: IStore): IDataBrowserResult {
     const { databrowser } = state
 
-    if (databrowser.component === component && databrowser.selectedColumns.length > 0) {
+    if (databrowser.component === component) {
         return {
-            valid: true,
+            valid: databrowser.selectedColumns.length > 0,
             message: databrowser.message,
             columns: databrowser.selectedColumns,
         }

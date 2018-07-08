@@ -17,13 +17,14 @@ export interface IProps {
     }
     schemainfo: ISchemaInfo
     tableinfo: ITableInfo
+    field: string
     onOpenDataBrowser: any
     onRemoveColumn: any
 }
 
 class ExpressionColumnSelector extends React.PureComponent<IProps, {}> {
     render() {
-        const { columnsByTable, schemainfo, tableinfo, onOpenDataBrowser, onRemoveColumn } = this.props
+        const { columnsByTable, schemainfo, tableinfo, field, onOpenDataBrowser, onRemoveColumn } = this.props
 
         const elements: Array<any> = []
         Object.keys(columnsByTable).forEach((table_uid: string) => {
@@ -41,7 +42,7 @@ class ExpressionColumnSelector extends React.PureComponent<IProps, {}> {
                         key={column.id}
                         primaryText={`${column.metadata_json.type}, ${column.metadata_json.kind}`}
                         rightIconButton={
-                            <IconButton tooltip="Remove column" onClick={() => onRemoveColumn({ colgroup: "colgroup1", column: column })}>
+                            <IconButton tooltip="Remove column" onClick={() => onRemoveColumn({ colgroup: field, column: column })}>
                                 <ActionDelete />
                             </IconButton>
                         }

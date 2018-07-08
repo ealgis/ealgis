@@ -93,13 +93,14 @@ export interface IProps {
     expressionCompiled: string
     expressionMode: eLayerValueExpressionMode
     advancedModeModalOpen: boolean
-    onFieldChange: Function
+    onActivateDataBrowser: Function
     onRemoveColumn: Function
+    onFieldChange: Function
     onExpressionChange: Function
     onApplyAdvanced: any
     onChangeExpressionMode: Function
     onToggleAdvModeModalState: any
-    openDataBrowser: Function
+    onOpenAdvancedDataBrowser: Function
 }
 
 class ValueExpressionEditor extends React.Component<IProps, {}> {
@@ -113,13 +114,14 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
             expressionCompiled,
             expressionMode,
             advancedModeModalOpen,
-            onFieldChange,
+            onActivateDataBrowser,
             onRemoveColumn,
+            onFieldChange,
             onExpressionChange,
             onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,
-            openDataBrowser,
+            onOpenAdvancedDataBrowser,
         } = this.props
 
         const advancedModeDialogActions = [
@@ -200,6 +202,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
                             field={"colgroup1"}
                             columns={expression["colgroup1"]}
+                            onActivateDataBrowser={onActivateDataBrowser}
                             onRemoveColumn={onRemoveColumn}
                         />
                     </ExpressionContainer>
@@ -211,6 +214,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
                             field={"colgroup1"}
                             columns={expression["colgroup1"]}
+                            onActivateDataBrowser={onActivateDataBrowser}
                             onRemoveColumn={onRemoveColumn}
                         />
 
@@ -220,6 +224,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
                             componentId={eEalUIComponent.VALUE_EXPRESSION_EDITOR}
                             field={"colgroup2"}
                             columns={expression["colgroup2"]}
+                            onActivateDataBrowser={onActivateDataBrowser}
                             onRemoveColumn={onRemoveColumn}
                         />
                     </ExpressionContainer>
@@ -243,7 +248,7 @@ class ValueExpressionEditor extends React.Component<IProps, {}> {
 
                 {expressionMode === eLayerValueExpressionMode.ADVANCED && (
                     <ExpressionOpenDataBrowser>
-                        <ExpressionRaisedButton label={"Open Data Browser"} primary={true} onClick={openDataBrowser} />
+                        <ExpressionRaisedButton label={"Open Data Browser"} primary={true} onClick={onOpenAdvancedDataBrowser} />
                     </ExpressionOpenDataBrowser>
                 )}
 
