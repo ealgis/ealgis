@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 with open("VERSION") as f:
-    version = version_file.read().strip()
+    version = f.read().strip()
 
 setup(
     author="Grahame Bowland and Keith Moss",

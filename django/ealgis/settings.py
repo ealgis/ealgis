@@ -70,7 +70,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     STATIC_ROOT = "/build/static"
 
     with open("VERSION") as f:
-        version = version_file.read().strip()
+        version = f.read().strip()
     RAVEN_CONFIG = {
         "dsn": get_env("RAVEN_URL"),
         "environment": get_env("ENVIRONMENT"),

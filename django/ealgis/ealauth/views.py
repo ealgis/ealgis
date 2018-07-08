@@ -43,6 +43,7 @@ class EalgisConfigView(APIView):
         return Response({
             "ENVIRONMENT": get_env("ENVIRONMENT"),
             "PRIVATE_SITE": False if get_env("EALGIS_PRIVATE_SITE") == "0" else True,
+            "EALGIS_SITE_CONTACT_EMAIL": get_env("EALGIS_SITE_CONTACT_EMAIL"),
             "GOOGLE_ANALYTICS_UA": get_env("GOOGLE_ANALYTICS_UA"),
             "GOOGLE_MAPS_API_KEY": get_env("GOOGLE_MAPS_API_KEY"),
             "MAPBOX_API_KEY": get_env("MAPBOX_API_KEY"),
