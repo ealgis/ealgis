@@ -48,9 +48,6 @@ module.exports = {
             "raf/polyfill",
         ],
     },
-    externals: {
-        Config: JSON.stringify(require("./config.prod.json")),
-    },
     plugins: [
         new webpack.DefinePlugin({
             DEVELOPMENT: JSON.stringify(true),

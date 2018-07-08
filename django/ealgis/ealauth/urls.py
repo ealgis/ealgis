@@ -1,5 +1,7 @@
 from django.conf.urls import url, include
 from .views import (
+    EalgisConfigView,
+    CurrentUserView,
     UserViewSet,
     ProfileViewSet,
     MapDefinitionViewSet,
@@ -7,7 +9,6 @@ from .views import (
     DataInfoViewSet,
     ColumnInfoViewSet,
     ColoursViewset,
-    CurrentUserView,
     LogoutUserView,
     SchemasViewSet,
     api_not_found)
@@ -29,6 +30,7 @@ router.register(r'columninfo', ColumnInfoViewSet, base_name='columninfo')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
+    url(r'^api/0.1/config$', EalgisConfigView.as_view(), name='api-config'),
     url(r'^api/0.1/self$', CurrentUserView.as_view(), name='api-self'),
     url(r'^api/0.1/logout$', LogoutUserView.as_view(), name='api-logout'),
     # make sure that the API never serves up the react app

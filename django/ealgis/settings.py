@@ -182,6 +182,9 @@ CACHES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        # 'OPTIONS': {
+        #     'options': '-c search_path={}'.format(get_env('DB_SCHEMA'))
+        # },
         'NAME': get_env('DB_NAME'),
         'USER': get_env('DB_USERNAME'),
         'PASSWORD': get_env('DB_PASSWORD'),

@@ -1,7 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IConfig } from "./interfaces"
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 // Actions
 const LOADING = "ealgis/app/LOADING"

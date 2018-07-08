@@ -7,7 +7,7 @@ import TileGrid from "ol/tilegrid/tilegrid"
 import * as React from "react"
 import { default as VectorTile } from "react-openlayers/dist/layers/vector-tile"
 import { IConfig, ILayer, IMap } from "../../redux/modules/interfaces"
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 export interface IProps {
     map: IMap

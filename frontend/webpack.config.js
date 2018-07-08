@@ -49,17 +49,11 @@ module.exports = {
             "raf/polyfill",
         ],
     },
-    externals: {
-        Config: JSON.stringify(require("./config.dev.json")),
-    },
     plugins: [
         new LiveReloadPlugin({
             appendScriptTag: false,
             cert: fs.readFileSync("/nginx/foobar.crt"),
             key: fs.readFileSync("/nginx/foobar.key"),
-        }),
-        new webpack.DefinePlugin({
-            DEVELOPMENT: JSON.stringify(true),
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: "vendor",

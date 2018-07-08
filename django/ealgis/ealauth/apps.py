@@ -11,7 +11,7 @@ class EalauthConfig(AppConfig):
     def ready(self):
         import ealgis.ealauth.signals  # noqa
 
-        self.private_site = get_env('EALGIS_CONFIG_PRIVATE_SITE')
+        self.private_site = get_env('EALGIS_PRIVATE_SITE')
         self.map_srid = 3857
         self.projected_srid = 3112
 

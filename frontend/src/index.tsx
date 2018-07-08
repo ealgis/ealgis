@@ -15,11 +15,11 @@ import reducers from "./redux/modules/reducer"
 import getRoutes from "./routes"
 import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
 import { EALGISApiClient } from "./shared/api/EALGISApiClient"
-const Config: IConfig = require("Config") as any
+declare var Config: IConfig
 
 let Middleware: Array<any> = []
 
-if (Config["ENVIRONMENT"] === "production" && "RAVEN_URL" in Config) {
+if (Config["ENVIRONMENT"] === "PRODUCTION" && "RAVEN_URL" in Config) {
     Raven.config(Config["RAVEN_URL"]).install()
     Middleware.push(createRavenMiddleware(Raven))
 }
@@ -29,7 +29,7 @@ if ("GOOGLE_ANALYTICS_UA" in Config) {
 }
 
 // Enable for detailed debugging of Redux actions
-// if (Config["ENVIRONMENT"] === "development") {
+// if (Config["ENVIRONMENT"] === "DEVELOPMENT") {
 //     const logger = createLogger({
 //         level: "log", // log, console, warn, error, info
 //         collapsed: true,

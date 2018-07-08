@@ -13,7 +13,7 @@ import Marker from "material-ui/svg-icons/maps/place"
 import * as React from "react"
 import ReactGoogleMapLoader from "react-google-maps-loader"
 import { IConfig } from "../../../redux/modules/interfaces"
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 const styles: any = {
     menuItem: {

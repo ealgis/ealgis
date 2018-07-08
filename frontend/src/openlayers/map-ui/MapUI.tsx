@@ -9,7 +9,7 @@ import { Map } from "react-openlayers/dist/map"
 import { IConfig, ILayer, IMap, IPosition } from "../../redux/modules/interfaces"
 import LayerContainerWrapped from "../layer/LayerContainer"
 
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 export interface IProps {
     defn: IMap

@@ -14,7 +14,7 @@ import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux
 import { IAppModule, IConfig, ISnackbarsModule, IStore, IUser, eEalUIComponent } from "./redux/modules/interfaces"
 import { moveToGooglePlacesResult, toggleDebugMode } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 const muiTheme = getMuiTheme({
     palette: {

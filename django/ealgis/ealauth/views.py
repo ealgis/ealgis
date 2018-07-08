@@ -3,6 +3,7 @@ from django.contrib.auth import logout
 from django.db.models import Q
 from django.http.response import HttpResponse
 from django.core.cache import cache
+from django.http import HttpResponseNotFound
 from .models import MapDefinition
 from geoalchemy2.elements import WKBElement
 
@@ -13,6 +14,7 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .permissions import AllowAnyIfPublicSite, IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanViewOrCloneMap
+from rest_framework_jsonp.renderers import JSONPRenderer
 
 from .serializers import UserSerializer, ProfileSerializer, MapDefinitionSerializer, TableInfoSerializer, DataInfoSerializer, ColumnInfoSerializer, EALGISMetadataSerializer
 
@@ -21,14 +23,36 @@ import copy
 import urllib.parse
 import json
 import csv
-from django.http import HttpResponseNotFound
 from ealgis_common.db import ealdb
 from ealgis.mvt import TileGenerator
 from ealgis.ealauth.admin import is_private_site
+from ealgis.util import get_env
 
 
 def api_not_found(request):
     return HttpResponseNotFound()
+
+
+class EalgisConfigView(APIView):
+    """
+    A view that returns the count of active users in JSONP
+    """
+    renderer_classes = (JSONPRenderer,)
+
+    def get(self, request):
+        return Response({
+            "ENVIRONMENT": get_env("ENVIRONMENT"),
+            "PRIVATE_SITE": False if get_env("EALGIS_PRIVATE_SITE") == "0" else True,
+            "GOOGLE_ANALYTICS_UA": get_env("GOOGLE_ANALYTICS_UA"),
+            "GOOGLE_MAPS_API_KEY": get_env("GOOGLE_MAPS_API_KEY"),
+            "MAPBOX_API_KEY": get_env("MAPBOX_API_KEY"),
+            "RAVEN_URL": get_env("RAVEN_URL"),
+            "DEFAULT_MAP_POSITION": {
+                "lat": get_env("DEFAULT_MAP_POSITION_LAT"),
+                "lon": get_env("DEFAULT_MAP_POSITION_LON"),
+                "zoom": get_env("DEFAULT_MAP_POSITION_ZOOM"),
+            }
+        })
 
 
 class CurrentUserView(APIView):

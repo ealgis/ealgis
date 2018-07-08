@@ -12,7 +12,7 @@ import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
 import { getMapURL } from "../../shared/utils";
 import { IConfig } from "./interfaces";
 
-const Config: IConfig = require("Config") as any
+const Config: IConfig = require("Config")
 
 // Actions
 const LOAD = "ealgis/maps/LOAD"
