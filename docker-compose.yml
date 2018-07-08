@@ -41,7 +41,6 @@ services:
     volumes:
       - ./django/:/app:delegated
       - ./frontend:/frontend:delegated
-      - ./frontend/dist/index.html:/app/ealgis/ealfront/templates/index.html:delegated
     ports:
       - "8000:8000"
     environment:

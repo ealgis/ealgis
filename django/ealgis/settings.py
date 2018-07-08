@@ -75,6 +75,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         "site": get_env("EALGIS_SITE_NAME"),
         "release": fetch_package_version("ealgis"),
     }
+    TEMPLATES_DIRS = []
 else:
     DEBUG = True
     CORS_ORIGIN_WHITELIST = (
@@ -84,6 +85,7 @@ else:
     STATICFILES_DIRS = [
         '/frontend/dist/',
     ]
+    TEMPLATES_DIRS = ["/frontend/dist/"]
 
 
 # Application definition
@@ -151,7 +153,7 @@ SOCIAL_AUTH_FACEBOOK_SECRET = get_env('SOCIAL_AUTH_FACEBOOK_SECRET')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': TEMPLATES_DIRS,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
