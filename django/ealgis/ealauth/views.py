@@ -49,9 +49,9 @@ class EalgisConfigView(APIView):
             "MAPBOX_API_KEY": get_env("MAPBOX_API_KEY"),
             "RAVEN_URL": get_env("RAVEN_URL"),
             "DEFAULT_MAP_POSITION": {
-                "lat": get_env("DEFAULT_MAP_POSITION_LAT"),
-                "lon": get_env("DEFAULT_MAP_POSITION_LON"),
-                "zoom": get_env("DEFAULT_MAP_POSITION_ZOOM"),
+                "lat": float(get_env("DEFAULT_MAP_POSITION_LAT")),
+                "lon": float(get_env("DEFAULT_MAP_POSITION_LON")),
+                "zoom": int(get_env("DEFAULT_MAP_POSITION_ZOOM")),
             }
         })
 
