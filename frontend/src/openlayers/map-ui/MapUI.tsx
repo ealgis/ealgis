@@ -8,8 +8,7 @@ import { default as Tile } from "react-openlayers/dist/layers/tile"
 import { Map } from "react-openlayers/dist/map"
 import { IConfig, ILayer, IMap, IPosition } from "../../redux/modules/interfaces"
 import LayerContainerWrapped from "../layer/LayerContainer"
-
-const Config: IConfig = require("Config")
+declare var Config: IConfig
 
 export interface IProps {
     defn: IMap

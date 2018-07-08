@@ -1,6 +1,6 @@
 import * as React from "react"
 import { IConfig, IMap } from "../../redux/modules/interfaces"
-const Config: IConfig = require("Config")
+declare var Config: IConfig
 
 export interface IProps {
     defn: IMap

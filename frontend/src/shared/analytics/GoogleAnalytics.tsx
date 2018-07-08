@@ -1,6 +1,6 @@
 import * as ReactGA from "react-ga"
 import { IConfig, IStore } from "../../redux/modules/interfaces"
-const Config: IConfig = require("Config")
+declare var Config: IConfig
 
 if ("GOOGLE_ANALYTICS_UA" in Config) {
     ReactGA.initialize(Config["GOOGLE_ANALYTICS_UA"])
