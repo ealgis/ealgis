@@ -43,14 +43,15 @@ class EalgisConfigView(APIView):
         return Response({
             "ENVIRONMENT": get_env("ENVIRONMENT"),
             "PRIVATE_SITE": False if get_env("EALGIS_PRIVATE_SITE") == "0" else True,
+            "EALGIS_SITE_CONTACT_EMAIL": get_env("EALGIS_SITE_CONTACT_EMAIL"),
             "GOOGLE_ANALYTICS_UA": get_env("GOOGLE_ANALYTICS_UA"),
             "GOOGLE_MAPS_API_KEY": get_env("GOOGLE_MAPS_API_KEY"),
             "MAPBOX_API_KEY": get_env("MAPBOX_API_KEY"),
             "RAVEN_URL": get_env("RAVEN_URL"),
             "DEFAULT_MAP_POSITION": {
-                "lat": get_env("DEFAULT_MAP_POSITION_LAT"),
-                "lon": get_env("DEFAULT_MAP_POSITION_LON"),
-                "zoom": get_env("DEFAULT_MAP_POSITION_ZOOM"),
+                "lat": float(get_env("DEFAULT_MAP_POSITION_LAT")),
+                "lon": float(get_env("DEFAULT_MAP_POSITION_LON")),
+                "zoom": int(get_env("DEFAULT_MAP_POSITION_ZOOM")),
             }
         })
 

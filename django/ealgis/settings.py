@@ -69,13 +69,13 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     ALLOWED_HOSTS = ["localhost", get_env("CORS_DOMAIN")]
     STATIC_ROOT = "/build/static"
 
-    with open("version.py") as f:
-        exec(f.read())
+    with open("VERSION") as f:
+        version = f.read().strip()
     RAVEN_CONFIG = {
         "dsn": get_env("RAVEN_URL"),
         "environment": get_env("ENVIRONMENT"),
         "site": get_env("EALGIS_SITE_NAME"),
-        "release": __version__,
+        "release": version,
     }
     TEMPLATES_DIRS = []
 else:
