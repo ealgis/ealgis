@@ -1,3 +1,4 @@
+loaders/
 build/
 nginx-prod/build/
 log/
