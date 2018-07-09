@@ -3,7 +3,7 @@ services:
   datastore:
     image: mdillon/postgis:10-alpine
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=datastore
@@ -19,7 +19,7 @@ services:
   db:
     image: mdillon/postgis:10-alpine
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
@@ -30,7 +30,7 @@ services:
       - ./frontend:/frontend:delegated
       - ./nginx-dev/nginx:/nginx
     ports:
-      - "35729:35729"
+      - "127.0.0.1:35729:35729"
   memcached:
     image: memcached
     expose:
@@ -42,7 +42,7 @@ services:
       - ./django/:/app:delegated
       - ./frontend:/frontend:delegated
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
@@ -70,4 +70,4 @@ services:
     depends_on:
       - web
     ports:
-      - "443:443"
+      - "127.0.0.1:443:443"
