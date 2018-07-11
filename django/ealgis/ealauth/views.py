@@ -40,6 +40,10 @@ class EalgisConfigView(APIView):
     renderer_classes = (JSONPRenderer,)
 
     def get(self, request):
+        #############################################################
+        # WARNING - ONLY PUT PUBLIC SECRETS HERE. EALGIS SENDS ALL
+        # OF THIS INFO TO THE EALGIS FRONTEND WITHOUT DURING STARTUP.
+        #############################################################
         return Response({
             "ENVIRONMENT": get_env("ENVIRONMENT"),
             "PRIVATE_SITE": False if get_env("EALGIS_PRIVATE_SITE") == "0" else True,
