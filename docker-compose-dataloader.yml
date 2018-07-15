@@ -7,6 +7,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=datastore
+    volumes:
+      - ./loaders:/app
 #   volumes:
 #
 # FOR DEVELOPMENT ONLY
