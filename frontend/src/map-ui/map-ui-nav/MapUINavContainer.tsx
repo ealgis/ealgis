@@ -163,7 +163,7 @@ const mapDispatchToProps = (dispatch: Function) => {
             // https://openlayers.org/en/latest/examples/export-map.html
             // We're being lazy - assume the map has already finised loading
             // so we don't need to access the OpenLayers `map` object.
-            const filename = `ealgis-${map["name-url-safe"]}.png`
+            const filename = `ealgis-${map["name-url-safe"]}.jpeg`
             const canvas: any = document.querySelectorAll(".ol-viewport > canvas")[0]
             if (navigator.msSaveBlob) {
                 navigator.msSaveBlob(canvas.msToBlob(), filename)
