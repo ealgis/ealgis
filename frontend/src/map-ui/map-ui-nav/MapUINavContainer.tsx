@@ -1,10 +1,12 @@
+import "blueimp-canvas-to-blob"
+import { saveAs } from "file-saver"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import olProj from "ol/proj"
 import * as React from "react"
 import { connect } from "react-redux"
 import { toggleModalState } from "../../redux/modules/app"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
-import { IMUITheme, IMUIThemePalette, IMap, IMapPositionDefaults, IPosition, IStore } from "../../redux/modules/interfaces"
+import { IMap, IMapPositionDefaults, IMUITheme, IMUIThemePalette, IPosition, IStore } from "../../redux/modules/interfaces"
 import { moveToPosition, restoreDefaultMapPosition } from "../../redux/modules/map"
 import {
     addLayer,
@@ -36,6 +38,7 @@ export interface IStoreProps {
 export interface IDispatchProps {
     onAddLayer: Function
     onDuplicateMap: Function
+    onDownloadMap: Function
     onSetOrigin: Function
     onMoveToPosition: Function
     onResetOrigin: Function
@@ -89,6 +92,7 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
             muiThemePalette,
             onAddLayer,
             onDuplicateMap,
+            onDownloadMap,
             onSetOrigin,
             onResetOrigin,
             onChangeSharing,
@@ -109,6 +113,7 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
                     isOwner={userId !== null && mapDefinition.owner_user_id === userId}
                     isLoggedIn={userId !== null}
                     onDuplicateMap={() => onDuplicateMap(mapDefinition.id)}
+                    onDownloadMap={() => onDownloadMap(mapDefinition)}
                     onAddLayer={() => onAddLayer(mapDefinition.id)}
                     onSetOrigin={() => onSetOrigin(mapDefinition, mapPosition)}
                     onChangeSharing={(event: object, value: any) => onChangeSharing(mapDefinition.id, value)}
@@ -153,6 +158,28 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         onDuplicateMap: (mapId: number) => {
             dispatch(duplicateMap(mapId))
+        },
+        onDownloadMap: (map: IMap) => {
+            // https://openlayers.org/en/latest/examples/export-map.html
+            // We're being lazy - assume the map has already finised loading
+            // so we don't need to access the OpenLayers `map` object.
+            const filename = `ealgis-${map["name-url-safe"]}.png`
+            const canvas: any = document.querySelectorAll(".ol-viewport > canvas")[0]
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(canvas.msToBlob(), filename)
+            } else if ("toBlob" in HTMLCanvasElement.prototype) {
+                canvas.toBlob(
+                    function(blob: any) {
+                        saveAs(blob, filename)
+                    },
+                    "image/jpeg",
+                    1
+                )
+            } else {
+                dispatch(
+                    sendSnackbarNotification("Sorry, map downloading doesn't work in your browser. Chrome, Firefox or Safari will work.")
+                )
+            }
         },
         onSetOrigin: (mapDefinition: IMap, position: IPosition) => {
             dispatch(updateMapOrigin(mapDefinition, position))

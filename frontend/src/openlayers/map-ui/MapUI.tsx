@@ -26,6 +26,7 @@ export class MapUI extends React.Component<IProps, {}> {
             url: `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${
                 Config["MAPBOX_API_KEY"]
             }`,
+            crossOrigin: "anonymous",
             attributions: [
                 "Based on Australian Bureau of Statistics data<br />",
                 '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright"> OpenStreetMap contributors</a>',

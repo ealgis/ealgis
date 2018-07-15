@@ -8,10 +8,8 @@ import { List, ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
 import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton"
 import RaisedButton from "material-ui/RaisedButton"
-import Subheader from "material-ui/Subheader"
-import { Tab, Tabs } from "material-ui/Tabs"
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
 import { white } from "material-ui/styles/colors"
+import Subheader from "material-ui/Subheader"
 import {
     ActionBookmarkBorder,
     ActionDelete,
@@ -22,6 +20,7 @@ import {
     ContentContentCopy,
     ContentLink,
     EditorModeEdit,
+    FileCloudDownload,
     FileFileDownload,
     ImageGridOff,
     ImageGridOn,
@@ -29,11 +28,13 @@ import {
     NavigationClose,
     NavigationMoreVert,
 } from "material-ui/svg-icons"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
 import * as React from "react"
 import * as CopyToClipboard from "react-copy-to-clipboard"
 import { Link } from "react-router"
 import styled from "styled-components"
-import { IMUIThemePalette, IMap } from "../../redux/modules/interfaces"
+import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces"
 import DataInspector from "../data-inspector/DataInspector"
 import LayerUINav from "../layer-ui-nav/LayerUINavContainer"
 
@@ -81,6 +82,7 @@ export interface IProps {
     isOwner: boolean
     isLoggedIn: boolean
     onDuplicateMap: any
+    onDownloadMap: any
     onAddLayer: any
     onSetOrigin: any
     onChangeSharing: any
@@ -103,6 +105,7 @@ export class MapUINav extends React.Component<IProps, {}> {
             isOwner,
             isLoggedIn,
             onDuplicateMap,
+            onDownloadMap,
             onAddLayer,
             onSetOrigin,
             onResetOrigin,
@@ -144,7 +147,10 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 />
                             )}
                             {isLoggedIn && (
-                                <MenuItem primaryText="Duplicate Map" leftIcon={<ContentContentCopy />} onClick={onDuplicateMap} />
+                                <React.Fragment>
+                                    <MenuItem primaryText="Duplicate Map" leftIcon={<ContentContentCopy />} onClick={onDuplicateMap} />
+                                    <MenuItem primaryText="Download Map" leftIcon={<FileCloudDownload />} onClick={onDownloadMap} />
+                                </React.Fragment>
                             )}
                             <MenuItem primaryText="Reset Position" leftIcon={<ActionHome />} onClick={onResetOrigin} />
                             {isOwner && (
