@@ -48,6 +48,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=5432
+      - MEMCACHED_LOCATION=memcached:11211
       - DB_NAME=ealgis
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres

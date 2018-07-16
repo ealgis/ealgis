@@ -175,7 +175,7 @@ WSGI_APPLICATION = 'ealgis.wsgi.application'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'memcached:11211',
+        'LOCATION': get_env('MEMCACHED_LOCATION'),
     }
 }
 

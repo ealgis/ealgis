@@ -18,6 +18,7 @@ services:
     volumes:
       - ./log/:/var/log:delegated
     environment:
+      - MEMCACHED_LOCATION=memcached:11211
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=ealgis

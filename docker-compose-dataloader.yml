@@ -24,6 +24,7 @@ services:
     volumes:
       - ./loaders:/app
     environment:
+      - MEMCACHED_LOCATION=memcached:11211
       - DB_HOST=datastore
       - DB_PORT=5432
       - DB_NAME=postgres
