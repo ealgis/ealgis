@@ -123,6 +123,18 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+AUTH_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.yahoo.YahooOpenId',
+    'social_core.backends.facebook.FacebookOAuth2',
+]
+if os.path.isfile("ealgis/ealauth/backends.py"):
+    AUTH_BACKENDS.append("ealgis.ealauth.backends.CustomOAuth2")
+AUTH_BACKENDS.append("django.contrib.auth.backends.ModelBackend")
+AUTHENTICATION_BACKENDS = tuple(AUTH_BACKENDS)
+del AUTH_BACKENDS
+
 # SOCIAL_AUTH_PIPELINE = (
 #     'social_core.pipeline.social_auth.social_details',
 #     'social_core.pipeline.social_auth.social_uid',
