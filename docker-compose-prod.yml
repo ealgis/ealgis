@@ -43,3 +43,7 @@ services:
       - uwsgi
     ports:
       - "443:443"
+    environment:
+      - HTTPS_ENABLED=TRUE
+      - SERVER_NAME=demo.ealgis.org
+      - DJANGO_LOCATION=uwsgi:9090

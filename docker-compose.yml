@@ -46,9 +46,9 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
+      - MEMCACHED_LOCATION=memcached:11211
       - DB_HOST=db
       - DB_PORT=5432
-      - MEMCACHED_LOCATION=memcached:11211
       - DB_NAME=ealgis
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -74,3 +74,7 @@ services:
       - web
     ports:
       - "127.0.0.1:443:443"
+    environment:
+      - HTTPS_ENABLED=TRUE
+      - SERVER_NAME=localhost
+      - DJANGO_LOCATION=web:8000

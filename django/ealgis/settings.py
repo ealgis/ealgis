@@ -27,7 +27,7 @@ SECRET_KEY = get_env("SECRET_KEY")
 # Causes an infite redirect loop...but works fine on Scremsong. Gotta work out why.
 # SECURE_SSL_REDIRECT = True
 # https://stackoverflow.com/a/22284717
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 SESSION_COOKIE_SECURE = True

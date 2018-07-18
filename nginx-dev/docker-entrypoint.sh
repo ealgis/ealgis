@@ -15,6 +15,13 @@ function dockerwait {
     exec 6<&-
 }
 
+if [ "$HTTPS_ENABLED" = "FALSE" ]; then
+    nginxconf="/etc/nginx/docker.http.conf"
+else
+    nginxconf="/etc/nginx/docker.https.conf"
+fi
+envsubst '\$HTTPS_ENABLED \$SERVER_NAME $DJANGO_LOCATION' < $nginxconf > /etc/nginx/conf.d/docker.conf
+
 CMD="$1"
 if [ "$CMD" = "nginx" ]; then
     nginx -g 'daemon off;'
