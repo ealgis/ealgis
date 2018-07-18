@@ -46,6 +46,7 @@ export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"
 
 import { IMapPositionDefaults } from "./maps"
 export interface IConfig {
+    VERSION: string
     ENVIRONMENT: string
     PRIVATE_SITE: boolean
     EALGIS_SITE_CONTACT_EMAIL: string

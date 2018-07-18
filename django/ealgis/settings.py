@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from ealgis.util import get_env
+from ealgis.util import get_env, get_version
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -69,13 +69,11 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     ALLOWED_HOSTS = ["localhost", get_env("CORS_DOMAIN")]
     STATIC_ROOT = "/build/static"
 
-    with open("VERSION") as f:
-        version = f.read().strip()
     RAVEN_CONFIG = {
         "dsn": get_env("RAVEN_URL"),
         "environment": get_env("ENVIRONMENT"),
         "site": get_env("EALGIS_SITE_NAME"),
-        "release": version,
+        "release": get_version(),
     }
     TEMPLATES_DIRS = []
 else:

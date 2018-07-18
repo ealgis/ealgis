@@ -26,7 +26,7 @@ import csv
 from ealgis_common.db import ealdb
 from ealgis.mvt import TileGenerator
 from ealgis.ealauth.admin import is_private_site
-from ealgis.util import get_env
+from ealgis.util import get_env, get_version
 
 
 def api_not_found(request):
@@ -45,6 +45,7 @@ class EalgisConfigView(APIView):
         # OF THIS INFO TO THE EALGIS FRONTEND WITHOUT DURING STARTUP.
         #############################################################
         return Response({
+            "VERSION": get_version(),
             "ENVIRONMENT": get_env("ENVIRONMENT"),
             "PRIVATE_SITE": False if get_env("EALGIS_PRIVATE_SITE") == "0" else True,
             "EALGIS_SITE_CONTACT_EMAIL": get_env("EALGIS_SITE_CONTACT_EMAIL"),

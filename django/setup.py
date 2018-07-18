@@ -1,7 +1,5 @@
 from setuptools import setup, find_packages
-
-with open("VERSION") as f:
-    version = f.read().strip()
+from ealgis.util import get_version
 
 setup(
     author="Grahame Bowland and Keith Moss",
@@ -11,6 +9,6 @@ setup(
     keywords="gis",
     url="https://github.com/ealgis/ealgis",
     name="ealgis",
-    version=version,
+    version=get_version(),
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
 )

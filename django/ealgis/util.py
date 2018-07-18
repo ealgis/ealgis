@@ -5,6 +5,11 @@ import time
 from math import pow
 
 
+def get_version():
+    with open("VERSION") as f:
+        return f.read().strip()
+
+
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = itertools.tee(iterable)
