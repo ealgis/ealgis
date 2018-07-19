@@ -80,7 +80,7 @@ Now you should be able to navigate to the Django admin backend at `http://localh
 
 # Choosing a basemap
 
-EALGIS supports a choice of four basemap providers that can be configured via environment variables in `docker-compose.yml`.
+EALGIS supports a choice of four basemap providers that can be configured via environment variables in `web-variables.env`.
 
 <table>
     <tr>
