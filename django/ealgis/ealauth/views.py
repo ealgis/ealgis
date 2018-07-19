@@ -52,6 +52,9 @@ class EalgisConfigView(APIView):
             "GOOGLE_ANALYTICS_UA": get_env("GOOGLE_ANALYTICS_UA"),
             "GOOGLE_MAPS_API_KEY": get_env("GOOGLE_MAPS_API_KEY"),
             "MAPBOX_API_KEY": get_env("MAPBOX_API_KEY"),
+            "EALGIS_BASEMAP_PROVIDER": get_env("EALGIS_BASEMAP_PROVIDER"),
+            "THUNDERFOREST_API_KEY": get_env("THUNDERFOREST_API_KEY"),
+            "THUNDERFOREST_MAP_STYLE": get_env("THUNDERFOREST_MAP_STYLE"),
             "RAVEN_URL": get_env("RAVEN_URL"),
             "DEFAULT_MAP_POSITION": {
                 "lat": float(get_env("DEFAULT_MAP_POSITION_LAT")),

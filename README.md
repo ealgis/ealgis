@@ -89,20 +89,21 @@ EALGIS supports a choice of four basemap providers that can be configured via en
     </tr>
     <tr>
         <td><a href="https://www.mapbox.com">Mapbox Light</a><br />Free for personal use.<br />Charges for private or commercial use.</td>
-        <td><img src="static/basemap_mapbox_light.jpg" width="305" height="230" /> </td>
+        <td><img src="static/basemap_mapbox_light.jpg" width="448" height="338" /></td>
     </tr>
     <tr>
-        <td><a href="https://www.mapbox.com">Mapbox Light</a><br />Free for personal use.<br />Charges for private or commercial use.</td>
-        <td><img src="static/basemap_mapbox_light.jpg" width="305" height="230" /> </td>
+        <td><a href="https://operations.osmfoundation.org/policies/tiles/">OpenStreetMap</a><br />Free use with some <a href="https://operations.osmfoundation.org/policies/tiles/">limitations</a>.</td>
+        <td><img src="static/basemap_osm.jpg" width="448" height="338" /></td>
+    </tr>
+    <tr>
+        <td><a href="http://maps.stamen.com/#toner/">Stamen Maps</a><br />Free and Creative Commons Attribution licensed. </td>
+        <td><img src="static/basemap_stamen_toner.jpg" width="448" height="338" /></td>
+    </tr>
+    <tr>
+        <td><a href="https://thunderforest.com">Thunderforest</a><br />Free below 150,000 tiles/month.</td>
+        <td><img src="static/basemap_thunderforest_mobile_atlas.jpg" width="448" height="338" /><br /><img src="static/basemap_thunderforest_neighbourhood.jpg" width="448" height="338" /></td>
     </tr>
 </table>
-
-| Provider                                                                                                                                                                     |                                                                                  Basmap Style                                                                                   |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [Mapbox Light](https://www.mapbox.com)<br />Free for personal use.<br />Charges for private or commercial use.                                                               |                                                     <img src="static/basemap_mapbox_light.jpg" width="305" height="230" />                                                      |
-| [OpenStreetMap](https://operations.osmfoundation.org/policies/tiles/)<br />Free for reasonable use with [limitations](https://operations.osmfoundation.org/policies/tiles/). |                                                          <img src="static/basemap_osm.jpg" width="305" height="230" />                                                          |
-| [Stamen Maps](http://maps.stamen.com/#toner/)<br />Free and Creative Commons Attribution licensed.                                                                           |                                                     <img src="static/basemap_stamen_toner.jpg" width="305" height="230" />                                                      |
-| [Thunderforest](https://thunderforest.com)<br />Free for low usage.<br />Charges for higher use.                                                                             | <img src="static/basemap_thunderforest_mobile_atlas.jpg" width="305" height="230" /><br /><img src="static/basemap_thunderforest_neighbourhood.jpg" width="305" height="230" /> |
 
 # Get some data
 

@@ -53,6 +53,9 @@ export interface IConfig {
     GOOGLE_ANALYTICS_UA: string
     GOOGLE_MAPS_API_KEY: string
     MAPBOX_API_KEY: string
+    EALGIS_BASEMAP_PROVIDER: string
+    THUNDERFOREST_API_KEY: string
+    THUNDERFOREST_MAP_STYLE: string
     RAVEN_URL: string
     DEFAULT_MAP_POSITION: IMapPositionDefaults
 }
