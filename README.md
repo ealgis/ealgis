@@ -10,22 +10,22 @@
 
 EAlGIS offers:
 
-*   a web interface to allow quick, interactive analysis of geospatial data, overlaid over a Google baselayer using OpenLayers
-    *   add one or more "polygon" layers, which plot a given loaded polygon data source (PostGIS table)
-    *   polygons in the layer are filled according to a function, which uses attributes that are linked to the chosen geometry
+-   a web interface to allow quick, interactive analysis of geospatial data, overlaid over a Google baselayer using OpenLayers
+    -   add one or more "polygon" layers, which plot a given loaded polygon data source (PostGIS table)
+    -   polygons in the layer are filled according to a function, which uses attributes that are linked to the chosen geometry
         functions are simple expressions. to plot the percentage of women in each Australian Census SA1 polygon, you would enter
         the formula "100 \* B2 / B3". this is automatically resolved into a database query which can be called by MapServer
-    *   polygons can also be filtered out. For example, if you wish to avoid SA1s which have very few people (and thus may have
+    -   polygons can also be filtered out. For example, if you wish to avoid SA1s which have very few people (and thus may have
         nonsense values when percentages of some attribute are calculated), you might add a filter "b3 > 30" when plotting the
         Australian Census.
-    *   download calculated values for further analysis
-    *   user access delegated to Mozilla Personas
-*   reproducable data loader infrastructure, and pre-supplied loader for the Australian Census 2011.
-    *   be sure where the data in your database came from
-    *   automated reprojection to map SRIDs (a big performance win)
-    *   includes loaders for shapefiles, and for CSV data (which can be linked with shapefiles, for easy interactive analysis)
-*   framework for off-line analysis work
-    *   perform complex analysis outside of EAlGIS, and then load the results in to visualise them on a map
+    -   download calculated values for further analysis
+    -   user access delegated to Mozilla Personas
+-   reproducable data loader infrastructure, and pre-supplied loader for the Australian Census 2011.
+    -   be sure where the data in your database came from
+    -   automated reprojection to map SRIDs (a big performance win)
+    -   includes loaders for shapefiles, and for CSV data (which can be linked with shapefiles, for easy interactive analysis)
+-   framework for off-line analysis work
+    -   perform complex analysis outside of EAlGIS, and then load the results in to visualise them on a map
 
 # Installation
 
@@ -43,14 +43,14 @@ Assuming you're configuring Google as a backend for auth:
 
 Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/latest/backends/google.html) and [Google - Using OAuth 2.0 to Access Google APIs](https://developers.google.com/identity/protocols/OAuth2?csw=1#Registering).
 
-*   Create a Web application OAuth 2 Client in the Google API's Console
-    *   Add `http://localhost:8000` as an **Authorised JavaScript origin**
-    *   Add `http://localhost:8000/complete/google-oauth2/` as an **Authorised redirect URI**
-    *   Enable the Google+ API
-*   Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
-*   Add the resulting Client Id and Secret to `django/web-variables.env`
-*   Nuke and restart your Docker containers
-*   Navigate to `http://localhost:8000/`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `http://localhost:8000/` with your username displayed on the app.
+-   Create a Web application OAuth 2 Client in the Google API's Console
+    -   Add `http://localhost:8000` as an **Authorised JavaScript origin**
+    -   Add `http://localhost:8000/complete/google-oauth2/` as an **Authorised redirect URI**
+    -   Enable the Google+ API
+-   Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
+-   Add the resulting Client Id and Secret to `django/web-variables.env`
+-   Nuke and restart your Docker containers
+-   Navigate to `http://localhost:8000/`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `http://localhost:8000/` with your username displayed on the app.
 
 Now you're up and running!
 
@@ -77,6 +77,32 @@ user.profile.save()
 ```
 
 Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
+
+# Choosing a basemap
+
+EALGIS supports a choice of four basemap providers that can be configured via environment variables in `docker-compose.yml`.
+
+<table>
+    <tr>
+        <td><strong>Provider</strong></td>
+        <td><strong>Basemap Style</strong></td>
+    </tr>
+    <tr>
+        <td><a href="https://www.mapbox.com">Mapbox Light</a><br />Free for personal use.<br />Charges for private or commercial use.</td>
+        <td><img src="static/basemap_mapbox_light.jpg" width="305" height="230" /> </td>
+    </tr>
+    <tr>
+        <td><a href="https://www.mapbox.com">Mapbox Light</a><br />Free for personal use.<br />Charges for private or commercial use.</td>
+        <td><img src="static/basemap_mapbox_light.jpg" width="305" height="230" /> </td>
+    </tr>
+</table>
+
+| Provider                                                                                                                                                                     |                                                                                  Basmap Style                                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [Mapbox Light](https://www.mapbox.com)<br />Free for personal use.<br />Charges for private or commercial use.                                                               |                                                     <img src="static/basemap_mapbox_light.jpg" width="305" height="230" />                                                      |
+| [OpenStreetMap](https://operations.osmfoundation.org/policies/tiles/)<br />Free for reasonable use with [limitations](https://operations.osmfoundation.org/policies/tiles/). |                                                          <img src="static/basemap_osm.jpg" width="305" height="230" />                                                          |
+| [Stamen Maps](http://maps.stamen.com/#toner/)<br />Free and Creative Commons Attribution licensed.                                                                           |                                                     <img src="static/basemap_stamen_toner.jpg" width="305" height="230" />                                                      |
+| [Thunderforest](https://thunderforest.com)<br />Free for low usage.<br />Charges for higher use.                                                                             | <img src="static/basemap_thunderforest_mobile_atlas.jpg" width="305" height="230" /><br /><img src="static/basemap_thunderforest_neighbourhood.jpg" width="305" height="230" /> |
 
 # Get some data
 
