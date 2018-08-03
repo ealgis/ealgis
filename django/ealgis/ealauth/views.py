@@ -40,9 +40,16 @@ class EalgisConfigView(APIView):
     renderer_classes = (JSONPRenderer,)
 
     def get(self, request):
+        def getCustomOAuth2ProviderDetails():
+            from django.conf import settings
+            if hasattr(settings, "CUSTOM_OAUTH2_BACKEND") and settings.CUSTOM_OAUTH2_BACKEND is True:
+                from ealgis.ealauth.backends import CustomOAuth2
+                return {"name": CustomOAuth2.name, "title": CustomOAuth2.title}
+            return None
+
         #############################################################
         # WARNING - ONLY PUT PUBLIC SECRETS HERE. EALGIS SENDS ALL
-        # OF THIS INFO TO THE EALGIS FRONTEND WITHOUT DURING STARTUP.
+        # OF THIS INFO TO THE EALGIS FRONTEND DURING APP STARTUP.
         #############################################################
         return Response({
             "VERSION": get_version(),
@@ -60,6 +67,12 @@ class EalgisConfigView(APIView):
                 "lat": float(get_env("DEFAULT_MAP_POSITION_LAT")),
                 "lon": float(get_env("DEFAULT_MAP_POSITION_LON")),
                 "zoom": int(get_env("DEFAULT_MAP_POSITION_ZOOM")),
+            },
+            "AUTH_PROVIDERS": {
+                "GOOGLE": False if get_env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY") is None else True,
+                "FACEBOOK": False if get_env("SOCIAL_AUTH_FACEBOOK_KEY") is None else True,
+                "TWITTER": False if get_env("SOCIAL_AUTH_TWITTER_KEY") is None else True,
+                "CUSTOM_OAUTH2": getCustomOAuth2ProviderDetails(),
             }
         })
 

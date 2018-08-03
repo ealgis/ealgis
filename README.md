@@ -105,6 +105,27 @@ EALGIS supports a choice of four basemap providers that can be configured via en
     </tr>
 </table>
 
+# Adding a Custom OAuth2 Provider
+
+EALGIS supports custom OAuth2 providers through [pluggable backends](http://python-social-auth.readthedocs.io/en/latest/backends/implementation.html) in Python Social Auth. To add your own custom OAuth2 provider you'll need to:
+
+1.  Create a `backends.py` file according to the Python Social Auth's [documentation](http://python-social-auth.readthedocs.io/en/latest/backends/implementation.html#oauth2). The class must be called `CustomOAuth2` and must contain an additional class variable called `title` that will be used for the label of its login button. For example:
+
+```python
+class CustomOAuth2(BaseOAuth2):
+    """Our custom OAuth2 authentication backend"""
+    name = 'myprovidername'
+    title = 'Our Custom Provider'
+```
+
+2.  Use Docker volumes to inject the file into the `web` container at `/app/ealgis/ealauth/backends.py`
+
+3.  To validate that your provider is available check the output of `https://localhost/api/0.1/config` for
+
+```json
+"CUSTOM_OAUTH2" : {"name": "myprovidername", "title": "Our Custom Provider"}
+```
+
 # Get some data
 
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.

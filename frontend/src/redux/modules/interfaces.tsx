@@ -58,6 +58,15 @@ export interface IConfig {
     THUNDERFOREST_MAP_STYLE: string
     RAVEN_URL: string
     DEFAULT_MAP_POSITION: IMapPositionDefaults
+    AUTH_PROVIDERS: {
+        GOOGLE: boolean
+        FACEBOOK: boolean
+        TWITTER: boolean
+        CUSTOM_OAUTH2: {
+            name: string
+            title: string
+        } | null
+    }
 }
 
 /* Material UI muiThemeable palette object */

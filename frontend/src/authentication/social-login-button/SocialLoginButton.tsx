@@ -1,10 +1,10 @@
-import * as React from "react"
 import RaisedButton from "material-ui/RaisedButton"
+import * as React from "react"
 
 export interface SocialLoginButtonProps {
     providerName: string
     providerUrl: string
-    colour: string
+    colour?: string
 }
 export interface SocialLoginButtonState {}
 
@@ -15,6 +15,14 @@ export class SocialLoginButton extends React.Component<SocialLoginButtonProps, S
     render() {
         const { providerName, colour } = this.props
 
+        let colourProps: object = { primary: true }
+        if (colour !== undefined) {
+            colourProps = {
+                backgroundColor: colour,
+                labelColor: "#ffffff",
+            }
+        }
+
         return (
             <RaisedButton
                 label={providerName}
@@ -22,9 +30,8 @@ export class SocialLoginButton extends React.Component<SocialLoginButtonProps, S
                     margin: 12,
                     display: "block",
                 }}
-                backgroundColor={colour}
-                labelColor={"#ffffff"}
                 onClick={this.handleClick}
+                {...colourProps}
             />
         )
     }
