@@ -1,22 +1,14 @@
-import { GridList, GridTile } from "material-ui/GridList"
+import { CardActions, CardHeader, RaisedButton } from "material-ui"
+import { Card, CardText } from "material-ui/Card"
 import { Tab, Tabs } from "material-ui/Tabs"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
-import { IMUIThemePalette, IMap, IMapsModule } from "../../redux/modules/interfaces"
-import MapCoverImage from "../map-cover-image/MapCoverImageContainer"
+import { ILayer, IMapsModule, IMUIThemePalette } from "../../redux/modules/interfaces"
 
 const MapListContainer = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
     margin-top: 30;
     padding: 10px;
-`
-
-const MapGridList = styled(GridList)`
-    overflow-y: auto !important;
-    width: 100% !important;
 `
 
 export interface IProps {
@@ -29,23 +21,26 @@ export interface IProps {
     getPublicMaps: Function
 }
 
+const createMapCards = (maps: Array<Array<any>>, userId: number | null) =>
+    maps.map(([mapId, map]: Array<any>) => {
+        return (
+            <Card key={mapId}>
+                <CardHeader
+                    title={map.name}
+                    subtitle={userId !== null && map.owner_user_id == userId ? map.description : `By ${map.owner.username}`}
+                    titleStyle={{ fontWeight: "bold" }}
+                />
+                <CardText>{map.json.layers.map((layer: ILayer, idx: number) => layer.name).join(", ")}</CardText>
+                <CardActions>
+                    <RaisedButton label="Open" primary={true} containerElement={<Link to={`/map/${map.id}/${map["name-url-safe"]}`} />} />
+                </CardActions>
+            </Card>
+        )
+    })
+
 export class MapList extends React.Component<IProps, {}> {
     render() {
         const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
-
-        const mapGridTiles = (maps: Array<Array<any>>) =>
-            maps.map(([mapId, map]: Array<any>) => (
-                <GridTile
-                    key={mapId}
-                    containerElement={<Link to={`/map/${map.id}/${map["name-url-safe"]}`} />}
-                    title={map.name}
-                    subtitle={userId !== null && map.owner_user_id == userId ? map.description : `By ${map.owner.username}`}
-                    titleBackground={muiThemePalette.accent1Color}
-                    cols={1}
-                >
-                    <MapCoverImage mapDefinition={map as IMap} width={370} height={180} />
-                </GridTile>
-            ))
 
         return (
             <div>
@@ -53,21 +48,13 @@ export class MapList extends React.Component<IProps, {}> {
                     <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                         {/* START MY MAPS TAB */}
                         <Tab label="My Maps" containerElement={<Link to={"/maps"} />} value="maps">
-                            <MapListContainer>
-                                <MapGridList cols={4} cellHeight={180} padding={10}>
-                                    {mapGridTiles(getMyMaps())}
-                                </MapGridList>
-                            </MapListContainer>
+                            <MapListContainer>{createMapCards(getMyMaps(), userId)}</MapListContainer>
                         </Tab>
                         {/* END MY MAPS TAB */}
 
                         {/* START SHARED TAB */}
                         <Tab label="Shared" containerElement={<Link to={"/shared"} />} value="shared">
-                            <MapListContainer>
-                                <MapGridList cols={4} cellHeight={180} padding={10}>
-                                    {mapGridTiles(getSharedMaps())}
-                                </MapGridList>
-                            </MapListContainer>
+                            <MapListContainer>{createMapCards(getSharedMaps(), userId)}</MapListContainer>
                         </Tab>
                         {/* START SHARED TAB */}
 
@@ -78,13 +65,7 @@ export class MapList extends React.Component<IProps, {}> {
                     value="public"
                 >
                     <MapListContainer>
-                        <MapGridList
-                            cols={4}
-                            cellHeight={180}
-                            padding={10}
-                        >
-                            {mapGridTiles(getPublicMaps())}
-                        </MapGridList>
+                        {createMapCards(getPublicMaps(), userId)}
                     </MapListContainer>
                 </Tab>*/}
                         {/* START PUBLIC TAB */}
@@ -95,11 +76,7 @@ export class MapList extends React.Component<IProps, {}> {
                     <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                         {/* START SHARED TAB */}
                         <Tab label="Shared" containerElement={<Link to={"/shared"} />} value="shared">
-                            <MapListContainer>
-                                <MapGridList cols={4} cellHeight={180} padding={10}>
-                                    {mapGridTiles(getSharedMaps())}
-                                </MapGridList>
-                            </MapListContainer>
+                            <MapListContainer>{createMapCards(getSharedMaps(), userId)}</MapListContainer>
                         </Tab>
                         {/* START SHARED TAB */}
 
@@ -110,13 +87,7 @@ export class MapList extends React.Component<IProps, {}> {
                     value="public"
                 >
                     <MapListContainer>
-                        <MapGridList
-                            cols={4}
-                            cellHeight={180}
-                            padding={10}
-                        >
-                            {mapGridTiles(getPublicMaps())}
-                        </MapGridList>
+                        {createMapCards(getPublicMaps(), userId)}
                     </MapListContainer>
                 </Tab>*/}
                         {/* START PUBLIC TAB */}

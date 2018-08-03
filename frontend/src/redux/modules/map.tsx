@@ -1,5 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IGeomInfo, ILayer, IMap, ITable } from "./interfaces"
 
 // Actions
 const TOGGLE_DEBUG_MODE = "ealgis/map/TOGGLE_DEBUG_MODE"
@@ -122,4 +123,24 @@ export function moveToGooglePlacesResult(extent: Array<number>) {
         }
         dispatch(savePosition(position))
     }
+}
+
+// Utilities
+export function getMapTablesDescriptions(tables: Array<ITable>) {
+    return tables
+        .map((table: ITable, idx: number) => {
+            return `${table.metadata_json.type} (${table.metadata_json.kind})`
+        })
+        .join(", ")
+}
+
+export function getMapGeometryDescriptions(map: IMap, geominfo: IGeomInfo) {
+    return new Set(
+        map.json.layers.map((layer: ILayer, idx: number) => {
+            const ginfo = geominfo[`${layer.schema}.${layer.geometry}`]
+            return ginfo.description
+        })
+    )
+        .toJSON()
+        .join(", ")
 }
