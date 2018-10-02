@@ -77,4 +77,5 @@ def export_csv_iter(*args, **kwargs):
         w.writerow(row)
         s.flush()
         yield s.getvalue()
+        s.seek(0)
         s.truncate(0)
