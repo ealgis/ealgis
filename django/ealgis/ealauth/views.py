@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth import logout
 from django.db.models import Q
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, StreamingHttpResponse
 from django.core.cache import cache
 from django.http import HttpResponseNotFound
 from .models import MapDefinition
@@ -24,9 +24,13 @@ import urllib.parse
 import json
 import csv
 from ealgis_common.db import ealdb
+from ealgis_common.util import make_logger
 from ealgis.mvt import TileGenerator
 from ealgis.ealauth.admin import is_private_site
 from ealgis.util import get_env, get_version
+
+
+logger = make_logger(__name__)
 
 
 def api_not_found(request):
@@ -353,40 +357,35 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         with ealdb.access_data() as db:
             return Response(db.get_summary_stats_for_layer(layer))
 
-    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
-    def export_csv(self, request, pk=None, format=None):
+    def _handle_export_csv(self, request, bounds=None, suffix=None):
         mapDefn = self.get_object()
         include_geom_attrs = request.query_params.get(
             "include_geom_attrs", False)
         include_geom_attrs = True if (include_geom_attrs == "true") else False
 
         from ..dataexport import export_csv_iter
-        response = HttpResponse(export_csv_iter(
-            mapDefn, include_geom_attrs=include_geom_attrs), content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % urllib.parse.quote(
-            mapDefn.name)
+        response = StreamingHttpResponse(export_csv_iter(
+            mapDefn, bounds=bounds, include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        filename_parts = [urllib.parse.quote(mapDefn.name)]
+        if suffix is not None:
+            filename_parts.append(suffix)
+        filename = '_'.join(filename_parts) + '.csv'
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         response['Cache-Control'] = 'max-age=86400, public'
         return response
 
     @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
-    def export_csv_viewport(self, request, pk=None, format=None):
-        mapDefn = self.get_object()
-        include_geom_attrs = request.query_params.get(
-            "include_geom_attrs", False)
-        include_geom_attrs = True if (include_geom_attrs == "true") else False
+    def export_csv(self, request, pk=None, format=None):
+        return self._handle_export_csv(request)
 
+    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
+    def export_csv_viewport(self, request, pk=None, format=None):
         ne = list(map(float, request.query_params.get("ne", None).split(',')))
         sw = list(map(float, request.query_params.get("sw", None).split(',')))
         if len(ne) != 2 or len(sw) != 2:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        from ..dataexport import export_csv_iter
-        response = HttpResponse(export_csv_iter(mapDefn, bounds=(
-            ne, sw), include_geom_attrs=include_geom_attrs), content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="%s_%f_%f_%f_%f.csv"' % (
-            urllib.parse.quote(mapDefn.name), ne[0], ne[1], sw[0], sw[1])
-        response['Cache-Control'] = 'max-age=86400, public'
-        return response
+        suffix = "%f_%f_%f_%f" % (ne[0], ne[1], sw[0], sw[1])
+        return self._handle_export_csv(request, bounds=(ne, sw), suffix=suffix)
 
     @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def tile(self, request, pk=None, format=None):
