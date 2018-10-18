@@ -23,11 +23,11 @@ import copy
 import urllib.parse
 import json
 import csv
-from ealgis_common.db import ealdb
 from ealgis_common.util import make_logger
 from ealgis.mvt import TileGenerator
 from ealgis.ealauth.admin import is_private_site
 from ealgis.util import get_env, get_version
+from ealgis.datastore import datastore
 
 
 logger = make_logger(__name__)
@@ -135,7 +135,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             tmp_recent_tables = []
             # Support for sending multiple tables in the future
             for table in [request.data["table"]]:
-                with ealdb.access_schema(table["schema_name"]) as db:
+                with datastore().access_schema(table["schema_name"]) as db:
                     tbl = db.get_table_info_by_id(table["id"])
                     if tbl is not None:
                         tmp_recent_tables.append({"id": tbl.id, "schema_name": table["schema_name"]})
@@ -167,7 +167,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             removed_tables = []
 
             for table in request.data["tables"]:
-                with ealdb.access_schema(table["schema_name"]) as db:
+                with datastore().access_schema(table["schema_name"]) as db:
                     tbl = db.get_table_info_by_id(table["id"])
                 if tbl is not None:
                     tbl_partial = {"id": tbl.id, "schema_name": table["schema_name"]}
@@ -354,7 +354,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        with ealdb.access_data() as db:
+        with datastore().access_data() as db:
             return Response(db.get_summary_stats_for_layer(layer))
 
     def _handle_export_csv(self, request, bounds=None, suffix=None):
@@ -448,9 +448,9 @@ class DataInfoViewSet(viewsets.ViewSet):
         tables = []
 
         # NOTE: not in the for loop directly, to avoid recursive use of schema access
-        schema_names = ealdb.get_geometry_schemas()
+        schema_names = datastore().get_geometry_schemas()
         for schema_name in schema_names:
-            with ealdb.access_schema(schema_name) as db:
+            with datastore().access_schema(schema_name) as db:
                 metadata = db.get_schema_metadata()
                 geometry_sources = db.get_geometry_sources_table_info()
 
@@ -478,7 +478,7 @@ class DataInfoViewSet(viewsets.ViewSet):
         gid = request.query_params.get('gid', None)
         schema_name = request.query_params.get('schema', None)
 
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             row = db.get_geometry_source_row(table_name, gid)
 
             info = {}
@@ -504,13 +504,13 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         geo_source_id = request.query_params.get('geo_source_id', None)
 
         if schema_name is None:
-            schema_names = ealdb.get_ealgis_schemas()
+            schema_names = datastore().get_ealgis_schemas()
         else:
             schema_names = [schema_name]
 
         tables = {}
         for schema_name in schema_names:
-            with ealdb.access_schema(schema_name) as db:
+            with datastore().access_schema(schema_name) as db:
                 for table, geometrylinkage in db.get_table_info_and_geometry_linkage_by_ids(geo_source_id=geo_source_id):
                     tmp = TableInfoSerializer(table).data
                     tmp["schema_name"] = schema_name
@@ -529,7 +529,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         tables = {}
         if isinstance(request.data, list) and len(request.data) > 0:
             for table in request.data:
-                with ealdb.access_schema(table["schema_name"]) as db:
+                with datastore().access_schema(table["schema_name"]) as db:
                     tbl, geometrylinkage = db.get_table_info_and_geometry_linkage_by_id(table["id"])
 
                 tmp = TableInfoSerializer(tbl).data
@@ -548,7 +548,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         table_family = request.query_params.get('table_family', None)
         geo_source_id = request.query_params.get('geo_source_id', None)
 
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             try:
                 table, geometrylinkage = db.get_table_info_and_geometry_linkage_by_family_and_geometry(table_family, geo_source_id)
             except Exception:
@@ -565,7 +565,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def search(self, request, format=None):
         def getSchemasToQuery(schemas, schema_families):
             schemaNames = []
-            ealgisSchemas = ealdb.get_ealgis_schemas()
+            ealgisSchemas = datastore().get_ealgis_schemas()
 
             if schemas is not None:
                 schemas = json.loads(schemas)
@@ -574,7 +574,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if schema_families is not None:
                 schema_families = json.loads(schema_families)
                 for schema_name in ealgisSchemas:
-                    with ealdb.access_schema(schema_name) as db:
+                    with datastore().access_schema(schema_name) as db:
                         metadata = db.get_schema_metadata()
                     if metadata.family in schema_families and schema_name not in schemaNames:
                         schemaNames.append(schema_name)
@@ -586,7 +586,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             # Sort scheams by name and date published
             schemas = []
             for schema_name in schemaNames:
-                with ealdb.access_schema(schema_name) as db:
+                with datastore().access_schema(schema_name) as db:
                     metadata = db.get_schema_metadata()
 
                 schema = EALGISMetadataSerializer(metadata).data
@@ -614,7 +614,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         response = {}
         for schema_name in getSchemasToQuery(schemas, schema_families):
-            with ealdb.access_schema(schema_name) as db:
+            with datastore().access_schema(schema_name) as db:
                 tables = []
 
                 # If we have a single search term it may be a column name,
@@ -669,7 +669,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # e.g. https://localhost:8443/api/0.1/columninfo/142949/?schema=aus_census_2011_bcp&format=json
         # Number of Persons usually resident Five; Non-family households
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             column = db.get_column_info(id)
             if column is None:
                 raise NotFound()
@@ -703,7 +703,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         tablesByUID = {}
 
         for schema_name in request.data:
-            with ealdb.access_schema(schema_name) as db:
+            with datastore().access_schema(schema_name) as db:
                 columns = db.get_column_info_by_names(request.data[schema_name])
                 tableIds = list(set([col.table_info_id for col, gl in columns]))
                 tables = db.get_table_info_and_geometry_linkage_by_ids(tableIds)
@@ -733,7 +733,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         # NB: For the Census data this implicitly limits us to a geometry soruce as well
         # e.g. https://localhost:8443/api/0.1/columninfo/fetch_for_table/?schema=aus_census_2011_xcp&tableinfo_id=490
         # Find all columns mentioning in table "Ancestry by Birthplace of Parents by Sex - Persons" (x06s3_aust_lga)
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             columns = db.fetch_columns(tableinfo_id)
 
         # Split the response into an object of columns tables indexed by ther uid.
@@ -774,7 +774,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # e.g. https://localhost:8443/api/0.1/columninfo/60631/summary_stats/?schema=aus_census_2011_bcp&format=json
         # Number of Persons usually resident One; Non-family households
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             column = db.get_column_info(id)
             if column is None:
                 raise NotFound()
@@ -815,11 +815,11 @@ class SchemasViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedAndApproved,)
 
     def list(self, request, format=None):
-        schema_names = ealdb.get_ealgis_schemas()
+        schema_names = datastore().get_ealgis_schemas()
 
         schemas = []
         for schema_name in schema_names:
-            with ealdb.access_schema(schema_name) as db:
+            with datastore().access_schema(schema_name) as db:
                 metadata = db.get_schema_metadata()
 
             schema = EALGISMetadataSerializer(metadata).data
