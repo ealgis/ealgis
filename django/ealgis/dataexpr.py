@@ -215,11 +215,12 @@ class DataExpressionParserTest(DataExpressionParser):
     stub class so we can test without a database
     """
 
-    def __init__(self):
+    def __init__(self, symbol_table=None):
+        self.symbol_table = symbol_table or {}
         super().__init__(None, None)
 
-    def lookup(self):
-        return 42
+    def lookup(self, attribute):
+        return self.symbol_table[attribute]
 
 
 class DataExpression:

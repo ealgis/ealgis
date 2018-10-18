@@ -65,3 +65,9 @@ def test_cond_ne():
     parsed = DataExpressionParserTest.cond_expr.parseString('2 != 1', parseAll=True)[0]
     parser = DataExpressionParserTest()
     assert(parsed.eval(parser) is True)
+
+
+def test_symbols():
+    parsed = DataExpressionParserTest.cond_expr.parseString('cat * dog', parseAll=True)[0]
+    parser = DataExpressionParserTest({'cat': 42, 'dog': 2})
+    assert(parsed.eval(parser) == 84)
