@@ -5,6 +5,17 @@ import time
 from math import pow
 
 
+def next_or_default(it, default=None):
+    """
+    return the next() value of `it`, unless it raises
+    StopIteration, in which case `default` is returned.
+    """
+    try:
+        return next(it)
+    except StopIteration:
+        return default
+
+
 def get_version():
     with open("VERSION") as f:
         return f.read().strip()

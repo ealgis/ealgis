@@ -3,4 +3,4 @@ language: python
 python:
   - "3.6"
 install: pip3 install flake8
-script: flake8 --ignore=E501,E731,C901 django/ealgis
+script: flake8 --ignore=E501,E731 django/ealgis
