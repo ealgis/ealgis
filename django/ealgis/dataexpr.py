@@ -96,6 +96,7 @@ class EvalAddOp():
 
 class EvalComparisonOp():
     "Class to evaluate comparison expressions"
+
     fn_map = {
         "<": '__lt__',
         "<=": '__le__',
@@ -151,7 +152,7 @@ class DataExpressionParser:
     signop = oneOf('+ -')
     multop = oneOf('* / // %')
     plusop = oneOf('+ -')
-    comparisonop = oneOf("< <= > >= == != <>")
+    comparisonop = oneOf("< <= > >= == !=")
     logicalop = oneOf("|| &&")
     operand.setParseAction(EvalConstant)
     arith_expr = operatorPrecedence(
