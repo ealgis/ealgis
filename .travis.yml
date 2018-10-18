@@ -2,7 +2,9 @@ sudo: false
 language: python
 python:
   - "3.6"
-install: pip3 install -r django/dev-requirements.txt
+install:
+- pip3 install -r django/requirements.txt
+- pip3 install -r django/dev-requirements.txt
 script:
 - flake8 --ignore=E501,E731 django/ealgis
 - pytest django/ealgis
