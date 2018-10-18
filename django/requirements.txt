@@ -17,4 +17,4 @@ raven==6.9.0
 uwsgi==2.0.17.1
 zipstream==1.1.4
 https://github.com/ealgis/ealgis-data-schema/archive/1.1.1.tar.gz
-https://github.com/ealgis/ealgis-common/archive/0.4.7.tar.gz
+https://github.com/ealgis/ealgis-common/archive/0.4.8.tar.gz
