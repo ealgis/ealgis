@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.apps import apps
 from model_utils import FieldTracker
 from ealgis.util import make_logger
-from ealgis_common.db import ealdb
+from ealgis.datastore import datastore
 import pyparsing
 import hashlib
 import copy
@@ -65,7 +65,7 @@ class MapDefinition(models.Model):
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
 
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             geometry_source = db.get_geometry_source(geometry_source_name)
 
         return DataExpression(
@@ -117,7 +117,7 @@ class MapDefinition(models.Model):
         layer["latlon_bbox"] = bbox
 
     def _get_latlon_bbox(self, layer):
-        with ealdb.access_data() as db:
+        with datastore().access_data() as db:
             return db.get_bbox_for_layer(layer)
 
     def _set(self, defn, force=False):

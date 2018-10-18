@@ -8,7 +8,7 @@ from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
 from sqlalchemy.dialects import postgresql
 from django.apps import apps
 from ealgis.util import make_logger
-from ealgis_common.db import ealdb
+from ealgis.datastore import datastore
 
 logger = make_logger(__name__)
 
@@ -182,7 +182,7 @@ class DataExpressionParser:
         attribute = attribute.lower()
         schema_name, attribute_name = attribute.split('.', 1)
 
-        with ealdb.access_schema(schema_name) as db:
+        with datastore().access_schema(schema_name) as db:
             attr_column_info, attr_column_linkage = db.get_attribute_info(self.geometry_source, attribute_name)
             # attr_tbl: aus_census_2011_xcp.x06s3_aust_lga
             attr_tbl = db.get_table_class_by_id(attr_column_info.table_info_id)
@@ -209,10 +209,13 @@ class DataExpressionParser:
         self.implicit_filters.append(f)
 
 
-class DataExpressionParserTest:
+class DataExpressionParserTest(DataExpressionParser):
     """
     stub class so we can test without a database
     """
+
+    def __init__(self):
+        super().__init__(None, None)
 
     def lookup(self):
         return 42
@@ -263,7 +266,7 @@ class DataExpression:
             parsed = DataExpressionParser.cond_expr.parseString(cond_processed, parseAll=True)[0]
             return parsed.eval(self.parser)
 
-        with ealdb.access_schema(self.geometry_source.__table__.schema) as db:
+        with datastore().access_schema(self.geometry_source.__table__.schema) as db:
             self.geometry_column = get_geometry_column()
             self.geometry_source_table_info = db.get_table_info_by_id(self.geometry_source.table_info_id)
             self.geometry_class = db.get_table_class_by_id(self.geometry_source.table_info_id)
@@ -319,7 +322,7 @@ class DataExpression:
         ymax, xmax = ne
         proj_srid = int(apps.get_app_config('ealauth').projected_srid)
 
-        with ealdb.access_schema(self.geometry_source.__table__.schema) as db:
+        with datastore().access_schema(self.geometry_source.__table__.schema) as db:
             proj_column = db.get_geometry_source_column(self.geometry_source, proj_srid).geometry_column
 
         q = self.query.filter(sqlalchemy.func.st_intersects(

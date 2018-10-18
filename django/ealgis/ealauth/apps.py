@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 from ealgis.util import make_logger, get_env
-from ealgis_common.db import ealdb
+from ealgis.datastore import datastore
 
 logger = make_logger(__name__)
 
@@ -21,5 +21,5 @@ class EalauthConfig(AppConfig):
             logger.error("This Ealgis instance doesn't have any admin users.")
 
         # Discover Ealgis-compliant data schemas
-        schema_names = ealdb.get_ealgis_schemas()
+        schema_names = datastore().get_ealgis_schemas()
         logger.info("Found {} EAlGIS-compliant schemas: {}".format(len(schema_names), ",".join(schema_names)))
