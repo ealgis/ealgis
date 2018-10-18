@@ -209,6 +209,15 @@ class DataExpressionParser:
         self.implicit_filters.append(f)
 
 
+class DataExpressionParserTest:
+    """
+    stub class so we can test without a database
+    """
+
+    def lookup(self):
+        return 42
+
+
 class DataExpression:
     """
     parse user-provided query expressions (with conditions) and product SQL
