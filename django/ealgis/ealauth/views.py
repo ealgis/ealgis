@@ -354,8 +354,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         if layer is None:
             raise ValidationError(detail="Layer not found.")
 
-        with datastore().access_data() as db:
-            return Response(db.get_summary_stats_for_layer(layer))
+        return Response(MapDefinition.get_summary_stats_for_layer(layer))
 
     def _handle_export_csv(self, request, bounds=None, suffix=None):
         mapDefn = self.get_object()
@@ -783,7 +782,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             if table is None:
                 raise NotFound()
 
-            return Response(db.get_summary_stats_for_column(column, table))
+            return Response(MapDefinition.get_summary_stats_for_column(column, table))
 
 
 class ColoursViewset(viewsets.ViewSet):

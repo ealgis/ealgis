@@ -85,16 +85,11 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         ]
 
     def update(self, instance, data):
-        # FIXME Do this properly
-        if "name" in data:
-            instance.name = data["name"]
-        if "description" in data:
-            instance.description = data["description"]
-        if "shared" in data:
-            instance.shared = data["shared"]
-
-        self._set(instance, data["json"])
-
+        for attr in ('name', 'description', 'shared', 'json'):
+            if attr in data:
+                setattr(instance, attr, data[attr])
+        logger.debug([type(instance), instance])
+        instance.clean()
         instance.save()
         return instance
 

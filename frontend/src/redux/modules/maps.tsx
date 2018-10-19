@@ -408,7 +408,6 @@ export interface ILayer {
         miny: number
     }
     selectedColumns: Array<ISelectedColumn>
-    _postgis_query?: string
 }
 
 export interface IOLStyleDef {

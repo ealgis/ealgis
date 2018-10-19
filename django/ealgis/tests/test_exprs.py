@@ -1,4 +1,4 @@
-from ...dataexpr import DataExpressionParserTest
+from ..dataexpr import DataExpressionParserTest
 
 
 def test_arith_addition():

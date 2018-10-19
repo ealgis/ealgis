@@ -1,5 +1,6 @@
 from ealgis.datastore import datastore
 from ealgis.util import z_res
+from ealgis.ealauth.models import MapDefinition
 from mercantile import bounds, xy
 from io import BytesIO
 
@@ -23,8 +24,9 @@ class TileGenerator:
 
             # Zoom 15 is our highest resolution (configured in OpenLayers), so we need to grab
             # unsimplified geometries to allow us to re-use them as the user zooms in.
+            base_query = MapDefinition.layer_postgis_query(layer)
             if z == 15:
-                data_query = layer["_postgis_query"].replace(
+                data_query = base_query.replace(
                     "ST_AsEWKB({})".format(geom_column_definition),
                     "ST_AsMVTGeom({geom_column_definition}, {extent})".format(geom_column_definition=geom_column_definition, extent=extent)
                 )
@@ -32,7 +34,7 @@ class TileGenerator:
                 # Bodge bodge
                 # Fudge the simplification tolerance so that collections of small and dense geometries (e.g. SA1s in capital cities)
                 # don't get dropped too soon
-                data_query = layer["_postgis_query"].replace(
+                data_query = base_query.replace(
                     "ST_AsEWKB({})".format(geom_column_definition),
                     "ST_AsMVTGeom(ST_Simplify({geom_column_definition}, {simplify_tolerance}), {extent})".format(geom_column_definition=geom_column_definition, simplify_tolerance=z_res(z + 2), extent=extent)
                 )
@@ -42,7 +44,7 @@ class TileGenerator:
 
             # FIXME Build this whole query in SQLAlchemy instead
             # We need to begin a WHERE clause if there's no filter on the layer
-            if " WHERE " not in layer["_postgis_query"]:
+            if " WHERE " not in base_query:
                 where_cause = "WHERE"
             else:
                 where_cause = "AND"

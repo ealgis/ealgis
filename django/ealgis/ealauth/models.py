@@ -1,14 +1,17 @@
-import json
-from django.db import models
-from django.contrib.postgres.fields import JSONField
-from django.contrib.auth.models import User
-from django.apps import apps
-from model_utils import FieldTracker
-from ealgis.util import make_logger
-from ealgis.datastore import datastore
-import pyparsing
+import base64
 import hashlib
-import copy
+import json
+
+from django.core.cache import cache
+import pyparsing
+from django.apps import apps
+from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
+from django.db import models
+from model_utils import FieldTracker
+
+from ealgis.datastore import datastore
+from ealgis.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -51,15 +54,11 @@ class MapDefinition(models.Model):
     class Meta:
         unique_together = ('name', 'owner_user_id')
 
-    def get(self):
-        if self.json is not None:
-            return self.json
-        return {}
-
     def has_geometry(self, layer):
         return "geometry" in layer and layer["geometry"] is not None
 
-    def compile_expr(self, layer, **kwargs):
+    @staticmethod
+    def compile_expr(layer, **kwargs):
         # in here to avoid circular import
         from ealgis.dataexpr import DataExpression
         geometry_source_name = layer['geometry']
@@ -76,29 +75,8 @@ class MapDefinition(models.Model):
             apps.get_app_config('ealauth').map_srid,
             **kwargs)
 
-    def _layer_build_postgis_query(self, old_layer, layer, force):
-        def get_recurse(obj, *args):
-            for v in args[:-1]:
-                obj = obj.get(v)
-                if obj is None:
-                    return None
-            return obj.get(args[-1])
-
-        # can we skip SQL compilation? it's sometimes slow, so worth extra code
-        def old_differs(*args):
-            old = get_recurse(old_layer, *args)
-            new = get_recurse(layer, *args)
-            return old != new
-
-        if force or '_postgis_query' not in layer or not old_layer or old_differs('geometry') or old_differs('schema') or old_differs('fill', 'expression') or old_differs('fill', 'conditional'):
-            logger.debug(
-                "compiling query for layer: {}".format(layer.get('name')))
-            expr = self.compile_expr(layer)
-            layer['_postgis_query'] = expr.get_postgis_query()
-            logger.debug("... compilation complete; query:")
-            logger.debug(layer['_postgis_query'])
-
-    def _layer_update_hash(self, layer):
+    @staticmethod
+    def layer_hash(layer):
         try:
             del layer['hash']
         except KeyError:
@@ -110,75 +88,90 @@ class MapDefinition(models.Model):
             "expression": layer["fill"]["expression"],
             "conditional": layer["fill"]["conditional"],
         }
-        layer['hash'] = hashlib.sha1(json.dumps(
-            hash_obj).encode("utf-8")).hexdigest()[:8]
+        # URL-safe base64 encoded SHA1 hash
+        json_layer = json.dumps(hash_obj, sort_keys=True).encode('utf8')
+        digest = hashlib.sha1(json_layer).digest()
+        return base64.b64encode(digest, altchars=b'.-').decode('ascii')
 
-    def _layer_set_latlon_bbox(self, layer, bbox):
-        layer["latlon_bbox"] = bbox
-
-    def _get_latlon_bbox(self, layer):
-        with datastore().access_data() as db:
-            return db.get_bbox_for_layer(layer)
-
-    def _set(self, defn, force=False):
-        def _private_clear(obj):
-            "clear all fields beginning with an _ (recursively down the tree)"
-            for k, v in obj.copy().items():
-                if k.startswith('_'):
-                    del obj[k]
-                elif isinstance(v, dict):
-                    _private_clear(v)
-
-        def _private_copy_over(from_obj, to_obj):
-            "copy private keys from old object to new object"
-            for k, v in from_obj.items():
-                if k.startswith('_'):
-                    to_obj[k] = v
-                elif isinstance(v, dict):
-                    jump_to_obj = to_obj.get(k)
-                    if jump_to_obj is not None:
-                        _private_copy_over(v, jump_to_obj)
-
-        # Otherwise _private_clear() ends up removing private properties from old_layer too
-        old_defn = copy.deepcopy(self.get())
-        if 'layers' not in defn:
-            defn['layers'] = []
-        if 'layers' not in old_defn:
-            old_defn['layers'] = []
-        rev = old_defn.get('rev', 0) + 1
-        defn['rev'] = rev
-        for idx, layer in enumerate(defn['layers']):
-            # we don't allow the client to set private variables (security)
-            # we simply clear & copy over from the last object in the database
-            # FIXME: private variables should be removed (no need for frontend to see them)
-            _private_clear(layer)
-            old_layer = None
+    @staticmethod
+    def layer_postgis_query(layer):
+        cache_key = layer['hash']
+        query = cache.get(cache_key)
+        if query is None:
             try:
-                old_layer = old_defn['layers'][idx]
-            except IndexError:
-                pass
-            if old_layer is not None:
-                _private_copy_over(old_layer, layer)
+                expr = MapDefinition.compile_expr(layer)
+                query = expr.get_postgis_query()
+                logger.debug("... compilation complete; query:")
+                logger.debug(query)
+            except pyparsing.ParseException as e:
+                raise CompilationError(str(e))
+            cache.set(cache_key, query)
+        return query
 
+    def clean(self):
+        for idx, layer in enumerate(self.json['layers']):
+            # FIXME: do this in a migration instead
+            if '_postgis_query' in layer:
+                del layer['_postgis_query']
             if self.has_geometry(layer):
-                # rebuild postgis query
-                self._layer_build_postgis_query(old_layer, layer, force)
-                # update layer hash
-                self._layer_update_hash(layer)
-                # calculate latlon bounding box of the expression
-                self._layer_set_latlon_bbox(layer, self._get_latlon_bbox(layer))
-            else:
-                # Handle cases where the old layer had geometry, but the new layer
-                # doesn't (e.g. the user has reset the layer creation form)
-                layer["hash"] = None
-                layer["latlon_bbox"] = None
-                layer["_postgis_query"] = None
+                logger.debug(['>clean', idx, layer])
+                layer['hash'] = self.layer_hash(layer)
+                layer['latlon_bbox'] = MapDefinition.get_bbox_for_layer(layer)
+                # ... and check that we can compile this layer (and warm up the cache)
+                self.layer_postgis_query(layer)
 
-        self.json = defn
-        return rev
+    @staticmethod
+    def get_summary_stats_for_layer(layer):
+        SQL_TEMPLATE = """
+            SELECT
+                MIN(sq.q),
+                MAX(sq.q),
+                STDDEV(sq.q)
+            FROM ({query}) AS sq"""
 
-    def set(self, defn, **kwargs):
-        try:
-            return self._set(defn, **kwargs)
-        except pyparsing.ParseException as e:
-            raise CompilationError(str(e))
+        with datastore().access_data() as db:
+            (min_value, max_value, stddev) = db.session.execute(SQL_TEMPLATE.format(query=MapDefinition.layer_postgis_query(layer))).first()
+        return {
+            "min": min_value or 0,
+            "max": max_value or 0,
+            "stddev": stddev or 0,
+        }
+
+    @staticmethod
+    def get_bbox_for_layer(layer):
+        SQL_TEMPLATE = """
+            SELECT
+                ST_XMin(latlon_bbox) AS minx,
+                ST_XMax(latlon_bbox) AS maxx,
+                ST_YMin(latlon_bbox) AS miny,
+                ST_YMax(latlon_bbox) as maxy
+            FROM (
+                SELECT
+                    -- Eugh
+                    Box2D(ST_GeomFromText(ST_AsText(ST_Transform(ST_SetSRID(ST_Extent(geom_3857), 3857), 4326)))) AS latlon_bbox
+                FROM (
+                    {query}
+                ) AS exp
+            ) AS bbox;
+        """
+
+        with datastore().access_data() as db:
+            return dict(db.session.execute(SQL_TEMPLATE.format(query=MapDefinition.layer_postgis_query(layer))).first())
+
+    @staticmethod
+    def get_summary_stats_for_column(column, table):
+        SQL_TEMPLATE = """
+            SELECT
+                MIN(sq.q),
+                MAX(sq.q),
+                STDDEV(sq.q)
+            FROM (SELECT {col_name} AS q FROM {schema_name}.{table_name}) AS sq"""
+
+        with datastore().access_data() as db:
+            (min_value, max_value, stddev) = db.session.execute(SQL_TEMPLATE.format(col_name=column.name, schema_name=db._schema_name, table_name=table.name)).first()
+
+        return {
+            "min": min_value or 0,
+            "max": max_value or 0,
+            "stddev": stddev or 0,
+        }
