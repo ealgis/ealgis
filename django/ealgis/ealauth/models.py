@@ -10,15 +10,11 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from model_utils import FieldTracker
 
-from ealgis.datastore import datastore
-from ealgis.util import make_logger
+from ..datastore import datastore
+from ..util import make_logger
+from .exceptions import CompilationError
 
 logger = make_logger(__name__)
-
-
-# Create your models here.
-class CompilationError(Exception):
-    pass
 
 
 class Profile(models.Model):
@@ -60,7 +56,7 @@ class MapDefinition(models.Model):
     @staticmethod
     def compile_expr(layer, **kwargs):
         # in here to avoid circular import
-        from ealgis.dataexpr import DataExpression
+        from ..dataexpr import DataExpression
         geometry_source_name = layer['geometry']
         schema_name = layer['schema']
 

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from urllib.parse import quote_plus
-from ealgis.util import make_logger
+from ..util import make_logger
 
 
 logger = make_logger(__name__)

@@ -4,7 +4,7 @@
 #
 
 from ealgis_common.db import Database
-from ealgis.util import make_logger
+from .util import make_logger
 
 
 logger = make_logger(__name__)

@@ -1,6 +1,6 @@
-from ealgis.datastore import datastore
-from ealgis.util import z_res
-from ealgis.ealauth.models import MapDefinition
+from .datastore import datastore
+from .util import z_res
+from .ealauth.models import MapDefinition
 from mercantile import bounds, xy
 from io import BytesIO
 
