@@ -66,6 +66,7 @@ export interface IProps {
     selectedTable?: ITable
     selectedColumns: Array<string>
     activeColumns: Array<IColumn>
+    selectedTab: string
     schemainfo: ISchemaInfo
     handleClickSchema: Function
     onChangeSchemaSelection: Function
@@ -78,6 +79,7 @@ export interface IProps {
     backToSchemaView: any
     backToTableList: any
     backToTableView: any
+    onChangeTab: any
 }
 
 export class DataBrowser extends React.PureComponent<IProps, {}> {
@@ -113,6 +115,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             selectedTable,
             selectedColumns,
             activeColumns,
+            selectedTab,
             handleClickSchema,
             onChangeSchemaSelection,
             onTableSearchChange,
@@ -124,6 +127,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             backToSchemaView,
             backToTableList,
             backToTableView,
+            onChangeTab,
         } = this.props
 
         let onGoBack
@@ -138,8 +142,8 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
         return (
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
-                    <Tabs>
-                        <Tab label="Browse">
+                    <Tabs value={selectedTab} onChange={onChangeTab}>
+                        <Tab label="Browse" value="browse">
                             <div style={{ overflowX: "hidden" }}>
                                 {this.showSchemas(selectedTables, selectedColumns) && (
                                     <React.Fragment>
@@ -168,7 +172,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             </div>
                         </Tab>
 
-                        <Tab label="In This Map">
+                        <Tab label="In This Map" value="in_this_map">
                             {mapTables.length > 0 && (
                                 <DataTableList
                                     tables={mapTables}
@@ -178,7 +182,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             )}
                         </Tab>
 
-                        <Tab label="Favourites">
+                        <Tab label="Favourites" value="favourites">
                             {favouriteTables.length > 0 && (
                                 <DataTableList
                                     tables={favouriteTables}
@@ -188,7 +192,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
                             )}
                         </Tab>
 
-                        <Tab label="Used Recently">
+                        <Tab label="Used Recently" value="used_recently">
                             {recentTables.length > 0 && (
                                 <DataTableList
                                     tables={recentTables}

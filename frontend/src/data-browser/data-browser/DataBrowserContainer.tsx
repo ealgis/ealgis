@@ -15,6 +15,7 @@ import {
 } from "../../redux/modules/databrowser"
 import { addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
 import {
+    eEalUIComponent,
     IColumn,
     IDataBrowserConfig,
     IGeomTable,
@@ -25,7 +26,6 @@ import {
     IStore,
     ITable,
     ITableInfo,
-    eEalUIComponent,
 } from "../../redux/modules/interfaces"
 import DataBrowser from "./DataBrowser"
 
@@ -83,6 +83,7 @@ interface IState {
     selectedSchemaId?: string
     dataTableSearchKeywords?: string
     selectedTable?: ITable
+    selectedTab: string
 }
 
 export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
@@ -152,6 +153,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
                 activeColumns={activeColumns}
+                selectedTab={this.state.selectedTab}
                 schemainfo={schemainfo}
                 handleClickSchema={(schema: ISchema) => {
                     this.handleSelectSchema(schema)
@@ -177,7 +179,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                     const tableForLayerGeometry = await getTableByFamilyAndGeometry(table, geometry)
                     if (tableForLayerGeometry !== null) {
                         handleChooseTable(tableForLayerGeometry)
-                        this.setState({ selectedTable: tableForLayerGeometry })
+                        this.setState({ selectedTable: tableForLayerGeometry, selectedTab: "browse" })
                     }
                 }}
                 handleFavouriteTable={(table: ITable) => {
@@ -205,6 +207,9 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 }}
                 backToTableView={() => {
                     showTableView()
+                }}
+                onChangeTab={(value: string) => {
+                    this.setState({ selectedTab: value })
                 }}
             />
         )
@@ -305,9 +310,10 @@ const mapDispatchToProps = (dispatch: Function) => {
     }
 }
 
-const DataBrowserContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
-    DataBrowserContainer
-)
+const DataBrowserContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+    mapStateToProps,
+    mapDispatchToProps
+)(DataBrowserContainer)
 
 // @ts-ignore
 export default withRouter(DataBrowserContainerWrapped)
