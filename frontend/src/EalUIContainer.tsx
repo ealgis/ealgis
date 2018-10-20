@@ -1,7 +1,7 @@
 import LinearProgress from "material-ui/LinearProgress"
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
 import { deepPurple100, deepPurple300, deepPurple400, deepPurple500, fullBlack, white, yellow500 } from "material-ui/styles/colors"
 import getMuiTheme from "material-ui/styles/getMuiTheme"
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
 import { fade } from "material-ui/utils/colorManipulator"
 import olProj from "ol/proj"
 import * as React from "react"
@@ -11,7 +11,7 @@ import EalUI from "./EalUI"
 import "./FixedLayout.css"
 import { setLastPage, toggleSidebarState, toggleUserMenu } from "./redux/modules/app"
 import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
-import { IAppModule, IConfig, ISnackbarsModule, IStore, IUser, eEalUIComponent } from "./redux/modules/interfaces"
+import { eEalUIComponent, IAppModule, IConfig, ISnackbarsModule, IStore, IUser } from "./redux/modules/interfaces"
 import { moveToGooglePlacesResult, toggleDebugMode } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
 declare var Config: IConfig
@@ -21,9 +21,9 @@ const muiTheme = getMuiTheme({
         primary1Color: deepPurple500, // AppBar and Tabs, Buttons, Active textfield et cetera
         primary2Color: yellow500, // Whatever this is used for, we don't use that element
         primary3Color: deepPurple100, // Switch background
-        accent1Color: deepPurple500, // Active tab highlight colour
+        accent1Color: "rgb(255, 202, 63)", // Active tab highlight colour
         accent2Color: deepPurple400, // Toolbars and switch buttons
-        accent3Color: deepPurple300, // Our app LinearProgress bar and Tabs
+        accent3Color: deepPurple300, // Our app LinearProgressBar
         textColor: fullBlack,
         alternateTextColor: white, // Buttons and Tabs
         canvasColor: white,
@@ -220,6 +220,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const EalContainerWrapped = connect(mapStateToProps, mapDispatchToProps)(EalContainer)
+const EalContainerWrapped = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(EalContainer)
 
 export default EalContainerWrapped

@@ -189,7 +189,7 @@ export class MapUINav extends React.Component<IProps, {}> {
                                 <FlatButton
                                     key={"add-layer-button"}
                                     label="Add Layer"
-                                    secondary={true}
+                                    primary={true}
                                     icon={<ContentAddBox />}
                                     fullWidth={true}
                                     onClick={onAddLayer}
@@ -205,13 +205,8 @@ export class MapUINav extends React.Component<IProps, {}> {
                         <TabContainer>
                             <Subheader>Download Data</Subheader>
 
-                            <DownloadButton label="Whole Map" secondary={true} icon={<FileFileDownload />} onClick={onExportWholeMap} />
-                            <DownloadButton
-                                label="Map Viewport"
-                                secondary={true}
-                                icon={<FileFileDownload />}
-                                onClick={onExportMapViewport}
-                            />
+                            <DownloadButton label="Whole Map" primary={true} icon={<FileFileDownload />} onClick={onExportWholeMap} />
+                            <DownloadButton label="Map Viewport" primary={true} icon={<FileFileDownload />} onClick={onExportMapViewport} />
 
                             <IncludeGeomCheckbox
                                 checkedIcon={<ImageGridOn />}

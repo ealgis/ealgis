@@ -662,7 +662,7 @@ class LayerForm extends React.Component<IProps, {}> {
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
                     <form onSubmit={(e: any) => e.preventDefault()}>
-                        <Tabs value={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
+                        <Tabs value={tabId}>
                             {/* START CREATE TAB */}
                             <Tab
                                 value={0}
