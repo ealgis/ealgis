@@ -64,7 +64,7 @@ def _export_iter(defn_obj, bounds=None, include_geom_attrs=False):
                     continue
                 geom_source_table_info = expr.get_geometry_source_table_info()
                 expressions[geom_source_table_info].append(expr)
-            return expressions
+        return expressions
 
     if bounds is None:
         def mkq(q):
