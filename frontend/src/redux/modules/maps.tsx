@@ -3,7 +3,7 @@ import * as dotProp from "dot-prop-immutable";
 import { cloneDeep, isEqual, merge } from "lodash-es";
 import { browserHistory } from "react-router";
 import { SubmissionError } from "redux-form";
-import { ISelectedColumn, IUserPartial, getUserIdFromState } from "../../redux/modules/ealgis";
+import { getUserIdFromState, ISelectedColumn, IUserPartial } from "../../redux/modules/ealgis";
 import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
 import { IPosition } from "../../redux/modules/map";
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
@@ -369,6 +369,11 @@ export enum eLayerFilterExpressionMode {
     SIMPLE = 1,
     ADVANCED = 2,
 }
+export enum eLayerTypeOfData {
+    NOT_SET = "",
+    CONTINUOUS = "continuous",
+    DISCRETE = "discrete",
+}
 export interface ILayer {
     [key: string]: any
     fill: {
@@ -383,14 +388,14 @@ export interface ILayer {
         conditional_mode: eLayerFilterExpressionMode
         scale_nlevels: number
     }
-    hash?: string
+    hash?: string | null
     line: {
         width: number
         colour: {
-            a: number
-            r: number
-            g: number
-            b: number
+            a: string
+            r: string
+            g: string
+            b: string
         }
     }
     name: string
@@ -408,6 +413,7 @@ export interface ILayer {
         miny: number
     }
     selectedColumns: Array<ISelectedColumn>
+    type_of_data: eLayerTypeOfData
     _postgis_query?: string
 }
 
@@ -618,6 +624,8 @@ export function addLayer(mapId: number) {
                     scale_name: "Huey",
                     conditional: "",
                     scale_nlevels: 6,
+                    expression_mode: eLayerValueExpressionMode.NOT_SET,
+                    conditional_mode: eLayerFilterExpressionMode.NOT_SET,
                 },
                 line: {
                     width: 1,
@@ -636,7 +644,8 @@ export function addLayer(mapId: number) {
                 hash: null,
                 description: "",
                 selectedColumns: [],
-            },
+                type_of_data: eLayerTypeOfData.NOT_SET,
+            } as ILayer,
         }
 
         return ealapi.put(`/api/0.1/maps/${mapId}/addLayer/`, payload, dispatch).then(({ response, json }: any) => {
