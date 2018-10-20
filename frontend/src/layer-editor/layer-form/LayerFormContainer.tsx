@@ -8,31 +8,31 @@ import { change, formValueSelector, initialize, isDirty } from "redux-form"
 import { setActiveContentComponent } from "../../redux/modules/app"
 import { finishBrowsing } from "../../redux/modules/databrowser"
 import {
+    eEalUIComponent,
+    eLayerFilterExpressionMode,
+    eLayerValueExpressionMode,
     IColourInfo,
     IGeomInfo,
     IGeomTable,
     ILayer,
     ILayerQuerySummary,
+    IMap,
     IMUITheme,
     IMUIThemePalette,
-    IMap,
     ISelectedColumn,
     IStore,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
 } from "../../redux/modules/interfaces"
-import { fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
+import { eLayerTypeOfData, fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { getMapURL } from "../../shared/utils"
 import LayerForm from "./LayerForm"
 
 export interface ILayerFormValues {
     borderColour: {
-        a: number
-        r: number
-        g: number
-        b: number
+        a: string
+        r: string
+        g: string
+        b: string
     }
     borderSize: number
     description: string
@@ -49,6 +49,7 @@ export interface ILayerFormValues {
     valueExpression: string
     valueExpressionMode: eLayerValueExpressionMode
     selectedColumns: Array<ISelectedColumn>
+    type_of_data: eLayerTypeOfData
 }
 
 export interface IProps {}
@@ -125,6 +126,7 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         valueExpression: layer["fill"]["expression"],
         valueExpressionMode: layer["fill"]["expression_mode"] || eLayerValueExpressionMode.NOT_SET,
         selectedColumns: layer["selectedColumns"],
+        type_of_data: layer["type_of_data"],
     }
 }
 
@@ -155,6 +157,7 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
         geometry: geometry !== null ? geometry["name"] : null,
         description: formValues["description"],
         selectedColumns: formValues["selectedColumns"],
+        type_of_data: formValues["type_of_data"],
     }
 }
 
