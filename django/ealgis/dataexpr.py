@@ -285,6 +285,7 @@ class DataExpression:
                 # Attach all columns from the geometry source
                 for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
                     query_attrs.append(getattr(self.geometry_class, column.name))
+            self.query_attrs = query_attrs
             query = db.session.query(*query_attrs)
 
             # apply condition expression (if any), plus any implicit != 0 conditions
