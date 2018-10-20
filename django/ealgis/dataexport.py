@@ -51,8 +51,7 @@ def _export_iter(defn_obj, bounds=None, include_geom_attrs=False):
 
     def get_grouped_queries():
         # group layer queries by source geometry
-        defn = defn_obj.get()
-        layers = defn.get('layers')
+        layers = defn_obj.json["layers"]
         expressions = defaultdict(list)
         for layer in layers:
             if layer["visible"]:
