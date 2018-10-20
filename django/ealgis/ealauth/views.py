@@ -370,7 +370,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             filename_parts.append(suffix)
         filename = '_'.join(filename_parts) + '.csv'
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
-        response['Cache-Control'] = 'max-age=86400, public'
+        response['Cache-Control'] = 'no-cache'
         return response
 
     @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
