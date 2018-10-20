@@ -1,13 +1,13 @@
-import { sortedIndex } from "lodash-es";
-import { eval as mathjsEval } from "mathjs";
+import { sortedIndex } from "lodash-es"
+import { eval as mathjsEval } from "mathjs"
 // @ts-ignore
-import has from "ol/has";
-import olStyleFill from "ol/style/fill";
-import olStyleStroke from "ol/style/stroke";
-import olStyleStyle from "ol/style/style";
-import olStyleText from "ol/style/text";
-import { ILayer, IOLFeatureProps, IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/interfaces";
-import { eLayerTypeOfData } from "../../redux/modules/maps";
+import has from "ol/has"
+import olStyleFill from "ol/style/fill"
+import olStyleStroke from "ol/style/stroke"
+import olStyleStyle from "ol/style/style"
+import olStyleText from "ol/style/text"
+import { ILayer, IOLFeatureProps, IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/interfaces"
+import { eLayerTypeOfData } from "../../redux/modules/maps"
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {
@@ -166,7 +166,7 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
         [eStyleType.NO_DATA]: undefined,
     }
     let layerStyleIdCache: any = {}
-    let do_fill = l["fill"]["expression"] !== ""
+    let do_fill = l["fill"]["expression"] !== "" && l["type_of_data"] !== eLayerTypeOfData.NOT_SET
 
     // styleClassValueRange is an array of the "to" values ("v") for each style class
     // in this layer. It lets us quickly lookup the index of that a given
