@@ -443,6 +443,7 @@ const GeometryAndDataFields = (fields: any) => {
                 // floatingLabelFixed={true}
                 validate={[required]}
                 fullWidth={true}
+                autoWidth={true}
                 onChange={(junk: object, newValue: object, previousValue: object) => fields.onFieldChange("geometry", newValue)}
                 selectionRenderer={fields.geometrySelectionRenderer}
             >
