@@ -112,6 +112,10 @@ class MapDefinition(models.Model):
             # FIXME: do this in a migration instead
             if '_postgis_query' in layer:
                 del layer['_postgis_query']
+            # FIXME: Refactor the Redux store so we're not mutating state with client-side stuff
+            # https://github.com/ealgis/ealgis/issues/183
+            if 'olStyleDef' in layer:
+                del layer['olStyleDef']
             if self.has_geometry(layer):
                 logger.debug(['>clean', idx, layer])
                 layer['hash'] = self.layer_hash(layer)
