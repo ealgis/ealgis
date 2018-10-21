@@ -47,7 +47,7 @@ def _export_geometry_csv(geom_source_table_info, queries, mkq):
         yield row
 
 
-def _export_iter(defn_obj, bounds=None, include_geom_attrs=False):
+def _export_iter(defn_obj, bounds=None):
 
     def get_grouped_queries():
         # group layer queries by source geometry
@@ -58,8 +58,7 @@ def _export_iter(defn_obj, bounds=None, include_geom_attrs=False):
                 expr = defn_obj.compile_expr(
                     layer,
                     include_geometry=False,
-                    order_by_gid=True,
-                    include_geom_attrs=include_geom_attrs)
+                    order_by_gid=True)
                 if expr.is_trivial:
                     continue
                 geom_source_table_info = expr.get_geometry_source_table_info()

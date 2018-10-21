@@ -1,42 +1,25 @@
-import Checkbox from "material-ui/Checkbox"
-import Dialog from "material-ui/Dialog"
-import Divider from "material-ui/Divider"
-import FlatButton from "material-ui/FlatButton"
-import IconButton from "material-ui/IconButton"
-import IconMenu from "material-ui/IconMenu"
-import { List, ListItem } from "material-ui/List"
-import MenuItem from "material-ui/MenuItem"
-import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton"
-import RaisedButton from "material-ui/RaisedButton"
-import { white } from "material-ui/styles/colors"
-import Subheader from "material-ui/Subheader"
-import {
-    ActionBookmarkBorder,
-    ActionDelete,
-    ActionHome,
-    ActionLock,
-    ActionLockOpen,
-    ContentAddBox,
-    ContentContentCopy,
-    ContentLink,
-    EditorModeEdit,
-    FileCloudDownload,
-    FileFileDownload,
-    ImageGridOff,
-    ImageGridOn,
-    MapsAddLocation,
-    NavigationClose,
-    NavigationMoreVert,
-} from "material-ui/svg-icons"
-import { Tab, Tabs } from "material-ui/Tabs"
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
-import * as React from "react"
-import * as CopyToClipboard from "react-copy-to-clipboard"
-import { Link } from "react-router"
-import styled from "styled-components"
-import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces"
-import DataInspector from "../data-inspector/DataInspector"
-import LayerUINav from "../layer-ui-nav/LayerUINavContainer"
+import Checkbox from "material-ui/Checkbox";
+import Dialog from "material-ui/Dialog";
+import Divider from "material-ui/Divider";
+import FlatButton from "material-ui/FlatButton";
+import IconButton from "material-ui/IconButton";
+import IconMenu from "material-ui/IconMenu";
+import { List, ListItem } from "material-ui/List";
+import MenuItem from "material-ui/MenuItem";
+import { RadioButton, RadioButtonGroup } from "material-ui/RadioButton";
+import RaisedButton from "material-ui/RaisedButton";
+import { white } from "material-ui/styles/colors";
+import Subheader from "material-ui/Subheader";
+import { ActionBookmarkBorder, ActionDelete, ActionHome, ActionLock, ActionLockOpen, ContentAddBox, ContentContentCopy, ContentLink, EditorModeEdit, FileCloudDownload, FileFileDownload, MapsAddLocation, NavigationClose, NavigationMoreVert } from "material-ui/svg-icons";
+import { Tab, Tabs } from "material-ui/Tabs";
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
+import * as React from "react";
+import * as CopyToClipboard from "react-copy-to-clipboard";
+import { Link } from "react-router";
+import styled from "styled-components";
+import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces";
+import DataInspector from "../data-inspector/DataInspector";
+import LayerUINav from "../layer-ui-nav/LayerUINavContainer";
 
 const MapName = styled.h3`
     font-weight: normal;
@@ -92,7 +75,6 @@ export interface IProps {
     deleteModalOpen: boolean
     onExportWholeMap: any
     onExportMapViewport: any
-    onCheckIncludeGeomAttrs: any
     onGetShareableLink: any
 }
 
@@ -115,7 +97,6 @@ export class MapUINav extends React.Component<IProps, {}> {
             deleteModalOpen,
             onExportWholeMap,
             onExportMapViewport,
-            onCheckIncludeGeomAttrs,
             onGetShareableLink,
         } = this.props
 
@@ -207,13 +188,6 @@ export class MapUINav extends React.Component<IProps, {}> {
 
                             <DownloadButton label="Whole Map" primary={true} icon={<FileFileDownload />} onClick={onExportWholeMap} />
                             <DownloadButton label="Map Viewport" primary={true} icon={<FileFileDownload />} onClick={onExportMapViewport} />
-
-                            <IncludeGeomCheckbox
-                                checkedIcon={<ImageGridOn />}
-                                uncheckedIcon={<ImageGridOff />}
-                                label="Include extra attributes from the geometry source"
-                                onCheck={onCheckIncludeGeomAttrs}
-                            />
 
                             <Divider />
 

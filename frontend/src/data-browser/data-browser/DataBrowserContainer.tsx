@@ -83,7 +83,7 @@ interface IState {
     selectedSchemaId?: string
     dataTableSearchKeywords?: string
     selectedTable?: ITable
-    selectedTab: string
+    selectedTab?: string
 }
 
 export class DataBrowserContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, IState> {
@@ -153,7 +153,7 @@ export class DataBrowserContainer extends React.Component<IProps & IStoreProps &
                 selectedTable={this.state.selectedTable}
                 selectedColumns={selectedColumns}
                 activeColumns={activeColumns}
-                selectedTab={this.state.selectedTab}
+                selectedTab={this.state.selectedTab || "browse"}
                 schemainfo={schemainfo}
                 handleClickSchema={(schema: ISchema) => {
                     this.handleSelectSchema(schema)

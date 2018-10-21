@@ -230,12 +230,12 @@ class DataExpression:
     """
 
     def __init__(self, name, geometry_source, expression, conditional,
-                 srid=None, include_geometry=True, order_by_gid=False, include_geom_attrs=False):
+                 srid=None, include_geometry=True, order_by_gid=False):
         self.name = name
         self.geometry_source = geometry_source
-        self.query = self.build_query(expression, conditional, srid, include_geometry, order_by_gid, include_geom_attrs)
+        self.query = self.build_query(expression, conditional, srid, include_geometry, order_by_gid)
 
-    def build_query(self, expression, conditional, srid, include_geometry, order_by_gid, include_geom_attrs):
+    def build_query(self, expression, conditional, srid, include_geometry, order_by_gid):
         def get_geometry_column():
             column = None
             if srid is not None:
@@ -281,10 +281,11 @@ class DataExpression:
             # parse the core expression and build up our query
             parsed_expression = parse_expression()
             query_attrs.append(sqlalchemy.sql.expression.label('q', parsed_expression))
-            if include_geom_attrs:
-                # Attach all columns from the geometry source
-                for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
-                    query_attrs.append(getattr(self.geometry_class, column.name))
+
+            # Attach all columns from the geometry source
+            for column in db.get_geometry_source_attribute_columns(self.geometry_source_table_info.name):
+                query_attrs.append(getattr(self.geometry_class, column.name))
+
             self.query_attrs = query_attrs
             query = db.session.query(*query_attrs)
 

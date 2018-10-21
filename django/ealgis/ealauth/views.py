@@ -358,13 +358,9 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
     def _handle_export_csv(self, request, bounds=None, suffix=None):
         mapDefn = self.get_object()
-        include_geom_attrs = request.query_params.get(
-            "include_geom_attrs", False)
-        include_geom_attrs = True if (include_geom_attrs == "true") else False
 
         from ..dataexport import export_csv_iter
-        response = StreamingHttpResponse(export_csv_iter(
-            mapDefn, bounds=bounds, include_geom_attrs=include_geom_attrs), content_type="text/csv")
+        response = StreamingHttpResponse(export_csv_iter(mapDefn, bounds=bounds), content_type="text/csv")
         filename_parts = [urllib.parse.quote(mapDefn.name)]
         if suffix is not None:
             filename_parts.append(suffix)

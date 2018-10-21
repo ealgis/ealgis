@@ -281,15 +281,12 @@ export function exportMap(): IAction {
     }
 }
 
-export function exportMapViewport(includeGeomAttributes: boolean): IAction {
+export function exportMapViewport(): IAction {
     return {
         type: EXPORT_MAP_VIEWPORT,
         meta: {
             analytics: {
                 category: "Maps",
-                payload: {
-                    includeGeomAttributes: includeGeomAttributes,
-                },
             },
         },
     }

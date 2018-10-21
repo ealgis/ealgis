@@ -48,7 +48,6 @@ export interface IDispatchProps {
     resetDataInspector: Function
     onExportWholeMap: Function
     onExportMapViewport: Function
-    onCheckIncludeGeomAttrs: Function
     onGetShareableLink: Function
 }
 
@@ -100,7 +99,6 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
             onToggleDeleteModalState,
             onExportWholeMap,
             onExportMapViewport,
-            onCheckIncludeGeomAttrs,
             onGetShareableLink,
         } = this.props
 
@@ -126,9 +124,6 @@ export class MapUINavContainer extends React.Component<IProps & IStoreProps & ID
                     }}
                     onExportMapViewport={() => {
                         onExportMapViewport(that, mapDefinition.id, mapPosition.extent)
-                    }}
-                    onCheckIncludeGeomAttrs={(event: any, isInputChecked: boolean) => {
-                        onCheckIncludeGeomAttrs(that, isInputChecked)
                     }}
                     onGetShareableLink={onGetShareableLink}
                 />
@@ -213,21 +208,15 @@ const mapDispatchToProps = (dispatch: Function) => {
         },
         onExportWholeMap: function(that: MapUINavContainer, mapId: number) {
             dispatch(exportMap())
-            const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
-            window.location.href = `/api/0.1/maps/${mapId}/export_csv.json?include_geom_attrs=${include_geom_attrs}`
+            window.location.href = `/api/0.1/maps/${mapId}/export_csv.json`
         },
         onExportMapViewport: function(that: MapUINavContainer, mapId: number, extent: [number, number, number, number]) {
-            const include_geom_attrs: boolean = that.isIncludeGeomAttrsChecked ? true : false
-            dispatch(exportMapViewport(include_geom_attrs))
+            dispatch(exportMapViewport())
 
             const extentLonLat = olProj.transformExtent(extent, "EPSG:900913", "EPSG:4326")
-            window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?include_geom_attrs=${include_geom_attrs}&ne=${
-                extentLonLat[1]
-            },${extentLonLat[0]}&sw=${extentLonLat[3]},${extentLonLat[2]}`
-        },
-        onCheckIncludeGeomAttrs: function(that: MapUINavContainer, isInputChecked: boolean) {
-            // FIXME Should be in state or props. What's best practice for attributes like this?
-            that.isIncludeGeomAttrsChecked = isInputChecked
+            window.location.href = `/api/0.1/maps/${mapId}/export_csv_viewport.json?ne=${extentLonLat[1]},${extentLonLat[0]}&sw=${
+                extentLonLat[3]
+            },${extentLonLat[2]}`
         },
         onGetShareableLink: () => {
             dispatch(copyShareableLink())
