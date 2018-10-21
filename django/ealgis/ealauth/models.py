@@ -87,7 +87,10 @@ class MapDefinition(models.Model):
         # URL-safe base64 encoded SHA1 hash
         json_layer = json.dumps(hash_obj, sort_keys=True).encode('utf8')
         digest = hashlib.sha1(json_layer).digest()
-        return base64.b64encode(digest, altchars=b'.-').decode('ascii')
+
+        # Using XX because of dot-prop-immutable's use of periods as special characters
+        # https://github.com/debitoor/dot-prop-immutable/issues/22
+        return base64.b64encode(digest, altchars=b'_-').decode('ascii')
 
     @staticmethod
     def layer_postgis_query(layer):
