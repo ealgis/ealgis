@@ -5,7 +5,7 @@ import IconButton from "material-ui/IconButton";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import Subheader from "material-ui/Subheader";
-import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
+import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo } from "material-ui/svg-icons";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import * as React from "react";
@@ -627,17 +627,15 @@ class LayerForm extends React.Component<IProps, {}> {
         } = this.props
 
         let tabId = 0
-        let backButtonLink = undefined
-        let nextButtonLink = <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />
         switch (tabName) {
-            case "visualise":
-                tabId = 1
-                backButtonLink = <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />
-                nextButtonLink = <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/describe`} />
+            case "name":
+                tabId = 0
                 break
-            case "describe":
+            case "data":
+                tabId = 1
+                break
+            case "style":
                 tabId = 2
-                backButtonLink = <Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />
                 break
         }
 
@@ -663,11 +661,50 @@ class LayerForm extends React.Component<IProps, {}> {
                 <MasterFlexboxItem>
                     <form onSubmit={(e: any) => e.preventDefault()}>
                         <Tabs value={tabId}>
-                            {/* START CREATE TAB */}
+                            {/* START DETAILS TAB */}
                             <Tab
                                 value={0}
-                                label="1. CREATE"
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}`} />}
+                                label="DETAILS"
+                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/name`} />}
+                            >
+                                <TabContainer>
+                                    <MyField
+                                        name="name"
+                                        component={TextField}
+                                        hintText="Give your layer a name..."
+                                        floatingLabelText="Layer name"
+                                        floatingLabelFixed={true}
+                                        validate={[required]}
+                                        fullWidth={true}
+                                        autoComplete="off"
+                                        onBlur={(event: any, newValue: string, previousValue: string) =>
+                                            onFieldBlur(event.target.name, newValue, previousValue)
+                                        }
+                                    />
+
+                                    <MyField
+                                        name="description"
+                                        component={TextField}
+                                        multiLine={true}
+                                        rows={2}
+                                        hintText="Give your layer a description..."
+                                        floatingLabelText="Layer description"
+                                        floatingLabelFixed={true}
+                                        fullWidth={true}
+                                        autoComplete="off"
+                                        onBlur={(event: any, newValue: string, previousValue: string) =>
+                                            onFieldBlur(event.target.name, newValue, previousValue)
+                                        }
+                                    />
+                                </TabContainer>
+                            </Tab>
+                            {/* END DETAILS TAB */}
+
+                            {/* START DATA TAB */}
+                            <Tab
+                                value={1}
+                                label="DATA"
+                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/data`} />}
                             >
                                 <TabContainer>
                                     {visibleComponent === eVisibleComponent.LAYER_FORM && (
@@ -712,13 +749,13 @@ class LayerForm extends React.Component<IProps, {}> {
                                     )}
                                 </TabContainer>
                             </Tab>
-                            {/* END CREATE TAB */}
+                            {/* END DATA TAB */}
 
                             {/* START STYLE TAB */}
                             <Tab
-                                value={1}
-                                label="2. STYLE"
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/visualise`} />}
+                                value={2}
+                                label="STYLE"
+                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/style`} />}
                             >
                                 <TabContainer>
                                     <Fields
@@ -754,45 +791,6 @@ class LayerForm extends React.Component<IProps, {}> {
                                 </TabContainer>
                             </Tab>
                             {/* END STYLE TAB */}
-
-                            {/* START DESCRIBE TAB */}
-                            <Tab
-                                value={2}
-                                label="3. DESCRIBE"
-                                containerElement={<Link to={`/map/${mapId}/${mapNameURLSafe}/layer/${layerId}/describe`} />}
-                            >
-                                <TabContainer>
-                                    <MyField
-                                        name="name"
-                                        component={TextField}
-                                        hintText="Give your layer a name..."
-                                        floatingLabelText="Layer name"
-                                        floatingLabelFixed={true}
-                                        validate={[required]}
-                                        fullWidth={true}
-                                        autoComplete="off"
-                                        onBlur={(event: any, newValue: string, previousValue: string) =>
-                                            onFieldBlur(event.target.name, newValue, previousValue)
-                                        }
-                                    />
-
-                                    <MyField
-                                        name="description"
-                                        component={TextField}
-                                        multiLine={true}
-                                        rows={2}
-                                        hintText="Give your layer a description..."
-                                        floatingLabelText="Layer description"
-                                        floatingLabelFixed={true}
-                                        fullWidth={true}
-                                        autoComplete="off"
-                                        onBlur={(event: any, newValue: string, previousValue: string) =>
-                                            onFieldBlur(event.target.name, newValue, previousValue)
-                                        }
-                                    />
-                                </TabContainer>
-                            </Tab>
-                            {/* END DESCRIBE TAB */}
                         </Tabs>
 
                         <HiddenButton type="submit" />
@@ -803,39 +801,17 @@ class LayerForm extends React.Component<IProps, {}> {
                     <Toolbar>
                         {visibleComponent === eVisibleComponent.LAYER_FORM && (
                             <React.Fragment>
-                                <ToolbarGroup firstChild={true}>
-                                    <MyRaisedButton
-                                        label={"Back"}
-                                        disabled={tabId < 1}
-                                        primary={true}
-                                        containerElement={backButtonLink}
-                                        icon={<NavigationArrowBack />}
-                                    />
-                                    <MyRaisedButton
-                                        label={"Next"}
-                                        disabled={tabId === 2}
-                                        primary={true}
-                                        containerElement={nextButtonLink}
-                                        icon={<NavigationArrowForward />}
-                                    />
-                                </ToolbarGroup>
+                                <ToolbarGroup firstChild={true} />
 
                                 <ToolbarGroup lastChild={true}>
-                                    <ClickableIconButton
-                                        tooltip="Discard your recent changes to this layer"
-                                        tooltipPosition="top-right"
+                                    <MyRaisedButton
+                                        label={"Undo"}
                                         disabled={isDirty === false}
                                         onClick={onResetForm}
-                                    >
-                                        <ContentUndo color={muiThemePalette.alternateTextColor} />
-                                    </ClickableIconButton>
-                                    <ClickableIconButton
-                                        tooltip="Return to the layer list"
-                                        tooltipPosition="top-right"
-                                        onClick={onFormComplete}
-                                    >
-                                        <AvPlaylistAddCheck color={muiThemePalette.alternateTextColor} />
-                                    </ClickableIconButton>
+                                        primary={true}
+                                        icon={<ContentUndo />}
+                                    />
+                                    <MyRaisedButton label={"Done"} onClick={onFormComplete} primary={true} icon={<AvPlaylistAddCheck />} />
                                 </ToolbarGroup>
                             </React.Fragment>
                         )}
