@@ -27,7 +27,7 @@ export class CreateMap extends React.Component<IProps, {}> {
             <HugeCreateMapButton
                 containerElement={isApprovedUser ? <Link to={"/new/map/"} /> : undefined}
                 label="New Map"
-                secondary={true}
+                primary={true}
                 disabled={!isApprovedUser}
                 icon={<MapsLayers />}
             />

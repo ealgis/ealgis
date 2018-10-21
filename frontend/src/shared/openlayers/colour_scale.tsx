@@ -1,6 +1,7 @@
 import "whatwg-fetch"
 import { IColourDefs } from "../../redux/modules/ealgis"
 import { ILayer, IOLStyleDef } from "../../redux/modules/interfaces"
+import { eLayerTypeOfData } from "../../redux/modules/maps"
 import { hsltorgb } from "../utils"
 import Matrix from "./Matrix"
 
@@ -71,6 +72,10 @@ export class ColourScale {
 
     get_nlevels() {
         return this.nlevels
+    }
+
+    get_colours() {
+        return this.interpolated
     }
 
     lookup(v: number, normalise: boolean = true) {
@@ -180,7 +185,7 @@ function add_style_def(olStyle: Array<IOLStyleDef>, rgb: RGB, expr_from: IOperat
     olStyle.push(style)
 }
 
-export function make_colour_scale(scale: ColourScale, attr: string = "q", cmin: number, cmax: number, opacity: number) {
+export function make_continuous_colour_scale(scale: ColourScale, attr: string = "q", cmin: number, cmax: number, opacity: number) {
     let olStyle: Array<IOLStyleDef> = []
 
     let inc
@@ -220,6 +225,30 @@ export function make_colour_scale(scale: ColourScale, attr: string = "q", cmin: 
     return olStyle
 }
 
+export function make_discrete_colour_scale(scale: ColourScale, attr: string = "q", cmin: number, cmax: number, opacity: number) {
+    let olStyle: Array<IOLStyleDef> = []
+    const fallbackColour = { r: 0, g: 0, b: 0 }
+
+    const colours = scale.get_colours()
+    let colourIdx = 0
+    let val = cmin
+    for (val = cmin; val <= cmax; val++) {
+        add_style_def(olStyle, colours[colourIdx], null, { attr: attr, op: "=", v: val }, opacity)
+
+        colourIdx += 1
+        if (colourIdx >= colours.length) {
+            break
+        }
+    }
+
+    // We've run out of colours in our scale but still have values left to fill - use the fallback colour
+    if (colourIdx >= colours.length && val < cmax) {
+        add_style_def(olStyle, fallbackColour, { attr: attr, op: ">", v: val }, null, opacity)
+    }
+
+    return olStyle
+}
+
 export function get_colour_scale_for_layer(layer: ILayer, colourdefs: IColourDefs) {
     let fill = layer["fill"]
     let scale_min = fill["scale_min"]
@@ -247,5 +276,10 @@ export function getLayerOLStyleDefinition(layer: ILayer, colourdefs: IColourDefs
         cmax = parseFloat(cmax)
     }
 
-    return make_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
+    if (layer["type_of_data"] === eLayerTypeOfData.CONTINUOUS) {
+        return make_continuous_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
+    } else if (layer["type_of_data"] === eLayerTypeOfData.DISCRETE) {
+        return make_discrete_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
+    }
+    return undefined
 }

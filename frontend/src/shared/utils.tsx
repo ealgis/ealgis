@@ -58,3 +58,7 @@ export function hsltorgb(h: any, s: any, l: any) {
 
     return [r, g, b]
 }
+
+export function capitaliseFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}

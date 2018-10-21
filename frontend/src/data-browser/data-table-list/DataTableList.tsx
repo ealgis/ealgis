@@ -45,7 +45,7 @@ export class DataTableList extends React.PureComponent<IProps, {}> {
         const favouriteTablesUIDs: any = favouriteTables.map(x => `${x.schema_name}.${x.id}`)
 
         return (
-            <GridList cols={6} cellHeight={"auto"} padding={10}>
+            <GridList cols={6} cellHeight={"auto"} padding={0}>
                 {tables.map((table: ITable, idx: number) => {
                     return (
                         <ClickableGridTile key={idx} cols={2} onClick={() => onClickTable(table)}>

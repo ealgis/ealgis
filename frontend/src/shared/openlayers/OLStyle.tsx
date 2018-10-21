@@ -7,6 +7,14 @@ import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
 import { ILayer, IOLFeatureProps, IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/interfaces"
+import { eLayerTypeOfData } from "../../redux/modules/maps"
+
+// These enum values must be unique and designed not to clash with the output of getRuleId()
+enum eStyleType {
+    HIGHLIGHTED_FEATURE = "_HIGHLIGHTED_FEATURE",
+    ERROR = "_ERROR", // In what circumstances does this occur again?
+    NO_DATA = "_NO_DATA",
+}
 
 function getHighlightedFeaturePattern() {
     // Courtesy of http://openlayers.org/en/latest/examples/canvas-gradient-pattern.html
@@ -61,6 +69,7 @@ function getErrorStylePattern() {
     pctx.lineTo(x1 + offset, y1)
     pctx.stroke()
 
+    // @ts-ignore
     context.fillStyle = pctx.createPattern(p, "repeat")
     context.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -98,6 +107,13 @@ function createDebugFeatures(feature: any) {
 }
 
 export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<number>) {
+    if (layer["type_of_data"] === eLayerTypeOfData.DISCRETE) {
+        if (q === undefined) {
+            return eStyleType.NO_DATA
+        }
+        return sortedIndex(styleClassValueRange, q)
+    }
+
     // Use a binary search to grab the index that our "q" value is closest to
     let ruleId = sortedIndex(styleClassValueRange, q)
     let rule = layer["olStyleDef"]![ruleId]
@@ -124,6 +140,10 @@ export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<
         }
     }
 
+    if (ruleId === -1) {
+        return eStyleType.ERROR
+    }
+
     return ruleId
 }
 
@@ -131,24 +151,22 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
     // layerStyleIdCache contains layerId => styleId mappings
     // "layerId.ruleId" (fill styles - e.g. with data expressions defined)
     // "layerId" (non-fill styles - e.g. boundaries only, with no data expression)
-    // Special cases:
-    // _highlightedFeatures
-    // _errored
 
     let styleCache: any = {
-        _highlightedFeatures: new olStyleStyle({
+        [eStyleType.HIGHLIGHTED_FEATURE]: new olStyleStyle({
             fill: new olStyleFill({
-                color: getHighlightedFeaturePattern(),
+                color: getHighlightedFeaturePattern() as any,
             }),
         }),
-        _errored: new olStyleStyle({
+        [eStyleType.ERROR]: new olStyleStyle({
             fill: new olStyleFill({
-                color: getErrorStylePattern(),
+                color: getErrorStylePattern() as any,
             }),
         }),
+        [eStyleType.NO_DATA]: undefined,
     }
     let layerStyleIdCache: any = {}
-    let do_fill = l["fill"]["expression"] !== ""
+    let do_fill = l["fill"]["expression"] !== "" && l["type_of_data"] !== eLayerTypeOfData.NOT_SET
 
     // styleClassValueRange is an array of the "to" values ("v") for each style class
     // in this layer. It lets us quickly lookup the index of that a given
@@ -176,15 +194,19 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
 
             // Apply our special feature highlight pattern to this feature
             if (highlightedFeatures.indexOf(gid) >= 0) {
-                return styleCache["_highlightedFeatures"]
+                return styleCache[eStyleType.HIGHLIGHTED_FEATURE]
             } else if (layerUID in layerStyleIdCache && layerStyleIdCache[layerUID] !== undefined) {
                 styleId = layerStyleIdCache[layerUID]
             } else {
                 if (do_fill) {
                     ruleId = getRuleId(q, l, styleClassValueRange)
-                    if (ruleId === -1) {
-                        return styleCache["_errored"]
+
+                    if (ruleId === eStyleType.ERROR) {
+                        return styleCache[eStyleType.ERROR]
+                    } else if (ruleId === eStyleType.NO_DATA) {
+                        return styleCache[eStyleType.NO_DATA]
                     }
+
                     styleId = `${l.hash}.${ruleId}`
                 } else {
                     styleId = `${l.hash}`

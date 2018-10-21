@@ -56,7 +56,7 @@ class ExpressionColumnSelector extends React.PureComponent<IProps, {}> {
                 <FlatButton
                     key={"add-column-list-item"}
                     label="Add Data"
-                    secondary={true}
+                    primary={true}
                     icon={<ContentAddBox />}
                     fullWidth={true}
                     onClick={onOpenDataBrowser}

@@ -1,12 +1,13 @@
+import { values as objectValues } from "core-js/library/fn/object";
 import { groupBy } from "lodash-es";
 import Divider from "material-ui/Divider";
 import IconButton from "material-ui/IconButton";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import Subheader from "material-ui/Subheader";
+import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
 import { Tab, Tabs } from "material-ui/Tabs";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
-import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo, NavigationArrowBack, NavigationArrowForward } from "material-ui/svg-icons";
 import * as React from "react";
 import { Link } from "react-router";
 import { Field, Fields, reduxForm } from "redux-form";
@@ -15,8 +16,10 @@ import styled from "styled-components";
 import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
 import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
 import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
+import { eLayerTypeOfData } from "../../redux/modules/maps";
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
+import { capitaliseFirstLetter } from "../../shared/utils";
 import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
 import ColumnCard from "../column-card/ColumnCardContainer";
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
@@ -122,6 +125,12 @@ const ColourSelectField = styled(SelectField)`
     & > div:nth-child(2) > div > div:nth-child(2) {
         height: auto !important;
     }
+`
+
+const HelpText = styled.div`
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
 `
 
 const styles: any = {
@@ -434,12 +443,12 @@ const GeometryAndDataFields = (fields: any) => {
                 // floatingLabelFixed={true}
                 validate={[required]}
                 fullWidth={true}
+                autoWidth={true}
                 onChange={(junk: object, newValue: object, previousValue: object) => fields.onFieldChange("geometry", newValue)}
                 selectionRenderer={fields.geometrySelectionRenderer}
             >
                 {fields.geometryTables}
             </MyField>
-
             <FormSectionSubheaderMini>2. Choose the data to map</FormSectionSubheaderMini>
             <MyField
                 name="valueExpression"
@@ -456,7 +465,6 @@ const GeometryAndDataFields = (fields: any) => {
                     fields.onFieldBlur(event.target.name, newValue, previousValue)
                 }
             />
-
             <RaisedButton
                 containerElement={<Link to={`${fields.layerURLBase}/data/value-expression`} />}
                 label={"Choose Data"}
@@ -465,7 +473,31 @@ const GeometryAndDataFields = (fields: any) => {
                 style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
             />
 
-            <FormSectionSubheaderMini>3. Filter the data</FormSectionSubheaderMini>
+            <FormSectionSubheaderMini>3. What type of data is this?</FormSectionSubheaderMini>
+            <MyField
+                name="type_of_data"
+                component={SelectField}
+                validate={[required]}
+                fullWidth={true}
+                onChange={(junk: object, newValue: object, previousValue: object) => fields.onFieldChange("type_of_data", newValue)}
+            >
+                {objectValues(eLayerTypeOfData).map((value: string) => (
+                    <MenuItem key={value} value={value} primaryText={capitaliseFirstLetter(value)} />
+                ))}
+            </MyField>
+            <HelpText>
+                <strong>Continuous data</strong> is data that is measuring something (e.g. the speed of a train or the percentage of people
+                in an area who are volunteers).
+                <br />
+                <br />
+                <strong>Discrete data</strong> is data that counts things (e.g. the number of languages spoken or the number of people in a
+                family) or data about categories of things (e.g. short, normal, tall).
+                <br />
+                <br />
+                If you're not sure, choose continuous and see if it's appropriate for your data when you style it in the next step.
+            </HelpText>
+
+            <FormSectionSubheaderMini>4. Filter the data</FormSectionSubheaderMini>
             <MyField
                 name="filterExpression"
                 component={TextField}
@@ -481,15 +513,13 @@ const GeometryAndDataFields = (fields: any) => {
                     fields.onFieldBlur(event.target.name, newValue, previousValue)
                 }
             />
-
             <RaisedButton
                 containerElement={<Link to={`${fields.layerURLBase}/data/filter-expression`} />}
-                label={"Set a Filter"}
+                label={"Apply a Filter"}
                 primary={true}
                 disabled={fields["geometry"].input.value === ""}
                 style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
             />
-
             {/* <FieldArray
                 name="selectedColumns"
                 component={SelectedColumns}
@@ -632,7 +662,7 @@ class LayerForm extends React.Component<IProps, {}> {
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
                     <form onSubmit={(e: any) => e.preventDefault()}>
-                        <Tabs value={tabId} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
+                        <Tabs value={tabId}>
                             {/* START CREATE TAB */}
                             <Tab
                                 value={0}
@@ -710,16 +740,17 @@ class LayerForm extends React.Component<IProps, {}> {
                                         doFill={doFill}
                                     />
 
-                                    {layerHash !== null && doFill && (
-                                        <React.Fragment>
-                                            <PaddedDivider />
-                                            <LayerQuerySummaryContainer
-                                                mapId={mapId}
-                                                layerHash={layerHash}
-                                                onFitScaleToData={onFitScaleToData}
-                                            />
-                                        </React.Fragment>
-                                    )}
+                                    {layerHash !== null &&
+                                        doFill && (
+                                            <React.Fragment>
+                                                <PaddedDivider />
+                                                <LayerQuerySummaryContainer
+                                                    mapId={mapId}
+                                                    layerHash={layerHash}
+                                                    onFitScaleToData={onFitScaleToData}
+                                                />
+                                            </React.Fragment>
+                                        )}
                                 </TabContainer>
                             </Tab>
                             {/* END STYLE TAB */}

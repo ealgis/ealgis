@@ -45,7 +45,7 @@ export class MapList extends React.Component<IProps, {}> {
         return (
             <div>
                 {userId !== null && (
-                    <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
+                    <Tabs value={tabName}>
                         {/* START MY MAPS TAB */}
                         <Tab label="My Maps" containerElement={<Link to={"/maps"} />} value="maps">
                             <MapListContainer>{createMapCards(getMyMaps(), userId)}</MapListContainer>

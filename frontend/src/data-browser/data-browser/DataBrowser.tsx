@@ -1,15 +1,8 @@
+import { Tab, Tabs } from "material-ui"
 import IconButton from "material-ui/IconButton"
+import { ActionSearch, ContentFilterList, MapsMap, NavigationArrowBack } from "material-ui/svg-icons"
 import TextField from "material-ui/TextField"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import {
-    ActionSearch,
-    ActionViewColumn,
-    ContentFilterList,
-    DeviceAccessTime,
-    MapsMap,
-    NavigationArrowBack,
-    ToggleStar,
-} from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
@@ -35,7 +28,6 @@ const MasterFlexboxContainer = styled.div`
 const MasterFlexboxItem = styled.div`
     padding-bottom: 56px; /* Height of MasterFlexboxItemBottomFixed */
     height: auto !important; /* Override FixedLayout.css .page-main-content > div > div */
-    padding-left: 12px;
 `
 
 const MasterFlexboxItemBottomFixed = styled.div`
@@ -44,10 +36,6 @@ const MasterFlexboxItemBottomFixed = styled.div`
     width: 2000px; /* Bodge bodge bodge */
     z-index: 1;
     height: auto !important; /* Override FixedLayout.css .page-main-content > div > div */
-`
-
-const DataBrowserSectionContainer = styled.div`
-    margin-bottom: 25px;
 `
 
 const DataBrowserTitle = styled(ToolbarTitle)`
@@ -78,6 +66,7 @@ export interface IProps {
     selectedTable?: ITable
     selectedColumns: Array<string>
     activeColumns: Array<IColumn>
+    selectedTab: string
     schemainfo: ISchemaInfo
     handleClickSchema: Function
     onChangeSchemaSelection: Function
@@ -90,6 +79,7 @@ export interface IProps {
     backToSchemaView: any
     backToTableList: any
     backToTableView: any
+    onChangeTab: any
 }
 
 export class DataBrowser extends React.PureComponent<IProps, {}> {
@@ -125,10 +115,10 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             selectedTable,
             selectedColumns,
             activeColumns,
+            selectedTab,
             handleClickSchema,
             onChangeSchemaSelection,
             onTableSearchChange,
-            schemainfo,
             handleClickTable,
             onClickRecentFavouriteOrUsedInThisMapTable,
             handleFavouriteTable,
@@ -137,6 +127,7 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
             backToSchemaView,
             backToTableList,
             backToTableView,
+            onChangeTab,
         } = this.props
 
         let onGoBack
@@ -151,89 +142,66 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
         return (
             <MasterFlexboxContainer>
                 <MasterFlexboxItem>
-                    {this.showSchemas(selectedTables, selectedColumns) && (
-                        <React.Fragment>
+                    <Tabs value={selectedTab} onChange={onChangeTab}>
+                        <Tab label="Browse" value="browse">
+                            <div style={{ overflowX: "hidden" }}>
+                                {this.showSchemas(selectedTables, selectedColumns) && (
+                                    <React.Fragment>
+                                        <DataSchemaGridContainer handleClickSchema={handleClickSchema} />
+                                    </React.Fragment>
+                                )}
+                                {this.showTables(selectedTables, selectedColumns) && (
+                                    <DataTableList
+                                        tables={selectedTables}
+                                        layout={eTableChooserLayout.LIST_LAYOUT}
+                                        onClickTable={handleClickTable}
+                                        onFavouriteTable={handleFavouriteTable}
+                                    />
+                                )}
+                                {this.showColumns(selectedColumns) &&
+                                    selectedTable && (
+                                        <DataColumnTable
+                                            showColumnNames={config.showColumnNames}
+                                            table={selectedTable}
+                                            selectedColumns={selectedColumns}
+                                            activeColumns={activeColumns}
+                                            onClickColumn={onChooseColumn}
+                                            onFavouriteTable={handleFavouriteTable}
+                                        />
+                                    )}
+                            </div>
+                        </Tab>
+
+                        <Tab label="In This Map" value="in_this_map">
                             {mapTables.length > 0 && (
-                                <DataBrowserSectionContainer>
-                                    <DataBrowserToolbar>
-                                        <ToolbarGroup>
-                                            <ActionViewColumn style={{ marginRight: "10px" }} />
-                                            <ToolbarTitle text={"Tables Used In This Map"} />
-                                        </ToolbarGroup>
-                                    </DataBrowserToolbar>
-                                    <DataTableList
-                                        tables={mapTables}
-                                        layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
-                                    />
-                                </DataBrowserSectionContainer>
+                                <DataTableList
+                                    tables={mapTables}
+                                    layout={eTableChooserLayout.GRID_LAYOUT}
+                                    onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
+                                />
                             )}
+                        </Tab>
 
-                            <DataBrowserToolbar>
-                                <ToolbarGroup>
-                                    <ActionViewColumn style={{ marginRight: "10px" }} />
-                                    <ToolbarTitle text={"Data Schemas"} />
-                                </ToolbarGroup>
-                            </DataBrowserToolbar>
-
-                            <DataBrowserSectionContainer>
-                                <DataSchemaGridContainer handleClickSchema={handleClickSchema} />
-                            </DataBrowserSectionContainer>
-
-                            {recentTables.length > 0 && (
-                                <DataBrowserSectionContainer>
-                                    <DataBrowserToolbar>
-                                        <ToolbarGroup>
-                                            <DeviceAccessTime style={{ marginRight: "10px" }} />
-                                            <ToolbarTitle text={"Recent Tables"} />
-                                        </ToolbarGroup>
-                                    </DataBrowserToolbar>
-                                    <DataTableList
-                                        tables={recentTables}
-                                        layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
-                                    />
-                                </DataBrowserSectionContainer>
-                            )}
-
+                        <Tab label="Favourites" value="favourites">
                             {favouriteTables.length > 0 && (
-                                <DataBrowserSectionContainer>
-                                    <DataBrowserToolbar>
-                                        <ToolbarGroup>
-                                            <ToggleStar style={{ marginRight: "10px" }} />
-                                            <ToolbarTitle text={"Favourite Tables"} />
-                                        </ToolbarGroup>
-                                    </DataBrowserToolbar>
-                                    <DataTableList
-                                        tables={favouriteTables}
-                                        layout={eTableChooserLayout.GRID_LAYOUT}
-                                        onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
-                                    />
-                                </DataBrowserSectionContainer>
+                                <DataTableList
+                                    tables={favouriteTables}
+                                    layout={eTableChooserLayout.GRID_LAYOUT}
+                                    onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
+                                />
                             )}
-                        </React.Fragment>
-                    )}
+                        </Tab>
 
-                    {this.showTables(selectedTables, selectedColumns) && (
-                        <DataTableList
-                            tables={selectedTables}
-                            layout={eTableChooserLayout.LIST_LAYOUT}
-                            onClickTable={handleClickTable}
-                            onFavouriteTable={handleFavouriteTable}
-                        />
-                    )}
-
-                    {this.showColumns(selectedColumns) &&
-                        selectedTable && (
-                            <DataColumnTable
-                                showColumnNames={config.showColumnNames}
-                                table={selectedTable}
-                                selectedColumns={selectedColumns}
-                                activeColumns={activeColumns}
-                                onClickColumn={onChooseColumn}
-                                onFavouriteTable={handleFavouriteTable}
-                            />
-                        )}
+                        <Tab label="Used Recently" value="used_recently">
+                            {recentTables.length > 0 && (
+                                <DataTableList
+                                    tables={recentTables}
+                                    layout={eTableChooserLayout.GRID_LAYOUT}
+                                    onClickTable={onClickRecentFavouriteOrUsedInThisMapTable}
+                                />
+                            )}
+                        </Tab>
+                    </Tabs>
                 </MasterFlexboxItem>
 
                 <MasterFlexboxItemBottomFixed>
