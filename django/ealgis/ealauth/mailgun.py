@@ -1,6 +1,6 @@
 import requests
-from ealgis.util import get_env
-from ealgis.ealauth.admin import get_ealgis_admins
+from ..util import get_env
+from .admin import get_ealgis_admins
 from raven.contrib.django.raven_compat.models import client
 
 

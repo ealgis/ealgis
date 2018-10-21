@@ -5,6 +5,7 @@ log/
 recipes/
 backend/geoserver/data/
 .vagrant
+.mypy_cache
 .*swp
 *.pyc
 *.pyo

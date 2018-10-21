@@ -24,10 +24,10 @@ import urllib.parse
 import json
 import csv
 from ealgis_common.util import make_logger
-from ealgis.mvt import TileGenerator
-from ealgis.ealauth.admin import is_private_site
-from ealgis.util import get_env, get_version
-from ealgis.datastore import datastore
+from ..mvt import TileGenerator
+from .admin import is_private_site
+from ..util import get_env, get_version
+from ..datastore import datastore
 
 
 logger = make_logger(__name__)
@@ -47,7 +47,7 @@ class EalgisConfigView(APIView):
         def getCustomOAuth2ProviderDetails():
             from django.conf import settings
             if hasattr(settings, "CUSTOM_OAUTH2_BACKEND") and settings.CUSTOM_OAUTH2_BACKEND is True:
-                from ealgis.ealauth.backends import CustomOAuth2
+                from .backends import CustomOAuth2
                 return {"name": CustomOAuth2.name, "title": CustomOAuth2.title}
             return None
 

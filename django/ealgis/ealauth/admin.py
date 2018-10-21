@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.apps import apps
 from django.db import connection
 from .models import MapDefinition, Profile
-from ealgis.util import get_env
+from ..util import get_env
 
 # Register your models here.
 admin.register(MapDefinition)(admin.ModelAdmin)
