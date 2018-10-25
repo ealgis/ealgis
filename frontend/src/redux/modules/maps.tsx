@@ -413,12 +413,18 @@ export interface ILayer {
     type_of_data: eLayerTypeOfData
 }
 
+export enum eStylePattern {
+    HIGHLIGHTED_FEATURE = "HIGHLIGHTED_FEATURE",
+    ERROR = "ERROR",
+}
+
 export interface IOLStyleDef {
     expr: {
         from?: IOLStyleDefExpression
         to?: IOLStyleDefExpression
     }
     rgb: Array<number>
+    pattern_fill?: eStylePattern
     opacity: number
 }
 

@@ -7,7 +7,7 @@ import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
 import { ILayer, IOLFeatureProps, IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/interfaces"
-import { eLayerTypeOfData } from "../../redux/modules/maps"
+import { eLayerTypeOfData, eStylePattern } from "../../redux/modules/maps"
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {
@@ -225,7 +225,15 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
                 let rule = l["olStyleDef"]![ruleId]
                 let rgb = rule["rgb"]
 
-                if (rgb.length > 0) {
+                if ("pattern_fill" in rule) {
+                    if (rule.pattern_fill === eStylePattern.ERROR) {
+                        olStyle = styleCache[eStyleType.ERROR]
+                    } else if (rule.pattern_fill === eStylePattern.HIGHLIGHTED_FEATURE) {
+                        olStyle = styleCache[eStyleType.HIGHLIGHTED_FEATURE]
+                    } else {
+                        olStyle = styleCache[eStyleType.ERROR]
+                    }
+                } else if (rgb.length > 0) {
                     if (l["line"].width > 0) {
                         olStyle = new olStyleStyle({
                             fill: new olStyleFill({

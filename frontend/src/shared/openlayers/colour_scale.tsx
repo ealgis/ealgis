@@ -1,7 +1,7 @@
 import "whatwg-fetch"
 import { IColourDefs } from "../../redux/modules/ealgis"
 import { ILayer, IOLStyleDef } from "../../redux/modules/interfaces"
-import { eLayerTypeOfData } from "../../redux/modules/maps"
+import { eLayerTypeOfData, eStylePattern } from "../../redux/modules/maps"
 import { hsltorgb } from "../utils"
 import Matrix from "./Matrix"
 
@@ -149,7 +149,14 @@ export class HLSDiscreteColourScale extends DiscreteColourScale {
     }
 }
 
-function add_style_def(olStyle: Array<IOLStyleDef>, rgb: RGB, expr_from: IOperator | null, expr_to: IOperator | null, opacity: number) {
+function add_style_def(
+    olStyle: Array<IOLStyleDef>,
+    rgb: RGB,
+    expr_from: IOperator | null,
+    expr_to: IOperator | null,
+    opacity: number,
+    pattern_fill?: eStylePattern
+) {
     let rgb_copy = JSON.parse(JSON.stringify(rgb))
     rgb_copy.r *= 255
     rgb_copy.g *= 255
@@ -164,6 +171,10 @@ function add_style_def(olStyle: Array<IOLStyleDef>, rgb: RGB, expr_from: IOperat
         expr: {},
         rgb: [parseInt(rgb_copy.r), parseInt(rgb_copy.g), parseInt(rgb_copy.b)],
         opacity: opacity,
+    }
+
+    if (pattern_fill !== undefined) {
+        style["pattern_fill"] = pattern_fill
     }
 
     if (expr_from !== null) {
@@ -243,7 +254,7 @@ export function make_discrete_colour_scale(scale: ColourScale, attr: string = "q
 
     // We've run out of colours in our scale but still have values left to fill - use the fallback colour
     if (colourIdx >= colours.length && val < cmax) {
-        add_style_def(olStyle, fallbackColour, { attr: attr, op: ">", v: val }, null, opacity)
+        add_style_def(olStyle, fallbackColour, { attr: attr, op: ">", v: val }, null, opacity, eStylePattern.ERROR)
     }
 
     return olStyle
