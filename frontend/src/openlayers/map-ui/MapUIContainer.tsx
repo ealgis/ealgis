@@ -72,8 +72,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 featurGids.push(featureProps.gid)
             })
 
-            dispatch(setHighlightedFeatures(featurGids))
-            dispatch(loadDataInspector(mapId, features))
+            if (featurGids.length > 0) {
+                dispatch(setHighlightedFeatures(featurGids))
+                dispatch(loadDataInspector(mapId, features))
+            }
         },
         onMoveEnd: (event: any) => {
             const view = event.map.getView()
