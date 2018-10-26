@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>EAlGIS: Map Everything</title>
+    <link>https://ealgis.org/</link>
+    <description>Recent content on EAlGIS: Map Everything</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 24 Jun 2015 13:50:46 +0200</lastBuildDate>
+    
+	<atom:link href="https://ealgis.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Creating a new theme</title>
+      <link>https://ealgis.org/blog/2015/06/24/creating-a-new-theme/</link>
+      <pubDate>Wed, 24 Jun 2015 13:50:46 +0200</pubDate>
+      
+      <guid>https://ealgis.org/blog/2015/06/24/creating-a-new-theme/</guid>
+      <description>Introduction Welcome to our blag.</description>
+    </item>
+    
+    <item>
+      <title>Contact</title>
+      <link>https://ealgis.org/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ealgis.org/contact/</guid>
+      <description>Contact us Want to get in touch? Flick an email to contact@ealgis.org or use the form below.</description>
+    </item>
+    
+  </channel>
+</rss>
