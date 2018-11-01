@@ -10,15 +10,15 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
-  memcached:
-    image: memcached
+  redis:
+    image: redis:5-alpine
   uwsgi:
     image: ealgis/uwsgi:latest
     command: uwsgi
     volumes:
       - ./log/:/var/log:delegated
     environment:
-      - MEMCACHED_LOCATION=memcached:11211
+      - REDIS_LOCATION=redis://redis:6379/1
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=ealgis
@@ -34,7 +34,7 @@ services:
     depends_on:
       - db
       - datastore
-      - memcached
+      - redis
   nginx-prod:
     image: ealgis/nginx:latest
     volumes:
