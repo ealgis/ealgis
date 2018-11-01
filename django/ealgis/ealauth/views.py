@@ -29,6 +29,7 @@ from .admin import is_private_site
 from ..util import get_env, get_version
 from ..datastore import datastore
 
+REDIS_LOCK_EXPIRE = 30  # (seconds) - worker must periodically renew distributed lock
 MVT_CACHE_TIMEOUT = (60 * 60 * 8)  # 8 hours
 logger = make_logger(__name__)
 
@@ -405,11 +406,23 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         cache_key = "map_{}_layer_{}_{}_{}_{}".format(map.id, layer_hash, x, y, z)
 
-        mvt_tile = cache.get(cache_key)
-        if mvt_tile is None:
-            mvt_tile = TileGenerator.mvt(layer, int(x), int(y), int(z))
-            cache.set(cache_key, mvt_tile, timeout=MVT_CACHE_TIMEOUT)
+        def get_tile():
+            mvt_tile = cache.get(cache_key)
+            if mvt_tile is not None:
+                return mvt_tile
+            # we make a distributed lock using python-redis-lock; this saves us
+            # from the stampeding herd problem
+            with cache.lock(cache_key, expire=REDIS_LOCK_EXPIRE):
+                # subtle: we check the cache again, in case we've been waiting
+                # behind another worker which has compiled the layer
+                mvt_tile = cache.get(cache_key)
+                if mvt_tile is not None:
+                    return mvt_tile
+                mvt_tile = TileGenerator.mvt(layer, int(x), int(y), int(z))
+                cache.set(cache_key, mvt_tile, timeout=MVT_CACHE_TIMEOUT)
+                return mvt_tile
 
+        mvt_tile = get_tile()
         response = HttpResponse(
             mvt_tile,
             content_type="application/vnd.mapbox-vector-tile"
