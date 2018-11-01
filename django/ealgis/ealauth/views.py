@@ -29,7 +29,7 @@ from .admin import is_private_site
 from ..util import get_env, get_version
 from ..datastore import datastore
 
-
+MVT_CACHE_TIMEOUT = (60 * 60 * 8)  # 8 hours
 logger = make_logger(__name__)
 
 
@@ -404,19 +404,11 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
             raise ValidationError(detail="Tile coordinates (X, Y, Z) not found.")
 
         cache_key = "map_{}_layer_{}_{}_{}_{}".format(map.id, layer_hash, x, y, z)
-        memcachedEnabled = True
-        fromMemcached = False
 
-        if memcachedEnabled:
-            mvt_tile = cache.get(cache_key)
-            if mvt_tile is not None:
-                fromMemcached = True
-
-        if memcachedEnabled is False or mvt_tile is None:
+        mvt_tile = cache.get(cache_key)
+        if mvt_tile is None:
             mvt_tile = TileGenerator.mvt(layer, int(x), int(y), int(z))
-
-            if memcachedEnabled:
-                cache.set(cache_key, mvt_tile, timeout=60 * 60 * 24 * 365)
+            cache.set(cache_key, mvt_tile, timeout=MVT_CACHE_TIMEOUT)
 
         response = HttpResponse(
             mvt_tile,
@@ -425,7 +417,6 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
 
         headers = {
             "Access-Control-Allow-Origin": "*",
-            "X-From-Memcached": fromMemcached,
         }
         for key, val in headers.items():
             response[key] = val

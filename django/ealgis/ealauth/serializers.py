@@ -88,7 +88,6 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         for attr in ('name', 'description', 'shared', 'json'):
             if attr in data:
                 setattr(instance, attr, data[attr])
-        logger.debug([type(instance), instance])
         instance.clean()
         instance.save()
         return instance

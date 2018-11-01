@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import threading
 import json
 
 from django.core.cache import cache
@@ -14,6 +15,7 @@ from ..datastore import datastore
 from ..util import make_logger
 from .exceptions import CompilationError
 
+LAYER_CACHE_TIMEOUT = None  # cache layers forever
 logger = make_logger(__name__)
 
 
@@ -30,6 +32,10 @@ class Profile(models.Model):
 
 
 class MapDefinition(models.Model):
+    # lock for layer compilation
+    COMPILATION_LOCK = threading.Lock()
+    # lock for non-threadsafe pyparsing code
+    PYPARSING_LOCK = threading.Lock()
     PRIVATE_SHARED = 1
     AUTHENTICATED_USERS_SHARED = 2
     PUBLIC_SHARED = 3
@@ -55,21 +61,25 @@ class MapDefinition(models.Model):
 
     @staticmethod
     def compile_expr(layer, **kwargs):
-        # in here to avoid circular import
-        from ..dataexpr import DataExpression
-        geometry_source_name = layer['geometry']
-        schema_name = layer['schema']
+        # FIXME: there seem to be some concurrency issues hiding within the version
+        # of pyParsing that we are using; this lock is a temporary workaround
+        with MapDefinition.PYPARSING_LOCK:
+            # in here to avoid circular import
+            from ..dataexpr import DataExpression
+            geometry_source_name = layer['geometry']
+            schema_name = layer['schema']
 
-        with datastore().access_schema(schema_name) as db:
-            geometry_source = db.get_geometry_source(geometry_source_name)
+            with datastore().access_schema(schema_name) as db:
+                geometry_source = db.get_geometry_source(geometry_source_name)
 
-        return DataExpression(
-            layer['name'],
-            geometry_source,
-            layer['fill'].get('expression', ''),
-            layer['fill'].get('conditional', ''),
-            apps.get_app_config('ealauth').map_srid,
-            **kwargs)
+            obj = DataExpression(
+                layer['name'],
+                geometry_source,
+                layer['fill'].get('expression', ''),
+                layer['fill'].get('conditional', ''),
+                apps.get_app_config('ealauth').map_srid,
+                **kwargs)
+        return obj
 
     @staticmethod
     def layer_hash(layer):
@@ -96,7 +106,21 @@ class MapDefinition(models.Model):
     def layer_postgis_query(layer):
         cache_key = layer['hash']
         query = cache.get(cache_key)
-        if query is None:
+        if query is not None:
+            return query
+        # FIXME: we should really use redis for this, and use a distributed
+        # lock. This works well enough to avoid multiple-recompilation in
+        # local dev, but in a production scenario with multiple worker processes
+        # this won't work (but it won't break anything, either)
+        with MapDefinition.COMPILATION_LOCK:
+            # subtle: we check the cache again, in case we've been waiting
+            # behind another thread which has compiled the layer; this might
+            # happen on cold-start if the cache is clear, and we're generating
+            # a bunch of tiles
+            query = cache.get(cache_key)
+            if query is not None:
+                return query
+            logger.debug("compiling layer: {}".format(layer))
             try:
                 expr = MapDefinition.compile_expr(layer)
                 query = expr.get_postgis_query()
@@ -104,7 +128,7 @@ class MapDefinition(models.Model):
                 logger.debug(query)
             except pyparsing.ParseException as e:
                 raise CompilationError(str(e))
-            cache.set(cache_key, query)
+            cache.set(cache_key, query, LAYER_CACHE_TIMEOUT)  # cache forever
         return query
 
     def clean(self):
@@ -117,7 +141,6 @@ class MapDefinition(models.Model):
             if 'olStyleDef' in layer:
                 del layer['olStyleDef']
             if self.has_geometry(layer):
-                logger.debug(['>clean', idx, layer])
                 layer['hash'] = self.layer_hash(layer)
                 layer['latlon_bbox'] = MapDefinition.get_bbox_for_layer(layer)
                 # ... and check that we can compile this layer (and warm up the cache)

@@ -18,6 +18,7 @@ class DatabaseWrapper:
         if self._database is None:
             logger.info('initialising access to the datastore')
             self._database = Database()
+
         return self._database
 
 
