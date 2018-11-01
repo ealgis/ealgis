@@ -6,5 +6,5 @@ install:
 - pip3 install -r django/requirements.txt
 - pip3 install -r django/dev-requirements.txt
 script:
-- flake8 --ignore=E501,E731 django/ealgis
+- flake8 --ignore=E501,E731,W504 django/ealgis
 - pytest django/ealgis
