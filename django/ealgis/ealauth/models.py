@@ -15,6 +15,7 @@ from ..datastore import datastore
 from ..util import make_logger
 from .exceptions import CompilationError
 
+REDIS_LOCK_EXPIRE = 30  # (seconds) - worker must periodically renew distributed lock
 LAYER_CACHE_TIMEOUT = None  # cache layers forever
 logger = make_logger(__name__)
 
@@ -32,8 +33,6 @@ class Profile(models.Model):
 
 
 class MapDefinition(models.Model):
-    # lock for layer compilation
-    COMPILATION_LOCK = threading.Lock()
     # lock for non-threadsafe pyparsing code
     PYPARSING_LOCK = threading.Lock()
     PRIVATE_SHARED = 1
@@ -108,15 +107,11 @@ class MapDefinition(models.Model):
         query = cache.get(cache_key)
         if query is not None:
             return query
-        # FIXME: we should really use redis for this, and use a distributed
-        # lock. This works well enough to avoid multiple-recompilation in
-        # local dev, but in a production scenario with multiple worker processes
-        # this won't work (but it won't break anything, either)
-        with MapDefinition.COMPILATION_LOCK:
+        # we make a distributed lock using python-redis-lock; this saves us
+        # from the stampeding herd problem
+        with cache.lock(cache_key, expire=REDIS_LOCK_EXPIRE):
             # subtle: we check the cache again, in case we've been waiting
-            # behind another thread which has compiled the layer; this might
-            # happen on cold-start if the cache is clear, and we're generating
-            # a bunch of tiles
+            # behind another worker which has compiled the layer
             query = cache.get(cache_key)
             if query is not None:
                 return query

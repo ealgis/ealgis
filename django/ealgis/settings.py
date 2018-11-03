@@ -190,8 +190,11 @@ WSGI_APPLICATION = 'ealgis.wsgi.application'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': get_env('MEMCACHED_LOCATION'),
+        'BACKEND': 'redis_lock.django_cache.RedisCache',
+        'LOCATION': get_env('REDIS_LOCATION'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+        }
     }
 }
 
