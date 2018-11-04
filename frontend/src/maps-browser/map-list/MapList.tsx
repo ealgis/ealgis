@@ -7,7 +7,7 @@ import styled from "styled-components"
 import { ILayer, IMapsModule, IMUIThemePalette } from "../../redux/modules/interfaces"
 
 const MapListContainer = styled.div`
-    margin-top: 30;
+    margin-top: 10px;
     padding: 10px;
 `
 
@@ -24,7 +24,7 @@ export interface IProps {
 const createMapCards = (maps: Array<Array<any>>, userId: number | null) =>
     maps.map(([mapId, map]: Array<any>) => {
         return (
-            <Card key={mapId}>
+            <Card key={mapId} style={{ marginBottom: 10 }}>
                 <CardHeader
                     title={map.name}
                     subtitle={userId !== null && map.owner_user_id == userId ? map.description : `By ${map.owner.username}`}
