@@ -790,7 +790,7 @@ class ColoursViewset(viewsets.ViewSet):
     """
     API endpoint that returns available colours scale for styling.
     """
-    permission_classes = (IsAuthenticatedAndApproved,)
+    permission_classes = (AllowAnyIfPublicSite,)
 
     def list(self, request, format=None):
         with open('/app/contrib/colorbrewer/ColorBrewer_all_schemes_RGBonly3.csv') as f:

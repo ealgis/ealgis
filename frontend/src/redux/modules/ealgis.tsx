@@ -315,7 +315,7 @@ export function fetchUserMapsColumnsDataColourAndSchemaInfo() {
             ])
             await dispatch(fetchColumnsForMaps())
         } else if (self.is_logged_in === false && getState()["app"]["private_site"] === false) {
-            await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo())])
+            await Promise.all([dispatch(fetchMaps()), dispatch(fetchGeomInfo()), dispatch(fetchColourDefs())])
         }
 
         dispatch(appLoaded())
