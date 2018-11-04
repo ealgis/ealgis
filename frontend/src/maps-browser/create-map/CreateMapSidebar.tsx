@@ -1,4 +1,6 @@
+import { ListItem } from "material-ui"
 import RaisedButton from "material-ui/RaisedButton"
+import { ActionInfo } from "material-ui/svg-icons"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
 import * as React from "react"
 import { Link } from "react-router"
@@ -24,13 +26,16 @@ export class CreateMap extends React.Component<IProps, {}> {
         const { isApprovedUser } = this.props
 
         return (
-            <HugeCreateMapButton
-                containerElement={isApprovedUser ? <Link to={"/new/map/"} /> : undefined}
-                label="New Map"
-                primary={true}
-                disabled={!isApprovedUser}
-                icon={<MapsLayers />}
-            />
+            <React.Fragment>
+                <HugeCreateMapButton
+                    containerElement={isApprovedUser ? <Link to={"/new/map/"} /> : undefined}
+                    label="New Map"
+                    primary={true}
+                    disabled={!isApprovedUser}
+                    icon={<MapsLayers />}
+                />
+                <ListItem primaryText="Register an account to start creating your own maps" leftIcon={<ActionInfo />} disabled={true} />
+            </React.Fragment>
         )
     }
 }

@@ -16,11 +16,11 @@ export class LoginDialog extends React.Component<LoginDialogProps, LoginDialogSt
 
         return (
             <Dialog title="Please login to access EALGIS" modal={false} open={open} onRequestClose={onRequestClose}>
-                {Config["AUTH_PROVIDERS"]["FACEBOOK"] === true && (
-                    <SocialLoginButton providerName="Facebook" providerUrl="/login/facebook/" colour={"#3B5998"} />
-                )}
                 {Config["AUTH_PROVIDERS"]["GOOGLE"] === true && (
                     <SocialLoginButton providerName="Google" providerUrl="/login/google-oauth2/" colour={"#DD4B39"} />
+                )}
+                {Config["AUTH_PROVIDERS"]["FACEBOOK"] === true && (
+                    <SocialLoginButton providerName="Facebook" providerUrl="/login/facebook/" colour={"#3B5998"} />
                 )}
                 {Config["AUTH_PROVIDERS"]["TWITTER"] === true && (
                     <SocialLoginButton providerName="Twitter" providerUrl="/login/twitter/" colour={"#55ACEE"} />
