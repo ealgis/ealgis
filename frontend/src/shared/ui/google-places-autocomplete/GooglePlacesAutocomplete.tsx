@@ -100,9 +100,7 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
     }
 
     init() {
-        console.log("init")
         if (this.geocoder === undefined) {
-            console.log("initing")
             const google = window.google
             this.geocoder = new google.maps.Geocoder()
 
@@ -186,6 +184,8 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
                 }}
                 render={(googleMaps: any) => {
                     if (googleMaps) {
+                        this.init()
+
                         return (
                             <AutoComplete
                                 {...autocompleteProps as any}
