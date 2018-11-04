@@ -99,14 +99,14 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
         this.getLatLgn = this.getLatLgn.bind(this)
     }
 
-    init() {
+    init(googleMaps: any) {
         if (this.geocoder === undefined) {
-            const google = window.google
-            this.geocoder = new google.maps.Geocoder()
+            // const google = window.google
+            this.geocoder = new googleMaps.Geocoder()
 
             // Documentation for AutocompleteService
             // https://developers.google.com/maps/documentation/javascript/places-autocomplete#place_autocomplete_service
-            this.service = new google.maps.places.AutocompleteService(null)
+            this.service = new googleMaps.places.AutocompleteService(null)
         }
     }
 
@@ -184,7 +184,7 @@ class GooglePlacesAutocomplete extends React.Component<IProps, IState> {
                 }}
                 render={(googleMaps: any) => {
                     if (googleMaps) {
-                        this.init()
+                        this.init(googleMaps)
 
                         return (
                             <AutoComplete
