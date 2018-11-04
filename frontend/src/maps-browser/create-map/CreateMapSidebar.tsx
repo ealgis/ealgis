@@ -34,7 +34,9 @@ export class CreateMap extends React.Component<IProps, {}> {
                     disabled={!isApprovedUser}
                     icon={<MapsLayers />}
                 />
-                <ListItem primaryText="Register an account to start creating your own maps" leftIcon={<ActionInfo />} disabled={true} />
+                {isApprovedUser === false && (
+                    <ListItem primaryText="Register an account to start creating your own maps" leftIcon={<ActionInfo />} disabled={true} />
+                )}
             </React.Fragment>
         )
     }
