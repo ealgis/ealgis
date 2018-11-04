@@ -115,17 +115,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.twitter.TwitterOAuth',
-    'social_core.backends.yahoo.YahooOpenId',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
 AUTH_BACKENDS = [
 
 ]
+
+if get_env('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY') is not None:
+    AUTH_BACKENDS.append("social_core.backends.microsoft.MicrosoftOAuth2")
+    SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = get_env('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY')
+    SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = get_env('SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET')
 
 if get_env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY') is not None:
     AUTH_BACKENDS.append("social_core.backends.google.GoogleOAuth2")

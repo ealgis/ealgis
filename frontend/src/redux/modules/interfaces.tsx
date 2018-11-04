@@ -59,6 +59,7 @@ export interface IConfig {
     RAVEN_URL: string
     DEFAULT_MAP_POSITION: IMapPositionDefaults
     AUTH_PROVIDERS: {
+        MICROSOFT: boolean
         GOOGLE: boolean
         FACEBOOK: boolean
         TWITTER: boolean

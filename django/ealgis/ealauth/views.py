@@ -74,6 +74,7 @@ class EalgisConfigView(APIView):
                 "zoom": int(get_env("DEFAULT_MAP_POSITION_ZOOM")),
             },
             "AUTH_PROVIDERS": {
+                "MICROSOFT": False if get_env("SOCIAL_AUTH_MICROSOFT_GRAPH_KEY") is None else True,
                 "GOOGLE": False if get_env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY") is None else True,
                 "FACEBOOK": False if get_env("SOCIAL_AUTH_FACEBOOK_KEY") is None else True,
                 "TWITTER": False if get_env("SOCIAL_AUTH_TWITTER_KEY") is None else True,

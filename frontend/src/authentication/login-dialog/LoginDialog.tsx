@@ -16,6 +16,9 @@ export class LoginDialog extends React.Component<LoginDialogProps, LoginDialogSt
 
         return (
             <Dialog title="Please login to access EALGIS" modal={false} open={open} onRequestClose={onRequestClose}>
+                {Config["AUTH_PROVIDERS"]["MICROSOFT"] === true && (
+                    <SocialLoginButton providerName="Microsoft" providerUrl="/login/microsoft-graph/" colour={"#7b7b7b"} />
+                )}
                 {Config["AUTH_PROVIDERS"]["GOOGLE"] === true && (
                     <SocialLoginButton providerName="Google" providerUrl="/login/google-oauth2/" colour={"#DD4B39"} />
                 )}
