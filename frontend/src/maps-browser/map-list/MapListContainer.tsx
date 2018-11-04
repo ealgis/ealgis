@@ -95,9 +95,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 // Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
 // @ts-ignore
-const MapListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
-    mapStateToProps,
-    mapDispatchToProps
-)(MapListContainer)
+const MapListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(MapListContainer)
 
 export default muiThemeable()(MapListContainerWrapped)
