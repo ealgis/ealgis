@@ -2,7 +2,7 @@ import { entries as objectEntries } from "core-js/library/fn/object"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IMUIThemePalette, IMUIThemeProps, IMapsModule, IStore, IUser } from "../../redux/modules/interfaces"
+import { IMapsModule, IMUIThemePalette, IMUIThemeProps, IStore, IUser } from "../../redux/modules/interfaces"
 import { eMapShared } from "../../redux/modules/maps"
 import MapList from "./MapList"
 
@@ -13,6 +13,7 @@ export interface IStoreProps {
     user: IUser
     maps: IMapsModule
     muiThemePalette: IMUIThemePalette
+    tabName: string
 }
 
 export interface IDispatchProps {
@@ -21,11 +22,7 @@ export interface IDispatchProps {
     getPublicMaps: Function
 }
 
-export interface IRouteProps {
-    tabName: string
-}
-
-export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouteProps, {}> {
+export class MapListContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     render() {
         const { tabName, isPrivateSite, user, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
 
@@ -56,6 +53,8 @@ const mapStateToProps = (state: IStore, ownProps: IMUIThemeProps): IStoreProps =
         user: ealgis.user,
         maps,
         muiThemePalette: ownProps.muiTheme.palette,
+        // @ts-ignore
+        tabName: ownProps.routeParams.tabName,
     }
 }
 
@@ -96,6 +95,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 // Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
 // @ts-ignore
-const MapListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(MapListContainer)
+const MapListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+    mapStateToProps,
+    mapDispatchToProps
+)(MapListContainer)
 
 export default muiThemeable()(MapListContainerWrapped)

@@ -5,8 +5,8 @@ import IconMenu from "material-ui/IconMenu"
 import LinearProgress from "material-ui/LinearProgress"
 import MenuItem from "material-ui/MenuItem"
 import Snackbar from "material-ui/Snackbar"
-import { ToolbarGroup } from "material-ui/Toolbar"
 import { ActionBugReport, ActionExitToApp, ActionFace, ActionInput, ActionSearch } from "material-ui/svg-icons"
+import { ToolbarGroup } from "material-ui/Toolbar"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
@@ -115,9 +115,8 @@ export class EalUI extends React.Component<IProps, {}> {
                                         />
                                     </React.Fragment>
                                 )}
-                                <HeaderBarButton label="Home" containerElement={<Link to={"/"} />} />
                                 <HeaderBarButton label="Maps" containerElement={<Link to={user !== null ? "/maps" : "/shared"} />} />
-                                <HeaderBarButton label="About" containerElement={<Link to={"/about"} />} />
+                                <HeaderBarButton label="About" containerElement={<a href={"https://ealgis.org"} target="_blank" />} />
                                 {user === null && (
                                     <HeaderBarButton
                                         label={"Login/Register"}

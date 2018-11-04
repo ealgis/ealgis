@@ -75,7 +75,7 @@ export class MapList extends React.Component<IProps, {}> {
                 {userId === null && (
                     <Tabs value={tabName} tabItemContainerStyle={{ backgroundColor: muiThemePalette.accent3Color }}>
                         {/* START SHARED TAB */}
-                        <Tab label="Shared" containerElement={<Link to={"/shared"} />} value="shared">
+                        <Tab label="Shared Maps" containerElement={<Link to={"/shared"} />} value="shared">
                             <MapListContainer>{createMapCards(getSharedMaps(), userId)}</MapListContainer>
                         </Tab>
                         {/* START SHARED TAB */}
