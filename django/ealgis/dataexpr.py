@@ -3,6 +3,7 @@
 #
 
 import sqlalchemy
+from contextlib import suppress
 from pyparsing import Word, nums, alphanums, Combine, oneOf, Optional, \
     opAssoc, operatorPrecedence
 from sqlalchemy.dialects import postgresql
@@ -32,14 +33,10 @@ class EvalConstant():
         self.value = tokens[0]
 
     def eval(self, expr_state):
-        try:
+        with suppress(ValueError):
             return int(self.value)
-        except ValueError:
-            pass
-        try:
+        with suppress(ValueError):
             return float(self.value)
-        except ValueError:
-            pass
         return expr_state.lookup(self.value)
 
 

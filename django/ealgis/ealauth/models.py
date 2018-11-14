@@ -3,6 +3,7 @@ import hashlib
 import threading
 import json
 
+from contextlib import suppress
 from django.core.cache import cache
 import pyparsing
 from django.apps import apps
@@ -82,10 +83,8 @@ class MapDefinition(models.Model):
 
     @staticmethod
     def layer_hash(layer):
-        try:
+        with suppress(KeyError):
             del layer['hash']
-        except KeyError:
-            pass
 
         hash_obj = {
             "schema": layer["schema"],
