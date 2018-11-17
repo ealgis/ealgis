@@ -137,7 +137,7 @@ uwsgi container.
 
 # Code of Conduct
 
-Please see the [Code of Conduct](https://github.com/ealgis/ealgis/CODE_OF_CONDUCT.md).
+Please see the [Code of Conduct](https://github.com/ealgis/ealgis/blob/next/CODE_OF_CONDUCT.md).
 
 # Development
 
