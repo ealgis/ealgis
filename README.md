@@ -135,6 +135,10 @@ When loading data, you might want to clone the loader module in the `data/uwsgi`
 of the EAlGIS checkout. The code will then be available in `/data` in your
 uwsgi container.
 
+# Code of Conduct
+
+Please see the [Code of Conduct](https://github.com/ealgis/ealgis/CODE_OF_CONDUCT.md).
+
 # Development
 
 ## Dump and restore Docker images
