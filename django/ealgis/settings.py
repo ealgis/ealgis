@@ -141,6 +141,8 @@ if get_env('SOCIAL_AUTH_TWITTER_KEY') is not None:
 
 if os.path.isfile("ealgis/ealauth/backends.py"):
     AUTH_BACKENDS.append("ealgis.ealauth.backends.CustomOAuth2")
+    SOCIAL_AUTH_CUSTOM_KEY = get_env('SOCIAL_AUTH_CUSTOM_KEY')
+    SOCIAL_AUTH_CUSTOM_SECRET = get_env('SOCIAL_AUTH_CUSTOM_SECRET')
     CUSTOM_OAUTH2_BACKEND = True
 
 AUTH_BACKENDS.append("django.contrib.auth.backends.ModelBackend")
