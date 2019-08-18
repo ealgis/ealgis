@@ -110,7 +110,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
         )
 
         let toolbarTitle =
-            table["metadata_json"]["series"] === null
+            !("series" in table["metadata_json"]) || table["metadata_json"]["series"] === null
                 ? `${table["metadata_json"]["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
                 : `${table["metadata_json"]["type"]}: ${table["metadata_json"]["series"]} (${table["metadata_json"][
                       "family"
@@ -147,27 +147,32 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                     </ToolbarGroup>
                 </DataBrowserToolbar>
                 {table["metadata_json"]["kind"]}{" "}
-                <TableNotesLink
-                    href=""
-                    onClick={(e: any) => {
-                        e.preventDefault()
-                        onToggleShowInfo()
-                    }}
-                >
-                    more
-                </TableNotesLink>
-                {showTableInfo && (
+                {"notes" in table["metadata_json"] && (
                     <React.Fragment>
-                        <br />
-                        <br />
-                        <TableNotes dangerouslySetInnerHTML={{ __html: table["metadata_json"]["notes"] }} />
-                        {table["metadata_json"]["metadataUrls"].map((obj: any, key: any) => (
-                            <MetadataURL key={key}>
-                                <a href={obj["url"]} target="_blank">
-                                    {obj["name"]}
-                                </a>
-                            </MetadataURL>
-                        ))}
+                        <TableNotesLink
+                            href=""
+                            onClick={(e: any) => {
+                                e.preventDefault()
+                                onToggleShowInfo()
+                            }}
+                        >
+                            more
+                        </TableNotesLink>
+                        {showTableInfo && (
+                            <React.Fragment>
+                                <br />
+                                <br />
+                                <TableNotes dangerouslySetInnerHTML={{ __html: table["metadata_json"]["notes"] }} />
+                                {"metadataUrls" in table["metadata_json"] &&
+                                    table["metadata_json"]["metadataUrls"].map((obj: any, key: any) => (
+                                        <MetadataURL key={key}>
+                                            <a href={obj["url"]} target="_blank">
+                                                {obj["name"]}
+                                            </a>
+                                        </MetadataURL>
+                                    ))}
+                            </React.Fragment>
+                        )}
                     </React.Fragment>
                 )}
                 <Table
