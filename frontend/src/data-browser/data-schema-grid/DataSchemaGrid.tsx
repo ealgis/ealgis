@@ -1,13 +1,11 @@
-import * as React from "react"
-import styled from "styled-components"
-import { entries as objectEntries } from "core-js/library/fn/object"
-import { GridList, GridTile } from "material-ui/GridList"
-import { List, ListItem } from "material-ui/List"
+import { GridTile } from "material-ui/GridList"
 import IconButton from "material-ui/IconButton"
+import { List, ListItem } from "material-ui/List"
 import Subheader from "material-ui/Subheader"
 import { ActionOpenInNew } from "material-ui/svg-icons"
+import * as React from "react"
+import styled from "styled-components"
 import { ISchema } from "../../redux/modules/interfaces"
-import { Function3 } from "lodash"
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {
@@ -52,9 +50,13 @@ export class DataSchemaGrid extends React.Component<IProps, {}> {
                                             key={schema.name}
                                             primaryText={schema.name}
                                             rightIconButton={
-                                                <IconButton tooltip="More Info">
-                                                    <ActionOpenInNew onClick={() => handleClickSchemaMoreInfo(schema)} />
-                                                </IconButton>
+                                                schema.description.startsWith("http") ? (
+                                                    <IconButton tooltip="More Info">
+                                                        <ActionOpenInNew onClick={() => handleClickSchemaMoreInfo(schema)} />
+                                                    </IconButton>
+                                                ) : (
+                                                    undefined
+                                                )
                                             }
                                             onClick={() => handleClickSchema(schema)}
                                         />
