@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { ILayerQuerySummary, IStore } from "../../redux/modules/interfaces"
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import { fetch as fetchLayerQuerySummary, ILayerQuerySummary } from "../../redux/modules/layerquerysummary"
 import LayerQuerySummary from "./LayerQuerySummary"
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     mapId: number

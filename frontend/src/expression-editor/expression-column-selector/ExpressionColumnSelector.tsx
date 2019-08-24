@@ -5,7 +5,7 @@ import Subheader from "material-ui/Subheader"
 import { ActionDelete, ContentAddBox } from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
-import { IColumn, ISchema, ISchemaInfo, ITable, ITableInfo } from "../../redux/modules/interfaces"
+import { IColumn, ISchemaInfo, ITableInfo, ITable, ISchema } from "../../redux/modules/ealgis";
 
 const MultiLineSubheader = styled(Subheader)`
     line-height: 26px !important;

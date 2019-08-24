@@ -1,4 +1,4 @@
-import { IMap } from "../redux/modules/interfaces"
+import { IMap } from "../redux/modules/maps";
 
 export function getMapURL(map: IMap) {
     return `/map/${map.id}/${map["name-url-safe"]}`

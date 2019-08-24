@@ -1,10 +1,11 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IColourDefs } from "../../redux/modules/ealgis"
-import { ILayer, IMap, IStore } from "../../redux/modules/interfaces"
 import { compileLayerStyle } from "../../shared/openlayers/OLStyle"
 import { getLayerOLStyleDefinition } from "../../shared/openlayers/colour_scale"
 import Layer from "./Layer"
+import { IMap, ILayer } from "../../redux/modules/maps";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     layerId: number

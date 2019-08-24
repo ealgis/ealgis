@@ -6,8 +6,8 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { toggleModalState } from "../../redux/modules/app"
 import { reset as resetDataInspector } from "../../redux/modules/datainspector"
-import { IMap, IMapPositionDefaults, IMUITheme, IMUIThemePalette, IPosition, IStore } from "../../redux/modules/interfaces"
-import { moveToPosition, restoreDefaultMapPosition } from "../../redux/modules/map"
+import { IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { moveToPosition, restoreDefaultMapPosition, IPosition } from "../../redux/modules/map"
 import {
     addLayer,
     changeMapSharing,
@@ -18,9 +18,12 @@ import {
     exportMapViewport,
     removeMap,
     updateMapOrigin,
+    IMap,
+    IMapPositionDefaults,
 } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import MapUINav from "./MapUINav"
+import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {}
 

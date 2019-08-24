@@ -1,4 +1,3 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array";
 import * as dotProp from "dot-prop-immutable";
 import { cloneDeep, isEqual, merge } from "lodash-es";
 import { browserHistory } from "react-router";
@@ -82,7 +81,7 @@ export default function reducer(state = initialState, action: IAction) {
             const selectedColumns: Array<ISelectedColumn> =
                 dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`) || []
 
-            if (arrayIncludes(selectedColumns, action.selectedColumn) == false) {
+            if (action.selectedColumn && selectedColumns.includes(action.selectedColumn) == false) {
                 return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`, [
                     ...selectedColumns,
                     action.selectedColumn,

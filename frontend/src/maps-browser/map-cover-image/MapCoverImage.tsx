@@ -1,5 +1,6 @@
 import * as React from "react"
-import { IConfig, IMap } from "../../redux/modules/interfaces"
+import { IConfig } from "../../redux/modules/interfaces"
+import { IMap } from "../../redux/modules/maps";
 declare var Config: IConfig
 
 export interface IProps {

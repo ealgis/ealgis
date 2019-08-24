@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore } from "../../redux/modules/interfaces"
 import CreateMapSidebar from "./CreateMapSidebar"
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {}
 

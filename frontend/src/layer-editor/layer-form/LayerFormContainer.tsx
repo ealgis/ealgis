@@ -1,31 +1,19 @@
-import { values as objectValues } from "core-js/library/fn/object"
 import { debounce, isEqual, reduce } from "lodash-es"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
 import { browserHistory } from "react-router"
 import { change, formValueSelector, initialize, isDirty } from "redux-form"
-import { setActiveContentComponent } from "../../redux/modules/app"
+import { setActiveContentComponent, eEalUIComponent } from "../../redux/modules/app"
 import { finishBrowsing } from "../../redux/modules/databrowser"
-import {
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
-    IColourInfo,
-    IGeomInfo,
-    IGeomTable,
-    ILayer,
-    ILayerQuerySummary,
-    IMap,
-    IMUITheme,
-    IMUIThemePalette,
-    ISelectedColumn,
-    IStore,
-} from "../../redux/modules/interfaces"
-import { eLayerTypeOfData, fitLayerScaleToData, handleLayerFormChange } from "../../redux/modules/maps"
+import { eLayerTypeOfData, fitLayerScaleToData, handleLayerFormChange, eLayerFilterExpressionMode, eLayerValueExpressionMode, IMap, ILayer } from "../../redux/modules/maps"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { getMapURL } from "../../shared/utils"
 import LayerForm from "./LayerForm"
+import { ISelectedColumn, IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
+import { IMUIThemePalette, IMUITheme } from "../../redux/modules/interfaces";
+import { ILayerQuerySummary } from "../../redux/modules/layerquerysummary";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface ILayerFormValues {
     borderColour: {
@@ -319,7 +307,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 []
             )
 
-            if (!isEqual(objectValues(diff), ["olStyle"])) {
+            if (!isEqual(diff.values(), ["olStyle"])) {
                 return true
             }
         }

@@ -3,7 +3,8 @@ import InsertChart from "material-ui/svg-icons/editor/insert-chart"
 import MapsLayers from "material-ui/svg-icons/maps/layers"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IFeature, IStore } from "../../redux/modules/interfaces"
+import { IFeature } from "../../redux/modules/datainspector";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {}
 

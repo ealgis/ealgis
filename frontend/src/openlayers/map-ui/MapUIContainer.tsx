@@ -3,10 +3,11 @@ import olProj from "ol/proj"
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { loadRecords as loadDataInspector } from "../../redux/modules/datainspector"
-import { IMap, IOLFeature, IOLFeatureProps, IPosition, IStore } from "../../redux/modules/interfaces"
-import { savePosition, setHighlightedFeatures } from "../../redux/modules/map"
+import { loadRecords as loadDataInspector, IOLFeature, IOLFeatureProps } from "../../redux/modules/datainspector"
+import { savePosition, setHighlightedFeatures, IPosition } from "../../redux/modules/map"
 import MapUI from "./MapUI"
+import { IMap } from "../../redux/modules/maps";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     params: IRouteProps

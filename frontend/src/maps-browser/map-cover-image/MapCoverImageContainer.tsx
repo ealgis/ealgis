@@ -1,7 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IMap, IStore } from "../../redux/modules/interfaces"
 import MapCoverImage from "./MapCoverImage"
+import { IMap } from "../../redux/modules/maps";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     mapDefinition: IMap

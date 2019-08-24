@@ -1,6 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { IGeomInfo, ILayer, IMap, ITable } from "./interfaces"
+import { ITable, IGeomInfo } from "./ealgis";
+import { IMap, ILayer } from "./maps";
 
 // Actions
 const TOGGLE_DEBUG_MODE = "ealgis/map/TOGGLE_DEBUG_MODE"

@@ -1,10 +1,12 @@
-import { entries as objectEntries } from "core-js/library/fn/object"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IMapsModule, IMUIThemePalette, IMUIThemeProps, IStore, IUser } from "../../redux/modules/interfaces"
+import { IModule as IMapsModule } from "../../redux/modules/maps";
 import { eMapShared } from "../../redux/modules/maps"
 import MapList from "./MapList"
+import { IUser } from "../../redux/modules/ealgis";
+import { IMUIThemePalette, IMUIThemeProps } from "../../redux/modules/interfaces";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {}
 
@@ -37,9 +39,9 @@ export class MapListContainer extends React.Component<IProps & IStoreProps & IDi
                 tabName={tabName}
                 userId={userId}
                 maps={maps}
-                getMyMaps={() => getMyMaps(objectEntries(maps), userId)}
-                getSharedMaps={() => getSharedMaps(objectEntries(maps), userId)}
-                getPublicMaps={() => getPublicMaps(objectEntries(maps), userId)}
+                getMyMaps={() => getMyMaps(Object.entries(maps), userId)}
+                getSharedMaps={() => getSharedMaps(Object.entries(maps), userId)}
+                getPublicMaps={() => getPublicMaps(Object.entries(maps), userId)}
             />
         )
     }

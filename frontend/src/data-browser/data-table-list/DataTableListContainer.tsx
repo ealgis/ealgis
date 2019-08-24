@@ -1,10 +1,10 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import * as React from "react"
 import { connect } from "react-redux"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
-import { ISchemaInfo, IStore, ITable, ITableInfo } from "../../redux/modules/interfaces"
 import DataTableList from "./DataTableList"
 import DataTableListBySchemaAndTopic from "./DataTableListBySchemaAndTopic"
+import { ITable, ISchemaInfo, ITableInfo } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {
     tables: Array<Partial<ITable>>
@@ -40,7 +40,7 @@ export class DataTableListContainer extends React.PureComponent<IProps & IStoreP
                 // Families must be unique within a schema - i.e. one family = one set of tables representing a dataset
                 if ("family" in table.metadata_json) {
                     const tableFamilyUID = `${table.schema_name}.${table.metadata_json.family}`
-                    if (arrayIncludes(tableFamilies, tableFamilyUID) === false) {
+                    if (tableFamilies.includes(tableFamilyUID) === false) {
                         tableFamilies.push(tableFamilyUID)
                         tablesActual.push(table)
                     }

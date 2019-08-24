@@ -9,11 +9,15 @@ import { connect } from "react-redux"
 import styled from "styled-components"
 import EalUI from "./EalUI"
 import "./FixedLayout.css"
-import { setLastPage, toggleSidebarState, toggleUserMenu } from "./redux/modules/app"
-import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser } from "./redux/modules/ealgis"
-import { eEalUIComponent, IAppModule, IConfig, ISnackbarsModule, IStore, IUser } from "./redux/modules/interfaces"
+import { setLastPage, toggleSidebarState, toggleUserMenu, eEalUIComponent } from "./redux/modules/app"
+import { fetchUserMapsColumnsDataColourAndSchemaInfo, logoutUser, IUser } from "./redux/modules/ealgis"
+import mainLogo from './assets/brand/ealgis_white_logo_transparent_background.png'
+import { IConfig } from "./redux/modules/interfaces"
 import { moveToGooglePlacesResult, toggleDebugMode } from "./redux/modules/map"
 import { iterate as iterateSnackbar } from "./redux/modules/snackbars"
+import { IModule as IAppModule } from './redux/modules/app'
+import { IModule as ISnackbarsModule } from './redux/modules/snackbars'
+import { IStore } from "./redux/modules/reducer";
 declare var Config: IConfig
 
 const muiTheme = getMuiTheme({
@@ -125,7 +129,7 @@ export class EalContainer extends React.Component<IStoreProps & IDispatchProps &
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <div style={{ backgroundColor: muiTheme.palette!.primary1Color, width: "100%", height: "100%" }}>
                         <LinearProgress mode="indeterminate" color={muiTheme.palette!.accent3Color} />
-                        <EALGISLogo src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background.png")} />
+                        <EALGISLogo src={mainLogo} />
                     </div>
                 </MuiThemeProvider>
             )

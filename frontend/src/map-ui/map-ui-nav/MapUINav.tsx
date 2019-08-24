@@ -14,12 +14,13 @@ import { ActionBookmarkBorder, ActionDelete, ActionHome, ActionLock, ActionLockO
 import { Tab, Tabs } from "material-ui/Tabs";
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
 import * as React from "react";
-import * as CopyToClipboard from "react-copy-to-clipboard";
+import CopyToClipboard from "react-copy-to-clipboard";
 import { Link } from "react-router";
 import styled from "styled-components";
-import { IMap, IMUIThemePalette } from "../../redux/modules/interfaces";
+import { IMUIThemePalette } from "../../redux/modules/interfaces";
 import DataInspector from "../data-inspector/DataInspector";
 import LayerUINav from "../layer-ui-nav/LayerUINavContainer";
+import { IMap } from "../../redux/modules/maps";
 
 const MapName = styled.h3`
     font-weight: normal;

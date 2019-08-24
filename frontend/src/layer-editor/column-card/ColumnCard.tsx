@@ -1,10 +1,10 @@
 import * as React from "react"
 import styled from "styled-components"
-import { ITable, IColumn } from "../../redux/modules/interfaces"
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from "material-ui/Card"
 import FlatButton from "material-ui/FlatButton"
 import IconButton from "material-ui/IconButton"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
+import { IColumn, ITable } from "../../redux/modules/ealgis";
 
 const StyledCard = styled(Card)`margin-bottom: 10px;`
 

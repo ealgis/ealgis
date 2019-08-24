@@ -7,7 +7,7 @@ import MapFormContainerWrapped from "./map-editor/map-form/MapFormContainer"
 import MapUINavContainerWrapped from "./map-ui/map-ui-nav/MapUINavContainer"
 import CreateMapSidebar from "./maps-browser/create-map/CreateMapSidebarContainer"
 import MapListContainerWrapped from "./maps-browser/map-list/MapListContainer"
-import { IStore } from "./redux/modules/interfaces"
+import { IStore } from "./redux/modules/reducer";
 
 export default (store: IStore) => {
     return (

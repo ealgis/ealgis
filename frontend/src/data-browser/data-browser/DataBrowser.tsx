@@ -5,12 +5,12 @@ import TextField from "material-ui/TextField"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
 import * as React from "react"
 import styled from "styled-components"
-import { eTableChooserLayout } from "../../redux/modules/databrowser"
-import { IColumn, IDataBrowserConfig, ISchemaInfo, ITable } from "../../redux/modules/interfaces"
+import { eTableChooserLayout, IDataBrowserConfig } from "../../redux/modules/databrowser"
 import DataColumnTable from "../data-column-table/DataColumnTableContainer"
 import DataSchemaGridContainer from "../data-schema-grid/DataSchemaGridContainer"
 import DataSchemaSelectContainer from "../data-schema-select/DataSchemaSelectContainer"
 import DataTableList from "../data-table-list/DataTableListContainer"
+import { ITable, IColumn, ISchemaInfo } from "../../redux/modules/ealgis";
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {

@@ -6,7 +6,8 @@ import IconButton from "material-ui/IconButton"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
 import { yellow500 } from "material-ui/styles/colors"
-import { ISchema, ITablesBySchemaAndFamily, ITableFamily, ITable } from "../../redux/modules/interfaces"
+import { ITablesBySchemaAndFamily, ITableFamily } from "../../redux/modules/databrowser";
+import { ITable } from "../../redux/modules/ealgis";
 
 const FlexboxContainer = styled.div`
     display: flex;

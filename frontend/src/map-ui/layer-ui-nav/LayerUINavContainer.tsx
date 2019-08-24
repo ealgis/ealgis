@@ -2,9 +2,11 @@ import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
 import { toggleModalState } from "../../redux/modules/app"
-import { IGeomInfo, ILayer, IMUITheme, IMUIThemePalette, IMap, IStore } from "../../redux/modules/interfaces"
-import { changeLayerVisibility, cloneMapLayer } from "../../redux/modules/maps"
+import { changeLayerVisibility, cloneMapLayer, ILayer, IMap } from "../../redux/modules/maps"
 import LayerUINav from "./LayerUINav"
+import { IGeomInfo } from "../../redux/modules/ealgis";
+import { IMUIThemePalette, IMUITheme } from "../../redux/modules/interfaces";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     // key: number

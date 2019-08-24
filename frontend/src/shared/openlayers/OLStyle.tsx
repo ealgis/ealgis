@@ -6,8 +6,8 @@ import olStyleFill from "ol/style/fill"
 import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
-import { ILayer, IOLFeatureProps, IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/interfaces"
-import { eLayerTypeOfData, eStylePattern } from "../../redux/modules/maps"
+import { eLayerTypeOfData, eStylePattern, ILayer, IOLStyleDefExpression } from "../../redux/modules/maps"
+import { IOLFeatureProps } from "../../redux/modules/datainspector";
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {

@@ -33,7 +33,7 @@ export class ColourScaleBar extends React.PureComponent<IProps, {}> {
                 {colourName}
                 <FlexboxContainer>
                     {colourScale.interpolated.map((value: RGB, key: number) => {
-                        const FlexboxColumn = FlexboxColumnBase.extend`
+                        const FlexboxColumn = styled(FlexboxColumnBase)`
                             background-color: rgba(${value.r * 255}, ${value.g * 255}, ${value.b * 255}, ${opacity});
                         `
                         return <FlexboxColumn key={key} />

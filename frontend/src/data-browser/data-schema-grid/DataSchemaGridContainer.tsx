@@ -1,8 +1,9 @@
 import { groupBy } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { ISchema, ISchemaInfo, IStore } from "../../redux/modules/interfaces"
 import DataSchemaGrid from "./DataSchemaGrid"
+import { ISchemaInfo, ISchema } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {
     handleClickSchema: Function

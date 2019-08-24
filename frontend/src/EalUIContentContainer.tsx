@@ -1,7 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import EalUIContent from "./EalUIContent"
-import { IStore, eEalUIComponent } from "./redux/modules/interfaces"
+import { eEalUIComponent } from "./redux/modules/app";
+import { IStore } from "./redux/modules/reducer";
 
 interface IProps {}
 

@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IMap, IStore } from "../../redux/modules/interfaces"
-import { mapUpsert } from "../../redux/modules/maps"
+import { mapUpsert, IMap } from "../../redux/modules/maps"
 import MapForm from "./MapForm"
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IMapFormValues {
     name: string

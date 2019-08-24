@@ -1,4 +1,3 @@
-import { entries as objectEntries, values as objectValues } from "core-js/library/fn/object"
 import * as dotProp from "dot-prop-immutable"
 import { xorBy } from "lodash-es"
 import { parse } from "mathjs"
@@ -7,22 +6,18 @@ import {
     loadColumns as loadColumnsToAppCache,
     loadTable as loadTableToAppCache,
     loadTables as loadTablesToAppCache,
+    IColumn,
+    ITable,
+    IGeomTable,
+    IColumnInfo,
+    ITableInfo,
 } from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import {
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
-    IColumn,
-    IColumnInfo,
-    IGeomTable,
-    IMap,
-    IStore,
-    ITable,
-    ITableInfo,
-} from "./interfaces"
+import { eEalUIComponent } from "./app";
+import { IStore } from "./reducer";
+import { eLayerValueExpressionMode, eLayerFilterExpressionMode, IMap } from "./maps";
 
 // Actions
 const START = "ealgis/databrowser/START"
@@ -58,13 +53,17 @@ export default function reducer(state = initialState, action: IAction) {
         case ADD_COLUMNS:
             return dotProp.set(state, "columns", action.columns)
         case SELECT_COLUMN:
-            const columns: Array<IColumn> = xorBy(
-                state.selectedColumns,
-                [action.column],
-                // @ts-ignore
-                (column: IColumn) => `${column.schema_name}.${column.id}`
-            )
-            return dotProp.set(state, "selectedColumns", columns)
+            if (action.column) {
+                const columns: Array<IColumn> = xorBy(
+                    state.selectedColumns,
+                    [action.column],
+                    // @ts-ignore
+                    (column: IColumn) => `${column.schema_name}.${column.id}`
+                )
+                return dotProp.set(state, "selectedColumns", columns)
+            } else {
+                return state;
+            }
         case DESELECT_COLUMN:
             return dotProp.set(state, "selectedColumns", removeColumnFromList(state.selectedColumns!, action.column!))
         default:
@@ -420,7 +419,7 @@ export function getFilterExpressionWithColumns(
 // @FIXME Assumes column names are unique within a schema (which works OK for Census data). There's no guarnatee that they are, though.
 function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo, geometry: IGeomTable) {
     const [schema_name, column_name] = column_schema_and_name.split(".")
-    const result = objectEntries(columninfo).find(
+    const result = Object.entries(columninfo).find(
         ([key, column]) =>
             column.name == column_name &&
             column.geometry_source_schema_name == geometry.schema_name &&
@@ -458,7 +457,7 @@ export function getTablesForMap(map: IMap, tableinfo: ITableInfo, columninfo: IC
         })
     }
 
-    return objectValues(tables)
+    return tables.values()
 }
 
 export function removeColumnFromList(columns: Array<IColumn>, column: IColumn) {

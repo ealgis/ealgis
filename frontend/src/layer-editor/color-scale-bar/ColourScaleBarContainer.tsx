@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore } from "../../redux/modules/interfaces"
 import { ColourScale } from "../../shared/openlayers/colour_scale"
 import ColourScaleBar from "./ColourScaleBar"
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     colourName: string

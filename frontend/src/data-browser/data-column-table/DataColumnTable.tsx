@@ -1,13 +1,14 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import IconButton from "material-ui/IconButton"
 import { yellow500 } from "material-ui/styles/colors"
 import { ActionInfo, ActionViewColumn, ToggleStar, ToggleStarBorder } from "material-ui/svg-icons"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import { Toolbar, ToolbarGroup, ToolbarTitle } from "material-ui/Toolbar"
 import * as React from "react"
-import * as CopyToClipboard from "react-copy-to-clipboard"
+import CopyToClipboard from "react-copy-to-clipboard"
 import styled from "styled-components"
-import { IColumn, IMUIThemePalette, ISchema, ITable, ITableColumns } from "../../redux/modules/interfaces"
+import { IMUIThemePalette } from "../../redux/modules/interfaces"
+import { ISchema, ITable, IColumn } from "../../redux/modules/ealgis";
+import { ITableColumns } from "../../redux/modules/databrowser";
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableIconButton extends React.Component<any, any> {
@@ -131,7 +132,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                             tooltip={"Favourite this table to easily find it again later"}
                             tooltipPosition={"bottom-left"}
                         >
-                            {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
+                            {favouriteTablesUIDs.includes(`${table.schema_name}.${table.id}`) ? (
                                 <ToggleStar color={yellow500} />
                             ) : (
                                 <ToggleStarBorder />
@@ -209,7 +210,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                             columnTypeAndKind in columns
                                                 ? `${columns[columnTypeAndKind].schema_name}.${columns[columnTypeAndKind].name}`
                                                 : ""
-                                        let bgColor = arrayIncludes(activeColumnsTypeAndKind, columnTypeAndKind)
+                                        let bgColor = activeColumnsTypeAndKind.includes(columnTypeAndKind)
                                             ? muiThemePalette.primary1Color
                                             : ""
 

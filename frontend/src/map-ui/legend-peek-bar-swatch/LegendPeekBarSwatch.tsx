@@ -1,6 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
-import { IOLStyleDef } from "../../redux/modules/interfaces"
+import { IOLStyleDef } from "../../redux/modules/maps";
 
 const FlexboxColumnBase = styled.div`
     height: 15px;
@@ -16,7 +16,7 @@ export interface IProps {
 export class LegendPeekBarSwatchNav extends React.Component<IProps, {}> {
     render() {
         const { styleDef, onMouseEnter, onMouseLeave } = this.props
-        const FlexboxColumn = FlexboxColumnBase.extend`
+        const FlexboxColumn = styled(FlexboxColumnBase)`
             background-color: rgb(${styleDef.rgb.join(",")});
         `
 

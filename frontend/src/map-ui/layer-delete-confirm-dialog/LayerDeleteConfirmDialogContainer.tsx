@@ -1,9 +1,9 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { toggleModalState } from "../../redux/modules/app"
-import { ILayer, IMap, IStore } from "../../redux/modules/interfaces"
-import { deleteMapLayer } from "../../redux/modules/maps"
+import { deleteMapLayer, ILayer, IMap } from "../../redux/modules/maps"
 import LayerDeleteConfirmDialog from "./LayerDeleteConfirmDialog"
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     modalId: string

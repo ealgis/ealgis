@@ -8,8 +8,10 @@ import { default as FullScreen } from "react-openlayers/dist/controls/full-scree
 import { Layers } from "react-openlayers/dist/layers/layers"
 import { default as Tile } from "react-openlayers/dist/layers/tile"
 import { Map } from "react-openlayers/dist/map"
-import { IConfig, ILayer, IMap, IPosition } from "../../redux/modules/interfaces"
+import { IConfig } from "../../redux/modules/interfaces"
 import LayerContainerWrapped from "../layer/LayerContainer"
+import { IMap, ILayer } from "../../redux/modules/maps";
+import { IPosition } from "../../redux/modules/map";
 declare var Config: IConfig
 
 export interface IProps {

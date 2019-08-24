@@ -1,8 +1,10 @@
 import { groupBy } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { ISchema, ISchemaInfo, ISelectedSchemas, IStore } from "../../redux/modules/interfaces"
 import DataSchemaSelect from "./DataSchemaSelect"
+import { ISchemaInfo, ISchema } from "../../redux/modules/ealgis";
+import { ISelectedSchemas } from "../../redux/modules/databrowser";
+import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {
     onChangeSchemaSelection: Function

@@ -4,7 +4,8 @@ import { Tab, Tabs } from "material-ui/Tabs"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
-import { ILayer, IMapsModule, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { IMUIThemePalette } from "../../redux/modules/interfaces";
+import { ILayer, IModule as IMapsModule } from "../../redux/modules/maps";
 
 const MapListContainer = styled.div`
     margin-top: 10px;

@@ -1,9 +1,10 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { setActiveContentComponent } from "../../redux/modules/app"
+import { setActiveContentComponent, eEalUIComponent } from "../../redux/modules/app"
 import { startBrowsing } from "../../redux/modules/databrowser"
-import { IStore, ITableInfo, eEalUIComponent } from "../../redux/modules/interfaces"
 import ExpressionPartItem from "./ExpressionPartItem"
+import { ITableInfo } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     componentId: eEalUIComponent

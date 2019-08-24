@@ -1,7 +1,7 @@
 import * as React from "react"
 import DataBrowser from "./data-browser/data-browser/DataBrowserContainer"
 import MapUIContainer from "./openlayers/map-ui/MapUIContainer"
-import { eEalUIComponent } from "./redux/modules/interfaces"
+import { eEalUIComponent } from "./redux/modules/app";
 
 export interface IProps {
     component: eEalUIComponent

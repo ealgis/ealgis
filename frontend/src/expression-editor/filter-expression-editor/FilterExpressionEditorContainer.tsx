@@ -3,22 +3,16 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { formValueSelector } from "redux-form"
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app"
-import { fetchResultForComponent, getFilterExpressionWithColumns, startBrowsing } from "../../redux/modules/databrowser"
+import { setActiveContentComponent, toggleModalState, eEalUIComponent } from "../../redux/modules/app"
+import { fetchResultForComponent, getFilterExpressionWithColumns, startBrowsing, IDataBrowserResult, IDataBrowserConfig } from "../../redux/modules/databrowser"
 import {
-    IColumnInfo,
-    IDataBrowserConfig,
-    IDataBrowserResult,
-    IGeomTable,
-    ILayer,
     IMUITheme,
     IMUIThemePalette,
-    IMap,
-    IStore,
-    eEalUIComponent,
-    eLayerFilterExpressionMode,
 } from "../../redux/modules/interfaces"
 import FilterExpressionEditor from "./FilterExpressionEditor"
+import { IMap, eLayerFilterExpressionMode, ILayer } from "../../redux/modules/maps";
+import { IGeomTable, IColumnInfo } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     onApply: Function

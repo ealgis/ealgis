@@ -5,7 +5,7 @@ import Subheader from "material-ui/Subheader"
 import { ActionOpenInNew } from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
-import { ISchema } from "../../redux/modules/interfaces"
+import { ISchema } from "../../redux/modules/ealgis";
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {

@@ -1,4 +1,3 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { GridList, GridTile } from "material-ui/GridList"
 import IconButton from "material-ui/IconButton"
 import { ListItem } from "material-ui/List"
@@ -6,7 +5,7 @@ import { yellow500 } from "material-ui/styles/colors"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
 import * as React from "react"
-import { ISchemaInfo, ITable } from "../../redux/modules/interfaces"
+import { ISchemaInfo, ITable } from "../../redux/modules/ealgis";
 
 // Silence "TS2339: Property 'onClick' does not exist'" warnings
 class ClickableGridTile extends React.Component<any, any> {
@@ -66,7 +65,7 @@ export class DataTableList extends React.PureComponent<IProps, {}> {
                                             tooltipPosition={"top-right"}
                                             onClick={() => onFavouriteTable(table)}
                                         >
-                                            {arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`) ? (
+                                            {favouriteTablesUIDs.includes(`${table.schema_name}.${table.id}`) ? (
                                                 <ToggleStar color={yellow500} />
                                             ) : (
                                                 <ToggleStarBorder />

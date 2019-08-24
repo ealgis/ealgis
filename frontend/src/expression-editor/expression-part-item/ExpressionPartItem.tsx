@@ -8,7 +8,7 @@ import ActionStars from "material-ui/svg-icons/action/stars"
 import ActionViewColumn from "material-ui/svg-icons/action/view-column"
 import AlertWarning from "material-ui/svg-icons/alert/warning"
 import * as React from "react"
-import { ITable, ITableInfo } from "../../redux/modules/interfaces"
+import { ITableInfo, ITable } from "../../redux/modules/ealgis";
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {

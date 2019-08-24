@@ -1,12 +1,12 @@
 import * as React from "react"
 import styled from "styled-components"
-import { ILayerQuerySummary } from "../../redux/modules/interfaces"
 
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/Table"
 import IconButton from "material-ui/IconButton"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 
 import { indigo900, grey100 } from "material-ui/styles/colors"
+import { ILayerQuerySummary } from "../../redux/modules/layerquerysummary";
 
 const FlexboxContainer = styled.div`
     display: -ms-flex;

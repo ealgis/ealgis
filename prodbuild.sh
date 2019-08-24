@@ -4,9 +4,7 @@
 mkdir -p nginx-prod/build/
 
 # build the frontend assets (this takes quite a while due to minification)
-docker-compose -f docker-compose-buildjs.yml build
-docker-compose -f docker-compose-buildjs.yml run frontend
-docker-compose -f docker-compose-buildjs.yml stop
+(cd frontend && yarn install && yarn build && cd build && tar czvf ../../build/frontend.tgz .)
 
 # build the django assets
 docker-compose -f docker-compose-buildpy.yml build
@@ -21,4 +19,3 @@ echo building prod nginx container
 
 echo building prod uwsgi container
 (cd django && docker build -t ealgis/uwsgi:latest .)
-rm django/ealgis/ealfront/templates/index.html

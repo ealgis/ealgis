@@ -79,7 +79,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
 else:
     DEBUG = True
     CORS_ORIGIN_WHITELIST = (
-        'localhost',
+        'http://localhost:3000',
     )
     ALLOWED_HOSTS = ["localhost"]
     STATICFILES_DIRS = [

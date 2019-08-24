@@ -3,10 +3,13 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import { formValueSelector } from "redux-form";
-import { setActiveContentComponent, toggleModalState } from "../../redux/modules/app";
-import { deselectColumn, fetchLiveResultForComponent, finishBrowsing, getValueExpressionWithColumns, removeColumnFromList, startBrowsing } from "../../redux/modules/databrowser";
-import { eEalUIComponent, eLayerValueExpressionMode, IColumn, IColumnInfo, IDataBrowserConfig, IDataBrowserResult, IGeomTable, ILayer, IMap, IMUITheme, IMUIThemePalette, IStore } from "../../redux/modules/interfaces";
+import { setActiveContentComponent, toggleModalState, eEalUIComponent } from "../../redux/modules/app";
+import { deselectColumn, fetchLiveResultForComponent, finishBrowsing, getValueExpressionWithColumns, removeColumnFromList, startBrowsing, IDataBrowserResult, IDataBrowserConfig } from "../../redux/modules/databrowser";
 import ValueExpressionEditor from "./ValueExpressionEditor";
+import { IMUIThemePalette, IMUITheme } from "../../redux/modules/interfaces";
+import { IMap, eLayerValueExpressionMode, ILayer } from "../../redux/modules/maps";
+import { IGeomTable, IColumnInfo, IColumn } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     onApply: Function

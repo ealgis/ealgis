@@ -1,5 +1,5 @@
 import "es6-promise/auto"
-import * as createRavenMiddleware from "raven-for-redux"
+import createRavenMiddleware from "raven-for-redux";
 import * as Raven from "raven-js"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
@@ -10,11 +10,12 @@ import { syncHistoryWithStore } from "react-router-redux"
 import { applyMiddleware, createStore, Store } from "redux"
 import { composeWithDevTools } from "redux-devtools-extension"
 import thunkMiddleware from "redux-thunk"
-import { IConfig, IStore } from "./redux/modules/interfaces"
-import reducers from "./redux/modules/reducer"
+import { IConfig } from "./redux/modules/interfaces"
+import reducers, { IStore } from "./redux/modules/reducer"
 import getRoutes from "./routes"
 import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
 import { EALGISApiClient } from "./shared/api/EALGISApiClient"
+import 'core-js'
 declare var Config: IConfig
 
 let Middleware: Array<any> = []

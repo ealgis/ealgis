@@ -1,12 +1,10 @@
 import * as React from "react"
 import styled from "styled-components"
 import { groupBy } from "lodash-es"
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 
 import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
-
-import { ISchemaInfo, ISchema } from "../../redux/modules/interfaces"
+import { ISchemaInfo, ISchema } from "../../redux/modules/ealgis";
 
 const SchemaChooserSelectFied = styled(SelectField)`
     top: 2px !important; /* Align horizontally with the TextField to our left */
@@ -42,7 +40,7 @@ export class DataSchemaSelect extends React.PureComponent<IProps, {}> {
                     <MenuItem
                         key={schema_family_name}
                         insetChildren={true}
-                        checked={arrayIncludes(selectedSchemas, `family.${schema_family_name}`)}
+                        checked={selectedSchemas.includes(`family.${schema_family_name}`)}
                         value={`family.${schema_family_name}`}
                         primaryText={schema_family_name}
                     />
@@ -53,7 +51,7 @@ export class DataSchemaSelect extends React.PureComponent<IProps, {}> {
                         <MenuItem
                             key={schema.name}
                             insetChildren={true}
-                            checked={arrayIncludes(selectedSchemas, `schema.${schema.name}`)}
+                            checked={selectedSchemas.includes(`schema.${schema.name}`)}
                             value={`schema.${schema.name}`}
                             primaryText={schema.name}
                         />

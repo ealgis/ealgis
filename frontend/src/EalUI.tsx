@@ -12,7 +12,10 @@ import { Link } from "react-router"
 import styled from "styled-components"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { NotApprovedDialog } from "./authentication/not-approved-dialog/NotApprovedDialog"
-import { IAppModule, IMUIThemePalette, ISnackbarsModule } from "./redux/modules/interfaces"
+import { IMUIThemePalette } from "./redux/modules/interfaces"
+import { IModule as IAppModule } from './redux/modules/app'
+import { IModule as ISnackbarsModule } from './redux/modules/snackbars'
+import header_bar from './assets/brand/ealgis_white_logo_transparent_background_header_bar.png';
 import GooglePlacesAutocomplete from "./shared/ui/google-places-autocomplete/GooglePlacesAutocomplete"
 
 const EALGISLogo = styled.img`
@@ -93,7 +96,7 @@ export class EalUI extends React.Component<IProps, {}> {
                     <AppBar
                         title={
                             <EALGISLogo
-                                src={require("base64-inline-loader!./assets/brand/ealgis_white_logo_transparent_background_header_bar.png")}
+                                src={header_bar}
                             />
                         }
                         onLeftIconButtonClick={onTapAppBarLeft}

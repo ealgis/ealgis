@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
-import { setActiveContentComponent } from "../../redux/modules/app"
+import { setActiveContentComponent, eEalUIComponent } from "../../redux/modules/app"
 import {
     fetchColumns,
     fetchTableByFamilyAndGeometry,
@@ -12,22 +12,13 @@ import {
     removeAllTables,
     searchTables,
     selectColumn,
-} from "../../redux/modules/databrowser"
-import { addToRecentTables, toggleFavouriteTables } from "../../redux/modules/ealgis"
-import {
-    eEalUIComponent,
-    IColumn,
     IDataBrowserConfig,
-    IGeomTable,
-    ILayer,
-    ISchema,
-    ISchemaInfo,
     ISelectedSchemas,
-    IStore,
-    ITable,
-    ITableInfo,
-} from "../../redux/modules/interfaces"
+} from "../../redux/modules/databrowser"
+import { addToRecentTables, toggleFavouriteTables, IGeomTable, ITable, IColumn, ITableInfo, ISchemaInfo, ISchema } from "../../redux/modules/ealgis"
 import DataBrowser from "./DataBrowser"
+import { IStore } from "../../redux/modules/reducer";
+import { ILayer } from "../../redux/modules/maps";
 
 interface IProps {
     params: IRouteProps

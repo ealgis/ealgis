@@ -8,7 +8,7 @@ import { Link } from "react-router";
 import { Field, reduxForm } from "redux-form";
 import { TextField } from "redux-form-material-ui";
 import styled from "styled-components";
-import { IMap } from "../../redux/modules/interfaces";
+import { IMap } from "../../redux/modules/maps";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}

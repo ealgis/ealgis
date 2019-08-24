@@ -11,9 +11,10 @@ import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
-import { ILayer, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { IMUIThemePalette } from "../../redux/modules/interfaces"
 import LayerDeleteConfirmDialog from "../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
 import LegendPeekBar from "../legend-peek-bar/LegendPeekBarContainer"
+import { ILayer } from "../../redux/modules/maps";
 
 const Description = styled.span`
     display: block;

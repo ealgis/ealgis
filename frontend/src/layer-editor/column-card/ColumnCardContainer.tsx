@@ -1,7 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IColumn, ISelectedColumn, IStore, ITable } from "../../redux/modules/interfaces"
 import ColumnCard from "./ColumnCard"
+import { ISelectedColumn, IColumn, ITable } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     columnStub: ISelectedColumn

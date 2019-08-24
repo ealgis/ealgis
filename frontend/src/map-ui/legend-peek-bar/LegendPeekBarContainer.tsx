@@ -1,9 +1,10 @@
 import { isEqual } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IOLStyleDef, IOLStyleDefExpression, IStore } from "../../redux/modules/interfaces"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
 import LegendPeekBar from "./LegendPeekBar"
+import { IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/maps";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     mapId: number

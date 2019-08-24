@@ -1,50 +1,5 @@
-export { eEalUIComponent, IModule as IAppModule } from "./app"
-export {
-    eTableChooserLayout,
-    IDataBrowserConfig,
-    IDataBrowserResult,
-    IModule as IDataBrowserModule,
-    ISelectedSchemas,
-    ITableColumns,
-    ITableFamily,
-    ITablesBySchemaAndFamily,
-} from "./databrowser"
-export { IFeature, IFeatureProps, IModule as IDataInspectorpModule, IOLFeature, IOLFeatureProps } from "./datainspector"
-export {
-    IColourDefs,
-    IColourInfo,
-    IColumn,
-    IColumnInfo,
-    IGeomInfo,
-    IGeomTable,
-    IModule as IEALGISModule,
-    ISchema,
-    ISchemaInfo,
-    ISelectedColumn,
-    ISelf,
-    ITable,
-    ITableInfo,
-    IUser,
-    IUserPartial,
-} from "./ealgis"
-export { IModule as ILayerFormModule } from "./layerform"
-export { ILayerQuerySummary, IModule as ILayerQuerySummaryModule } from "./layerquerysummary"
-export { IModule as ILegendsModule } from "./legends"
-export { IModule as IMapModule, IPosition } from "./map"
-export {
-    eLayerFilterExpressionMode,
-    eLayerValueExpressionMode,
-    ILayer,
-    IMap,
-    IMapPositionDefaults,
-    IModule as IMapsModule,
-    IOLStyleDef,
-    IOLStyleDefExpression,
-} from "./maps"
-export { IStore } from "./reducer"
-export { IModule as ISnackbarsModule, ISnackbarMessage } from "./snackbars"
+import { IMapPositionDefaults } from "./maps";
 
-import { IMapPositionDefaults } from "./maps"
 export interface IConfig {
     VERSION: string
     ENVIRONMENT: string

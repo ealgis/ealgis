@@ -1,7 +1,6 @@
 import "whatwg-fetch"
 import { IColourDefs } from "../../redux/modules/ealgis"
-import { ILayer, IOLStyleDef } from "../../redux/modules/interfaces"
-import { eLayerTypeOfData, eStylePattern } from "../../redux/modules/maps"
+import { eLayerTypeOfData, eStylePattern, IOLStyleDef, ILayer } from "../../redux/modules/maps"
 import { hsltorgb } from "../utils"
 import Matrix from "./Matrix"
 

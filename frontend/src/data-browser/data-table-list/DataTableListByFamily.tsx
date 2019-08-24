@@ -1,4 +1,3 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import IconButton from "material-ui/IconButton"
 import { ListItem } from "material-ui/List"
 import { yellow500 } from "material-ui/styles/colors"
@@ -6,7 +5,8 @@ import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
 import * as React from "react"
 import styled from "styled-components"
-import { ITable, ITableFamily } from "../../redux/modules/interfaces"
+import { ITableFamily } from "../../redux/modules/databrowser";
+import { ITable } from "../../redux/modules/ealgis";
 
 const FlexboxContainer = styled.div`
     display: flex;
@@ -38,7 +38,7 @@ export interface IProps {
     onFavouriteTable?: Function
 }
 
-const isFavourited = (table: ITable, favouriteTables: Array<string>) => arrayIncludes(favouriteTables, `${table.schema_name}.${table.id}`)
+const isFavourited = (table: ITable, favouriteTables: Array<string>) => favouriteTables.includes(`${table.schema_name}.${table.id}`)
 
 const getTableTitle = (table: ITable, tableFamily: ITableFamily) =>
     `${tableFamily["type"]} (${table["metadata_json"]["family"].toUpperCase()})`

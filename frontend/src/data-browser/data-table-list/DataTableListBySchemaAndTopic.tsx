@@ -1,10 +1,10 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { flattenDeep, uniq } from "lodash-es"
 import { List } from "material-ui/List"
 import Subheader from "material-ui/Subheader"
 import * as React from "react"
-import { ISchema, ITable, ITableFamily } from "../../redux/modules/interfaces"
 import DataTableListByFamily from "./DataTableListByFamily"
+import { ISchema, ITable } from "../../redux/modules/ealgis";
+import { ITableFamily } from "../../redux/modules/databrowser";
 
 export interface IProps {
     schemas: Array<ISchema>
@@ -18,7 +18,7 @@ export class DataTableListBySchemaAndTopic extends React.PureComponent<IProps, {
     getTablesForTopic(topic_name: string | null, tables: Array<ITable>) {
         if (topic_name !== null) {
             return tables.filter(
-                (table: ITable) => "topics" in table.metadata_json && arrayIncludes(table.metadata_json.topics, topic_name)
+                (table: ITable) => "topics" in table.metadata_json && table.metadata_json.topics.includes(topic_name)
             )
         } else {
             return tables

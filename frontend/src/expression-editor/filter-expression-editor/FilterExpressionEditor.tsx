@@ -10,8 +10,10 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-
 import { ActionCode, ActionSettings } from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
-import { IMUIThemePalette, eEalUIComponent, eLayerFilterExpressionMode } from "../../redux/modules/interfaces"
+import { IMUIThemePalette } from "../../redux/modules/interfaces"
 import ExpressionPartItemContainer from "../expression-part-item/ExpressionPartItemContainer"
+import { eLayerFilterExpressionMode } from "../../redux/modules/maps";
+import { eEalUIComponent } from "../../redux/modules/app";
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {

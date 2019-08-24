@@ -1,6 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IConfig } from "./interfaces"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
 declare var Config: IConfig
 
 // Actions

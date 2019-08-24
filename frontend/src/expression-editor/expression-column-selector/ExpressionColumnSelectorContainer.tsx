@@ -1,8 +1,10 @@
 import { groupBy } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
-import { eEalUIComponent, IColumn, ISchemaInfo, IStore, ITableInfo } from "../../redux/modules/interfaces"
 import ExpressionColumnSelector from "./ExpressionColumnSelector"
+import { eEalUIComponent } from "../../redux/modules/app";
+import { IColumn, ITableInfo, ISchemaInfo } from "../../redux/modules/ealgis";
+import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     componentId: eEalUIComponent

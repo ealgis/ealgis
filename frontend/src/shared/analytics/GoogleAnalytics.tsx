@@ -1,5 +1,6 @@
 import * as ReactGA from "react-ga"
-import { IConfig, IStore } from "../../redux/modules/interfaces"
+import { IConfig } from "../../redux/modules/interfaces"
+import { IStore } from "../../redux/modules/reducer";
 declare var Config: IConfig
 
 if ("GOOGLE_ANALYTICS_UA" in Config) {
@@ -52,7 +53,7 @@ const fireAnalyticsTracking = () => {
     gaTrack.pageview(window.location.pathname + window.location.search)
 }
 
-interface IAnalyticsMeta {
+export interface IAnalyticsMeta {
     category: string
     type?: string
     payload?: {
@@ -60,4 +61,4 @@ interface IAnalyticsMeta {
     }
 }
 
-export { AnalyticsMiddleware, fireAnalyticsTracking, IAnalyticsMeta }
+export { AnalyticsMiddleware, fireAnalyticsTracking }

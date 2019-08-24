@@ -1,4 +1,3 @@
-import { values as objectValues } from "core-js/library/fn/object";
 import { groupBy } from "lodash-es";
 import Divider from "material-ui/Divider";
 import IconButton from "material-ui/IconButton";
@@ -15,7 +14,6 @@ import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui
 import styled from "styled-components";
 import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
 import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
-import { IColourInfo, IGeomInfo, IGeomTable, IMUIThemePalette, ISelectedColumn } from "../../redux/modules/interfaces";
 import { eLayerTypeOfData } from "../../redux/modules/maps";
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
@@ -24,6 +22,8 @@ import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
 import ColumnCard from "../column-card/ColumnCardContainer";
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
 import { eVisibleComponent } from "./LayerFormContainer";
+import { ISelectedColumn, IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
+import { IMUIThemePalette } from "../../redux/modules/interfaces";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -481,7 +481,7 @@ const GeometryAndDataFields = (fields: any) => {
                 fullWidth={true}
                 onChange={(junk: object, newValue: object, previousValue: object) => fields.onFieldChange("type_of_data", newValue)}
             >
-                {objectValues(eLayerTypeOfData).map((value: string) => (
+                {Object.values(eLayerTypeOfData).map((value: string) => (
                     <MenuItem key={value} value={value} primaryText={capitaliseFirstLetter(value)} />
                 ))}
             </MyField>

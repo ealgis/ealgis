@@ -1,10 +1,12 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import muiThemeable from "material-ui/styles/muiThemeable"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IColumn, IColumnInfo, IMUITheme, IMUIThemePalette, ISchema, IStore, ITable, ITableColumns } from "../../redux/modules/interfaces"
+import { IMUIThemePalette, IMUITheme } from "../../redux/modules/interfaces"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import DataColumnTable from "./DataColumnTable"
+import { ITable, IColumn, IColumnInfo, ISchema } from "../../redux/modules/ealgis";
+import { ITableColumns } from "../../redux/modules/databrowser";
+import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {
     showColumnNames: boolean
@@ -61,11 +63,11 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IDisp
         for (let columnUID of selectedColumns) {
             let column: IColumn = columninfo[columnUID]
 
-            if (arrayIncludes(header, column["metadata_json"]["kind"]) == false) {
+            if (header.includes(column["metadata_json"]["kind"]) == false) {
                 header.push(column["metadata_json"]["kind"])
             }
 
-            if (arrayIncludes(rows, column["metadata_json"]["type"]) == false) {
+            if (rows.includes(column["metadata_json"]["type"]) == false) {
                 rows.push(column["metadata_json"]["type"])
             }
 
