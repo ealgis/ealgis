@@ -1,6 +1,6 @@
 # EAlGIS
 
-![Unemployment % in Perth, Australia](https://raw.github.com/ealgis/ealgis/next/doc/screenshots/template-easy-code.png "EAlGIS")
+![EAlGIS screenshot](https://raw.github.com/ealgis/ealgis/next/doc/screenshots/template-easy-code.png "EAlGIS")
 
 # Build status
 
