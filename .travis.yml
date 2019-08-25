@@ -1,5 +1,7 @@
 sudo: false
 language: python
+services:
+- docker
 python:
   - "3.7"
 install:
@@ -8,3 +10,5 @@ install:
 script:
 - (cd django && flake8)
 - (cd django && pytest)
+- docker-compose build
+- (cd frontend && yarn install && yarn build)
