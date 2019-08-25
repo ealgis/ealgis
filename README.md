@@ -138,7 +138,7 @@ Ensure the class variable name holds the value 'custom'. Python Social Auth sett
 # Get some data
 
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
-You may wish to start with the 2011 Australian Census: https://github.com/grahame/ealgis-aus-census-2011
+You may wish to start with the 2011 Australian Census: https://github.com/ealgis/ealgis-aus-census-2011
 
 When loading data, you might want to clone the loader module in the `data/uwsgi` directory
 of the EAlGIS checkout. The code will then be available in `/data` in your
