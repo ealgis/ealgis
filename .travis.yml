@@ -7,4 +7,4 @@ install:
 - pip3 install -r django/dev-requirements.txt
 script:
 - (cd django && flake8)
-- (cd django && django/ealgis)
+- (cd django && pytest)
