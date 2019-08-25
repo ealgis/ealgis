@@ -40,7 +40,7 @@ Then, fire up the frontend:
 
 > cd frontend  
 > yarn install  
-> yarn start
+> HTTPS=true yarn start
 
 # Django Setup
 
