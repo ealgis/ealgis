@@ -11,5 +11,5 @@ install:
 script:
 - (cd django && flake8)
 - (cd django && pytest)
-- docker-compose build
 - (cd frontend && yarn install && yarn build)
+- cp web-variables.env.tmpl web-variables.env && docker-compose build
