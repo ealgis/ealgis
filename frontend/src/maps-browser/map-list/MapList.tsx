@@ -28,7 +28,7 @@ const createMapCards = (maps: Array<Array<any>>, userId: number | null) =>
             <Card key={mapId} style={{ marginBottom: 10 }}>
                 <CardHeader
                     title={map.name}
-                    subtitle={userId !== null && map.owner_user_id == userId ? map.description : `By ${map.owner.username}`}
+                    subtitle={userId !== null && map.owner_user_id === userId ? map.description : `By ${map.owner.username}`}
                     titleStyle={{ fontWeight: "bold" }}
                 />
                 <CardText>{map.json.layers.map((layer: ILayer, idx: number) => layer.name).join(", ")}</CardText>
@@ -41,7 +41,7 @@ const createMapCards = (maps: Array<Array<any>>, userId: number | null) =>
 
 export class MapList extends React.Component<IProps, {}> {
     render() {
-        const { tabName, userId, maps, getMyMaps, getSharedMaps, getPublicMaps, muiThemePalette } = this.props
+        const { tabName, userId, getMyMaps, getSharedMaps, muiThemePalette } = this.props
 
         return (
             <div>

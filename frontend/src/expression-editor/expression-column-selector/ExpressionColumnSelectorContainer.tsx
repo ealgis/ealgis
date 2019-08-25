@@ -43,7 +43,7 @@ export class ExpressionColumnSelectorContainer extends React.PureComponent<IProp
 }
 
 const mapStateToProps = (state: IStore): IStoreProps => {
-    const { maps, ealgis, databrowser } = state
+    const { ealgis } = state
 
     return { tableinfo: ealgis.tableinfo, schemainfo: ealgis.schemainfo }
 }

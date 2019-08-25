@@ -1,5 +1,4 @@
 import * as React from "react"
-import { connect } from "react-redux"
 import LegendPeekBarSwatch from "./LegendPeekBarSwatch"
 import { isEqual } from "lodash-es"
 import { IOLStyleDef } from "../../redux/modules/maps";

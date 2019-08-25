@@ -247,7 +247,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, layerDefinition, geominfo } = this.props
+        const { layerDefinition, geominfo } = this.props
 
         // Each layer mounts this component anew, so store their initial layer form values.
         // e.g. For use in resetting the form state (Undo/Discard Changes)
@@ -274,7 +274,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
         }
 
         // We've changed the map or layer we're looking at
-        if (mapDefinition.id != nextProps.mapDefinition.id || layerId != nextProps.layerId) {
+        if (mapDefinition.id !== nextProps.mapDefinition.id || layerId !== nextProps.layerId) {
             return true
         }
 
@@ -284,7 +284,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
         }
 
         // We're saving/undoing changes or we've chnaged our dirty state
-        if (layerFormSubmitting != nextProps.layerFormSubmitting || isDirty != nextProps.isDirty) {
+        if (layerFormSubmitting !== nextProps.layerFormSubmitting || isDirty !== nextProps.isDirty) {
             return true
         }
 
@@ -313,7 +313,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
         }
 
         // We need to open or close the dirty form modal
-        if (dirtyFormModalOpen != nextProps.dirtyFormModalOpen) {
+        if (dirtyFormModalOpen !== nextProps.dirtyFormModalOpen) {
             return true
         }
         return false

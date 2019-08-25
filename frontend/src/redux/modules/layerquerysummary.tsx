@@ -54,7 +54,7 @@ export interface ILayerQuerySummary {
 // e.g. thunks, epics, et cetera
 export function fetch(mapId: number, layerHash: string) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get(`/api/0.1/maps/${mapId}/query_summary/`, dispatch, {
+        const { json } = await ealapi.get(`/api/0.1/maps/${mapId}/query_summary/`, dispatch, {
             layer: layerHash,
         })
         dispatch(load(json, layerHash))

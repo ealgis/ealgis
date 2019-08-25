@@ -43,10 +43,6 @@ const DataBrowserTitle = styled(ToolbarTitle)`
     padding-left: 10px;
 `
 
-const DataBrowserToolbar = styled(Toolbar)`
-    background-color: white !important;
-`
-
 const TableSearchTextField = styled(TextField)`
     /* margin-left: 15px !important; */
     top: -10px !important;
@@ -84,12 +80,11 @@ export interface IProps {
 
 export class DataBrowser extends React.PureComponent<IProps, {}> {
     showSchemas(selectedTables: any, selectedColumns: any) {
-        return selectedTables.length == 0 && selectedColumns.length == 0
+        return selectedTables.length === 0 && selectedColumns.length === 0
     }
 
     showTables(selectedTables: any, selectedColumns: any) {
-        const { dataTableSearchKeywords } = this.props
-        return selectedTables.length > 0 && selectedColumns.length == 0
+        return selectedTables.length > 0 && selectedColumns.length === 0
     }
 
     showTableSearchResults() {
@@ -104,9 +99,6 @@ export class DataBrowser extends React.PureComponent<IProps, {}> {
     render() {
         const {
             config,
-            mapId,
-            layerId,
-            mapNameURLSafe,
             dataTableSearchKeywords,
             recentTables,
             favouriteTables,

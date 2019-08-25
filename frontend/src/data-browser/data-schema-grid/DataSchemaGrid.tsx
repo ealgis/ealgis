@@ -1,29 +1,9 @@
-import { GridTile } from "material-ui/GridList"
 import IconButton from "material-ui/IconButton"
 import { List, ListItem } from "material-ui/List"
 import Subheader from "material-ui/Subheader"
 import { ActionOpenInNew } from "material-ui/svg-icons"
 import * as React from "react"
-import styled from "styled-components"
 import { ISchema } from "../../redux/modules/ealgis";
-
-// Silence "TS2339: Property 'onClick' does not exist'" warnings
-class ClickableGridTile extends React.Component<any, any> {
-    render() {
-        return <GridTile {...this.props} />
-    }
-}
-
-const DataSchemaGridTile = styled(ClickableGridTile)`
-    background-color: rgba(204, 204, 204, 0.65);
-    cursor: pointer;
-`
-
-const EALGISLogo = styled.img`
-    width: 45%;
-    display: block;
-    margin: 0 auto;
-`
 
 export interface IProps {
     schemasByFamily: {

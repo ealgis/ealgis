@@ -119,7 +119,10 @@ export class EalUI extends React.Component<IProps, {}> {
                                     </React.Fragment>
                                 )}
                                 <HeaderBarButton label="Maps" containerElement={<Link to={user !== null ? "/maps" : "/shared"} />} />
-                                <HeaderBarButton label="About" containerElement={<a href={"https://ealgis.org"} target="_blank" />} />
+                                <HeaderBarButton label="About" containerElement={
+                                    // eslint-disable-next-line jsx-a11y/anchor-has-content
+                                    <a href={"https://ealgis.org"} target="_blank" rel="noopener noreferrer" />
+                                } />
                                 {user === null && (
                                     <HeaderBarButton
                                         label={"Login/Register"}

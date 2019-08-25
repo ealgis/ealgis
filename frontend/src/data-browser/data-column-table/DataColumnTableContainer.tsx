@@ -63,11 +63,11 @@ export class DataColumnTableContainer extends React.PureComponent<IProps & IDisp
         for (let columnUID of selectedColumns) {
             let column: IColumn = columninfo[columnUID]
 
-            if (header.includes(column["metadata_json"]["kind"]) == false) {
+            if (header.includes(column["metadata_json"]["kind"]) === false) {
                 header.push(column["metadata_json"]["kind"])
             }
 
-            if (rows.includes(column["metadata_json"]["type"]) == false) {
+            if (rows.includes(column["metadata_json"]["type"]) === false) {
                 rows.push(column["metadata_json"]["type"])
             }
 

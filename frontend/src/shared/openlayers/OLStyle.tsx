@@ -79,9 +79,6 @@ function getErrorStylePattern() {
 function createDebugFeatures(feature: any) {
     if (feature.get("label") !== undefined) {
         // Tile centroid point
-        const stroke = new olStyleStroke({ color: "black", width: 2 })
-        const fill = new olStyleFill({ color: "red" })
-
         return new olStyleStyle({
             text: new olStyleText({
                 textAlign: "center",

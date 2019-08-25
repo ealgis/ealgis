@@ -19,10 +19,9 @@ import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
 import { capitaliseFirstLetter } from "../../shared/utils";
 import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
-import ColumnCard from "../column-card/ColumnCardContainer";
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
 import { eVisibleComponent } from "./LayerFormContainer";
-import { ISelectedColumn, IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
+import { IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
 import { IMUIThemePalette } from "../../redux/modules/interfaces";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
@@ -97,19 +96,6 @@ const FirstFlexboxColumn = styled.div`
 
 const SecondFlexboxColumn = styled.div`
     flex: 1;
-`
-
-const FauxFieldLabel = styled.h5`
-    font-size: 12px;
-    color: rgba(0, 0, 0, 0.3);
-    margin-bottom: 10px;
-    transform: scale(1) translate(0px, -4px);
-    transform-origin: left top 0px;
-`
-
-const FillOpacityPickerContainer = styled.div`
-    margin-bottom: 0px;
-    margin-top: 0px;
 `
 
 const FauxFieldLabelDescriptionHeading = styled.h4`
@@ -520,21 +506,6 @@ const GeometryAndDataFields = (fields: any) => {
                 disabled={fields["geometry"].input.value === ""}
                 style={{ width: "100%", marginTop: "15px", marginBottom: "10px" }}
             />
-            {/* <FieldArray
-                name="selectedColumns"
-                component={SelectedColumns}
-                onRemoveColumn={onRemoveColumn}
-            /> */}
-        </React.Fragment>
-    )
-}
-
-const SelectedColumns = ({ fields, meta: { error }, onRemoveColumn }: any) => {
-    return (
-        <React.Fragment>
-            {fields.getAll().map((column: ISelectedColumn, key: number) => {
-                return <ColumnCard key={key} columnStub={column} onRemoveColumn={onRemoveColumn} />
-            })}
         </React.Fragment>
     )
 }
@@ -578,7 +549,7 @@ class LayerForm extends React.Component<IProps, {}> {
     }
 
     componentWillMount() {
-        const { geominfo, colourinfo } = this.props
+        const { geominfo } = this.props
 
         this.geometryTables = []
         const grouped = groupBy(geominfo, (geom: any) => geom.schema_title)
@@ -599,7 +570,7 @@ class LayerForm extends React.Component<IProps, {}> {
     }
 
     render() {
-        const { error, handleSubmit, pristine, reset, submitting, change, initialValues }: any = this.props // from react-form
+        const { initialValues }: any = this.props // from react-form
         const {
             muiThemePalette,
             mapId,
@@ -610,20 +581,15 @@ class LayerForm extends React.Component<IProps, {}> {
             onFieldBlur,
             onFieldChange,
             colourinfo,
-            layerFillColourScheme,
             doFill,
             visibleComponent,
             onFormComplete,
             onResetForm,
-            dirtyFormModalOpen,
             onFitScaleToData,
-            layerFormSubmitting,
             isDirty,
-            onRemoveColumn,
             onApplyValueExpression,
             onApplyFilterExpression,
             onCloseExpressionEditor,
-            onCloseLayer,
         } = this.props
 
         let tabId = 0

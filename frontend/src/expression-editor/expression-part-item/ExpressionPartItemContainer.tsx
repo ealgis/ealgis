@@ -88,7 +88,7 @@ export class ExpressionPartItemContainer extends React.Component<IProps & IDispa
 }
 
 const mapStateToProps = (state: IStore): IStoreProps => {
-    const { maps, ealgis, databrowser } = state
+    const { ealgis } = state
 
     return { tableinfo: ealgis.tableinfo }
 }

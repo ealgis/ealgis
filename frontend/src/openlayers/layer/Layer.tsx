@@ -1,8 +1,6 @@
-import olFormatGeoJSON from "ol/format/geojson"
 import olFormatMVT from "ol/format/mvt"
 import olProj from "ol/proj"
 import olSourceVectorTile from "ol/source/vectortile"
-import olTileGrid from "ol/tilegrid"
 import TileGrid from "ol/tilegrid/tilegrid"
 import * as React from "react"
 import { default as VectorTile } from "react-openlayers/dist/layers/vector-tile"

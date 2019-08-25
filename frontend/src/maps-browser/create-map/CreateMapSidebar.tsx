@@ -12,11 +12,6 @@ const HugeCreateMapButton = styled(RaisedButton)`
     margin-top: 10px;
 `
 
-const HugeCreateMapIcon = styled(MapsLayers)`
-    width: 200% !important;
-    height: 200% !important;
-`
-
 export interface IProps {
     isApprovedUser: boolean
 }

@@ -37,7 +37,7 @@ export function pairwise(arr: Array<any>) {
 export function hsltorgb(h: any, s: any, l: any) {
     var r, g, b
 
-    if (s == 0) {
+    if (s === 0) {
         r = g = b = l // achromatic
     } else {
         var hue2rgb = function hue2rgb(p: any, q: any, t: any) {

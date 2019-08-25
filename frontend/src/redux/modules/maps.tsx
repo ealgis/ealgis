@@ -81,7 +81,7 @@ export default function reducer(state = initialState, action: IAction) {
             const selectedColumns: Array<ISelectedColumn> =
                 dotProp.get(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`) || []
 
-            if (action.selectedColumn && selectedColumns.includes(action.selectedColumn) == false) {
+            if (action.selectedColumn && selectedColumns.includes(action.selectedColumn) === false) {
                 return dotProp.set(state, `${action.mapId}.json.layers.${action.layerId}.selectedColumns`, [
                     ...selectedColumns,
                     action.selectedColumn,
@@ -601,7 +601,7 @@ export function duplicateMap(mapId: number) {
 export function removeMap(mapId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         return ealapi.delete("/api/0.1/maps/" + encodeURIComponent(mapId.toString()) + "/", dispatch).then((response: any) => {
-            if (response.status == 204) {
+            if (response.status === 204) {
                 dispatch(deleteMap(mapId))
                 dispatch(sendSnackbarNotification("Map deleted successfully"))
                 browserHistory.push("/maps")

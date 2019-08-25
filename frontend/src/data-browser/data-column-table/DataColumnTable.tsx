@@ -95,7 +95,6 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
             columns,
             header,
             rows,
-            selectedColumns,
             activeColumns,
             showTableInfo,
             favouriteTables,
@@ -167,7 +166,7 @@ export class DataColumnTable extends React.PureComponent<IProps, {}> {
                                 {"metadataUrls" in table["metadata_json"] &&
                                     table["metadata_json"]["metadataUrls"].map((obj: any, key: any) => (
                                         <MetadataURL key={key}>
-                                            <a href={obj["url"]} target="_blank">
+                                            <a href={obj["url"]} target="_blank" rel="noopener noreferrer">
                                                 {obj["name"]}
                                             </a>
                                         </MetadataURL>

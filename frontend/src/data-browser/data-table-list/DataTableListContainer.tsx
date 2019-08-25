@@ -24,7 +24,6 @@ export interface IDispatchProps {}
 export class DataTableListContainer extends React.PureComponent<IProps & IStoreProps & IDispatchProps, {}> {
     tablePartialsToFullTable(tables: Array<Partial<ITable>>, tableinfo: ITableInfo): Array<ITable> {
         const tablesActual: Array<ITable> = []
-        const tableinfoUIDs: Array<string> = Object.keys(tableinfo)
         const tableFamilies: Array<string> = []
 
         // Turn out partial table objects (id + schema_name) into
@@ -104,6 +103,6 @@ const mapStateToProps = (state: IStore): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): any => {}
 
-const DataTableListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, {})(DataTableListContainer)
+const DataTableListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(DataTableListContainer)
 
 export default DataTableListContainerWrapped

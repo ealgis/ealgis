@@ -108,17 +108,12 @@ export interface IProps {
 class ValueExpressionEditor extends React.Component<IProps, {}> {
     render() {
         const {
-            muiThemePalette,
-            mapId,
-            mapNameURLSafe,
-            layerId,
             expression,
             expressionCompiled,
             expressionMode,
             advancedModeModalOpen,
             onActivateDataBrowser,
             onRemoveColumn,
-            onFieldChange,
             onExpressionChange,
             onApplyAdvanced,
             onChangeExpressionMode,

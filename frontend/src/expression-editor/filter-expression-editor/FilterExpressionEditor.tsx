@@ -80,17 +80,12 @@ export interface IProps {
 class FilterExpressionEditor extends React.Component<IProps, {}> {
     render() {
         const {
-            muiThemePalette,
-            mapId,
-            mapNameURLSafe,
-            layerId,
             expression,
             expressionCompiled,
             expressionMode,
             advancedModeModalOpen,
             onFieldChange,
             onExpressionChange,
-            onApply,
             onApplyAdvanced,
             onChangeExpressionMode,
             onToggleAdvModeModalState,

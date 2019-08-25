@@ -68,7 +68,7 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, valueExpression, geometry, columninfo } = this.props
+        const { valueExpression, geometry, columninfo } = this.props
         const { expressionMode } = this.state
 
         const parsed: any = getValueExpressionWithColumns(valueExpression, expressionMode, columninfo, geometry)
@@ -78,7 +78,7 @@ export class ValueExpressionEditorContainer extends React.Component<
     }
 
     componentDidUpdate(prevProps: IProps & IStoreProps, prevState: IState) {
-        const { dataBrowserResult, onApply } = this.props
+        const { dataBrowserResult } = this.props
         const { expression } = this.state
 
         if (/*dataBrowserResult.valid && */ JSON.stringify(dataBrowserResult) !== JSON.stringify(prevProps.dataBrowserResult)) {

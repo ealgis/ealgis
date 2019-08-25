@@ -32,7 +32,7 @@ export interface IProps {
 
 export class LegendPeekBarNav extends React.Component<IProps, {}> {
     render() {
-        const { layerId, olStyleDef, handleMouseEnter, handleMouseLeave, labelText } = this.props
+        const { olStyleDef, handleMouseEnter, handleMouseLeave, labelText } = this.props
 
         return (
             <PeerBarContainer>

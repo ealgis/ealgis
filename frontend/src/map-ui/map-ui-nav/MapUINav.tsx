@@ -1,4 +1,3 @@
-import Checkbox from "material-ui/Checkbox";
 import Dialog from "material-ui/Dialog";
 import Divider from "material-ui/Divider";
 import FlatButton from "material-ui/FlatButton";
@@ -33,10 +32,6 @@ const TabContainer = styled.div`
 `
 
 const DownloadButton = styled(RaisedButton)`
-    margin: 12px !important;
-`
-
-const IncludeGeomCheckbox = styled(Checkbox)`
     margin: 12px !important;
 `
 

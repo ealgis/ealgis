@@ -324,7 +324,7 @@ export function fetchUserMapsColumnsDataColourAndSchemaInfo() {
 
 export function fetchUser() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/self", dispatch)
+        const { json } = await ealapi.get("/api/0.1/self", dispatch)
         dispatch(loadUser(json))
         return json
     }
@@ -383,7 +383,6 @@ export function fetchTablesIfUncached(tables: Array<Partial<ITable>>) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const missingTables: Array<Partial<ITable>> = []
         const tableinfo: ITableInfo = getState()["ealgis"]["tableinfo"]
-        const tableinfoUIDs: Array<string> = Object.keys(tables)
         for (var key in tables) {
             const table = tables[key]
             const tableUID: string = `${table.schema_name}.${table.id}`
@@ -393,7 +392,7 @@ export function fetchTablesIfUncached(tables: Array<Partial<ITable>>) {
         }
 
         if (missingTables.length > 0) {
-            const { response, json } = await ealapi.post("/api/0.1/tableinfo/fetch/", missingTables, dispatch)
+            const { json } = await ealapi.post("/api/0.1/tableinfo/fetch/", missingTables, dispatch)
             dispatch(loadTables(json["tables"]))
         }
     }
@@ -430,7 +429,7 @@ export function fetchColumnsForMaps() {
             }
         }
 
-        const { response, json } = await ealapi.post("/api/0.1/columninfo/by_schema/", columnNamesBySchema, dispatch)
+        const { json } = await ealapi.post("/api/0.1/columninfo/by_schema/", columnNamesBySchema, dispatch)
 
         dispatch(loadColumns(json["columns"]))
         dispatch(loadTables(json["tables"]))
@@ -439,13 +438,13 @@ export function fetchColumnsForMaps() {
 
 export function fetchGeomInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/datainfo/", dispatch)
+        const { json } = await ealapi.get("/api/0.1/datainfo/", dispatch)
         dispatch(loadGeom(json))
     }
 }
 export function fetchColourDefs() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/colours/", dispatch)
+        const { json } = await ealapi.get("/api/0.1/colours/", dispatch)
 
         let colourdefs: IColourDefs = {}
         let colourinfo: IColourInfo = {}
@@ -506,14 +505,14 @@ export function fetchColourDefs() {
 
 export function fetchSchemaInfo() {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/schemas/", dispatch)
+        const { json } = await ealapi.get("/api/0.1/schemas/", dispatch)
         dispatch(loadSchemas(json))
     }
 }
 
 export function fetchColumnInfo(column: ISelectedColumn) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get(`/api/0.1/columninfo/${column.id}/?schema=${column.schema}`, dispatch)
+        const { json } = await ealapi.get(`/api/0.1/columninfo/${column.id}/?schema=${column.schema}`, dispatch)
         dispatch(loadColumn(json["column"], json["schema"]))
         dispatch(loadTable(json["table"], json["schema"]))
     }

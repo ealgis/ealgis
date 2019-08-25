@@ -38,7 +38,7 @@ export interface IProps {
 
 export class MapForm extends React.Component<IProps, {}> {
     render() {
-        const { error, handleSubmit, pristine, reset, submitting, onSubmit, initialValues }: any = this.props // from react-form
+        const { error, handleSubmit, submitting, onSubmit }: any = this.props // from react-form
         const { mapDefinition } = this.props
 
         let closeLink =

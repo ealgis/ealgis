@@ -93,7 +93,7 @@ export function loadRecords(mapId: number, features: Array<IOLFeature>) {
                 const featureProps: IOLFeatureProps = olFeature.featureProps
                 const layer = map.json.layers[olFeature.layerId]
 
-                const { response, json } = await ealapi.get(
+                const { json } = await ealapi.get(
                     `/api/0.1/datainfo/${layer.geometry}/?schema=${layer.schema}&gid=${featureProps.gid}`,
                     dispatch
                 )

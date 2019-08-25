@@ -286,7 +286,7 @@ export function fetchTableByFamilyAndGeometry(table: ITable, geometry: IGeomTabl
 
 export function fetchColumns(schema_name: string, tableinfo_id: number) {
     return async (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
-        const { response, json } = await ealapi.get("/api/0.1/columninfo/fetch_for_table/", dispatch, {
+        const { json } = await ealapi.get("/api/0.1/columninfo/fetch_for_table/", dispatch, {
             schema: schema_name,
             tableinfo_id: tableinfo_id,
         })
@@ -418,18 +418,18 @@ export function getFilterExpressionWithColumns(
 
 // @FIXME Assumes column names are unique within a schema (which works OK for Census data). There's no guarnatee that they are, though.
 function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo, geometry: IGeomTable) {
-    const [schema_name, column_name] = column_schema_and_name.split(".")
+    const [, column_name] = column_schema_and_name.split(".")
     const result = Object.entries(columninfo).find(
         ([key, column]) =>
-            column.name == column_name &&
-            column.geometry_source_schema_name == geometry.schema_name &&
-            column.geometry_source_id == geometry._id
+            column.name === column_name &&
+            column.geometry_source_schema_name === geometry.schema_name &&
+            column.geometry_source_id === geometry._id
     )
 
     if (result === undefined) {
         return undefined
     } else {
-        const [column_uid, column] = result
+        const [, column] = result
         return column
     }
 }

@@ -69,7 +69,7 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
     }
 
     componentWillMount() {
-        const { mapDefinition, layerId, geometry, filterExpression, filterExpressionMode, columninfo } = this.props
+        const { geometry, filterExpression, columninfo } = this.props
         const { expressionMode } = this.state
 
         const parsed: any = getFilterExpressionWithColumns(filterExpression, expressionMode, columninfo, geometry)
@@ -117,7 +117,6 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
     }
 
     compileExpression() {
-        const { valueExpression } = this.props
         const { expression } = this.state
         let expr: string = ""
 
@@ -193,7 +192,7 @@ export class FilterExpressionEditorContainer extends React.PureComponent<
 }
 
 const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
-    const { app, maps, ealgis, databrowser } = state
+    const { app, maps, ealgis } = state
     const layerFormValues = formValueSelector("layerForm")
     const layer: ILayer = maps[ownProps.params.mapId].json.layers[ownProps.params.layerId]
 
