@@ -29,11 +29,18 @@ EAlGIS offers:
 
 # Installation
 
-EAlGIS is intended to be run within docker.
+EAlGIS is intended to be run within [Docker](https://docker.com).
+For development, you will also need [Yarn](https://yarnpkg.com/) installed.
 
-To get started:
+To get started, fire up the backend:
 
 > docker-compose up
+
+Then, fire up the frontend:
+
+> cd frontend  
+> yarn install  
+> yarn start
 
 # Django Setup
 
