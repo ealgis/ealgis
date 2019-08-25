@@ -4,7 +4,7 @@
 
 # Build status
 
-[![Build Status](https://travis-ci.org/ealgis/ealgis.svg?branch=master)](https://travis-ci.org/ealgis/ealgis)
+[![Build Status](https://travis-ci.org/ealgis/ealgis.svg?branch=next)](https://travis-ci.org/ealgis/ealgis)
 
 # Interactive Data Analysis
 
