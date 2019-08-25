@@ -17,4 +17,4 @@ ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
 ADD build/frontend.tgz /frontend/
-ADD build/django.tgz /frontend/
+ADD build/django.tgz /frontend/static/
