@@ -25,14 +25,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
-  frontend:
-    build: frontend/
-    command: webpack
-    volumes:
-      - ./frontend:/frontend:delegated
-      - ./nginx-dev/nginx:/nginx
-    ports:
-      - "127.0.0.1:35729:35729"
   redis:
     image: redis:5-alpine
   web:
@@ -40,7 +32,6 @@ services:
     command: runserver
     volumes:
       - ./django/:/app:delegated
-      - ./frontend:/frontend:delegated
     ports:
       - "127.0.0.1:8000:8000"
     environment:
@@ -61,18 +52,3 @@ services:
       - db
       - datastore
       - redis
-      - frontend
-  nginx-dev:
-    build: nginx-dev/
-    volumes:
-      - ./nginx-dev:/app
-      - ./nginx-dev/web:/var/www/html
-      - ./frontend:/frontend:delegated
-    depends_on:
-      - web
-    ports:
-      - "127.0.0.1:443:443"
-    environment:
-      - HTTPS_ENABLED=TRUE
-      - SERVER_NAME=localhost
-      - DJANGO_LOCATION=web:8000
