@@ -1,10 +1,10 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { eTableChooserLayout } from "../../redux/modules/databrowser"
+import { ISchemaInfo, ITable, ITableInfo } from "../../redux/modules/ealgis"
+import { IStore } from "../../redux/modules/reducer"
 import DataTableList from "./DataTableList"
 import DataTableListBySchemaAndTopic from "./DataTableListBySchemaAndTopic"
-import { ITable, ISchemaInfo, ITableInfo } from "../../redux/modules/ealgis";
-import { IStore } from "../../redux/modules/reducer";
 
 interface IProps {
     tables: Array<Partial<ITable>>
@@ -101,8 +101,13 @@ const mapStateToProps = (state: IStore): IStoreProps => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function): any => {}
+const mapDispatchToProps = (dispatch: Function): any => {
+    return {}
+}
 
-const DataTableListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(DataTableListContainer)
+const DataTableListContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+    mapStateToProps,
+    mapDispatchToProps
+)(DataTableListContainer)
 
 export default DataTableListContainerWrapped
