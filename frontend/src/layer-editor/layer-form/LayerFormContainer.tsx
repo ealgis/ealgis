@@ -307,7 +307,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 []
             )
 
-            if (!isEqual(diff.values(), ["olStyle"])) {
+            if (!isEqual(Object.values(diff), ["olStyle"])) {
                 return true
             }
         }

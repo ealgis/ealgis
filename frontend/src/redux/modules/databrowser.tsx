@@ -457,7 +457,7 @@ export function getTablesForMap(map: IMap, tableinfo: ITableInfo, columninfo: IC
         })
     }
 
-    return tables.values()
+    return Object.values(tables)
 }
 
 export function removeColumnFromList(columns: Array<IColumn>, column: IColumn) {
