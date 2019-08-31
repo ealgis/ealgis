@@ -9,7 +9,7 @@ from geoalchemy2.elements import WKBElement
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -128,7 +128,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.profile
 
-    @list_route(methods=['put'])
+    @action(detail=False, methods=['put'])
     def recent_tables(self, request, format=None):
         # Add our new tables to the start of the list of recent
         # tables that the user has interacted with.
@@ -161,7 +161,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route(methods=['put'])
+    @action(detail=False, methods=['put'])
     def favourite_tables(self, request, format=None):
         if "tables" in request.data and isinstance(request.data["tables"], list):
             profile = self.get_queryset()
@@ -226,13 +226,13 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
+    @action(detail=False, methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
     def all(self, request, format=None):
         maps = self.get_queryset()
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
+    @action(detail=False, methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
     def shared(self, request, format=None):
         maps = None
         if isinstance(request.user, AnonymousUser):
@@ -244,7 +244,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         serializer = MapDefinitionSerializer(maps, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
+    @action(detail=False, methods=['get'], permission_classes=(AllowAnyIfPublicSite,))
     def public(self, request, format=None):
         maps = None
         if isinstance(request.user, AnonymousUser):
@@ -275,7 +275,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['put'])
+    @action(detail=True, methods=['put'])
     def addLayer(self, request, pk=None, format=None):
         map = self.get_object()
 
@@ -302,7 +302,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['put'])
+    @action(detail=True, methods=['put'])
     def updateLayer(self, request, pk=None, format=None):
         map = self.get_object()
         layerId = int(request.data["layerId"])
@@ -325,7 +325,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @detail_route(methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanViewOrCloneMap,))
+    @action(detail=True, methods=['put'], permission_classes=(IsAuthenticatedAndApproved, CanViewOrCloneMap,))
     def clone(self, request, pk=None, format=None):
         map = self.get_object()
 
@@ -341,7 +341,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(map)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @detail_route(methods=['get'], permission_classes=(IsAuthenticatedAndApproved, IsMapOwner,))
+    @action(detail=True, methods=['get'], permission_classes=(IsAuthenticatedAndApproved, IsMapOwner,))
     def query_summary(self, request, pk=None, format=None):
         map = self.get_object()
         qp = request.query_params
@@ -371,11 +371,11 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         response['Cache-Control'] = 'no-cache'
         return response
 
-    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
+    @action(detail=True, methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def export_csv(self, request, pk=None, format=None):
         return self._handle_export_csv(request)
 
-    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
+    @action(detail=True, methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def export_csv_viewport(self, request, pk=None, format=None):
         ne = list(map(float, request.query_params.get("ne", None).split(',')))
         sw = list(map(float, request.query_params.get("sw", None).split(',')))
@@ -384,7 +384,7 @@ class MapDefinitionViewSet(viewsets.ModelViewSet):
         suffix = "%f_%f_%f_%f" % (ne[0], ne[1], sw[0], sw[1])
         return self._handle_export_csv(request, bounds=(ne, sw), suffix=suffix)
 
-    @detail_route(methods=['get'], permission_classes=(CanViewOrCloneMap,))
+    @action(detail=True, methods=['get'], permission_classes=(CanViewOrCloneMap,))
     def tile(self, request, pk=None, format=None):
         map = self.get_object()
         layer_hash = request.query_params.get("layer", None)
@@ -524,7 +524,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             raise NotFound()
         return Response(tables)
 
-    @list_route(methods=['post'])
+    @action(detail=False, methods=['post'])
     def fetch(self, request, format=None):
         tables = {}
         if isinstance(request.data, list) and len(request.data) > 0:
@@ -542,7 +542,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         return Response({"tables": tables})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def fetch_table_for_geometry(self, request, format=None):
         schema_name = request.query_params.get('schema', None)
         table_family = request.query_params.get('table_family', None)
@@ -561,7 +561,7 @@ class TableInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         return Response({"table": tmp})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def search(self, request, format=None):
         def getSchemasToQuery(schemas, schema_families):
             schemaNames = []
@@ -697,7 +697,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 "schema": schema_name,
             })
 
-    @list_route(methods=['post'])
+    @action(detail=False, methods=['post'])
     def by_schema(self, request, format=None):
         columnsByUID = {}
         tablesByUID = {}
@@ -724,7 +724,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         return Response({"columns": columnsByUID, "tables": tablesByUID})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def fetch_for_table(self, request, format=None):
         schema_name = request.query_params.get('schema', None)
         tableinfo_id = request.query_params.get('tableinfo_id', None)
@@ -767,7 +767,7 @@ class ColumnInfoViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             raise NotFound()
         return Response(response)
 
-    @detail_route(methods=['get'])
+    @action(detail=True, methods=['get'])
     def summary_stats(self, request, pk=None, format=None):
         id = pk
         schema_name = request.query_params.get('schema', None)
