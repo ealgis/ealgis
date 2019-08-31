@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 function postgres_ready(){
 python << END
