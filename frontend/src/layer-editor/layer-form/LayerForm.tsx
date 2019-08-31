@@ -14,6 +14,8 @@ import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui
 import styled from "styled-components";
 import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
 import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
+import { IColourInfo, IGeomInfo, IGeomTable } from "../../redux/modules/ealgis";
+import { IMUIThemePalette } from "../../redux/modules/interfaces";
 import { eLayerTypeOfData } from "../../redux/modules/maps";
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
@@ -21,8 +23,6 @@ import { capitaliseFirstLetter } from "../../shared/utils";
 import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
 import { eVisibleComponent } from "./LayerFormContainer";
-import { IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
-import { IMUIThemePalette } from "../../redux/modules/interfaces";
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}

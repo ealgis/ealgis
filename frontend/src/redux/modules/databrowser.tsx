@@ -2,22 +2,22 @@ import * as dotProp from "dot-prop-immutable"
 import { xorBy } from "lodash-es"
 import { parse } from "mathjs"
 import {
+    IColumn,
+    IColumnInfo,
     IGeomInfo,
+    IGeomTable,
+    ITable,
+    ITableInfo,
     loadColumns as loadColumnsToAppCache,
     loadTable as loadTableToAppCache,
     loadTables as loadTablesToAppCache,
-    IColumn,
-    ITable,
-    IGeomTable,
-    IColumnInfo,
-    ITableInfo,
 } from "../../redux/modules/ealgis"
 import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
 import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
-import { eEalUIComponent } from "./app";
-import { IStore } from "./reducer";
-import { eLayerValueExpressionMode, eLayerFilterExpressionMode, IMap } from "./maps";
+import { eEalUIComponent } from "./app"
+import { eLayerFilterExpressionMode, eLayerValueExpressionMode, IMap } from "./maps"
+import { IStore } from "./reducer"
 
 // Actions
 const START = "ealgis/databrowser/START"
@@ -62,7 +62,7 @@ export default function reducer(state = initialState, action: IAction) {
                 )
                 return dotProp.set(state, "selectedColumns", columns)
             } else {
-                return state;
+                return state
             }
         case DESELECT_COLUMN:
             return dotProp.set(state, "selectedColumns", removeColumnFromList(state.selectedColumns!, action.column!))
@@ -434,7 +434,7 @@ function getColumnByName(column_schema_and_name: string, columninfo: IColumnInfo
     }
 }
 
-export function getTablesForMap(map: IMap, tableinfo: ITableInfo, columninfo: IColumnInfo, geominfo: IGeomInfo) {
+export function getTablesForMap(map: IMap, tableinfo: ITableInfo, columninfo: IColumnInfo, geominfo: IGeomInfo): ITable[] {
     let tables: any = {}
 
     for (let layer of map["json"]["layers"]) {

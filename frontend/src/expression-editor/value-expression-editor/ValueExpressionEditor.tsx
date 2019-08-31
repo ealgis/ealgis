@@ -4,15 +4,15 @@ import FlatButton from "material-ui/FlatButton"
 import { List, ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
+import { ActionSettings } from "material-ui/svg-icons"
 import TextField from "material-ui/TextField"
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from "material-ui/Toolbar"
-import { ActionSettings } from "material-ui/svg-icons"
 import * as React from "react"
 import styled from "styled-components"
+import { eEalUIComponent } from "../../redux/modules/app"
 import { IMUIThemePalette } from "../../redux/modules/interfaces"
+import { eLayerValueExpressionMode } from "../../redux/modules/maps"
 import ExpressionColumnSelectorContainer from "../expression-column-selector/ExpressionColumnSelectorContainer"
-import { eLayerValueExpressionMode } from "../../redux/modules/maps";
-import { eEalUIComponent } from "../../redux/modules/app";
 
 // Silence "TS2339: Property 'onBlur' does not exist'" warnings
 class BlurableTextField extends React.Component<any, any> {
