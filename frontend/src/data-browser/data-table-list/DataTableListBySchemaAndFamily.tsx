@@ -1,13 +1,12 @@
-import * as React from "react"
-import styled from "styled-components"
-import { includes as arrayIncludes } from "core-js/library/fn/array"
-import { List, ListItem } from "material-ui/List"
 import IconButton from "material-ui/IconButton"
+import { List, ListItem } from "material-ui/List"
+import { yellow500 } from "material-ui/styles/colors"
 import ToggleStar from "material-ui/svg-icons/toggle/star"
 import ToggleStarBorder from "material-ui/svg-icons/toggle/star-border"
-import { yellow500 } from "material-ui/styles/colors"
-import { ITablesBySchemaAndFamily, ITableFamily } from "../../redux/modules/databrowser";
-import { ITable } from "../../redux/modules/ealgis";
+import * as React from "react"
+import styled from "styled-components"
+import { ITableFamily, ITablesBySchemaAndFamily } from "../../redux/modules/databrowser"
+import { ITable } from "../../redux/modules/ealgis"
 
 const FlexboxContainer = styled.div`
     display: flex;
@@ -39,8 +38,7 @@ export interface IProps {
     onFavouriteTable?: Function
 }
 
-const isFavourited = (table: ITable, favouriteTablesUIDs: Array<string>) =>
-    arrayIncludes(favouriteTablesUIDs, `${table.schema_name}.${table.id}`)
+const isFavourited = (table: ITable, favouriteTablesUIDs: Array<string>) => favouriteTablesUIDs.includes(`${table.schema_name}.${table.id}`)
 
 const getTableTitle = (table: ITable, tableFamily: ITableFamily) =>
     `${tableFamily["type"]} (${table["metadata_json"]["family"].toUpperCase()})`
