@@ -17,16 +17,16 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 
-# Need to set base_name because Reasons
-# http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)
+# Need to set basename because Reasons
+# http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `basename`)
 # http://stackoverflow.com/questions/22083090/what-base-name-parameter-do-i-need-in-my-route-to-make-this-django-api-work
-router.register(r'profile', ProfileViewSet, base_name='Profile')
-router.register(r'maps', MapDefinitionViewSet, base_name='MapDefinition')
-router.register(r'colours', ColoursViewset, base_name='colours')
-router.register(r'schemas', SchemasViewSet, base_name='schemas')
-router.register(r'tableinfo', TableInfoViewSet, base_name='tableinfo')
-router.register(r'datainfo', DataInfoViewSet, base_name='datainfo')
-router.register(r'columninfo', ColumnInfoViewSet, base_name='columninfo')
+router.register(r'profile', ProfileViewSet, basename='Profile')
+router.register(r'maps', MapDefinitionViewSet, basename='MapDefinition')
+router.register(r'colours', ColoursViewset, basename='colours')
+router.register(r'schemas', SchemasViewSet, basename='schemas')
+router.register(r'tableinfo', TableInfoViewSet, basename='tableinfo')
+router.register(r'datainfo', DataInfoViewSet, basename='datainfo')
+router.register(r'columninfo', ColumnInfoViewSet, basename='columninfo')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
