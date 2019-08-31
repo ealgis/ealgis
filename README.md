@@ -40,7 +40,7 @@ Then, fire up the frontend:
 
 > cd frontend  
 > yarn install  
-> HTTPS=true yarn start
+> yarn start
 
 # Django Setup
 
@@ -51,13 +51,13 @@ Assuming you're configuring Google as a backend for auth:
 Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/latest/backends/google.html) and [Google - Using OAuth 2.0 to Access Google APIs](https://developers.google.com/identity/protocols/OAuth2?csw=1#Registering).
 
 -   Create a Web application OAuth 2 Client in the Google API's Console
-    -   Add `http://localhost:8000` as an **Authorised JavaScript origin**
-    -   Add `http://localhost:8000/complete/google-oauth2/` as an **Authorised redirect URI**
+    -   Add `https://localhost:3000` as an **Authorised JavaScript origin**
+    -   Add `https://localhost:3000/complete/google-oauth2/` as an **Authorised redirect URI**
     -   Enable the Google+ API
 -   Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
 -   Add the resulting Client Id and Secret to `django/web-variables.env`
 -   Nuke and restart your Docker containers
--   Navigate to `http://localhost:8000/`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `http://localhost:8000/` with your username displayed on the app.
+-   Navigate to `https://localhost:3000`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `https://localhost:3000` with your username displayed on the app.
 
 Now you're up and running!
 
@@ -83,7 +83,7 @@ user.profile.is_approved = True
 user.profile.save()
 ```
 
-Now you should be able to navigate to the Django admin backend at `http://localhost:8000/admin/`!
+Now you should be able to navigate to the Django admin backend at `https://localhost:3000/admin/`!
 
 # Choosing a basemap
 
@@ -126,10 +126,10 @@ class CustomOAuth2(BaseOAuth2):
 ```
 
 Ensure the class variable name holds the value 'custom'. Python Social Auth settings variables for authentication providers are based on the provider name. EALGIS will recognise your provider if you name it 'custom'.
- 
+
 2.  Use Docker volumes to inject the file into the `web` container at `/app/ealgis/ealauth/backends.py`
 
-3.  To validate that your provider is available check the output of `https://localhost/api/0.1/config` for
+3.  To validate that your provider is available check the output of `https://localhost:3000/api/0.1/config` for
 
 ```json
 "CUSTOM_OAUTH2" : {"name": "myprovidername", "title": "Our Custom Provider"}
@@ -138,7 +138,7 @@ Ensure the class variable name holds the value 'custom'. Python Social Auth sett
 # Get some data
 
 However, you won't have any data. You'll need to load one or more datasets into EAlGIS.
-You may wish to start with the 2011 Australian Census: https://github.com/ealgis/ealgis-aus-census-2011
+You may wish to start with the 2016 Australian Census: https://github.com/ealgis/aus-census-2016
 
 When loading data, you might want to clone the loader module in the `data/uwsgi` directory
 of the EAlGIS checkout. The code will then be available in `/data` in your
