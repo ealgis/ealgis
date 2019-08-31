@@ -34,14 +34,12 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 X_FRAME_OPTIONS = "DENY"
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ORIGIN_WHITELIST = (get_env("CORS_DOMAIN"),)
+ALLOWED_HOSTS = ["localhost", get_env("CORS_DOMAIN")]
 
 if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 100  # Should be half our max number of PostgreSQL connections
-    CORS_ORIGIN_WHITELIST = (
-        get_env("CORS_DOMAIN"),
-    )
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -66,7 +64,6 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
             },
         },
     }
-    ALLOWED_HOSTS = ["localhost", get_env("CORS_DOMAIN")]
     STATIC_ROOT = "/build/static"
 
     RAVEN_CONFIG = {
@@ -78,10 +75,6 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     TEMPLATES_DIRS = []
 else:
     DEBUG = True
-    CORS_ORIGIN_WHITELIST = (
-        'http://localhost:3000',
-    )
-    ALLOWED_HOSTS = ["localhost"]
     STATICFILES_DIRS = [
         '/frontend/dist/',
     ]
