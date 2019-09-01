@@ -1,5 +1,4 @@
-#
-FROM nginx:latest
+FROM nginx:stable-alpine
 MAINTAINER Grahame Bowland <grahame@oreamnos.com.au>
 
 RUN rm -rf /etc/nginx
