@@ -18,3 +18,4 @@ log/
 nginx-prod/build/
 node_modules/
 web-variables.env
+notes-*.md
