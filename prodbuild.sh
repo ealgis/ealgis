@@ -19,3 +19,6 @@ echo building prod nginx container
 
 echo building prod uwsgi container
 (cd django && docker build -t ealgis/uwsgi:latest .)
+
+# remove build artefact
+rm ealgis/ealfront/templates/index.html
