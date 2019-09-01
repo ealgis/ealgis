@@ -1,6 +1,6 @@
 {
     "name": "ealgis",
-    "version": "2.1.1.3",
+    "version": "2.1.1.4",
     "description": "ealgis",
     "private": true,
     "dependencies": {

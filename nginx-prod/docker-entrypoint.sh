@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # wait for a given host:port to become available
 #
