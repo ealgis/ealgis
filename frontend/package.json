@@ -45,7 +45,7 @@
         "react-color": "2.14.1",
         "react-copy-to-clipboard": "~5.0.0",
         "react-dom": "^16.3.2",
-        "react-ga": "2.4.1",
+        "react-ga": "^2.6.0",
         "react-google-maps-loader": "4.2.0",
         "react-openlayers": "https://github.com/ealgis/react-openlayers.git#0.2.61",
         "react-redux": "~5.0.5",

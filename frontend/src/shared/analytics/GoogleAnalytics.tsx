@@ -1,6 +1,6 @@
 import * as ReactGA from "react-ga"
 import { IConfig } from "../../redux/modules/interfaces"
-import { IStore } from "../../redux/modules/reducer";
+import { IStore } from "../../redux/modules/reducer"
 declare var Config: IConfig
 
 if ("GOOGLE_ANALYTICS_UA" in Config) {
@@ -28,6 +28,10 @@ class GATracker {
     }
 
     event(cfg: ReactGA.EventArgs) {
+        if (cfg.hasOwnProperty("action") === false) {
+            cfg.action = "n/a"
+        }
+
         if (Config["ENVIRONMENT"] === "PRODUCTION" || this.always_send === true) {
             ReactGA.event(cfg)
         }
