@@ -39,6 +39,12 @@ p {
     overflow-y: auto;
 }
 
+/* Hacky workaround for the OpenLayers FullScreen control using document.body rather than document.documentElement and the sidebar going black */
+/* https://github.com/hakimel/reveal.js/issues/1516 */
+.page-nav {
+    background-color: #ffffff;
+}
+
 .page-main-content {
     overflow: auto;
 }
