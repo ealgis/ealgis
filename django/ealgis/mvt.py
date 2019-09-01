@@ -25,7 +25,7 @@ class TileGenerator:
             # Zoom 15 is our highest resolution (configured in OpenLayers), so we need to grab
             # unsimplified geometries to allow us to re-use them as the user zooms in.
             base_query = MapDefinition.layer_postgis_query(layer)
-            if z == 15:
+            if z == 15 or layer["type"] in ["POINT", "MULTIPOINT"]:
                 data_query = base_query.replace(
                     "ST_AsEWKB({})".format(geom_column_definition),
                     "ST_AsMVTGeom({geom_column_definition}, {extent})".format(geom_column_definition=geom_column_definition, extent=extent)
@@ -40,7 +40,9 @@ class TileGenerator:
                 )
 
             # Drop any geometries that are too small for the user to see in this tile (smaller than about a pixel)
-            area_filter = "{geom_table_name}.sqrt_area_geom_3857 >= {area_threshold} AND".format(geom_table_name=geom_table_name, area_threshold=z_res(z + 1.5))
+            area_filter = ""
+            if layer["type"] in ["POLYGON", "MULTIPOLYGON"]:
+                area_filter = "{geom_table_name}.sqrt_area_geom_3857 >= {area_threshold} AND".format(geom_table_name=geom_table_name, area_threshold=z_res(z + 1.5))
 
             # FIXME Build this whole query in SQLAlchemy instead
             # We need to begin a WHERE clause if there's no filter on the layer
