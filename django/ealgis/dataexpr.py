@@ -189,17 +189,19 @@ class DataExpressionParser:
         # attr_attr: aus_census_2011_xcp.x06s3_aust_lga_1.x4630
         attr_attr = getattr(attr_tbl, attr_column_info.name)
 
-        # and our join columns
-        # attr_column_linkage.attr_column: gid
-        # attr_linkage: aus_census_2011_xcp.x06s3_aust_lga.gid
-        attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)
+        # Not all datasets have their attributes and geometry in separate tables
+        if self.geometry_class != attr_tbl:
+            # and our join columns
+            # attr_column_linkage.attr_column: gid
+            # attr_linkage: aus_census_2011_xcp.x06s3_aust_lga.gid
+            attr_linkage = getattr(attr_tbl, attr_column_linkage.attr_column)
 
-        # self.geometry_class: aus_census_2011_shapes.lga
-        # attr_column_linkage.attr_column: gid
-        # tbl_linkage: aus_census_2011_shapes.lga_1.gid
-        tbl_linkage = getattr(self.geometry_class, attr_column_linkage.attr_column)
+            # self.geometry_class: aus_census_2011_shapes.lga
+            # attr_column_linkage.attr_column: gid
+            # tbl_linkage: aus_census_2011_shapes.lga_1.gid
+            tbl_linkage = getattr(self.geometry_class, attr_column_linkage.attr_column)
 
-        self.joins.add((attr_tbl, attr_linkage, tbl_linkage))
+            self.joins.add((attr_tbl, attr_linkage, tbl_linkage))
 
         return attr_attr
 
