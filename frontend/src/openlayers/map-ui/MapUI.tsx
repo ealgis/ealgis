@@ -9,9 +9,9 @@ import { Layers } from "react-openlayers/dist/layers/layers"
 import { default as Tile } from "react-openlayers/dist/layers/tile"
 import { Map } from "react-openlayers/dist/map"
 import { IConfig } from "../../redux/modules/interfaces"
+import { IPosition } from "../../redux/modules/map"
+import { ILayer, IMap } from "../../redux/modules/maps"
 import LayerContainerWrapped from "../layer/LayerContainer"
-import { IMap, ILayer } from "../../redux/modules/maps";
-import { IPosition } from "../../redux/modules/map";
 declare var Config: IConfig
 
 export interface IProps {
@@ -28,9 +28,7 @@ export class MapUI extends React.Component<IProps, {}> {
         super(props)
         if (Config["EALGIS_BASEMAP_PROVIDER"] === "MAPBOX") {
             this.basemapTileSource = new olSourceXYZ({
-                url: `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${
-                    Config["MAPBOX_API_KEY"]
-                }`,
+                url: `https://api.mapbox.com/styles/v1/keithmoss/citje9al5004f2ipg4tc3neyi/tiles/256/{z}/{x}/{y}?access_token=${Config["MAPBOX_API_KEY"]}`,
                 crossOrigin: "anonymous",
                 attributions: [
                     "Based on Australian Bureau of Statistics data<br />",
@@ -46,10 +44,12 @@ export class MapUI extends React.Component<IProps, {}> {
             })
         } else if (Config["EALGIS_BASEMAP_PROVIDER"] === "THUNDERFOREST") {
             this.basemapTileSource = new olSourceXYZ({
-                url: `https://tile.thunderforest.com/${Config["THUNDERFOREST_MAP_STYLE"]}/{z}/{x}/{y}.png?apikey=${
-                    Config["THUNDERFOREST_API_KEY"]
-                }`,
+                url: `https://tile.thunderforest.com/${Config["THUNDERFOREST_MAP_STYLE"]}/{z}/{x}/{y}.png?apikey=${Config["THUNDERFOREST_API_KEY"]}`,
                 crossOrigin: "anonymous",
+                attributions: [
+                    "Based on Australian Bureau of Statistics data<br />",
+                    'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+                ],
             })
         } else {
             this.basemapTileSource = new olSourceStamen({
