@@ -211,7 +211,14 @@ const StylingFields = (fields: any) => {
 
     return (
         <React.Fragment>
-            {fields["doFill"] && (
+            {fields["typeOfData"] === eLayerTypeOfData.DISCRETE && (
+                <React.Fragment>
+                    <FormSectionSubheader>Colours</FormSectionSubheader>
+                    <FlexboxContainer></FlexboxContainer>
+                </React.Fragment>
+            )}
+
+            {fields["typeOfData"] === eLayerTypeOfData.CONTINUOUS && fields["doFill"] === true && (
                 <React.Fragment>
                     <FormSectionSubheader>Colours</FormSectionSubheader>
                     <FlexboxContainer>
@@ -327,7 +334,11 @@ const StylingFields = (fields: any) => {
                     </FlexboxContainer>
 
                     <PaddedDivider />
+                </React.Fragment>
+            )}
 
+            {fields["doFill"] === true && (
+                <React.Fragment>
                     <FlexboxContainer>
                         <FirstFlexboxColumn>
                             <FauxFieldLabelDescriptionHeading>Transparency</FauxFieldLabelDescriptionHeading>
@@ -385,7 +396,7 @@ const StylingFields = (fields: any) => {
                 </React.Fragment>
             )}
 
-            {fields["doFill"] && (
+            {fields["typeOfData"] === eLayerTypeOfData.CONTINUOUS && fields["doFill"] === true && (
                 <React.Fragment>
                     <FormSectionSubheader>Scaling</FormSectionSubheader>
 
@@ -547,6 +558,7 @@ export interface IProps {
     layerFillColourScheme: string
     doFill: boolean
     isPointGeom: boolean
+    typeOfData: eLayerTypeOfData
     visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
@@ -611,6 +623,7 @@ class LayerForm extends React.Component<IProps, {}> {
             colourinfo,
             doFill,
             isPointGeom,
+            typeOfData,
             visibleComponent,
             onFormComplete,
             onResetForm,
@@ -771,9 +784,10 @@ class LayerForm extends React.Component<IProps, {}> {
                                         colourinfo={colourinfo}
                                         doFill={doFill}
                                         isPointGeom={isPointGeom}
+                                        typeOfData={typeOfData}
                                     />
 
-                                    {layerHash !== null && doFill && (
+                                    {layerHash !== null && doFill && typeOfData === eLayerTypeOfData.CONTINUOUS && (
                                         <React.Fragment>
                                             <PaddedDivider />
                                             <LayerQuerySummaryContainer

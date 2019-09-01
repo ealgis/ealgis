@@ -373,6 +373,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerFillColourScheme={layerFillColourScheme}
                 doFill={doFill}
                 isPointGeom={isPointGeom}
+                typeOfData={layerDefinition.type_of_data}
                 visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}
