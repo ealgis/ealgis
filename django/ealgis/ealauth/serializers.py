@@ -121,10 +121,14 @@ class MapDefinitionSerializer(serializers.ModelSerializer):
         if "layers" not in map["json"]:
             map["json"]["layers"] = []
 
-        # October 2018 - Introducing "type_of_data" attribute (continuous or discrete). Assume continuous for pre-existing layers.
         for layer in map["json"]["layers"]:
+            # October 2018 - Introducing "type_of_data" attribute (continuous or discrete). Assume continuous for pre-existing layers.
             if "type_of_data" not in layer:
                 layer["type_of_data"] = "continuous"
+
+            # September 2019 - Adding support for point styling.
+            if "point" not in layer:
+                layer["point"] = {"radius": 12}
         return map
 
 

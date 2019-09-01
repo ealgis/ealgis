@@ -385,6 +385,9 @@ export interface ILayer {
         scale_nlevels: number
     }
     hash?: string | null
+    point: {
+        radius: number
+    }
     line: {
         width: number
         colour: {
@@ -636,6 +639,9 @@ export function addLayer(mapId: number) {
                         b: "0",
                         a: "1",
                     },
+                },
+                point: {
+                    radius: 12,
                 },
                 name: "Unnamed Layer",
                 type: null,

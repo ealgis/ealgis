@@ -2,12 +2,13 @@ import { sortedIndex } from "lodash-es"
 import { eval as mathjsEval } from "mathjs"
 // @ts-ignore
 import has from "ol/has"
+import olStyleCircle from "ol/style/circle"
 import olStyleFill from "ol/style/fill"
 import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
+import { IOLFeatureProps } from "../../redux/modules/datainspector"
 import { eLayerTypeOfData, eStylePattern, ILayer, IOLStyleDefExpression } from "../../redux/modules/maps"
-import { IOLFeatureProps } from "../../redux/modules/datainspector";
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {
@@ -104,6 +105,10 @@ function createDebugFeatures(feature: any) {
 }
 
 export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<number>) {
+    if (layer["olStyleDef"] === undefined) {
+        return eStyleType.NO_DATA
+    }
+
     if (layer["type_of_data"] === eLayerTypeOfData.DISCRETE) {
         if (q === undefined) {
             return eStyleType.NO_DATA
@@ -164,6 +169,7 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
     }
     let layerStyleIdCache: any = {}
     let do_fill = l["fill"]["expression"] !== "" && l["type_of_data"] !== eLayerTypeOfData.NOT_SET
+    let is_point = l["type"] === "POINT" || l["type"] === "MULTIPOINT"
 
     // styleClassValueRange is an array of the "to" values ("v") for each style class
     // in this layer. It lets us quickly lookup the index of that a given
@@ -195,7 +201,7 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
             } else if (layerUID in layerStyleIdCache && layerStyleIdCache[layerUID] !== undefined) {
                 styleId = layerStyleIdCache[layerUID]
             } else {
-                if (do_fill) {
+                if (do_fill || is_point === true) {
                     ruleId = getRuleId(q, l, styleClassValueRange)
 
                     if (ruleId === eStyleType.ERROR) {
@@ -217,7 +223,37 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
             }
             // console.log(`Cache Miss for ${styleId}!`)
 
-            if (do_fill) {
+            if (is_point === true) {
+                // Fill according to a set of user-defined styling rules
+                let rule = l["olStyleDef"]![ruleId]
+                let rgb = rule["rgb"]
+
+                if (rgb.length > 0) {
+                    if (l["line"].width > 0) {
+                        olStyle = new olStyleStyle({
+                            image: new olStyleCircle({
+                                fill: new olStyleFill({
+                                    color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
+                                }),
+                                stroke: new olStyleStroke({
+                                    color: `rgba(${l["line"].colour.r}, ${l["line"].colour.g}, ${l["line"].colour.b}, ${l["line"].colour.a})`,
+                                    width: l["line"].width,
+                                }),
+                                radius: l["point"].radius,
+                            }),
+                        })
+                    } else {
+                        olStyle = new olStyleStyle({
+                            image: new olStyleCircle({
+                                fill: new olStyleFill({
+                                    color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${l.fill.opacity})`,
+                                }),
+                                radius: l["point"].radius,
+                            }),
+                        })
+                    }
+                }
+            } else if (do_fill) {
                 // Fill according to a set of user-defined styling rules
                 let rule = l["olStyleDef"]![ruleId]
                 let rgb = rule["rgb"]
