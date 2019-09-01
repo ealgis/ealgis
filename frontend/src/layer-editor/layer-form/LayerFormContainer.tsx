@@ -1,19 +1,19 @@
-import { debounce, isEqual, reduce } from "lodash-es"
-import muiThemeable from "material-ui/styles/muiThemeable"
-import * as React from "react"
-import { connect } from "react-redux"
-import { browserHistory } from "react-router"
-import { change, formValueSelector, initialize, isDirty } from "redux-form"
-import { setActiveContentComponent, eEalUIComponent } from "../../redux/modules/app"
-import { finishBrowsing } from "../../redux/modules/databrowser"
-import { eLayerTypeOfData, fitLayerScaleToData, handleLayerFormChange, eLayerFilterExpressionMode, eLayerValueExpressionMode, IMap, ILayer } from "../../redux/modules/maps"
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
-import { getMapURL } from "../../shared/utils"
-import LayerForm from "./LayerForm"
-import { ISelectedColumn, IGeomInfo, IColourInfo, IGeomTable } from "../../redux/modules/ealgis";
-import { IMUIThemePalette, IMUITheme } from "../../redux/modules/interfaces";
+import { debounce, isEqual, reduce } from "lodash-es";
+import muiThemeable from "material-ui/styles/muiThemeable";
+import * as React from "react";
+import { connect } from "react-redux";
+import { browserHistory } from "react-router";
+import { change, formValueSelector, initialize, isDirty } from "redux-form";
+import { eEalUIComponent, setActiveContentComponent } from "../../redux/modules/app";
+import { finishBrowsing } from "../../redux/modules/databrowser";
+import { IColourInfo, IGeomInfo, IGeomTable, ISelectedColumn } from "../../redux/modules/ealgis";
+import { IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces";
 import { ILayerQuerySummary } from "../../redux/modules/layerquerysummary";
+import { eLayerFilterExpressionMode, eLayerTypeOfData, eLayerValueExpressionMode, fitLayerScaleToData, handleLayerFormChange, ILayer, IMap } from "../../redux/modules/maps";
 import { IStore } from "../../redux/modules/reducer";
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
+import { getMapURL } from "../../shared/utils";
+import LayerForm from "./LayerForm";
 
 export interface ILayerFormValues {
     borderColour: {
@@ -38,6 +38,7 @@ export interface ILayerFormValues {
     valueExpressionMode: eLayerValueExpressionMode
     selectedColumns: Array<ISelectedColumn>
     type_of_data: eLayerTypeOfData
+    pointRadius: number
 }
 
 export interface IProps {}
@@ -115,6 +116,7 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         valueExpressionMode: layer["fill"]["expression_mode"] || eLayerValueExpressionMode.NOT_SET,
         selectedColumns: layer["selectedColumns"],
         type_of_data: layer["type_of_data"],
+        pointRadius: layer["point"]["radius"],
     }
 }
 
@@ -133,6 +135,9 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
             conditional: formValues["filterExpression"] ? formValues["filterExpression"] : "",
             conditional_mode: formValues["filterExpressionMode"] ? formValues["filterExpressionMode"] : eLayerFilterExpressionMode.NOT_SET,
             scale_nlevels: formValues["fillColourSchemeLevels"],
+        },
+        point: {
+            radius: formValues["pointRadius"] ? formValues["pointRadius"] : 0,
         },
         line: {
             width: formValues["borderSize"],
@@ -177,6 +182,8 @@ const mapLayerFormFieldNameToLayerProp = (fieldName: string) => {
             return "colour"
         case "selectedColumns":
             return "selectedColumns"
+        case "pointRadius":
+            return "radius"
         default:
             return fieldName
     }
@@ -208,6 +215,13 @@ const mapLayerFormValuesToLayer = (layer: any, fieldName: string, fieldValue: an
                 layer["line"] = {}
             }
             layer["line"][layerPropName] = fieldValue
+            break
+
+        case "pointRadius":
+            if (layer["point"] === undefined) {
+                layer["point"] = {}
+            }
+            layer["point"][layerPropName] = fieldValue
             break
 
         case "geometry":
@@ -346,6 +360,8 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             muiThemePalette,
         } = this.props
 
+        const isPointGeom = layerDefinition["type"] === "POINT" || layerDefinition["type"] === "MULTIPOINT"
+
         return (
             <LayerForm
                 muiThemePalette={muiThemePalette}
@@ -356,6 +372,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerHash={layerDefinition.hash}
                 layerFillColourScheme={layerFillColourScheme}
                 doFill={doFill}
+                isPointGeom={isPointGeom}
                 visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
                 isDirty={isDirty}

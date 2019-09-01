@@ -1,28 +1,28 @@
-import { groupBy } from "lodash-es";
-import Divider from "material-ui/Divider";
-import IconButton from "material-ui/IconButton";
-import MenuItem from "material-ui/MenuItem";
-import RaisedButton from "material-ui/RaisedButton";
-import Subheader from "material-ui/Subheader";
-import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo } from "material-ui/svg-icons";
-import { Tab, Tabs } from "material-ui/Tabs";
-import { Toolbar, ToolbarGroup } from "material-ui/Toolbar";
-import * as React from "react";
-import { Link } from "react-router";
-import { Field, Fields, reduxForm } from "redux-form";
-import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui";
-import styled from "styled-components";
-import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer";
-import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer";
-import { IColourInfo, IGeomInfo, IGeomTable } from "../../redux/modules/ealgis";
-import { IMUIThemePalette } from "../../redux/modules/interfaces";
-import { eLayerTypeOfData } from "../../redux/modules/maps";
-import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer";
-import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer";
-import { capitaliseFirstLetter } from "../../shared/utils";
-import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer";
-import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer";
-import { eVisibleComponent } from "./LayerFormContainer";
+import { groupBy } from "lodash-es"
+import Divider from "material-ui/Divider"
+import IconButton from "material-ui/IconButton"
+import MenuItem from "material-ui/MenuItem"
+import RaisedButton from "material-ui/RaisedButton"
+import Subheader from "material-ui/Subheader"
+import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo } from "material-ui/svg-icons"
+import { Tab, Tabs } from "material-ui/Tabs"
+import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
+import * as React from "react"
+import { Link } from "react-router"
+import { Field, Fields, reduxForm } from "redux-form"
+import { Checkbox, SelectField, Slider, TextField } from "redux-form-material-ui"
+import styled from "styled-components"
+import FilterExpressionContainer from "../../expression-editor/filter-expression-editor/FilterExpressionEditorContainer"
+import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
+import { IColourInfo, IGeomInfo, IGeomTable } from "../../redux/modules/ealgis"
+import { IMUIThemePalette } from "../../redux/modules/interfaces"
+import { eLayerTypeOfData } from "../../redux/modules/maps"
+import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
+import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import { capitaliseFirstLetter } from "../../shared/utils"
+import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
+import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
+import { eVisibleComponent } from "./LayerFormContainer"
 
 // Silence TS2322 "Types of property 'component' are incompatible" errors
 class MyField extends Field<any> {}
@@ -358,6 +358,33 @@ const StylingFields = (fields: any) => {
                 initialBorderColour={fields.initialValues["borderColour"]}
             />
 
+            {fields["isPointGeom"] && (
+                <React.Fragment>
+                    <FormSectionSubheader>Points</FormSectionSubheader>
+                    <FlexboxContainer>
+                        <FirstFlexboxColumn>
+                            <FauxFieldLabelDescriptionHeading>Radius</FauxFieldLabelDescriptionHeading>
+                            Choose the symbol radius for your point data.
+                        </FirstFlexboxColumn>
+
+                        <SecondFlexboxColumn>
+                            <MyField
+                                name="pointRadius"
+                                component={TextField}
+                                validate={[required]}
+                                fullWidth={true}
+                                type="number"
+                                min="0"
+                                autoComplete="off"
+                                onChange={(event: any, newValue: string, previousValue: string) =>
+                                    fields.onFieldChange(event.target.name, parseFloat(newValue), parseFloat(previousValue))
+                                }
+                            />
+                        </SecondFlexboxColumn>
+                    </FlexboxContainer>
+                </React.Fragment>
+            )}
+
             {fields["doFill"] && (
                 <React.Fragment>
                     <FormSectionSubheader>Scaling</FormSectionSubheader>
@@ -519,6 +546,7 @@ export interface IProps {
     layerHash: string
     layerFillColourScheme: string
     doFill: boolean
+    isPointGeom: boolean
     visibleComponent: eVisibleComponent
     dirtyFormModalOpen: boolean
     isDirty: boolean
@@ -582,6 +610,7 @@ class LayerForm extends React.Component<IProps, {}> {
             onFieldChange,
             colourinfo,
             doFill,
+            isPointGeom,
             visibleComponent,
             onFormComplete,
             onResetForm,
@@ -741,19 +770,19 @@ class LayerForm extends React.Component<IProps, {}> {
                                         initialValues={initialValues}
                                         colourinfo={colourinfo}
                                         doFill={doFill}
+                                        isPointGeom={isPointGeom}
                                     />
 
-                                    {layerHash !== null &&
-                                        doFill && (
-                                            <React.Fragment>
-                                                <PaddedDivider />
-                                                <LayerQuerySummaryContainer
-                                                    mapId={mapId}
-                                                    layerHash={layerHash}
-                                                    onFitScaleToData={onFitScaleToData}
-                                                />
-                                            </React.Fragment>
-                                        )}
+                                    {layerHash !== null && doFill && (
+                                        <React.Fragment>
+                                            <PaddedDivider />
+                                            <LayerQuerySummaryContainer
+                                                mapId={mapId}
+                                                layerHash={layerHash}
+                                                onFitScaleToData={onFitScaleToData}
+                                            />
+                                        </React.Fragment>
+                                    )}
                                 </TabContainer>
                             </Tab>
                             {/* END STYLE TAB */}
