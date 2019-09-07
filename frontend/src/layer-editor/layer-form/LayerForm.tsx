@@ -69,7 +69,9 @@ const HiddenButton = styled.button`
 
 const FormSectionSubheader = styled(Subheader)`
     line-height: 30px !important;
-    padding-top: 16px;
+    padding-left: 0px !important;
+    margin-top: 30px;
+    border-top: 5px solid;
 `
 
 const FormSectionSubheaderMini = styled(Subheader)`
@@ -79,7 +81,8 @@ const FormSectionSubheaderMini = styled(Subheader)`
 `
 
 const PaddedDivider = styled(Divider)`
-    margin-top: 12px !important;
+    /* margin-top: 12px !important; */
+    display: none;
 `
 
 const FlexboxContainer = styled.div`
@@ -102,10 +105,8 @@ const SecondFlexboxColumn = styled.div`
 
 const FauxFieldLabelDescriptionHeading = styled.h4`
     font-size: 12px;
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.7);
     margin-bottom: 10px;
-    transform: scale(1) translate(0px, -4px);
-    transform-origin: left top 0px;
 `
 
 const ColourSelectField = styled(SelectField)`
