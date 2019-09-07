@@ -154,7 +154,8 @@ function add_style_def(
     expr_from: IOperator | null,
     expr_to: IOperator | null,
     opacity: number,
-    pattern_fill?: eStylePattern
+    pattern_fill?: eStylePattern,
+    label?: string
 ) {
     let rgb_copy = JSON.parse(JSON.stringify(rgb))
     rgb_copy.r *= 255
@@ -174,6 +175,10 @@ function add_style_def(
 
     if (pattern_fill !== undefined) {
         style["pattern_fill"] = pattern_fill
+    }
+
+    if (label !== undefined) {
+        style["label"] = label
     }
 
     if (expr_from !== null) {
@@ -276,7 +281,9 @@ export function make_discrete_colour_scale_from_category_styles(
                     { r: style.colour.r / 255, g: style.colour.g / 255, b: style.colour.b / 255 },
                     null,
                     { attr: attr, op: "=", v: parseFloat(style.value) },
-                    opacity
+                    opacity,
+                    undefined,
+                    style.label
                 )
             }
         })
@@ -296,7 +303,7 @@ export function get_colour_scale_for_layer(layer: ILayer, colourdefs: IColourDef
     return ColourScale.with_scale_or_flip(colourdefs[`${scale_name}.${scale_nlevels}`], scale_min, scale_max, scale_flip)
 }
 
-export function getLayerOLStyleDefinition(layer: ILayer, colourdefs: IColourDefs, attr: string = "q") {
+export function getLayerOLStyleDefinition(layer: ILayer, colourdefs: IColourDefs, attr: string = "q"): IOLStyleDef[] | undefined {
     // Only layers with data expressions need colour scales created
     if (layer["fill"]["expression"] === "") {
         return undefined

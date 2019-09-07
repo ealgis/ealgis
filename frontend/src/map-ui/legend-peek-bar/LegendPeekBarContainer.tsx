@@ -2,9 +2,9 @@ import { isEqual } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
 import { receiveLegendPeekLabel } from "../../redux/modules/legends"
+import { IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/maps"
+import { IStore } from "../../redux/modules/reducer"
 import LegendPeekBar from "./LegendPeekBar"
-import { IOLStyleDef, IOLStyleDefExpression } from "../../redux/modules/maps";
-import { IStore } from "../../redux/modules/reducer";
 
 export interface IProps {
     mapId: number
@@ -74,6 +74,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 labelText = expressionToString(styleDef.expr.from!)
             }
 
+            if ("label" in styleDef && styleDef.label !== undefined && styleDef.label.length > 0) {
+                labelText = `${styleDef.label} (${labelText})`
+            }
+
             dispatch(receiveLegendPeekLabel(mapId, layerId, labelText))
         },
         handleMouseLeave: (mapId: number, layerId: number) => {
@@ -82,8 +86,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const LegendPeekBarContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
-    LegendPeekBarContainer
-)
+const LegendPeekBarContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+    mapStateToProps,
+    mapDispatchToProps
+)(LegendPeekBarContainer)
 
 export default LegendPeekBarContainerWrapped

@@ -8,7 +8,14 @@ import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
 import { IOLFeatureProps } from "../../redux/modules/datainspector"
-import { eLayerTypeOfData, eStylePattern, ILayer, IOLStyleDefExpression, isPointGeometry } from "../../redux/modules/maps"
+import {
+    eLayerTypeOfData,
+    eStylePattern,
+    hasStyleDefinition,
+    ILayer,
+    IOLStyleDefExpression,
+    isPointGeometry,
+} from "../../redux/modules/maps"
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {
@@ -106,7 +113,7 @@ function createDebugFeatures(feature: any) {
 }
 
 export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<number>) {
-    if (layer["olStyleDef"] === undefined || (Array.isArray(layer["olStyleDef"]) && layer["olStyleDef"].length === 0)) {
+    if (hasStyleDefinition(layer) === false) {
         return eStyleType.NO_STYLE
     }
 

@@ -442,6 +442,7 @@ export interface IOLStyleDef {
     rgb: Array<number>
     pattern_fill?: eStylePattern
     opacity: number
+    label?: string
 }
 
 export interface IOLStyleDefExpression {
@@ -801,3 +802,6 @@ export function getLayerFromState(getState: Function, mapId: number, layerId: nu
 }
 
 export const isPointGeometry = (layer: ILayer) => layer["type"] === "POINT" || layer["type"] === "MULTIPOINT"
+
+export const hasStyleDefinition = (layer: ILayer) =>
+    "olStyleDef" in layer && layer["olStyleDef"] !== undefined && Array.isArray(layer["olStyleDef"]) && layer["olStyleDef"].length > 0

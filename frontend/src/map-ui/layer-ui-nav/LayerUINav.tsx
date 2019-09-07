@@ -3,18 +3,18 @@ import IconButton from "material-ui/IconButton"
 import IconMenu from "material-ui/IconMenu"
 import { ListItem } from "material-ui/List"
 import MenuItem from "material-ui/MenuItem"
-import Toggle from "material-ui/Toggle"
 import ActionDelete from "material-ui/svg-icons/action/delete"
 import ContentCopy from "material-ui/svg-icons/content/content-copy"
 import MapsEditLocation from "material-ui/svg-icons/maps/edit-location"
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert"
+import Toggle from "material-ui/Toggle"
 import * as React from "react"
 import { Link } from "react-router"
 import styled from "styled-components"
 import { IMUIThemePalette } from "../../redux/modules/interfaces"
+import { hasStyleDefinition, ILayer } from "../../redux/modules/maps"
 import LayerDeleteConfirmDialog from "../layer-delete-confirm-dialog/LayerDeleteConfirmDialogContainer"
 import LegendPeekBar from "../legend-peek-bar/LegendPeekBarContainer"
-import { ILayer } from "../../redux/modules/maps";
 
 const Description = styled.span`
     display: block;
@@ -79,7 +79,7 @@ export class LayerUINav extends React.Component<IProps, {}> {
         )
 
         let legendPeekProps: any = {}
-        if ("olStyleDef" in defn && defn["olStyleDef"] !== undefined) {
+        if (hasStyleDefinition(defn) === true) {
             legendPeekProps.open = true
             legendPeekProps.style = styles.layerListItemWithLegend
             legendPeekProps.nestedItems = [
