@@ -1,19 +1,29 @@
-import { debounce, isEqual, reduce } from "lodash-es";
-import muiThemeable from "material-ui/styles/muiThemeable";
-import * as React from "react";
-import { connect } from "react-redux";
-import { browserHistory } from "react-router";
-import { change, formValueSelector, initialize, isDirty } from "redux-form";
-import { eEalUIComponent, setActiveContentComponent } from "../../redux/modules/app";
-import { finishBrowsing } from "../../redux/modules/databrowser";
-import { IColourInfo, IGeomInfo, IGeomTable, ISelectedColumn } from "../../redux/modules/ealgis";
-import { IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces";
-import { ILayerQuerySummary } from "../../redux/modules/layerquerysummary";
-import { eLayerFilterExpressionMode, eLayerTypeOfData, eLayerValueExpressionMode, fitLayerScaleToData, handleLayerFormChange, ILayer, IMap } from "../../redux/modules/maps";
-import { IStore } from "../../redux/modules/reducer";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { getMapURL } from "../../shared/utils";
-import LayerForm from "./LayerForm";
+import { debounce, isEqual, reduce } from "lodash-es"
+import muiThemeable from "material-ui/styles/muiThemeable"
+import * as React from "react"
+import { connect } from "react-redux"
+import { browserHistory } from "react-router"
+import { change, formValueSelector, initialize, isDirty } from "redux-form"
+import { eEalUIComponent, setActiveContentComponent } from "../../redux/modules/app"
+import { finishBrowsing } from "../../redux/modules/databrowser"
+import { IColourInfo, IGeomInfo, IGeomTable, ISelectedColumn } from "../../redux/modules/ealgis"
+import { IMUITheme, IMUIThemePalette } from "../../redux/modules/interfaces"
+import { ILayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import {
+    eLayerFilterExpressionMode,
+    eLayerTypeOfData,
+    eLayerValueExpressionMode,
+    fitLayerScaleToData,
+    handleLayerFormChange,
+    ILayer,
+    ILayerCategoryStyle,
+    IMap,
+    isPointGeometry,
+} from "../../redux/modules/maps"
+import { IStore } from "../../redux/modules/reducer"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { getMapURL } from "../../shared/utils"
+import LayerForm from "./LayerForm"
 
 export interface ILayerFormValues {
     borderColour: {
@@ -39,9 +49,10 @@ export interface ILayerFormValues {
     selectedColumns: Array<ISelectedColumn>
     type_of_data: eLayerTypeOfData
     pointRadius: number
+    categoryStyles: ILayerCategoryStyle[]
 }
 
-export interface IProps {}
+export interface IProps extends IOwnProps {}
 
 export interface IStoreProps {
     tabName: string
@@ -117,6 +128,7 @@ const getLayerFormValuesFromLayer = (layer: ILayer, geominfo: IGeomInfo): ILayer
         selectedColumns: layer["selectedColumns"],
         type_of_data: layer["type_of_data"],
         pointRadius: layer["point"]["radius"],
+        categoryStyles: layer["category_styles"] !== undefined ? layer["category_styles"] : [],
     }
 }
 
@@ -151,6 +163,7 @@ const getLayerFromLayerFormValues = (formValues: ILayerFormValues): ILayer => {
         description: formValues["description"],
         selectedColumns: formValues["selectedColumns"],
         type_of_data: formValues["type_of_data"],
+        category_styles: formValues["categoryStyles"] ? formValues["categoryStyles"] : [],
     }
 }
 
@@ -184,6 +197,8 @@ const mapLayerFormFieldNameToLayerProp = (fieldName: string) => {
             return "selectedColumns"
         case "pointRadius":
             return "radius"
+        case "categoryStyles":
+            return "category_styles"
         default:
             return fieldName
     }
@@ -246,11 +261,12 @@ const getLayerFromLayerFormValuesPartial = (formValues: any) => {
     return layer
 }
 
-export class LayerFormContainer extends React.Component<IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps, {}> {
+type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps & IOwnProps
+class LayerFormContainer extends React.Component<TComponentProps, {}> {
     onFieldChangeDebounced: Function
     initialValues!: object
 
-    constructor(props: IProps & IStoreProps & IDispatchProps & IRouterProps & IRouteProps) {
+    constructor(props: TComponentProps) {
         super(props)
         const { onFieldUpdate } = props
 
@@ -360,8 +376,6 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
             muiThemePalette,
         } = this.props
 
-        const isPointGeom = layerDefinition["type"] === "POINT" || layerDefinition["type"] === "MULTIPOINT"
-
         return (
             <LayerForm
                 muiThemePalette={muiThemePalette}
@@ -372,7 +386,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
                 layerHash={layerDefinition.hash}
                 layerFillColourScheme={layerFillColourScheme}
                 doFill={doFill}
-                isPointGeom={isPointGeom}
+                isPointGeom={isPointGeometry(layerDefinition)}
                 typeOfData={layerDefinition.type_of_data}
                 visibleComponent={visibleComponent}
                 dirtyFormModalOpen={dirtyFormModalOpen}
@@ -413,7 +427,7 @@ export class LayerFormContainer extends React.Component<IProps & IStoreProps & I
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: IOwnProps): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { app, maps, ealgis, layerform } = state
     const layerFormValues = formValueSelector("layerForm")
 
@@ -461,12 +475,13 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onFieldUpdate: (fieldName: string, newValue: any, mapId: number, layerId: number) => {
             let formValues: object = {}
 
-            // The Fill Colour Scheme field submits an object as its value
-            // containing both the Colour Scheme and Number of Levels.
-            // This is so we can keep the Fill Colour Scheme Level in the
-            // valid range for this given colour scheme.
             if (fieldName === "fillColourScheme") {
+                // The Fill Colour Scheme field submits an object as its value containing both the Colour Scheme and Number of Levels. This is so we can keep the Fill Colour Scheme Level in the valid range for this given colour scheme.
                 formValues = newValue
+            } else if (fieldName === "categoryStyles") {
+                // Category Styles submits an array of style objects that need to be updated in their form 'field' too.
+                dispatch(change("layerForm", fieldName, newValue))
+                formValues = { [fieldName]: newValue }
             } else {
                 formValues = { [fieldName]: newValue }
             }
@@ -537,8 +552,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
 
 // Caused by muiThemable() https://github.com/mui-org/material-ui/issues/5975 - resolved in MaterialUI 1.0
 // @ts-ignore
-const LayerFormContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(
-    LayerFormContainer
-)
+const LayerFormContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+    mapStateToProps,
+    mapDispatchToProps
+)(LayerFormContainer)
 
-export default muiThemeable()(LayerFormContainerWrapped)
+export default muiThemeable()(LayerFormContainerWrapped as any)

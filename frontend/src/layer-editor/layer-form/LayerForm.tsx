@@ -4,8 +4,9 @@ import IconButton from "material-ui/IconButton"
 import MenuItem from "material-ui/MenuItem"
 import RaisedButton from "material-ui/RaisedButton"
 import Subheader from "material-ui/Subheader"
-import { ActionCheckCircle, AvPlaylistAddCheck, ContentUndo } from "material-ui/svg-icons"
+import { ActionCheckCircle, AvPlaylistAdd, AvPlaylistAddCheck, ContentRemoveCircleOutline, ContentUndo } from "material-ui/svg-icons"
 import { Tab, Tabs } from "material-ui/Tabs"
+import { default as MUITextField } from "material-ui/TextField"
 import { Toolbar, ToolbarGroup } from "material-ui/Toolbar"
 import * as React from "react"
 import { Link } from "react-router"
@@ -16,9 +17,10 @@ import FilterExpressionContainer from "../../expression-editor/filter-expression
 import ValueExpressionContainer from "../../expression-editor/value-expression-editor/ValueExpressionEditorContainer"
 import { IColourInfo, IGeomInfo, IGeomTable } from "../../redux/modules/ealgis"
 import { IMUIThemePalette } from "../../redux/modules/interfaces"
-import { eLayerTypeOfData } from "../../redux/modules/maps"
+import { eLayerTypeOfData, ILayerCategoryStyle } from "../../redux/modules/maps"
 import AlphaPicker from "../../shared/ui/alpha-picker/AlphaPickerContainer"
 import ColourPicker from "../../shared/ui/colour-picker/ColourPickerContainer"
+import ColourPickerNoInputContainer from "../../shared/ui/colour-picker/ColourPickerNoInputContainer"
 import { capitaliseFirstLetter } from "../../shared/utils"
 import ColourScaleBarContainer from "../color-scale-bar/ColourScaleBarContainer"
 import LayerQuerySummaryContainer from "../layer-query-summary/LayerQuerySummaryContainer"
@@ -119,6 +121,21 @@ const HelpText = styled.div`
     margin-bottom: 10px;
 `
 
+const CategoryStyleCol1 = styled.div`
+    order: 1;
+    width: 25%;
+`
+
+const CategoryStyleCol2 = styled.div`
+    order: 2;
+    width: 60%;
+`
+
+const CategoryStyleCol3 = styled.div`
+    order: 3;
+    width: 15%;
+`
+
 const styles: any = {
     fauxFiedlLabel: {
         fontSize: "12px",
@@ -191,6 +208,57 @@ const BorderSizeAndColourFields = (fields: any) => {
     )
 }
 
+const CategoryValueLabelAndColourFields = (idx: number, categoryStyle: ILayerCategoryStyle, fields: any) => {
+    const onUpdateChangeCategoryStyle = (newValue: any, fieldName: string) => {
+        let categoryStyles = [...fields["categoryStyles"].input.value]
+        categoryStyles[idx] = { ...categoryStyle }
+        categoryStyles[idx][fieldName] = newValue
+        fields.onFieldChange("categoryStyles", categoryStyles, undefined)
+    }
+
+    const onBlurChangeCategoryStyle = (newValue: any, fieldName: string) => {
+        let categoryStyles = [...fields["categoryStyles"].input.value]
+        categoryStyles[idx] = { ...categoryStyle }
+        categoryStyles[idx][fieldName] = newValue
+        fields.onFieldBlur("categoryStyles", categoryStyles, undefined)
+    }
+
+    return (
+        <React.Fragment>
+            <FlexboxContainer key={idx}>
+                <CategoryStyleCol1>
+                    <MUITextField
+                        fullWidth={true}
+                        floatingLabelText="Value"
+                        floatingLabelFixed={true}
+                        defaultValue={categoryStyle.value}
+                        autoComplete="off"
+                        onChange={(event: React.FormEvent<{}>, newValue: string) => onUpdateChangeCategoryStyle(newValue, "value")}
+                    />
+                </CategoryStyleCol1>
+
+                <CategoryStyleCol2>
+                    <MUITextField
+                        fullWidth={true}
+                        floatingLabelText="Label"
+                        floatingLabelFixed={true}
+                        defaultValue={categoryStyle.label}
+                        autoComplete="off"
+                        onBlur={(event: React.FocusEvent<HTMLInputElement>) => onBlurChangeCategoryStyle(event.target.value, "label")}
+                    />
+                </CategoryStyleCol2>
+
+                <CategoryStyleCol3>
+                    <ColourPickerNoInputContainer
+                        colour={categoryStyle.colour}
+                        onChange={(newValue: object) => onBlurChangeCategoryStyle(newValue, "colour")}
+                    />
+                </CategoryStyleCol3>
+            </FlexboxContainer>
+        </React.Fragment>
+    )
+}
+
 const StylingFields = (fields: any) => {
     const colourSchemeLevels = fields.colourinfo[fields["fillColourScheme"].input.value]
         ? fields.colourinfo[fields["fillColourScheme"].input.value]
@@ -214,7 +282,31 @@ const StylingFields = (fields: any) => {
             {fields["typeOfData"] === eLayerTypeOfData.DISCRETE && (
                 <React.Fragment>
                     <FormSectionSubheader>Colours</FormSectionSubheader>
-                    <FlexboxContainer></FlexboxContainer>
+                    <FauxFieldLabelDescriptionHeading>Create a colour scheme for your data.</FauxFieldLabelDescriptionHeading>
+                    {fields["categoryStyles"].input.value.map((cat_field: any, idx: number) => (
+                        <React.Fragment key={idx}>{CategoryValueLabelAndColourFields(idx, cat_field, fields)}</React.Fragment>
+                    ))}
+                    <MyRaisedButton
+                        label={"Remove"}
+                        icon={<ContentRemoveCircleOutline />}
+                        onClick={(event: React.MouseEvent<HTMLElement>) => {
+                            let categoryStyles = [...fields["categoryStyles"].input.value]
+                            categoryStyles.pop()
+                            fields.onFieldChange("categoryStyles", categoryStyles, undefined)
+                        }}
+                    />
+                    <MyRaisedButton
+                        label={"Add"}
+                        icon={<AvPlaylistAdd />}
+                        onClick={(event: React.MouseEvent<HTMLElement>) => {
+                            fields.onFieldChange(
+                                "categoryStyles",
+                                [...fields["categoryStyles"].input.value, { value: "", label: "" }],
+                                undefined
+                            )
+                        }}
+                    />
+                    <PaddedDivider />{" "}
                 </React.Fragment>
             )}
 
@@ -776,6 +868,7 @@ class LayerForm extends React.Component<IProps, {}> {
                                             "borderSize",
                                             "scaleMin",
                                             "scaleMax",
+                                            "categoryStyles",
                                         ]}
                                         component={StylingFields}
                                         onFieldChange={onFieldChange}

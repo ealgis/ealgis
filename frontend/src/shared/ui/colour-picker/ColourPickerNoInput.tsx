@@ -3,9 +3,9 @@ import { RGBColor, SwatchesPicker } from "react-color"
 import styled from "styled-components"
 import { Colour } from "../alpha-picker/AlphaPicker"
 
-export interface ColourPickerProps {
+export interface ColourPickerNoInputProps {
     colour: RGBColor | undefined
-    input: any
+    onChange: any
 }
 
 const Swatch = styled.div`
@@ -37,7 +37,7 @@ const Cover = styled.div`
     left: 0px;
 `
 
-class ColourPicker extends React.Component<ColourPickerProps, any> {
+class ColourPickerNoInput extends React.Component<ColourPickerNoInputProps, any> {
     state = {
         displayColorPicker: false,
     }
@@ -51,9 +51,7 @@ class ColourPicker extends React.Component<ColourPickerProps, any> {
     }
 
     handleChange = (colour: Colour) => {
-        const {
-            input: { onChange },
-        } = this.props
+        const { onChange } = this.props
         onChange(colour.rgb)
         this.handleClose()
     }
@@ -78,4 +76,4 @@ class ColourPicker extends React.Component<ColourPickerProps, any> {
     }
 }
 
-export default ColourPicker
+export default ColourPickerNoInput

@@ -8,12 +8,13 @@ import olStyleStroke from "ol/style/stroke"
 import olStyleStyle from "ol/style/style"
 import olStyleText from "ol/style/text"
 import { IOLFeatureProps } from "../../redux/modules/datainspector"
-import { eLayerTypeOfData, eStylePattern, ILayer, IOLStyleDefExpression } from "../../redux/modules/maps"
+import { eLayerTypeOfData, eStylePattern, ILayer, IOLStyleDefExpression, isPointGeometry } from "../../redux/modules/maps"
 
 // These enum values must be unique and designed not to clash with the output of getRuleId()
 enum eStyleType {
     HIGHLIGHTED_FEATURE = "_HIGHLIGHTED_FEATURE",
     ERROR = "_ERROR", // In what circumstances does this occur again?
+    NO_STYLE = "_NO_STYLE",
     NO_DATA = "_NO_DATA",
 }
 
@@ -105,15 +106,27 @@ function createDebugFeatures(feature: any) {
 }
 
 export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<number>) {
-    if (layer["olStyleDef"] === undefined) {
-        return eStyleType.NO_DATA
+    if (layer["olStyleDef"] === undefined || (Array.isArray(layer["olStyleDef"]) && layer["olStyleDef"].length === 0)) {
+        return eStyleType.NO_STYLE
     }
 
     if (layer["type_of_data"] === eLayerTypeOfData.DISCRETE) {
         if (q === undefined) {
-            return eStyleType.NO_DATA
+            return eStyleType.NO_STYLE
         }
-        return sortedIndex(styleClassValueRange, q)
+
+        // Handle "out of range" issues. e.g. Where users are providing their own categorical styles, but haven't provided styles to cover all cases
+        let ruleId = sortedIndex(styleClassValueRange, q)
+
+        if (q < styleClassValueRange[ruleId]) {
+            return eStyleType.NO_STYLE
+        }
+
+        if (q > styleClassValueRange[ruleId]) {
+            return eStyleType.NO_STYLE
+        }
+
+        return ruleId
     }
 
     // Use a binary search to grab the index that our "q" value is closest to
@@ -143,7 +156,7 @@ export function getRuleId(q: number, layer: ILayer, styleClassValueRange: Array<
     }
 
     if (ruleId === -1) {
-        return eStyleType.ERROR
+        return eStyleType.NO_STYLE
     }
 
     return ruleId
@@ -165,11 +178,31 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
                 color: getErrorStylePattern() as any,
             }),
         }),
+        [eStyleType.NO_STYLE]: {
+            polygon: new olStyleStyle({
+                fill: new olStyleFill({
+                    color: "rgb(0, 0, 0)",
+                }),
+            }),
+            line: new olStyleStyle({
+                stroke: new olStyleStroke({
+                    color: "rgb(0, 0, 0)",
+                }),
+            }),
+            point: new olStyleStyle({
+                image: new olStyleCircle({
+                    fill: new olStyleFill({
+                        color: "rgb(0, 0, 0)",
+                    }),
+                    radius: 10,
+                }),
+            }),
+        },
         [eStyleType.NO_DATA]: undefined,
     }
     let layerStyleIdCache: any = {}
     let do_fill = l["fill"]["expression"] !== "" && l["type_of_data"] !== eLayerTypeOfData.NOT_SET
-    let is_point = l["type"] === "POINT" || l["type"] === "MULTIPOINT"
+    let is_point = isPointGeometry(l)
 
     // styleClassValueRange is an array of the "to" values ("v") for each style class
     // in this layer. It lets us quickly lookup the index of that a given
@@ -180,6 +213,11 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
         styleClassValueRange = l["olStyleDef"]!.map((o: IOLStyleDef) => ("to" in o["expr"] ? o["expr"]["to"]!["v"] : undefined)).filter(
             (o: number | undefined) => o !== undefined
         )
+
+        // So that the user doesn't have to enter the style rules in ascending order
+        if (l["type_of_data"] === eLayerTypeOfData.DISCRETE) {
+            styleClassValueRange = styleClassValueRange.sort()
+        }
     }
 
     return (feature: IOLFeatureProps, resolution: number) => {
@@ -204,8 +242,8 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
                 if (do_fill || is_point === true) {
                     ruleId = getRuleId(q, l, styleClassValueRange)
 
-                    if (ruleId === eStyleType.ERROR) {
-                        return styleCache[eStyleType.ERROR]
+                    if (ruleId === eStyleType.NO_STYLE) {
+                        return is_point === true ? styleCache[eStyleType.NO_STYLE]["point"] : styleCache[eStyleType.NO_STYLE]["polygon"]
                     } else if (ruleId === eStyleType.NO_DATA) {
                         return styleCache[eStyleType.NO_DATA]
                     }
@@ -217,11 +255,9 @@ export function compileLayerStyle(l: ILayer, layerId: number, debugMode: boolean
             }
 
             if (styleId !== null && styleCache[styleId] !== undefined) {
-                // console.log(`Cache Hit for ${styleId}`)
                 layerStyleIdCache[layerUID] = styleId
                 return styleCache[styleId]
             }
-            // console.log(`Cache Miss for ${styleId}!`)
 
             if (is_point === true) {
                 // Fill according to a set of user-defined styling rules

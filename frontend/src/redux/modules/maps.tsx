@@ -1,15 +1,15 @@
-import * as dotProp from "dot-prop-immutable";
-import { cloneDeep, isEqual, merge } from "lodash-es";
-import { browserHistory } from "react-router";
-import { SubmissionError } from "redux-form";
-import { getUserIdFromState, ISelectedColumn, IUserPartial } from "../../redux/modules/ealgis";
-import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary";
-import { IPosition } from "../../redux/modules/map";
-import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars";
-import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics";
-import { IEALGISApiClient } from "../../shared/api/EALGISApiClient";
-import { getMapURL } from "../../shared/utils";
-import { IConfig } from "./interfaces";
+import * as dotProp from "dot-prop-immutable"
+import { cloneDeep, isEqual, mergeWith } from "lodash-es"
+import { browserHistory } from "react-router"
+import { SubmissionError } from "redux-form"
+import { getUserIdFromState, ISelectedColumn, IUserPartial } from "../../redux/modules/ealgis"
+import { fetch as fetchLayerQuerySummary } from "../../redux/modules/layerquerysummary"
+import { IPosition } from "../../redux/modules/map"
+import { sendNotification as sendSnackbarNotification } from "../../redux/modules/snackbars"
+import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IEALGISApiClient } from "../../shared/api/EALGISApiClient"
+import { getMapURL } from "../../shared/utils"
+import { IConfig } from "./interfaces"
 
 declare var Config: IConfig
 
@@ -413,6 +413,20 @@ export interface ILayer {
     }
     selectedColumns: Array<ISelectedColumn>
     type_of_data: eLayerTypeOfData
+    category_styles: ILayerCategoryStyle[]
+}
+
+export interface ILayerCategoryStyle {
+    value: string
+    label: string
+    colour?: IColourRGBA
+}
+
+export interface IColourRGBA {
+    r: number
+    g: number
+    b: number
+    a: number
 }
 
 export enum eStylePattern {
@@ -652,6 +666,7 @@ export function addLayer(mapId: number) {
                 description: "",
                 selectedColumns: [],
                 type_of_data: eLayerTypeOfData.NOT_SET,
+                category_styles: [],
             } as ILayer,
         }
 
@@ -717,7 +732,17 @@ export function deleteMapLayer(map: IMap, layerId: number) {
 export function handleLayerFormChange(layerPartial: Partial<ILayer>, mapId: number, layerId: number) {
     return (dispatch: Function, getState: Function, ealapi: IEALGISApiClient) => {
         const layer = getLayerFromState(getState, mapId, layerId)
-        const newLayer = merge(cloneDeep(layer), layerPartial)
+
+        const newLayer = mergeWith(
+            cloneDeep(layer),
+            layerPartial,
+            (objValue: any, srcValue: any, key: any, obj: any, source: any, stack: any) => {
+                // LayerForm handles merging `category_styles`, so we just want the source value (i.e. the version in layerPartial )
+                if (key === "category_styles") {
+                    return srcValue
+                }
+            }
+        )
 
         if (isEqual(layer, newLayer) === false) {
             return dispatch(updateLayer(mapId, layerId, newLayer, true)).then(({ response, json }: any) => {
@@ -774,3 +799,5 @@ export function getMapFromState(getState: Function, mapId: number) {
 export function getLayerFromState(getState: Function, mapId: number, layerId: number) {
     return getState().maps[mapId].json.layers[layerId]
 }
+
+export const isPointGeometry = (layer: ILayer) => layer["type"] === "POINT" || layer["type"] === "MULTIPOINT"

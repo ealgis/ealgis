@@ -1,7 +1,7 @@
 import "whatwg-fetch"
 import { IColourDefs } from "../../redux/modules/ealgis"
-import { eLayerTypeOfData, eStylePattern, IOLStyleDef, ILayer } from "../../redux/modules/maps"
-import { hsltorgb } from "../utils"
+import { eLayerTypeOfData, eStylePattern, ILayer, ILayerCategoryStyle, IOLStyleDef } from "../../redux/modules/maps"
+import { hsltorgb, isNumeric } from "../utils"
 import Matrix from "./Matrix"
 
 interface IOperator {
@@ -253,7 +253,33 @@ export function make_discrete_colour_scale(scale: ColourScale, attr: string = "q
 
     // We've run out of colours in our scale but still have values left to fill - use the fallback colour
     if (colourIdx >= colours.length && val < cmax) {
-        add_style_def(olStyle, fallbackColour, { attr: attr, op: ">", v: val }, null, opacity, eStylePattern.ERROR)
+        add_style_def(olStyle, fallbackColour, { attr: attr, op: ">", v: val }, null, opacity)
+    }
+
+    return olStyle
+}
+
+export function make_discrete_colour_scale_from_category_styles(
+    layer: ILayer,
+    attr: string = "q",
+    cmin: number,
+    cmax: number,
+    opacity: number
+) {
+    let olStyle: Array<IOLStyleDef> = []
+
+    if ("category_styles" in layer && Array.isArray(layer["category_styles"]) === true) {
+        layer["category_styles"].forEach((style: ILayerCategoryStyle) => {
+            if (style.value.length > 0 && isNumeric(style.value) === true && "colour" in style && style.colour !== undefined) {
+                add_style_def(
+                    olStyle,
+                    { r: style.colour.r / 255, g: style.colour.g / 255, b: style.colour.b / 255 },
+                    null,
+                    { attr: attr, op: "=", v: parseFloat(style.value) },
+                    opacity
+                )
+            }
+        })
     }
 
     return olStyle
@@ -289,7 +315,12 @@ export function getLayerOLStyleDefinition(layer: ILayer, colourdefs: IColourDefs
     if (layer["type_of_data"] === eLayerTypeOfData.CONTINUOUS) {
         return make_continuous_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
     } else if (layer["type_of_data"] === eLayerTypeOfData.DISCRETE) {
-        return make_discrete_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
+        return make_discrete_colour_scale_from_category_styles(layer, attr, cmin, cmax, layer.fill.opacity)
+        // if (isPointGeometry(layer)) {
+        //     return make_discrete_colour_scale_from_category_styles(layer, attr, cmin, cmax, layer.fill.opacity)
+        // } else {
+        //     return make_discrete_colour_scale(get_colour_scale_for_layer(layer, colourdefs), attr, cmin, cmax, layer.fill.opacity)
+        // }
     }
     return undefined
 }

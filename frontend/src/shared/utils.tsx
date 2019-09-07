@@ -1,4 +1,4 @@
-import { IMap } from "../redux/modules/maps";
+import { IMap } from "../redux/modules/maps"
 
 export function getMapURL(map: IMap) {
     return `/map/${map.id}/${map["name-url-safe"]}`
@@ -62,3 +62,5 @@ export function hsltorgb(h: any, s: any, l: any) {
 export function capitaliseFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+export const isNumeric = (val: any) => !isNaN(val)
