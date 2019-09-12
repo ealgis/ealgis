@@ -6,6 +6,11 @@
 
 [![Build Status](https://travis-ci.org/ealgis/ealgis.svg?branch=next)](https://travis-ci.org/ealgis/ealgis)
 
+![BrowserStack logo](https://raw.githubusercontent.com/ealgis/ealgis/next/logos/browserstack-logo-600x315.png)
+
+We are in the process of integrating [BrowserStack](https://browserstack.com) tests into our CI pipeline. Thanks
+very much to BrowserStack for providing free access for the project.
+
 # Interactive Data Analysis
 
 EAlGIS offers:
