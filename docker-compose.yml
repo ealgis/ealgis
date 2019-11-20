@@ -1,7 +1,7 @@
 version: "3"
 services:
   datastore:
-    image: mdillon/postgis:10-alpine
+    image: ealgis/postgis:latest
     ports:
       - "127.0.0.1:5432:5432"
     environment:
@@ -19,7 +19,7 @@ services:
 # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
 #     - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
   db:
-    image: mdillon/postgis:10-alpine
+    image: ealgis/postgis:latest
     ports:
       - "127.0.0.1:5433:5432"
     environment:

@@ -1,12 +1,12 @@
 version: "3"
 services:
   datastore:
-    image: mdillon/postgis:10-alpine
+    image: ealgis/postgis:latest
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=datastore
   db:
-    image: mdillon/postgis:10-alpine
+    image: ealgis/postgis:latest
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
