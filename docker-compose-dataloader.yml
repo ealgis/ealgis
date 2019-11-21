@@ -20,7 +20,7 @@ services:
 #     - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
 
   dataloader:
-    image: ealgis/ealgis-ingest-base:latest
+    image: ealgis/ingest-base:latest
     volumes:
       - ./loaders:/app
     environment:
