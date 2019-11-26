@@ -9,6 +9,7 @@ services:
       - POSTGRES_DB=datastore
     volumes:
       - ./loaders:/app
+      - datastore_pgdata:/var/lib/postgresql/data
 #   volumes:
 #
 # FOR DEVELOPMENT ONLY
@@ -25,6 +26,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=ealgis
+    volumes:
+      - db_pgdata:/var/lib/postgresql/data
   redis:
     image: redis:5-alpine
     ports:
@@ -54,3 +57,6 @@ services:
       - db
       - datastore
       - redis
+volumes:
+  datastore_pgdata:
+  db_pgdata:
