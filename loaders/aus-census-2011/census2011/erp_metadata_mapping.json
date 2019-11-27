@@ -1,0 +1,26 @@
+{
+  "tables": {
+    "E01": {
+      "metadataUrls": [
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": ""
+    }, 
+    "E02": {
+      "metadataUrls": [
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }
+      ], 
+      "notes": ""
+    }
+  }
+}

@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: ealgis/postgis:latest
+    volumes:
+      - data:/data
+      - tmp:/tmp
+
+  dataloader:
+    image: ealgis/ingest-base:latest
+    volumes:
+      - ./:/app
+      - data:/data
+      - tmp:/tmp
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+    - db
+
+volumes:
+  data:
+  tmp:

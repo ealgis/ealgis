@@ -1,0 +1,391 @@
+{
+  "tables": {
+    "W01": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Employed, worked full-time is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "W02": {
+      "metadataUrls": [
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W03": {
+      "metadataUrls": [
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "W04": {
+      "metadataUrls": [
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br /><span class=\"rowLabel\">Employed, worked full-time</span> -  Employed, worked full-time is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Employed, away from work</span> -  Includes employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "W05": {
+      "metadataUrls": [
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Country of Birth of Person", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1102011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) This list of countries consists of the most common 35 Country of Birth responses reported in the 2006 Census.<br /><span class=\"rowLabel\">China (excl. SARs and Taiwan); Hong Kong (SAR of China)</span> -  Special Administrative Regions (SARs) comprise 'Hong Kong (SAR of China)' and 'Macau (SAR of China)'.<br /><span class=\"rowLabel\">South Eastern Europe, nfd</span> -  Includes persons who stated their birthplace as Yugoslavia.<br /><span class=\"rowLabel\">United Kingdom, Channel Islands and Isle of Man</span> -  Comprises 'United Kingdom, Channel Islands and Isle of Man, nfd', 'England', 'Isle of Man', 'Northern ireland', 'Scotland', 'Wales', 'Guernsey', and 'Jersey'.<br /><span class=\"rowLabel\">Born elsewhere</span> -  Includes countries not identified individually, 'Australian External Territories', 'Inadequately described' and 'At sea'."
+    }, 
+    "W06": {
+      "metadataUrls": [
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W07": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Year of Arrival in Australia", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Excludes persons who did not state their country of birth.<br />(b) The year 2011 is the period 1 January 2011 to 9 August 2011."
+    }, 
+    "W08": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Year of Arrival in Australia", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902011"
+        }, 
+        {
+          "name": "Proficiency in Spoken English", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3302011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Excludes persons who did not state their country of birth.<br />(b) The year 2011 is the period 1 January 2011 to 9 August 2011.<br />(c) Includes respondents who stated a language but did not state their proficiency in English. Also includes respondents who did not state a language nor their proficiency in English."
+    }, 
+    "W09": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W10": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Number of Employees", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3002011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />.. Not applicable"
+    }, 
+    "W11": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours during the week prior to Census Night."
+    }, 
+    "W12": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W13": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W14": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Employment Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3102011"
+        }, 
+        {
+          "name": "Number of Employees", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3002011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />.. Not applicable"
+    }, 
+    "W15": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Public/Private Employer Indicator", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4202011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) If the government sector cannot be determined, responses are coded to private sector as the default code."
+    }, 
+    "W16": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W17": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "W18": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Non-School Qualification: Level of Education", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8202011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Excludes schooling up to Year 12.<br />(b) Excludes persons with a qualification out of the scope of the Australian Standard Classification of Education (ASCED).<br />(c) Includes Advanced Diploma and Diploma Level, Bachelor Degree Level, Graduate Diploma and Graduate Certificate Level and Postgraduate Degree level.<br />(d) Includes 'Certificate III & IV Level, nfd'.<br />(e) Includes 'Certificate I & II Level, nfd'."
+    }, 
+    "W19": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Full/Part-time Student Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W20": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Full/Part-time Student Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night."
+    }, 
+    "W21": {
+      "metadataUrls": [
+        {
+          "name": "Method of Travel to Work", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7002011"
+        }, 
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W22": {
+      "metadataUrls": [
+        {
+          "name": "Method of Travel to Work", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7002011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of work."
+    }, 
+    "W23": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Type of Educational Institution Attending", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10102011"
+        }, 
+        {
+          "name": "Full/Part-time Student Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }
+      ], 
+      "notes": "This table is based on place of work.<br />(a) Includes Technical and Further Education (TAFE) colleges.<br />(b) Includes students who were attending a technical or further educational institution but did not state whether they were full-time or part-time.<br />(c) Includes students who were attending a university or other tertiary institution but did not state whether they were full-time or part-time.<br />(d) Employed, worked full-time is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(e) Comprises employed persons who did not work any hours in the week prior to Census Night or did not state their hours worked."
+    }
+  }
+}

@@ -1,0 +1,529 @@
+{
+  "tables": {
+    "T01": {
+      "metadataUrls": [],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Total persons; Age group</span> -  Excludes overseas visitors.<br /><span class=\"rowLabel\">Both Aboriginal and Torres Strait Islander</span> -  Applicable to persons who are of both Aboriginal and Torres Strait Islander origin.<br /><span class=\"rowLabel\">Australia</span> -  In 2016 includes 'Australia (includes External Territories), nfd', 'Norfolk Island' and 'Australian External Territories, nec'.<br /><span class=\"rowLabel\">Elsewhere</span> -  Includes 'Inadequately described', and 'At sea'. In 2006 and 2011 includes 'Australia (includes External Territories), nfd', 'Norfolk Island' and 'Australian External Territories, nec'. In 2006 includes 'Not elsewhere classified'.<br /><span class=\"rowLabel\">Language spoken at home</span> -  Excludes overseas vistors and not stated.<br /><span class=\"rowLabel\">Other language</span> -  Includes 'Inadequately described' and 'Non-verbal, so described'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T02": {
+      "metadataUrls": [],
+      "notes": "Median total personal income is applicable to persons aged 15 years and over.<br />Median total family income is applicable to families in family households. It excludes families where at least one family member aged 15 years and over did not state an income, and families<br />where at least one member aged 15 years and over was temporarily absent on Census Night.<br />Median total household income is applicable to occupied private dwellings. It excludes households where at least one member aged 15 years and over did not state an income and<br />households where at least one member aged 15 years and over was temporarily absent on Census Night. It excludes 'Other non-classifiable' households.<br />Median mortgage repayment is applicable to occupied private dwellings being purchased and includes dwellings being purchased under a shared equity scheme. It excludes  'Visitors only'<br />and 'Other non-classifiable' households.<br />Median rent is applicable to occupied private dwellings being rented. It excludes 'Other non-classifiable' households.<br />Average number of persons per bedroom is applicable to occupied private dwellings. It excludes 'Visitors only' and 'Other non-classifiable' households.<br />Note: There has been a change in methodology used to calculate the average number of persons per bedroom. In the 2016 Time Series Profile, the 2011 average number of persons per<br />bedroom data uses the updated methodology. For further information go to:<br />Average household size is applicable to number of persons usually resident in occupied private dwellings. Includes partners, children, and co-tenants (in group households) who were<br />temporarily absent on Census Night. A maximum of three temporary absentees can be counted in each household. It excludes 'Visitors only' and 'Other non-classifiable' households."
+    },
+    "T03": {
+      "metadataUrls": [
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T04": {
+      "metadataUrls": [
+        {
+          "name": "Registered Marital Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6902016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes de facto marriages.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T05": {
+      "metadataUrls": [
+        {
+          "name": "Social Marital Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6602016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes persons in 'Visitors only' and 'Other non-classifiable' households, 'Non-private dwellings', and 'Migratory, off-shore and shipping' SA1s. Excludes persons who were temporarily absent on Census Night.<br />(b) Includes same-sex couples.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T06": {
+      "metadataUrls": [
+        {
+          "name": "Indigenous Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) Comprises persons who identified themselves as being of 'Aboriginal', 'Torres Strait Islander' or 'Both Aboriginal and Torres Strait Islander' origin.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T07": {
+      "metadataUrls": [
+        {
+          "name": "Number of Children Born",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9902016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T08": {
+      "metadataUrls": [
+        {
+          "name": "Country of Birth of Person",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1102016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) This list of countries consists of the most common 35 Country of Birth responses reported in the 2011 Census.<br /><span class=\"rowLabel\">Australia</span> -  In 2016 includes 'Australia (includes External Territories), nfd', 'Norfolk Island' and 'Australian External Territories, nec'.<br /><span class=\"rowLabel\">China (excludes SARs and Taiwan); Hong Kong (SAR of China)</span> -  Special Administrative Regions (SARs) comprise 'Hong Kong (SAR of China)' and 'Macau (SAR of China)'.<br /><span class=\"rowLabel\">United Kingdom, Channel Islands and Isle of Man</span> -  Comprises 'United Kingdom, Channel Islands and Isle of Man, nfd', 'England', 'Isle of Man', 'Northern Ireland', 'Scotland', 'Wales', 'Guernsey' and 'Jersey'.<br /><span class=\"rowLabel\">Born elsewhere</span> -  Includes countries not identified individually, 'Inadequately described' and 'At sea'. In 2006 and 2011 inclides 'Australia (includes External Territories), nfd', 'Norfolk Island' and 'Australian External Territories, nec'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T09": {
+      "metadataUrls": [
+        {
+          "name": "Ancestry",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter602016"
+        },
+        {
+          "name": "Country of Birth of Parents",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1302016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) Selected ancestries are based on the most common 30 Ancestry responses reported in the 2011 Census.<br />(b) Includes birthplace for either or both parents not stated.<br /><span class=\"rowLabel\">Total persons</span> -  This table is a multi-response table, and therefore the total responses count will not necessarily equal the total persons count.<br /><span class=\"rowLabel\">Sinhalese</span> -  For the Ancestry question in the 2016 and 2011 Censuses, responses of Sri Lankan (or similar) were coded to Sri Lankan. In the 2006 Census these responses were coded to Sinhalese.<br /><span class=\"rowLabel\">Other</span> -  If two responses from one person are categorised in the 'Other' category only one response is counted. Includes ancestries not identified individually and 'Inadequately described'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T10": {
+      "metadataUrls": [
+        {
+          "name": "Language spoken at home",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6102016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) This list of languages consists of the most common Language Spoken at Home responses reported in the 2011 Census.<br /><span class=\"rowLabel\">Other</span> -  In 2011 and 2016 comprises 'Chinese, nfd', 'Hakka', 'Wu', 'Min Nan' and 'Chinese, nec'. In 2006 comprises 'Chinese, nfd', 'Hakka', 'Hokkien', 'Teochew', 'Wu', and 'Chinese, nec.'<br /><span class=\"rowLabel\">Other</span> -  Includes languages not identified individually, 'Inadequately described' and 'Non-verbal, so described'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T11": {
+      "metadataUrls": [
+        {
+          "name": "Proficiency in Spoken English/Language",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3202016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T12": {
+      "metadataUrls": [
+        {
+          "name": "Religious Affiliation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8302016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Christian, nfd</span> -  In 2006 and 2011 comprises 'Christian, nfd', 'Apostolic Church, so described', 'Church of God, so described',  'Australian Christian Churches, so described',<br />'New Church Alliance, so described' and 'Faith Churches'.<br /><span class=\"rowLabel\">Other Religious Groups</span> -  Comprises 'Baha'i', 'Chinese Religions', 'Druse', 'Japanese Religions', 'Nature Religions', 'Sikhism', 'Spiritualism' and 'Miscellaneous Religions'.<br /><span class=\"rowLabel\">and No Religious Affiliation</span> -  In 2006 and 2011 comprises 'No Religion, nfd', 'Agnosticism', 'Atheism', 'Humanism', 'Rationalism', 'New Age, so described', 'Theism', 'Pantheism', 'Unitarian'  and 'Religious Belief nfd'. In 2016 the order of the response categories changed on the Census form, no religion moved to the first response. This may result in higher responses reported for the 'No Religion, so described' category.<br /><span class=\"rowLabel\">Religious affiliation not stated</span> -  In 2006 and 2011 includes 'Not defined'. In 2016 includes 'Inadequately described'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T13": {
+      "metadataUrls": [
+        {
+          "name": "Educational Institution: Attendee Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10202016"
+        },
+        {
+          "name": "Full/Part-time Student Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Technical or Further Educational Institution</span> -  Includes TAFE colleges.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T14": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502016"
+        },
+        {
+          "name": "Household Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4502016"
+        },
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) In multiple family households, only the family composition of the primary family is included.<br />(b) Comprises 'Visitors only' and 'Other non-classifiable' households.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T15": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502016"
+        },
+        {
+          "name": "Number of Persons Usually Resident",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Includes up to three residents who were temporarily absent on Census Night.<br />(b) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T16": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502016"
+        },
+        {
+          "name": "Number of Bedrooms",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter802016"
+        },
+        {
+          "name": "Family Household",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002016"
+        },
+        {
+          "name": "Number of Persons Usually Resident",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Includes up to three residents who were temporarily absent on Census Night.<br />(b) Excludes 'Lone person',  'Group', 'Visitors only' and 'Other non-classifiable' households.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T17": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502016"
+        },
+        {
+          "name": "Number of Bedrooms",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter802016"
+        },
+        {
+          "name": "Group Household",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302016"
+        },
+        {
+          "name": "Number of Persons Usually Resident",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Includes up to three residents who were temporarily absent on Census Night.<br />(b) Excludes 'Family', 'Lone person',  'Visitors only' and 'Other non-classifiable' households.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T18": {
+      "metadataUrls": [
+        {
+          "name": "Tenure Type",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702016"
+        },
+        {
+          "name": "Landlord Type",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502016"
+        },
+        {
+          "name": "Dwelling Structure",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br /><span class=\"rowLabel\">Owned with a mortgage; Owned with a mortgage</span> -  Includes dwellings being purchased under a shared equity scheme.<br /><span class=\"rowLabel\">Person not in same household; Person not in same household</span> -  Comprises dwellings being rented from a parent/other relative or other person.<br /><span class=\"rowLabel\">Other landlord type; Other landlord type</span> -  Comprises dwellings being rented through a 'Residential park (includes caravan parks and marinas)', 'Employer - Government (includes Defence Housing Authority)' and 'Employer - other employer'.<br /><span class=\"rowLabel\">Other tenure type; Other tenure type</span> -  Includes dwellings being occupied under a life tenure scheme.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T19": {
+      "metadataUrls": [
+        {
+          "name": "Rent",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802016"
+        },
+        {
+          "name": "Landlord Type",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b) Includes dwellings being occupied rent-free.<br />(c) Comprises dwellings being rented from a parent/other relative or other person.<br />(d) Comprises dwellings being rented through a 'Residential park (includes caravan parks and marinas)', 'Employer - Government (includes Defence Housing Authority)' and 'Employer - other employer'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T20": {
+      "metadataUrls": [
+        {
+          "name": "Rent",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802016"
+        },
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "Couple Families",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b)  Includes same-sex couple families.<br />(c)  Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(d)  Includes couple families that also have non-dependent children.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data.These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T21": {
+      "metadataUrls": [
+        {
+          "name": "Rent",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802016"
+        },
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "One Parent Families",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter44902016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(c) Includes one parent families that also have non-dependent children.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T22": {
+      "metadataUrls": [
+        {
+          "name": "Family Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702016"
+        },
+        {
+          "name": "Number of Children",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1402016"
+        },
+        {
+          "name": "Couple Families",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b) Number of children may include up to three children who were temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated; Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated; All incomes not stated</span> -  Includes families where no members present stated an income.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T23": {
+      "metadataUrls": [
+        {
+          "name": "Family Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702016"
+        },
+        {
+          "name": "Number of Children",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1402016"
+        },
+        {
+          "name": "One Parent Families",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter44902016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b) Number of children may include up to three children who were temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated; Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated; All incomes not stated</span> -  Includes families where no members present stated an income.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T24": {
+      "metadataUrls": [
+        {
+          "name": "Household Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902016"
+        },
+        {
+          "name": "Rent",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Income and rent amounts are as reported in each Census (2006, 2011 and 2016), i.e. not adjusted for inflation.<br />(b) Includes dwellings being occupied rent-free. Excludes 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated; Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent on Census Night.<br /><span class=\"rowLabel\">All incomes not stated; All incomes not stated</span> -  Includes households where no members present stated an income.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T25": {
+      "metadataUrls": [
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "Mortgage Repayments",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6632016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Includes dwellings being purchased under a rent/buy scheme. Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes dwellings being purchased under a shared equity scheme.<br /><span class=\"rowLabel\">dependent students; no dependent students; with dependent students; dependent students; no dependent students; with dependent students</span> -  Includes families that also have non-dependent children.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T26": {
+      "metadataUrls": [
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "Parents",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202016"
+        },
+        {
+          "name": "Partners",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46402016"
+        },
+        {
+          "name": "Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Excludes families where one parent/partner was temporarily absent on Census Night. Income details for temporarily absent persons are not available. Excludes same-sex couple families. Excludes couple<br />families where one or both incomes were not stated.<br /><span class=\"rowLabel\">and dependent students; and no dependent students; and with dependent students</span> -  Includes couple families that also have non-dependent children.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T27": {
+      "metadataUrls": [
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "Social Marital Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6602016"
+        },
+        {
+          "name": "Dependent Children",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Comprises children aged under 15 years and dependent students aged 15-24 years. Includes families who also have non-dependent children.<br />(b) Number of children may include up to three children who were temporarily absent on Census Night.<br /><span class=\"rowLabel\">Married in a de facto marriage; Married in a de facto marriage; Married in a de facto marriage</span> -  Includes same-sex couples.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T28": {
+      "metadataUrls": [
+        {
+          "name": "Core Activity Need for Assistance",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter702016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) Measures the number of people with a profound or severe disability. People with a profound or severe disability are defined as those people needing help or assistance in one or more of the three core activity<br />areas of self-care, mobility and communication, because of a disability, long-term health condition (lasting six months or more) or old age.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T29": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Labour force status; Non-school qualifications</span> -  Applicable to persons aged 15 years and over.<br /><span class=\"rowLabel\">Employed, worked full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Employed, away from work</span> -  Comprises employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked.<br /><span class=\"rowLabel\">% Unemployment</span> -   The number of unemployed persons expressed as a percentage of the total labour force. The ABS Labour Force Survey provides the official estimates of Australia's unemployment rate.<br /><span class=\"rowLabel\">% Labour force participation</span> -  The number of persons in the labour force expressed as a percentage of persons aged 15 years and over.<br /><span class=\"rowLabel\">% Employment to population</span> -  The number of employed persons expressed as a percentage of persons aged 15 years and over.<br /><span class=\"rowLabel\">Certificate III & IV Level</span> -  Includes 'Certificate III & IV Level, nfd'.<br /><span class=\"rowLabel\">Certificate I & II Level</span> -  Includes 'Certificate I & II Level, nfd'.<br /><span class=\"rowLabel\">Lived at same address 1 year ago; Lived at different address 1 year ago</span> -  Excludes persons less than 1 year of age. Lived at different address 1 year ago includes persons living elsewhere in Australia or overseas 1 year ago.<br /><span class=\"rowLabel\">Lived at same address 5 years ago; Lived at different address 5 years ago</span> -  Excludes persons less than 5 years of age. Lived at different address 5 years ago includes persons living elsewhere in Australia or overseas 5 years ago.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T30": {
+      "metadataUrls": [
+        {
+          "name": "Family Composition",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802016"
+        },
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        },
+        {
+          "name": "Parents",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202016"
+        },
+        {
+          "name": "Partners",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46402016"
+        }
+      ],
+      "notes": "This table is based on place of enumeration.<br />(a) Includes same-sex couple families.<br />(b) Includes families where at least one member aged 15 years and over did not state an income and/or was temporarily absent on Census Night and families where no persons stated an income and/or was temporarily absent on Census Night.<br /><span class=\"rowLabel\">Both employed, full-time; One employed full-time; One employed full-time; Both employed, full-time; One employed full-time; One employed full-time; Employed full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">One employed, one away from work; One away from work; Both employed, away from work; One employed, one away from work; One away from work; Both employed, away from work</span> -  Comprises employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked.<br /><span class=\"rowLabel\">One employed full-time(c), one not working; One employed part-time, one not working; One away from work(d), one not working; One employed full-time(c), one not working; One employed part-time, one not working; One away from work(d), one not working</span> -  Includes families where one partner was employed and the other was unemployed or not in the labour force.<br /><span class=\"rowLabel\">Both not working; Both not working</span> -  Includes families where both partners were unemployed or not in the labour force, and families where one partner was unemployed and the other not in the labour force.<br /><span class=\"rowLabel\">Labour force status not stated; Labour force status not stated; Labour force status not stated</span> -  Includes families where one or both parents/partners did not state his/her labour force status or a parent/partner was temporarily absent.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T31": {
+      "metadataUrls": [
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Count of persons aged 15 years and over with a qualification</span> -  Excludes persons with a qualification out of the scope of the Australian Standard Classification of Education (ASCED).<br /><span class=\"rowLabel\">Certificate III & IV Level; Certificate III & IV Level; Certificate III & IV Level</span> -  Includes 'Certificate III & IV Level, nfd'.<br /><span class=\"rowLabel\">Certificate I & II Level; Certificate I & II Level; Certificate I & II Level</span> -  Includes 'Certificate I & II Level, nfd'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T32": {
+      "metadataUrls": [
+        {
+          "name": "Non-school Qualification: Field of Study",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8102016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Count of persons aged 15 years and over with a qualification</span> -  Excludes persons with a qualification out of the scope of the Australian Standard Classification of Education (ASCED).<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T33": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T34": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) 'Industry of Employment' was coded to the Australian and New Zealand Standard Industrial Classification (ANZSIC) 2006, Revision 2 published in 2013. Data for 2006 and 2011 have been concorded.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "T35": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of usual residence.<br />(a) 'Occupation' was coded to the Australian and New Zealand Standard Classification of Occupations (ANZSCO) Version 1.2 released in 2013. Data for 2006 and 2011 have been concorded.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    }
+  }
+}

@@ -3,12 +3,15 @@ services:
   datastore:
     image: ealgis/postgis:latest
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=datastore
     volumes:
-      - ./loaders:/app
+      - ./:/app
+      - datastore_pgdata:/var/lib/postgresql/data
+      - data:/data
+      - tmp:/tmp
 #   volumes:
 #
 # FOR DEVELOPMENT ONLY
@@ -18,11 +21,14 @@ services:
 #
 # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
 #     - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
-
   dataloader:
-    image: ealgis/ingest-base:latest
+    build:
+      context: django/
+      dockerfile: Dockerfile-ingest
     volumes:
-      - ./loaders:/app
+      - ./:/app
+      - data:/data
+      - tmp:/tmp
     environment:
       - REDIS_LOCATION=redis://redis:6379/1
       - DB_HOST=datastore
@@ -32,4 +38,7 @@ services:
       - DB_PASSWORD=postgres
     depends_on:
     - datastore
-
+volumes:
+  datastore_pgdata:
+  data:
+  tmp:

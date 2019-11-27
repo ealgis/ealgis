@@ -1,0 +1,766 @@
+{
+  "tables": {
+    "X01": {
+      "metadataUrls": [
+        {
+          "name": "Country of Birth of Person", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1102011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) This list consists of the most common 50 Country of Birth responses reported in the 2006 Census.<br /><span class=\"rowLabel\">China (excludes SARs and Taiwan); Hong Kong (SAR of China)</span> -  Special Administrative Regions (SARs) comprise 'Hong Kong (SAR of China)' and 'Macau (SAR of China)'.<br /><span class=\"rowLabel\">South Eastern Europe, nfd</span> -  Includes persons who stated their birthplace as Yugoslavia.<br /><span class=\"rowLabel\">Sudan</span> -  Includes persons who stated their birthplace as South Sudan."
+    }, 
+    "X02": {
+      "metadataUrls": [
+        {
+          "name": "Country of Birth (Major Group) of Person", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter54302011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Other; Other</span> -  Includes 'Australian External Territories'.<br /><span class=\"rowLabel\">Other; Other</span> -  Includes 'Inadequately described', and 'At sea'."
+    }, 
+    "X03": {
+      "metadataUrls": [
+        {
+          "name": "Country of Birth (Minor Group) of Person", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter54302011"
+        }, 
+        {
+          "name": "Year of Arrival in Australia", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes persons born in Australia and persons who did not state a country of birth.<br />(b) The year 2011 is the period 1 January 2011 to 9 August 2011.<br /><span class=\"rowLabel\">Australia (includes External Territories)</span> -  Comprises 'Australia', 'Australia (includes External Territories, nfd)', 'Norfolk Island' and 'Australian External Territories, nec'.<br /><span class=\"rowLabel\">Other</span> -  Includes 'Inadequately described', and 'At sea'."
+    }, 
+    "X04": {
+      "metadataUrls": [
+        {
+          "name": "Proficiency in Spoken English/Language", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3202011"
+        }, 
+        {
+          "name": "Year of Arrival in Australia", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes persons born in Australia and persons who did not state a country of birth.<br />(b) The year 2011 is the period 1 January 2011 to 9 August 2011.<br />..  Not applicable"
+    }, 
+    "X05": {
+      "metadataUrls": [
+        {
+          "name": "Language Spoken at Home", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6102011"
+        }, 
+        {
+          "name": "Proficiency in Spoken English/Language", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3202011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) This list of languages consists of the most common Language Spoken at Home responses reported in the 2006 Census.<br />(b) Includes the categories 'Proficiency in English not stated' and 'Language and proficiency in English not stated'.<br /><span class=\"rowLabel\">Other</span> -  Comprises 'Chinese, nfd', 'Hakka', 'Wu', 'Min Nan' and 'Chinese, nec'.<br /><span class=\"rowLabel\">Other</span> -  Comprises' Indo-Aryan, nfd', 'Gujarati', 'Konkani', 'Marathi', 'Nepali', 'Sindhi', 'Assamese', 'Dhivehi', 'Kashmiri', 'Oriya', 'Fijian Hindustani' and 'Indo-Aryan, nec'.<br /><span class=\"rowLabel\">Other</span> -  Comprises 'Iranic, nfd', 'Kurdish', 'Pashto', 'Balochi', 'Hazaraghi' and 'Iranic, nec'.<br /><span class=\"rowLabel\">Other</span> -  Comprises 'Bikol', 'Bisaya', 'Cebuano', 'Ilokano', 'Ilonggo (Hiligaynon)', 'Pampangan', 'Malay', 'Tetum', 'Timorese', 'Acehnese', 'Balinese', 'Iban', 'Javanese', 'Southeast Asian Austronesian Languages, nec' and<br />'Southeast Asian Austronesian Languages, nfd'.<br /><span class=\"rowLabel\">Other</span> -  Comprises languages not identified individually, 'Inadequately described' and 'Non-verbal, so described'.<br />..  Not applicable"
+    }, 
+    "X06": {
+      "metadataUrls": [
+        {
+          "name": "Ancestry", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter602011"
+        }, 
+        {
+          "name": "Birthplace Of Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) This list of ancestries consists of the most common 30 Ancestry responses reported in the 2006 Census.<br />(b) Includes birthplace for either or both parents not stated.<br /><span class=\"rowLabel\">Total responses; Total persons</span> -  This table is a multi-response table and therefore the total responses count will not necessarily equal the total persons count.<br /><span class=\"rowLabel\">Other</span> -  If two responses from one person are categorised in the 'Other' category only one response is counted. Includes ancestries not identified individually and 'Inadequately described'."
+    }, 
+    "X07": {
+      "metadataUrls": [
+        {
+          "name": "Ancestry", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter602011"
+        }, 
+        {
+          "name": "Dependent Children ", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Birthplace Of Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1302011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) This list of ancestries consists of the most common 30 Ancestry responses reported in the 2006 Census.<br />(b) Comprises children aged under 15 years and dependent students aged 15-24 years who were present at their usual residence on Census Night.<br /><span class=\"rowLabel\">Total responses; Total dependent children</span> -  This table is a multi-response table and therefore the total responses count will not necessarily equal the total persons count.<br /><span class=\"rowLabel\">Other</span> -  If two responses from one person are categorised in the 'Other' category only one response is counted. Includes ancestries not identified individually and 'Inadequately described'.<br />(e) Includes birthplace for either or both parents not stated."
+    }, 
+    "X08": {
+      "metadataUrls": [
+        {
+          "name": "Religious Affiliation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8302011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Other Orthodox</span> -  Comprises 'Eastern Orthodox, nfd', 'Albanian Orthodox', 'Antiochian Orthodox', 'Romanian Orthodox', 'Russian Orthodox', 'Ukranian Orthodox' and 'Eastern Orthodox, nec'.<br /><span class=\"rowLabel\">Christian, nfd</span> -  Comprises 'Christian, nfd', 'Apostolic Church, so described', 'Church of God, so described', 'Australian Christian Churches, so described', and 'New Church Alliance, so described'.<br /><span class=\"rowLabel\">No religion</span> -  Comprises 'No Religion, nfd', 'Agnosticism', 'Atheism', 'Humanism' and 'Rationalism'.<br /><span class=\"rowLabel\">Other religious affiliation</span> -  Comprises 'Religious belief, nfd', 'Not defined', 'New Age, so described' and 'Theism'."
+    }, 
+    "X09": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Dependent Children", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }, 
+        {
+          "name": "Couple Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502011"
+        }
+      ], 
+      "notes": "(a) Comprises children aged under 15 years and dependent students aged 15-24 years. Includes families who also have non-dependent children.<br />(b) Number of children may include up to three children who were temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X10": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Dependent Children", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }, 
+        {
+          "name": "One Parent Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter44902011"
+        }
+      ], 
+      "notes": "(a) Comprises children aged under 15 years and dependent students aged 15-24 years. Includes families who also have non-dependent children.<br />(b) Number of children may include up to three children who were temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X11": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }
+      ], 
+      "notes": "(a) In dwellings where there is more than one family, each family will be counted separately under the tenure type for that dwelling.  Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X12": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Landlord Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502011"
+        }, 
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes caravan parks and marinas.<br />(c) Includes Defence Housing Authority.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X13": {
+      "metadataUrls": [
+        {
+          "name": "Mortgage Repayment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6632011"
+        }, 
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being purchased under a rent/buy scheme. Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes families that also have dependent students and non-dependent children."
+    }, 
+    "X14": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Family Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X15": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Lone Person Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter39802011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Family', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X16": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Group Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Family', 'Lone person', 'Visitors only' and 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X17": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Family Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes caravan parks and marinas.<br />(c) Includes Defence Housing Authority.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X18": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Landlord Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502011"
+        }, 
+        {
+          "name": "Lone Person Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter39802011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Family', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes caravan parks and marinas.<br />(c) Includes Defence Housing Authority."
+    }, 
+    "X19": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Landlord Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502011"
+        }, 
+        {
+          "name": "Group Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Family', 'Lone person', 'Visitors only' and 'Other non-classifiable' households.<br />(b) Includes caravan parks and marinas.<br />(c) Includes Defence Housing Authority.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X20": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Rent", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802011"
+        }, 
+        {
+          "name": "Family Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being occupied rent-free. Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X21": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Rent", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802011"
+        }, 
+        {
+          "name": "Lone Person Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter39802011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being occupied rent-free. Excludes 'Family', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X22": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Rent", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802011"
+        }, 
+        {
+          "name": "Group Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being occupied rent-free. Excludes 'Family', 'Lone person', 'Visitors only' and 'Other non-classifiable' households.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes households where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes households where no members present stated an income."
+    }, 
+    "X23": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Rent", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8802011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being occupied rent-free. Excludes 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X24": {
+      "metadataUrls": [
+        {
+          "name": "Mortgage Repayment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6632011"
+        }, 
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }
+      ], 
+      "notes": "(a) Includes dwellings being purchased under a rent/buy scheme. Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(b) Comprises the categories 'Caravan, cabin, houseboat', 'Improvised home, tent, sleepers out' and 'House or flat attached to a shop, office, etc'."
+    }, 
+    "X25": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Household Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4502011"
+        }, 
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(b) In multiple family households, only the family composition of the primary family is included."
+    }, 
+    "X26": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Motor Vehicles", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10702011"
+        }, 
+        {
+          "name": "Number of Persons Usually Resident", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502011"
+        }, 
+        {
+          "name": "Family Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002011"
+        }
+      ], 
+      "notes": "(a) Excludes motorbikes/scooters.<br />(b) Includes up to three residents who were temporarily absent on Census Night.<br />(c) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X27": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Motor Vehicles", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10702011"
+        }, 
+        {
+          "name": "Lone Person Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter39802011"
+        }
+      ], 
+      "notes": "(a) Excludes motorbikes/scooters.<br />(b) Excludes 'Family', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X28": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Motor Vehicles", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10702011"
+        }, 
+        {
+          "name": "Number of Persons Usually Resident", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502011"
+        }, 
+        {
+          "name": "Group Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302011"
+        }
+      ], 
+      "notes": "(a) Excludes motorbikes/scooters.<br />(b) Includes up to three residents who were temporarily absent on Census Night.<br />(c) Excludes 'Family', 'Lone person', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X29": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Bedrooms", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter802011"
+        }, 
+        {
+          "name": "Number of Persons Usually Resident", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502011"
+        }, 
+        {
+          "name": "Family Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter35002011"
+        }
+      ], 
+      "notes": "(a) Includes up to three persons who were temporarily absent on Census Night.<br />(b) Excludes 'Lone person', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X30": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Bedrooms", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter802011"
+        }, 
+        {
+          "name": "Lone Person Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter39802011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Family', 'Group', 'Visitors only' and 'Other non-classifiable' households."
+    }, 
+    "X31": {
+      "metadataUrls": [
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Number of Bedrooms", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter802011"
+        }, 
+        {
+          "name": "Number of Persons Usually Resident", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7502011"
+        }, 
+        {
+          "name": "Group Households", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter34302011"
+        }
+      ], 
+      "notes": "(a) Includes up to three persons who were temporarily absent on Census Night.<br />(b) Excludes 'Family', 'Lone person', 'Visitors only' and 'Other not classifiable' households."
+    }, 
+    "X32": {
+      "metadataUrls": [
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }, 
+        {
+          "name": "Birthplace of Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1302011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Dependent Children", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }
+      ], 
+      "notes": "(a) Comprises children aged under 15 years and dependent students aged 15-24 years who were present at their usual residence on Census Night.<br /><span class=\"rowLabel\">Birthplace not stated; Birthplace not stated</span> -  Includes birthplace for either or both parents not stated."
+    }, 
+    "X33": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Dependent Children", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }, 
+        {
+          "name": "Couple Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502011"
+        }
+      ], 
+      "notes": "(a) Comprises children aged under 15 years and dependent students aged 15-24 years who were present at their usual residence on Census Night.<br />(b) Comprises couple families with both parents present at their usual residence on Census Night. Excludes same-sex couples.<br /><span class=\"rowLabel\">Full-time; Full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Employed, away from work; Employed, away from work</span> -  Comprises employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "X34": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Dependent Children", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter25702011"
+        }, 
+        {
+          "name": "One Parent Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter44902011"
+        }
+      ], 
+      "notes": "(a) Comprises children aged under 15 years and dependent students aged 15-24 years who were present at their usual residence on Census Night.<br /><span class=\"rowLabel\">Full-time; Full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Employed, away from work; Employed, away from work</span> -  Comprises employed persons who did not work any hours in the week prior to Census Night."
+    }, 
+    "X35": {
+      "metadataUrls": [
+        {
+          "name": "Non-school Qualification: Field of Study", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8102011"
+        }, 
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes persons with a qualification outside of the scope of the Australian Standard Classification of Education (ASCED)."
+    }, 
+    "X36": {
+      "metadataUrls": [
+        {
+          "name": "Non-school Qualification: Level of Education", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8202011"
+        }, 
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes schooling up to Year 12.<br />(b) Excludes persons with a qualification outside of the scope of the Australian Standard Classification of Education (ASCED).<br /><span class=\"rowLabel\">Certificate III & IV Level</span> -  Includes 'Certificate III & IV Level, nfd'.<br /><span class=\"rowLabel\">Certificate I & II Level</span> -  Includes 'Certificate I & II Level, nfd'."
+    }, 
+    "X37": {
+      "metadataUrls": [
+        {
+          "name": "Non-school Qualification: Level of Education", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8202011"
+        }, 
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes schooling up to Year 12.<br />(b) Excludes persons with a qualification outside the scope of the Australian Standard Classification of Education (ASCED)."
+    }, 
+    "X38": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Comprises employed persons who did not work any hours during the week prior to Census Night."
+    }, 
+    "X39": {
+      "metadataUrls": [
+        {
+          "name": "Occupation", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602011"
+        }, 
+        {
+          "name": "Hours Worked", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Comprises employed persons who did not work any hours during the week prior to Census Night."
+    }, 
+    "X40": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Partners", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46402011"
+        }, 
+        {
+          "name": "Couple Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502011"
+        }
+      ], 
+      "notes": "(a) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked.<br />(c) Comprises people who are unemployed and people not in the labour force.<br />(d) Includes families where one or both partners did not state their labour force status or a partner was temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X41": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202011"
+        }, 
+        {
+          "name": "Partners", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46402011"
+        }, 
+        {
+          "name": "Couple Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter27502011"
+        }
+      ], 
+      "notes": "(a) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked.<br />(c) Comprises people who are unemployed and people not in the labour force.<br />(d) Includes families where one or both parents/partners did not state their labour force status or a parent/partner was temporarily absent on Census Night.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }, 
+    "X42": {
+      "metadataUrls": [
+        {
+          "name": "Family Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3702011"
+        }, 
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Parents", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter46202011"
+        }, 
+        {
+          "name": "One Parent Families", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter44902011"
+        }
+      ], 
+      "notes": "(a) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked.<br /><span class=\"rowLabel\">Partial income stated</span> -  Includes families where at least one, but not all, member(s) aged 15 years and over did not state an income and/or was temporarily absent.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Includes families where no members present stated an income."
+    }
+  }
+}

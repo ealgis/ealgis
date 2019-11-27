@@ -1,0 +1,28 @@
+{
+    "Selected Person Characteristics": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09",
+        "T10",
+        "T11",
+        "T12",
+        "T13",
+        "T32",
+        "T33",
+        "T34"
+    ],
+    "Selected Dwelling and Household Characteristics": ["T02", "T14", "T15", "T16", "T17", "T18", "T19"],
+    "Selected Family Characteristics": ["T02", "T04", "T05", "T14", "T16", "T20", "T21", "T22", "T23", "T25", "T26", "T29"],
+    "Aboriginal and Torres Strait Islander Peoples": ["T06"],
+    "Children and Childcare": ["T07", "T22", "T23", "T27"],
+    "Cultural and Language Diversity": ["T06", "T08", "T09", "T10", "T11", "T12"],
+    "Education and Qualifications": ["T13", "T28", "T30", "T31"],
+    "Employment, Income and Unpaid Work": ["T26", "T28", "T29", "T32", "T33", "T34"],
+    "Household Income and Housing Costs": ["T02", "T19", "T20", "T21", "T24", "T25"]
+}

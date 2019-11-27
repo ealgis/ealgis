@@ -1,0 +1,11 @@
+{
+    "Selected Person Characteristics": ["I01", "I02", "I03", "I04", "I05", "I06", "I07", "I08", "I09"],
+    "Selected Dwelling and Household Characteristics": ["I01", "I04", "I10", "I11", "I12", "I13"],
+    "Selected Family Characteristics": ["I12"],
+    "Cultural and Language Diversity": ["I01", "I02"],
+    "Disability, Need for Assistance and Carers": ["I08", "I09"],
+    "Education and Qualifications": ["I01", "I05", "I06", "I15"],
+    "Employment, Income and Unpaid Work": ["I04", "I07", "I09", "I14", "I16"],
+    "Household Income and Housing Costs": ["I04", "I13"],
+    "Usual Address and Internal Migration": ["I01"]
+}

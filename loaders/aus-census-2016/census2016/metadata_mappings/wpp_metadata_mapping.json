@@ -1,0 +1,396 @@
+{
+  "tables": {
+    "W01": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours in the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W02": {
+      "metadataUrls": [
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Comprises 'Owner manager of incorporated enterprise with employees', 'Owner manager of incorporated enterprise without employees' and 'Owner manager of incorporated enterprise - employees not stated'.<br />(b) Comprises 'Owner manager of unincorporated enterprise with employees', 'Owner manager of unincorporated enterprise without employees' and 'Owner manager of unincorporated enterprise - employees not stated'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W03": {
+      "metadataUrls": [
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        },
+        {
+          "name": "Hours Worked",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002011"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night.<br />(c) Comprises 'Owner manager of incorporated enterprise with employees', 'Owner manager of incorporated enterprise without employees' and 'Owner manager of incorporated enterprise - employees not stated'.<br />(d) Comprises 'Owner manager of unincorporated enterprise with employees', 'Owner manager of unincorporated enterprise without employees' and 'Owner manager of unincorporated enterprise - employees not stated'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W04": {
+      "metadataUrls": [
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Comprises 'Owner manager of incorporated enterprise with employees', 'Owner manager of incorporated enterprise without employees' and 'Owner manager of incorporated enterprise - employees not stated'.<br />(b) Comprises 'Owner manager of unincorporated enterprise with employees', 'Owner manager of unincorporated enterprise without employees' and 'Owner manager of unincorporated enterprise - employees not stated'.<br /><span class=\"rowLabel\">Employed, worked full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Employed, away from work</span> -  Includes employed persons who did not work any hours in the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W05": {
+      "metadataUrls": [
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Country of Birth of Person",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter1102016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) This list of countries consists of the most common 35 Country of Birth responses reported in the 2011 Census.<br />(b) Comprises 'Owner manager of incorporated enterprise with employees', 'Owner manager of incorporated enterprise without employees' and 'Owner manager of incorporated enterprise - employees not stated'.<br />(c) Comprises 'Owner manager of unincorporated enterprise with employees', 'Owner manager of unincorporated enterprise without employees' and 'Owner manager of unincorporated enterprise - employees not stated'.<br /><span class=\"rowLabel\">Australia</span> -  Includes 'Australia', 'Australia (includes External Territories), nfd', 'Norfolk Island' and 'Australian External Territories, nec'.<br /><span class=\"rowLabel\">China (excludes SARs and Taiwan); Hong Kong (SAR of China)</span> -  Special Administrative Regions (SARs) comprise 'Hong Kong (SAR of China)' and 'Macau (SAR of China)'.<br /><span class=\"rowLabel\">United Kingdom, Channel Islands and Isle of Man</span> -  Comprises 'United Kingdom, Channel Islands and Isle of Man, nfd', 'England', 'Isle of Man', 'Northern Ireland', 'Scotland', 'Wales', 'Guernsey', and 'Jersey'.<br /><span class=\"rowLabel\">Born elsewhere</span> -  Includes countries not identified individually, 'Inadequately described', and 'At sea'.  Excludes not stated.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W06": {
+      "metadataUrls": [
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Comprises 'Owner manager of incorporated enterprise with employees', 'Owner manager of incorporated enterprise without employees' and 'Owner manager of incorporated enterprise - employees not stated'.<br />(b) Comprises 'Owner manager of unincorporated enterprise with employees', 'Owner manager of unincorporated enterprise without employees' and 'Owner manager of unincorporated enterprise - employees not stated'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W07": {
+      "metadataUrls": [
+        {
+          "name": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Year of Arrival in Australia",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Excludes persons who did not state their country of birth.<br />(b) The year 2016 is the period 1 January 2016 to 9 August 2016.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W08": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Year of Arrival in Australia",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10902016"
+        },
+        {
+          "name": "Proficiency in Spoken English",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3302016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br /><span class=\"rowLabel\">Count of employed persons aged 15 years and over born overseas</span> -  Excludes persons who did not state their country of birth.<br />(b) The year 2016 is the period 1 January 2016 to 9 August 2016.<br />(c) Includes respondents who stated a language but did not state their proficiency in English. Also includes respondents who did not state a language nor their proficiency in English.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W09": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W10": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Number of Employees",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3002016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Records the number of employees (in ranges) employed by owner managers (excluding the owner managers themselves).<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W11": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Hours Worked",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Comprises employed persons who did not work any hours during the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W12": {
+      "metadataUrls": [
+        {
+          "name": "Industry of Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5802016"
+        },
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W13": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W14": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Status in Employment",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9152016"
+        },
+        {
+          "name": "Number of Employees",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3002016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W15": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Total Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        },
+        {
+          "name": "Public/Private Sector",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4202016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) If the government sector cannot be determined, responses are coded to private sector as the default code.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W16": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Total Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W17": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Total Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        },
+        {
+          "name": "Hours Worked",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br />(b) Includes employed persons who did not work any hours in the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W18": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Total Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Excludes schooling up to Year 12.<br />(b) Excludes persons with a qualification out of the scope of the Australian Standard Classification of Education (ASCED).<br />(c) Includes 'Advanced Diploma and Diploma Level', 'Bachelor Degree Level', 'Graduate Diploma and Graduate Certificate Level' and 'Postgraduate Degree level'.<br />(d) Includes 'Certificate III & IV Level, nfd'.<br />(e) Includes 'Certificate I & II Level, nfd'.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W19": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Total Personal Income",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Full/Part-time Student Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W20": {
+      "metadataUrls": [
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        },
+        {
+          "name": "Hours Worked",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5002016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Full/Part-time Student Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Hours worked is an aggregate of the number of hours worked in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">None; None</span> -  Comprises employed persons who did not work any hours during the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W21": {
+      "metadataUrls": [
+        {
+          "name": "Method of Travel to Work",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7002016"
+        },
+        {
+          "name": "Occupation",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7602016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W22": {
+      "metadataUrls": [
+        {
+          "name": "Method of Travel to Work",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7002016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        },
+        {
+          "name": "Sex",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W23": {
+      "metadataUrls": [
+        {
+          "name": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10202016",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10202016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) Includes Technical and Further Education (TAFE) colleges.<br />(b) Includes students who were attending a technical or further educational institution but did not state whether they were full-time or part-time.<br />(c) Includes students who were attending a university or other tertiary institution but did not state whether they were full-time or part-time.<br />(d) Includes students who were attending a secondary or other institution<br />(e) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(f) Comprises employed persons who did not work any hours in the week prior to Census Night or did not state their hours worked.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    },
+    "W24": {
+      "metadataUrls": [
+        {
+          "name": "Core Activity Need for Assistance",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter702016"
+        },
+        {
+          "name": "Labour Force Status",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402016"
+        },
+        {
+          "name": "Age",
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302016"
+        }
+      ],
+      "notes": "This table is based on place of work.<br />(a) A person's need for help or assistance in one or more of the three core activity areas of self-care, mobility and communication, because of a disability,<br />long term health condition (lasting six months or more) or old age.<br />(b) 'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br />(c) Comprises employed persons who did not work any hours in the week prior to Census Night.<br />Please note that there are small random adjustments made to all cell values to protect the confidentiality of data. These adjustments may cause the sum of rows or columns to differ by small amounts from table totals."
+    }
+  }
+}

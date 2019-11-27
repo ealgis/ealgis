@@ -1,0 +1,288 @@
+{
+  "tables": {
+    "I01": {
+      "metadataUrls": [
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence unless otherwise stated.<br /><span class=\"rowLabel\">Same Statistical Area Level 2 (SA2); Different SA2 in:</span> -  Data are based on place of enumeration.<br /><span class=\"rowLabel\">educational institution</span> -  Comprises 'Pre-school', 'Infants/Primary' (including Government, Catholic, Other Non Government), 'Secondary' (including Government, Catholic, Other Non Government),<br />'Technical or Further Educational Institution (including TAFE Colleges)', and 'University or other Tertiary Institutions'.<br /><span class=\"rowLabel\">Highest year of school completed</span> -  Applicabale to persons aged 15 years and over.<br /><span class=\"rowLabel\">Type of usual residence</span> -  Applicable only to persons counted at their usual residence on Census Night.<br /><span class=\"rowLabel\">Improvised home, tent, sleepers out</span> -  Includes persons enumerated in sheds, tents, humpies, and other improvised dwellings. It also includes persons sleeping on park benches or in other rough accommodation.<br /><span class=\"rowLabel\">Other private dwelling</span> -  Includes 'Semi-detached, row or terrace house, townhouse etc.', 'Flat, unit or apartment', 'Caravan, cabin, houseboat' and 'House or flat attached to a shop, office, etc.'."
+    }, 
+    "I02": {
+      "metadataUrls": [
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Both Aboriginal and Torres Strait Islander</span> -  Applicable to persons who are of both Aboriginal and Torres Strait Islander origin."
+    }, 
+    "I03": {
+      "metadataUrls": [
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence."
+    }, 
+    "I04": {
+      "metadataUrls": [
+        {
+          "name": "Medians", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter40802011"
+        }, 
+        {
+          "name": "Averages", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter40702011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }, 
+        {
+          "name": "Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter40902011"
+        }
+      ], 
+      "notes": "Proportion of dwellings that need 1 or more extra bedrooms is applicable to occupied private dwellings, excluding 'Visitors only' and 'Other non-classifiable' households. It is a<br />comparison of the number of bedrooms in a dwelling with a series of household demographics, such as the number of usual residents, their relationship to each other, age and sex.<br />It is based on the Canadian National Occupancy Standard. See the explanatory notes for more detail."
+    }, 
+    "I05": {
+      "metadataUrls": [
+        {
+          "name": "Type of Educational Institution Attending ", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10102011"
+        }, 
+        {
+          "name": "Full/Part-time Student Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9602011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Institution</span> -  Includes TAFE colleges."
+    }, 
+    "I06": {
+      "metadataUrls": [
+        {
+          "name": "Highest Year of School Completed", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5202011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence."
+    }, 
+    "I07": {
+      "metadataUrls": [
+        {
+          "name": "Personal Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5702011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Persons", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter20102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence."
+    }, 
+    "I08": {
+      "metadataUrls": [
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Persons", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter20102011"
+        }, 
+        {
+          "name": "Core Activity Need for Assistance", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter702011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence."
+    }, 
+    "I09": {
+      "metadataUrls": [
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Persons", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter20102011"
+        }, 
+        {
+          "name": "Unpaid Assistance to a Person with a Disability", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter10602011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence."
+    }, 
+    "I10": {
+      "metadataUrls": [
+        {
+          "name": "Tenure Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9702011"
+        }, 
+        {
+          "name": "Landlord Type", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6502011"
+        }, 
+        {
+          "name": "Dwelling Structure", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9502011"
+        }, 
+        {
+          "name": "Indigenous Status of Household", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5902011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(b) A household with Indigenous person(s) is any household that had at least one person of any age as a resident at the time of the Census who identified as being of Aboriginal and/or Torres Strait Islander origin.<br /><span class=\"rowLabel\">Owned with a mortgage</span> -  Includes dwellings being purchased under a rent/buy scheme.<br /><span class=\"rowLabel\">Person not in same household</span> -  Comprises dwellings being rented from a parent/other relative or other person.<br /><span class=\"rowLabel\">Other landlord type</span> -  Comprises dwellings being rented through a 'Residential park (includes caravan parks and marinas)', 'Employer - Government (includes Defence Housing Authority)' and 'Employer - other employer'.<br /><span class=\"rowLabel\">Other tenure type</span> -  Includes dwellings being occupied under a life tenure scheme."
+    }, 
+    "I11": {
+      "metadataUrls": [
+        {
+          "name": "Type of Internet Connection", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter7302011"
+        }, 
+        {
+          "name": "Indigenous Status of Household", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5902011"
+        }
+      ], 
+      "notes": "(a) Where a dwelling has more than one type of Internet connection, only one is recorded.<br />(b) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(c) A household with Indigenous person(s) is any household that had at least one person of any age as a resident at the time<br />of the Census who identified as being of Aboriginal and/or Torres Strait Islander origin."
+    }, 
+    "I12": {
+      "metadataUrls": [
+        {
+          "name": "Household Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4502011"
+        }, 
+        {
+          "name": "Family Composition", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter3802011"
+        }, 
+        {
+          "name": "Indigenous Status of Household", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5902011"
+        }
+      ], 
+      "notes": "(a) Includes up to three residents who were temporarily absent on Census Night.<br />(b) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(c) A household with Indigenous person(s) is any household that had at least one person of any age as a resident at the time of the Census who identified as being of Aboriginal and/or Torres Strait Islander origin.<br />..   Not applicable"
+    }, 
+    "I13": {
+      "metadataUrls": [
+        {
+          "name": "Household Income", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter4902011"
+        }, 
+        {
+          "name": "Indigenous Status of Household", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter5902011"
+        }
+      ], 
+      "notes": "(a) Excludes 'Visitors only' and 'Other non-classifiable' households.<br />(b) A household with Indigenous person(s) is any household that had at least one person of any age as a resident at the time of the Census who identified as being of<br />Aboriginal and/or Torres Strait Islander origin.<br /><span class=\"rowLabel\">Partial income stated</span> -  Comprises households where at least one, but not all, members aged 15 years and over did not state an income, and/or was temporarily absent on Census Night.<br /><span class=\"rowLabel\">All incomes not stated</span> -  Comprises households where no members present stated an income."
+    }, 
+    "I14": {
+      "metadataUrls": [
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">In the labour force; Industry sector; Non-school qualifications</span> -  Applicable to persons aged 15 years and over.<br /><span class=\"rowLabel\">% Unemployment</span> -  The number of unemployed persons expressed as a percentage of the total labour force.<br /><span class=\"rowLabel\">% Labour force participation</span> -  The number of persons in the labour force expressed as a percentage of persons aged 15 years and over.<br /><span class=\"rowLabel\">% Employment to population</span> -  The number of employed persons expressed as a percentage of persons aged 15 years and over.<br /><span class=\"rowLabel\">CDEP participants</span> -  Community Development Employment Projects (CDEP) participants are counted as employed persons. CDEP participation is only identified on the Interviewer Household Form. These forms are designed<br />specifically for use in discrete Indigenous communities. Applicable to persons aged 15 years and over.<br /><span class=\"rowLabel\">Self employed</span> -  Comprises owner managers of unincorporated enterprises with nil employees. Applicable to persons aged 15 years and over.<br /><span class=\"rowLabel\">Same address 1 year ago; Different address 1 year ago</span> -  Excludes persons less than 1 year of age.<br /><span class=\"rowLabel\">Same address 5 years ago; Different address 5 years ago</span> -  Excludes persons less than 5 years of age."
+    }, 
+    "I15": {
+      "metadataUrls": [
+        {
+          "name": "Non-School Qualification: Level of Education", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter8202011"
+        }, 
+        {
+          "name": "Indigenous Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6002011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br />(a) Excludes schooling up to Year 12.<br />(b) Excludes persons with a qualification out of the scope of the Australian Standard Classification of Education (ASCED).<br />(c) Includes 'Certificate III & IV, nfd'.<br />(d) Includes 'Certificate I & II, nfd'.<br />(e) Includes 'Level of education inadequately described'."
+    }, 
+    "I16": {
+      "metadataUrls": [
+        {
+          "name": "Labour Force Status", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter6402011"
+        }, 
+        {
+          "name": "Age", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter302011"
+        }, 
+        {
+          "name": "Sex", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter9102011"
+        }, 
+        {
+          "name": "Indigenous Persons", 
+          "url": "http://www.abs.gov.au/ausstats/abs@.nsf/Lookup/2901.0Chapter20102011"
+        }
+      ], 
+      "notes": "This table is based on place of usual residence.<br /><span class=\"rowLabel\">Worked full-time; Worked full-time; Worked full-time</span> -  'Employed, worked full-time' is defined as having worked 35 hours or more in all jobs during the week prior to Census Night.<br /><span class=\"rowLabel\">Away from work; Away from work; Away from work</span> -  Comprises employed persons who did not work any hours in the week prior to Census Night or who did not state their number of hours worked."
+    }
+  }
+}
