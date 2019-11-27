@@ -13,7 +13,6 @@ data/
 dev/*
 dist/
 keys/
-loaders/
 log/
 nginx-prod/build/
 node_modules/

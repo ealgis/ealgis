@@ -15,8 +15,7 @@ social-auth-core==3.2.0
 raven==6.10.0
 uwsgi==2.0.18
 zipstream==1.1.4
-https://github.com/ealgis/ealgis-data-schema/archive/1.1.2.tar.gz
-https://github.com/ealgis/ealgis-common/archive/0.8.5.tar.gz
 django-redis==4.10.0
 python-redis-lock[django]==3.3.1
 redis==3.3.8
+SQLAlchemy-Utils==0.34.2

@@ -1,7 +1,7 @@
 import csv
 from decimal import Decimal
 from io import StringIO
-from ealgis_common.util import make_logger
+from .common.util import make_logger
 from collections import defaultdict
 from functools import partial
 from .util import next_or_default

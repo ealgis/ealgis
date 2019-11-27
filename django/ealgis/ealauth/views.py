@@ -23,7 +23,7 @@ import copy
 import urllib.parse
 import json
 import csv
-from ealgis_common.util import make_logger
+from ..common.util import make_logger
 from ..mvt import TileGenerator
 from .admin import is_private_site
 from ..util import get_env, get_version

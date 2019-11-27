@@ -3,7 +3,7 @@
 # control access to the EAlGIS datastore from the webapp
 #
 
-from ealgis_common.db import Database
+from .common.db import Database
 from .util import make_logger
 
 
