@@ -1,6 +1,6 @@
 # temporary: need the latest GDAL for PostgreSQL 12 compat
 FROM debian:unstable
-MAINTAINER https://github.com/ealgis/docker-ingest-base
+MAINTAINER https://github.com/ealgis/ealgis
 
 # httpredir is often down, just use the AARNET mirror
 RUN sed -i s/httpredir.debian.org/mirror.aarnet.edu.au/ /etc/apt/sources.list

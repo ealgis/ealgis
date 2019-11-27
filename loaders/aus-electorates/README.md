@@ -101,7 +101,7 @@ Once you've found the spatial data from the relevant electoral commission simply
 
 #### Adding a new spatial data format
 
-The loader uses GDAL's venerable [ogr2ogr](https://gdal.org/programs/ogr2ogr.html) tool to load spatial data into PostgreSQL - so there's practically no limit on the data formats you could use. Additional formats can be added by creating a new `GeoDataLoader` class in [ealgis-common](https://github.com/ealgis/ealgis/blob/master/django/ealgis/common/loaders.py), updating [ingest-base](https://github.com/ealgis/docker-ingest-base), and modifying `recipe.py`.
+The loader uses GDAL's venerable [ogr2ogr](https://gdal.org/programs/ogr2ogr.html) tool to load spatial data into PostgreSQL - so there's practically no limit on the data formats you could use. Additional formats can be added by creating a new `GeoDataLoader` class in [ealgis-common](https://github.com/ealgis/ealgis/blob/master/django/ealgis/common/loaders.py).
 
 ### 2. Add your boundaries to recipe.py
 
