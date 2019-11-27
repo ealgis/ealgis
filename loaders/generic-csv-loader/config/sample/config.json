@@ -1,0 +1,43 @@
+{
+    "data": {
+        "type": "csv",
+        "file": "ABS_3218.0_Regional_Population_Growth_NSW_2017-18.csv",
+        "db_table_name": "rpg_nsw_2017_18",
+        "csv": {
+            "dialect": "excel",
+            "encoding": "utf-8-sig",
+            "skip": 0
+        }
+    },
+    "geometry_linkage": {
+        "shape_schema": "aus_census_2016_shapes",
+        "shape_table": "sa2",
+        "shape_column": "sa2_main",
+        "csv_column": "sa2_main",
+        "match": "str"
+    },
+    "metadata": {
+        "collection_name": "New South Wales",
+        "title": "Regional Population Growth, NSW, 2017-18",
+        "description": "A description of the dataset. It's <strong>OK</strong> to use HTML.",
+        "kind": "Persons",
+        "family": "3218.0"
+    },
+    "column_metadata": {
+        "erp_30_june_2017": "ERP at 30 June 2017",
+        "erp_30_june_2018": "ERP at 30 June 2018",
+        "erp_2017_2018_change_no": "ERP change 2017-18",
+        "erp_2017_2018_change_percent": "ERP change % 2017-18",
+        "erp_2017_2018_change_component_natural_increase": "Components of population change - Natural increase",
+        "erp_2017_2018_change_component_net_internal_migration": "Components of population change - Internal migration",
+        "erp_2017_2018_change_component_net_overseas_migration": "Components of population change - Overseas migration",
+        "area_km2": "Area km2",
+        "population_density_persons_per_km2": "Population density 2018 - persons/km2"
+    },
+    "schema": {
+        "name": "sample",
+        "title": "2019 Project Data",
+        "description": "A description of the datasets you'll find in this schema.",
+        "date_published": "2019-03-27"
+    }
+}
