@@ -741,7 +741,7 @@ class DataLoader(SchemaAccess):
         self.session.execute(
             self.tables['ealgis_metadata'].insert().values(**kwargs))
         self.session.commit()
-    
+
     def is_table_registered(self, table_name):
         TableInfo = self.classes['table_info']
         return True if self.session.query(TableInfo).filter(TableInfo.name == table_name).one_or_none() is not None else False

@@ -9,7 +9,7 @@ import re
 import urllib.request
 from shutil import rmtree
 from urllib.parse import urlparse
-from .util import piperun, table_name_valid, make_logger
+from .util import table_name_valid, make_logger
 
 from .seqclassifier import SequenceClassifier
 import csv
