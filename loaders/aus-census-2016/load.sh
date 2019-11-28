@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function defaults {
-    : ${DBSERVER:="db"}
+    : ${DBSERVER:="datastore"}
     : ${DBPORT:="5432"}
     : ${DBUSER="postgres"}
     : ${DBNAME="${DBUSER}"}
