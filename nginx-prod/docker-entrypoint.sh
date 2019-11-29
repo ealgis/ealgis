@@ -16,7 +16,11 @@ function dockerwait {
 }
 
 if [ "$HTTPS_ENABLED" = "FALSE" ]; then
+  if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
+    nginxconf="/etc/nginx/docker.http.prod.conf"
+  else
     nginxconf="/etc/nginx/docker.http.conf"
+  fi
 else
     nginxconf="/etc/nginx/docker.https.conf"
 fi
