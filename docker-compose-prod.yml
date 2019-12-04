@@ -45,5 +45,6 @@ services:
       - "443:443"
     environment:
       - HTTPS_ENABLED=TRUE
+      - ENVIRONMENT=PRODUCTION
       - SERVER_NAME=demo.ealgis.org
       - DJANGO_LOCATION=uwsgi:9090
